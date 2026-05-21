@@ -1,0 +1,55 @@
+{% set name = "chap_mddb" %}
+{% set version = "0.10.0" %}
+
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{version}}'
+
+source:
+  url: https://github.com/RubenChM/chap/archive/v{{version}}.tar.gz 
+  sha256: a8d68bd297acbca83b2b2e0454fdbb2a38f27ae1b5fcc70bca923489400bc973
+
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.5
+  host:
+    - boost-cpp
+    - libcblas * *_netlib
+    - liblapacke * *_netlib
+    - libtmglib
+    - gromacs >2019
+    - rapidjson
+    - intel-compute-runtime
+  run:
+    - boost-cpp
+    - libcblas
+    - liblapacke
+    - gromacs >2019
+    - rapidjson
+    - intel-compute-runtime
+
+test:
+  commands:
+    - chap -h
+
+about:
+  home: https://github.com/RubenChM/chap
+  license: MIT
+  license_file: LICENSE.TXT
+  summary: |
+    CHAP is a tool for the functional annotation of ion channel structures.
+    This a fork of the original CHAP code, which is no longer maintained, with the aim of
+    providing compatibility with new GROMACS versions. The original code can be found at:
+    https://github.com/channotation/chap
+
