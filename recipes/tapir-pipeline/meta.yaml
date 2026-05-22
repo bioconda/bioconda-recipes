@@ -1,0 +1,59 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: tapir-pipeline
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/t/tapir-pipeline/tapir-pipeline-{{ version }}.tar.gz
+  sha256: c43e425d732284ce3cba3e823829135d5be616c4eb9767b1c7d95badd6c2e853
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - tapir = tapir:main
+  noarch: python
+  string: py_0
+  post-link: post-link.sh
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=61,<77
+  run:
+    - python >=3.11
+    - biopython >=1.80
+    - cobra-meta
+    - fastp
+    - bowtie2
+    - samtools
+    - spades >=3.15
+    - megahit
+    - mmseqs2
+    - coverm
+    - pip
+
+test:
+  commands:
+    - tapir --help
+
+about:
+  home: https://github.com/LymF/TAPIR
+  license: MIT
+  license_file: LICENSE
+  summary: "End-to-end pipeline for RNA virus discovery from metatranscriptomic data"
+  description: |
+    TAPIR (Transcriptome Assembly Pipeline for Identification of RNA viruses)
+    discovers and annotates RNA viruses from paired-end metatranscriptomic
+    Illumina reads. It integrates quality control, host decontamination,
+    triple-strategy de novo assembly (rnaSPAdes, SPAdes --rnaviral, MEGAHIT),
+    dereplication, contig extension, cross-sample consolidation, and
+    taxonomic annotation via ViralQuest.
+  doc_url: https://github.com/LymF/TAPIR#readme
+  dev_url: https://github.com/LymF/TAPIR
+
+extra:
+  recipe-maintainers:
+    - LymF
