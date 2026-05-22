@@ -9,9 +9,9 @@ package:
 source:
   url: https://github.com/uym2/TreeShrink/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
   {% if version < "1.4.0" %}
-  - 0001-python-3.10.patch
+  patches:
+    - 0001-python-3.10.patch
   {% endif %}
 
 build:
@@ -24,7 +24,6 @@ build:
     - chmod 0755 ${PREFIX}/bin/run_treeshrink
   run_exports:
     - {{ pin_subpackage("treeshrink", max_pin="x") }}
-
 requirements:
   host:
     - python >=3.8,<3.13
@@ -32,15 +31,18 @@ requirements:
     - setuptools
   run:
     - python >=3.8,<3.13
+    - numpy
+    - scipy
+    - treeswift
 
 test:
+  imports:
+    - treeshrink
   requires:
     - python <3.13
     - numpy
     - scipy
     - treeswift
-  imports:
-    - treeshrink
   commands:
     - run_treeshrink -h
 
