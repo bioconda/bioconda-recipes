@@ -2,6 +2,7 @@
 set -euo pipefail
 
 make \
+  DOTMATCH_VERSION="${PKG_VERSION}" \
   CC="${CC}" \
   CFLAGS="${CFLAGS:-} ${CPPFLAGS:-} -std=c11 -Wall -Wextra -Wpedantic -Iinclude" \
   LDFLAGS="${LDFLAGS:-}" \
