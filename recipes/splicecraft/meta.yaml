@@ -1,0 +1,99 @@
+{% set name = "splicecraft" %}
+{% set version = "0.9.19" %}
+
+# Bioconda recipe for SpliceCraft.
+#
+# This file is the REFERENCE COPY maintained in-repo. It's the source
+# of truth for the recipe contents; the bioconda-recipes mirror at
+#   https://github.com/bioconda/bioconda-recipes/tree/master/recipes/splicecraft/
+# is updated by syncing from here (manually for the first submission,
+# then by the bioconda regro-cf-autotick-bot for subsequent version
+# bumps). See `conda-recipe/README.md` for the submission workflow.
+#
+# Maintenance: after a new PyPI release, bump `version` above and
+# regenerate `source.sha256`:
+#
+#   curl -sL https://pypi.io/packages/source/s/splicecraft/splicecraft-X.Y.Z.tar.gz | sha256sum
+#
+# Either keep both copies in step manually, or let regro-cf-autotick-bot
+# (post first submission) pick up the PyPI bump automatically — the bot
+# will open a PR against bioconda-recipes within a few hours. Maintainer
+# approval is then a one-click merge.
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  # Regenerate this on every version bump (see comment above).
+  sha256: aa8a43acb4ae09dd111777b877cf2ea7b3795c5c80be1b3ca3e3b477356a99ab
+
+build:
+  noarch: python
+  number: 0
+  # `max_pin="x.x"` because SpliceCraft is on 0.x.y — semver permits
+  # breaking changes between 0.minor releases, so downstreams must
+  # pin to the same minor to stay compatible. Bumps to >=1.0.0 should
+  # relax this to `max_pin="x"`.
+  run_exports:
+    - {{ pin_subpackage('splicecraft', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - splicecraft     = splicecraft:main
+    - splicecraft-cli = splicecraft_cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling >=1.24
+  run:
+    - python >=3.10
+    - textual >=8.2.7
+    - biopython >=1.87
+    - primer3-py >=2.3.0
+    - platformdirs >=4.9.6
+    - pyhmmer >=0.12.1
+    - Pillow >=12.2.0
+    - pyspellchecker >=0.8.0
+    - rich-pixels >=3.0.1
+
+test:
+  imports:
+    - splicecraft
+  commands:
+    - splicecraft --version
+    - splicecraft-cli --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Binomica-Labs/SpliceCraft
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Terminal plasmid workbench (map viewer, sequence editor, cloning)
+  description: |
+    SpliceCraft is a terminal-native plasmid workbench built for daily
+    lab work. Renders circular and linear maps via Unicode braille
+    graphics, edits sequence with full undo / redo, designs primers
+    (detection, cloning, Golden Braid L0, generic) via Primer3, runs
+    SOE-PCR site-directed mutagenesis on any CDS.
+
+    Manages a collection-driven plasmid library with atomic writes and
+    on-disk backups (four-tier safety net: legacy `.bak`, timestamped
+    rotation, daily snapshots, shrink-guard spillover). Provides
+    in-process similarity search (BLASTN / BLASTP / HMMscan) via
+    pyhmmer against the user's plasmid collections — no external
+    blast+ install required.
+
+    Local `.gb` / `.gbk` and `.dna` files (popular commercial plasmid
+    editor format) load directly; bulk-import an archive into a new
+    collection from the panel.
+  dev_url: https://github.com/Binomica-Labs/SpliceCraft
+  doc_url: https://github.com/Binomica-Labs/SpliceCraft
+
+extra:
+  recipe-maintainers:
+    - ATinyGreenCell
