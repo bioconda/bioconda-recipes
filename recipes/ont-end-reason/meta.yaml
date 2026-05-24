@@ -1,0 +1,84 @@
+{% set name = "ont-end-reason" %}
+{% set version = "0.2.0a1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ont_end_reason-{{ version }}.tar.gz
+  sha256: 3e5b9898b630284a1344d8f9a12549de3fc425570bd8f436eb69c37602fc08b3
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ont-end-reason = ont_end_reason.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('ont-end-reason', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - click >=8.1
+    - pysam >=0.22
+    - pod5 >=0.3
+    - numpy >=1.24
+    - pandas >=2.0
+    - matplotlib-base >=3.7
+    - scipy >=1.10
+    - structlog >=24.1
+    - pyyaml >=6.0
+    - jinja2 >=3.1
+    - tabulate >=0.9
+
+test:
+  imports:
+    - ont_end_reason
+    - ont_end_reason.analyze.distribution
+    - ont_end_reason.analyze.umc_posterior
+    - ont_end_reason.filter
+    - ont_end_reason.io
+    - ont_end_reason.viz
+  commands:
+    - ont-end-reason --version
+    - ont-end-reason --help
+    - ont-end-reason codes
+    - ont-end-reason schema
+
+about:
+  home: https://github.com/Single-Molecule-Sequencing/ont-end-reason
+  summary: Comprehensive CLI for Oxford Nanopore end_reason analysis
+  description: |
+    ont-end-reason is the canonical analysis toolkit for Oxford Nanopore
+    Technologies `end_reason` metadata — the tag every read carries that
+    explains why sequencing stopped. The package provides:
+
+      - 9 analyses (distribution, length, quality with GMM, temporal,
+        hypothesis tests, UMC posterior, signal trace, SMA metrics, tables)
+      - 4 filter operations (tag, filter, export-fastq, stats)
+      - 4 paper figure reproducers (fig3, fig5, fig6, supplementary)
+      - 6-section composed interactive HTML reports
+
+    The Bayesian UMC posterior analysis estimates how much sequence was
+    truncated by adaptive sampling — recovering an estimate of "unobserved"
+    sequence per read. This is the central novel contribution of the
+    companion paper.
+
+    Companion to the end-reason paper from the Single-Molecule-Sequencing
+    lab at the University of Michigan.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://silver-adventure-o322543.pages.github.io/
+  dev_url: https://github.com/Single-Molecule-Sequencing/ont-end-reason
+
+extra:
+  recipe-maintainers:
+    - gregfar
