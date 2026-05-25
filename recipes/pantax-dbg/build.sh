@@ -90,7 +90,7 @@ popd
 # sanity checks
 "${PREFIX}/bin/python" - <<'PY'
 import importlib
-for mod in ["themis", "themis_scripts"]:
+for mod in ["pantax_dbg", "pantax_dbg_scripts"]:
     m = importlib.import_module(mod)
     print(f"[sanity] imported {mod}: {m.__file__}")
 PY
