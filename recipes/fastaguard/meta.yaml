@@ -1,0 +1,50 @@
+{% set name = "fastaguard" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ehsanestaji/FastaGuard/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 10a5520e54d7e7884aa4cdfec5108cd7183c6033053e7839f969b9dcd9d73a17
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fastaguard', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - fastaguard --help
+    - fastaguard --schema
+    - fastaguard --finding-catalog
+
+about:
+  home: https://github.com/ehsanestaji/FastaGuard
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: FASTA preflight QC for assembly pipelines
+  description: |
+    FastaGuard validates assembly FASTA files, detects structural and
+    composition red flags, and emits pipeline-ready JSON, TSV, HTML, and
+    MultiQC outputs before downstream analysis.
+  dev_url: https://github.com/ehsanestaji/FastaGuard
+  doc_url: https://github.com/ehsanestaji/FastaGuard/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ehsanestaji
