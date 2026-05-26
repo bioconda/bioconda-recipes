@@ -1,0 +1,62 @@
+{% set name = "caddsv" %}
+{% set version = "2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kircherlab/CADD-SV/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c5eefc4e3bf2305966f6bf723c0ee8d5128dca848b4783ae43baa7238a430dc0
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - caddsv = caddsv.cli:app
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - typer >=0.9
+    - huggingface_hub >=0.24
+    - snakemake >=7.31
+    - pulp ==2.7
+    - numpy
+    - pandas
+
+test:
+  imports:
+    - caddsv
+  commands:
+    - caddsv --help
+    - caddsv run --help
+
+about:
+  home: https://github.com/kircherlab/CADD-SV
+  dev_url: https://github.com/kircherlab/CADD-SV
+  license: MIT
+  license_file: LICENSE
+  summary: CADD-SV structural variant scoring workflow CLI
+  description: |
+    CADD-SV is a Snakemake-based command-line tool for scoring structural
+    variants. This package installs the caddsv CLI and bundled workflow files.
+    Large annotation resources are downloaded separately with
+    caddsv get annotations.
+
+extra:
+  notes: |
+    CADD-SV invokes Snakemake with --use-conda and packaged workflow
+    environment YAML files. Full scoring requires a working conda-compatible
+    environment manager at runtime. SegmentNT modes require GPU-capable
+    infrastructure and may download Hugging Face model weights unless the user
+    has already populated the cache.
+  recipe-maintainers:
+    - catonao
