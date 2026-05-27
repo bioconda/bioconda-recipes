@@ -1,4 +1,4 @@
-{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+python -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 ## build Go binaries
 mkdir -p ${PREFIX}/bin
@@ -12,9 +12,9 @@ mkdir -p ${PREFIX}/bin
     install -m 755 gih-stagger gih-convert djinn-standardize ${PREFIX}/bin/
 }
 
-## CLI completions
-mkdir -p $PREFIX/etc/conda/activate.d
-mkdir -p $PREFIX/etc/conda/deactivate.d
+# Jupyter env fixes for Xeus-python
+mkdir -p ${PREFIX}/etc/conda/activate.d
+mkdir -p ${PREFIX}/etc/conda/deactivate.d
 
 #echo "export JUPYTER_NOTARY_DB=':memory:'" > ${PREFIX}/etc/conda/activate.d/my-package-activate.sh
 #echo "unset JUPYTER_NOTARY_DB" > ${PREFIX}/etc/conda/deactivate.d/my-package-deactivate.sh
