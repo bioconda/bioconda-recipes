@@ -4,7 +4,9 @@
 # conda-build automatically sets up the environment so that the
 # C compiler ($CC) is found and the htslib headers and libraries
 # are available for compilation and linking.
-make PREFIX=$PREFIX
+export CC="${CC:-cc}"
+export CXX="${CXX:-c++}"
+make PREFIX=$PREFIX CONDA_PREFIX=$PREFIX CC="$CC" CXX="$CXX"
 
 # Create the directory where executables should be placed in a conda env
 mkdir -p $PREFIX/bin
