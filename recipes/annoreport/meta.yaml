@@ -1,0 +1,45 @@
+{% set name = "annoreport" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/keplerridge/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: afad0a3ae881805c0aade67cbf20ad411c197403a66a77ff2c30a39082daa1ee
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -v
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+
+test:
+  commands:
+    - annoreport --help
+
+about:
+  home: https://github.com/keplerridge/annoreport
+  license: MIT
+  license_file: LICENSE
+  summary: Summary and visualization tool for MAG gene annotation workflows
+  description: |
+    annoreport summarizes annotated gene products across all bins from Prokka
+    or Bakta metagenome annotation workflows. It auto-detects the annotation
+    tool, enriches top gene products via the UniProt REST API, clusters genes
+    by functional category, and produces an interactive HTML report and TSV
+    summary table.
+
+extra:
+  recipe-maintainers:
+    - keplerridge
