@@ -1,0 +1,56 @@
+{% set name = "factorforge-cds" %}
+{% set version = "3.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e484ff3fe6e3fc3374dac7e1e91241f7500dc8046d242c928c303db0547e5187
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - biopython >=1.81
+    - requests >=2.31
+    - click >=8.0
+    - pydantic >=2.0
+
+test:
+  imports:
+    - factorforge
+    - factorforge.engines
+    - factorforge.validation
+  commands:
+    - factorforge --help
+    - factorforge-validate --help
+
+about:
+  home: https://factorforge-cds.vercel.app
+  dev_url: https://github.com/eijex/factorforge-cds
+  doc_url: https://eijex.github.io/factorforge-cds/
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: Constraint-aware coding sequence design engine for plant expression workflows
+  description: |
+    FactorForge is an open-source CDS design engine for plant expression workflows,
+    with an initial focus on Nicotiana benthamiana. It provides deterministic,
+    constraint-aware optimization via a dynamic-programming feasibility engine,
+    profile-based rule optimization, and MoClo/Golden Gate-compatible output.
+    Distributed as a Python package, CLI, REST API, and Docker-deployable web app.
+
+extra:
+  recipe-maintainers:
+    - eijex
