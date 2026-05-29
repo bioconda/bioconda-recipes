@@ -9,9 +9,11 @@ fi
 
 # configure CMake: install into $PREFIX (v1.0.0+ adds real install() rules that
 # install the binary, the bin/rad wrapper, and resources/ to share/rad).
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+# ${CMAKE_ARGS} carries the conda toolchain settings, incl. the macOS
+# deployment target + SDK sysroot, which std::filesystem availability depends on.
+cmake -S . -B build ${CMAKE_ARGS:-} -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-   "${CONFIG_ARGS}"
+  ${CONFIG_ARGS}
 
 cmake --build build --clean-first -j "${CPU_COUNT}"
 cmake --install build --prefix "${PREFIX}"
