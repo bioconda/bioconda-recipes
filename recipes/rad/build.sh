@@ -2,7 +2,9 @@
 set -euo pipefail
 
 if [[ `uname` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+  # std::filesystem needs a macOS 10.15+ deployment target; force CMake to use
+  # the conda target (raised to 10.15 for osx-64 via conda_build_config.yaml).
+  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET:-10.15}"
 else
   export CONFIG_ARGS=""
 fi
