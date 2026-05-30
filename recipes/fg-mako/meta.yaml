@@ -1,0 +1,54 @@
+{% set name = "fg-mako" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/mako/archive/v{{ version }}.tar.gz
+  sha256: 78903f301343718d262c7b39c77bdee0727ed6039dfe512d9cb8dd5f3565c114
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  ignore_run_exports_from:
+    - libdeflate
+    - libgit2
+    - zlib
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+  host:
+    - libdeflate
+    - libgit2
+    - zlib
+
+test:
+  commands:
+    - mako --version
+
+about:
+  home: https://github.com/fg-labs/mako
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast SAM/BAM sorter (installs the `mako` binary).
+  dev_url: https://github.com/fg-labs/mako
+  doc_url: https://docs.rs/fg-mako
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
