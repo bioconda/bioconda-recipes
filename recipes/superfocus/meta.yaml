@@ -1,0 +1,54 @@
+{% set name = "superfocus" %}
+{% set version = "1.8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/metageni/SUPER-FOCUS/archive/v{{ version }}.tar.gz
+  sha256: 42bf300866c3bfe1020aaaddd1846ee7749ddff13485919391639835a83493cb
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -q
+  run_exports:
+    - {{ pin_subpackage("superfocus", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=68
+    - setuptools-scm
+    - wheel
+  run:
+    - python >=3.8
+    - click >=8.0
+    - numpy >=1.12.1
+    - scipy >=0.19.0
+
+test:
+  imports:
+    - superfocus_app
+    - superfocus_app.cli
+    - superfocus_app.pipeline
+    - superfocus_app.utils
+  commands:
+    - superfocus --help
+    - superfocus_downloadDB --help
+
+about:
+  home: https://github.com/metageni/SUPER-FOCUS
+  license: GPL-3.0-or-later
+  license_file: COPYING
+  summary: SUPER-FOCUS - A tool for agile functional analysis of shotgun metagenomic data
+  description: |
+    SUPER-FOCUS uses fast protein aligners (DIAMOND, BLAST, MMseqs2, RAPSearch2)
+    to profile the functional composition of shotgun metagenomic samples against
+    the SEED subsystems database.
+
+extra:
+  recipe-maintainers:
+    - metageni
