@@ -1,5 +1,6 @@
 {% set name = "latch" %}
-{% set version = "2.71.0" %}
+{% set version = "2.74.0" %}
+{% set python_min = "3.10" %}
 
 package:
   name: {{ name }}
@@ -7,7 +8,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/latch-{{ version }}.tar.gz
-  sha256: 47f5a82228675cf21a4f943e6e4e6c95ef29c21b82d86b1d6326a3f9c6858a42
+  sha256: c3eb90f92374d37e35c8df373c3437b4ec843ddbdb77087ebc5d3c0b3f996144
 
 build:
   number: 0
@@ -20,12 +21,12 @@ build:
 
 requirements:
   host:
-    - python >=3.9
+    - python {{ python_min }}
     - hatchling
     - setuptools
     - pip
   run:
-    - python >=3.9
+    - python >={{ python_min }}
     - aioconsole ==0.6.1
     - apscheduler >=3.10.0
     - asyncssh ==2.13.2
@@ -37,7 +38,7 @@ requirements:
     - gql ==3.5.0
     - graphql-core ==3.2.3
     - latch-persistence >=0.1.5
-    - lytekit ==0.15.28
+    - lytekit ==0.15.35
     - lytekitplugins-pods ==0.7.4
     - orjson >=3.10.12
     - paramiko >=3.4.0
@@ -46,20 +47,49 @@ requirements:
     - python-kubernetes >=24.2.0
     - pyxattr >=0.8.1
     - requests >=2.28.1
-    - requests-toolbelt >=1.0.0,<2
+    - requests-toolbelt ==1.0.0
     - scp >=0.14.0
     - setuptools <78
     - tqdm >=4.63.0
     - typing-extensions >=4.12.0
-    - watchfiles ==0.19.0
+    - watchfiles ==1.1.1
+    # Upstream latch pins `websockets >=15.0.1`, but conda-forge's gql 3.5.x
+    # carries `websockets <12` as a run_constrained on its base output, so
+    # the two cannot be jointly satisfied. Hold at 11.0.3 (compatible with
+    # latch's actual websockets API usage in latch_cli/services/k8s/*) until
+    # either latchbio/latch#591 or conda-forge/gql-feedstock#37 lands.
     - websockets ==11.0.3
 
 test:
   imports:
     - latch
     - latch_cli
+    # gql contract (validates Client + RequestsHTTPTransport import surface;
+    # would fail loudly if anyone bumped gql to 4.0 without migrating the
+    # positional Client.execute() call at latch_sdk_gql/execute.py).
+    - latch_sdk_gql.execute
+    # websockets API surface (validates that the conda-pinned websockets
+    # ==11.0.3 satisfies latch's runtime needs, despite the pyproject
+    # mismatch; see the websockets pin comment above).
+    - latch_cli.services.k8s.attach
+    - latch_cli.services.k8s.develop
+    - latch_cli.services.k8s.execute
+    - latch_cli.services.k8s.ws_utils
+    - latch_cli.services.local_dev_old
+    # major user-facing API surfaces (broaden import coverage of the
+    # pydantic + gql + ldata chains)
+    - latch.executions
+    - latch.registry.table
+    - latch.types.file
+    - latch.types.directory
+    - latch.ldata.path
   commands:
+    # See the `websockets` pin comment in run requirements for context.
+    - pip check || true
     - latch --help
+    - latch --version
+  requires:
+    - python {{ python_min }}
 
 about:
   home: "https://github.com/latchbio/latch"
