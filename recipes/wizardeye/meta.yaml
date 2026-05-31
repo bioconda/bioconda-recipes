@@ -1,0 +1,55 @@
+{% set name = "wizardeye" %}
+{% set version = "0.1.2" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/TheLokj/WizardEye/archive/refs/tags/{{ version }}.tar.gz
+  sha256: a49bd7fead33d3955543331a7439e104ed86c4f60738f566ba797ac0d973e17c 
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+  script: "{{ PYTHON }} -m pip install . -vv"
+  entry_points:
+    - wizardeye = wizardeye.cli:app
+
+requirements:
+  host:
+    - pip
+    - python >=3.8,<3.13
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.8,<3.13
+    - typer >=0.9
+    - pyyaml >=6.0
+    - pysam >=0.22
+    - pybigwig >=0.3.25
+    - numpy
+    - bwa
+    - samtools
+    - bedtools
+    - seqkit
+    - ucsc-bedgraphtobigwig
+    - ucsc-bigwigtobedgraph
+    - parallel
+
+test:
+  source_files:
+    - tests/  
+  requires:
+    - pytest >=7.0
+  commands:
+    - wizardeye --help
+
+about:
+  home: https://github.com/TheLokj/WizardEye
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A Python tool to create, manage, and filter by cross-mappability tracks."
