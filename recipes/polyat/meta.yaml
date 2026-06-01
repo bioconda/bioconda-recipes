@@ -1,0 +1,49 @@
+{% set name = "polyat" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DaanJansen94/polyat/archive/{{ version }}.tar.gz
+  sha256: 1bd3e1d209095f7bc7d297ee25495e28f8cf31cc38879d33407f124c61fbf62e
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - polyat=polyat.polyat:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - polyat
+  commands:
+    - polyat --help
+
+about:
+  home: https://github.com/DaanJansen94/polyat
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: Command-line tool to quantify poly-A/T homopolymers within FASTQ sequencing reads.
+  description: |
+    polyat counts poly-A/T homopolymers across FASTQ reads (>=10/15/20 nt),
+    summarizes per sample, and writes both TSV and HTML reports with interactive filters.
+  doc_url: https://github.com/DaanJansen94/polyat/blob/master/README.md
+  dev_url: https://github.com/DaanJansen94/polyat
+
+extra:
+  recipe-maintainers:
+    - DaanJansen94

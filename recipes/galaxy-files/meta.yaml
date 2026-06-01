@@ -1,6 +1,7 @@
-{% set version = "25.0.3" %}
-{% set sha256 = "1d353f6691e91e77182a53d3317ac9b24256cb78c1acef3046cbe658ff4aeb8d" %}
+{% set version = "25.1.2" %}
+{% set sha256 = "61f115f92b7e51ccdab83f756315044c3c01a2955b98fbe0d4c0697d16cec87b" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
+{% set python_min = "3.9" %}
 
 package:
   name: galaxy-files
@@ -13,21 +14,22 @@ source:
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --no-compile -vvv"
   run_exports:
     - {{ pin_subpackage('galaxy-files', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python {{ python_min }}
     - pip
     - setuptools
   run:
-    - python >=3.8
+    - python >={{ python_min }},<3.14
     - galaxy-util >={{ galaxy_version }}
     - fs
+    - pydantic >=2.7.4
     - typing-extensions
-    - legacy-cgi
+    - fsspec
 
 test:
   imports:

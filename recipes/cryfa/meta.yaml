@@ -1,29 +1,39 @@
-{% set version = "20.04" %}
+{% set version = "26.05" %}
 
 package:
   name: cryfa
   version: {{ version }}
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cryfa', max_pin="x") }}
 
 source:
   url: https://github.com/cobilab/cryfa/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 8e65537821d4a6f8d64ddbdb7751344fcb7793096809cb3ed1661720c607aaa9
+  sha256: 20045d0baccad6dec725cb2a6c34b7e078cd52dd086b600daab9e1024f3b7a4e
 
 requirements:
   build:
     - make
     - cmake
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - cryptopp
 
 test:
   commands:
-     - cryfa --version 2>&1 | grep {{ version }}
+     - (cryfa --version 2>&1 || true) | grep -F "{{ version }}"
 
 about:
-  home: https://github.com/smortezah/cryfa
-  license: GPL3
+  home: https://github.com/cobilab/cryfa
+  license: GPL-3.0-or-later
   license_file: LICENSE
   license_family: GPL
-  summary: A secure encryption tool for genomic data
+  summary: "A secure encryption tool for genomic data."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

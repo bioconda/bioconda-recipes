@@ -1,35 +1,30 @@
 #!/bin/bash
 set -ex
 
-unset LD LINK ARCH
-export CMAKE_INSTALL_RPATH='$ORIGIN/../lib'
-export CMAKE_BUILD_WITH_INSTALL_RPATH=ON
+## Using Ninja instead of Make
+export CMAKE_GENERATOR="Ninja"
+export CMAKE_FIND_PACKAGE_PREFER_CONFIG=ON
 
-mkdir -p "$PREFIX/bin"
-mkdir -p "$PREFIX/lib"
-mkdir -p "$PREFIX/share"
-mkdir -p $SRC_DIR/build
+## 1) Build CM-Rep code (C++)
+mkdir -p "${SRC_DIR}/build"
+cd "${SRC_DIR}/build"
 
-## copy small test data:
-mkdir -p $PREFIX/share/meta-neuro/example
-cp $SRC_DIR/resources/test.nii.gz $PREFIX/share/meta-neuro/example/
-
-cd $SRC_DIR/build
-cmake -S $SRC_DIR -B $SRC_DIR/build  \
+cmake -S "${SRC_DIR}" -B "${SRC_DIR}/build" \
+    -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$PREFIX \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_CXX_STANDARD=17 \
-    -DCMAKE_MODULE_PATH=$PREFIX/share/cmake \
-    -DCMAKE_PREFIX_PATH=$PREFIX \
-    -DCMAKE_INSTALL_RPATH=$CMAKE_INSTALL_RPATH \
-    -DCMAKE_BUILD_WITH_INSTALL_RPATH=$CMAKE_BUILD_WITH_INSTALL_RPATH
+    -DCMAKE_PREFIX_PATH="${PREFIX}" \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_RPATH='$ORIGIN/../lib' \
+    -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON
 
-cmake --build . --config Release --parallel ${CPU_COUNT} --verbose
-cmake --install .
+cmake --build . --target install -- -j${CPU_COUNT}
 
-# Clean up build directory
-rm -rf $SRC_DIR/build
-
-# Install MeTA package
-cd ${SRC_DIR}
+## 2) Install MeTA package
+cd "${SRC_DIR}"
 ${PYTHON} -m pip install . --no-deps -vv
+
+## 3) Copy example data for testing:
+mkdir -p "${PREFIX}/share/meta-neuro/example"
+cp "${SRC_DIR}/resources/test.nii.gz" "${PREFIX}/share/meta-neuro/example/"
