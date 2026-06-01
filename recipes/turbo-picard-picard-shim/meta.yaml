@@ -1,0 +1,66 @@
+{% set name = "turbo-picard-picard-shim" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dnncha/turbo-picard/archive/refs/tags/v0.1.0.tar.gz
+  sha256: 95923bebbc7f6ab59e73c436b31d84c8da547939c1e6c63be984747acfbc387c
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage('turbo-picard-picard-shim', max_pin="x.x") }}
+  script_env:
+    - CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - clangdev
+    - make
+    - pkg-config
+  host:
+    - bzip2
+    - curl
+    - libzlib
+    - openssl
+    - xz
+  run:
+    - turbo-picard =={{ version }}
+    - bzip2
+    - curl
+    - libzlib
+    - openssl
+    - xz
+  run_constrained:
+    - picard ==0
+
+test:
+  commands:
+    - picard --version
+    - picard MarkDuplicates --help
+
+about:
+  home: https://github.com/dnncha/turbo-picard
+  doc_url: https://turbo-picard.readthedocs.io/
+  dev_url: https://github.com/dnncha/turbo-picard
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Optional picard command shim for turbo-picard.
+  description: |
+    Installs a picard compatibility entrypoint backed by turbo-picard. This
+    package intentionally conflicts with upstream picard because it shadows the
+    same command name. See CITATION.cff for the software citation and the
+    documentation for the separate real-data evidence citations.
+
+extra:
+  recipe-maintainers:
+    - dnncha

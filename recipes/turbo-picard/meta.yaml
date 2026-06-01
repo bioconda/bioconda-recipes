@@ -1,0 +1,97 @@
+{% set name = "turbo-picard" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dnncha/turbo-picard/archive/refs/tags/v0.1.0.tar.gz
+  sha256: 95923bebbc7f6ab59e73c436b31d84c8da547939c1e6c63be984747acfbc387c
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage('turbo-picard', max_pin="x.x") }}
+  script_env:
+    - CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - clangdev
+    - make
+    - pkg-config
+  host:
+    - bzip2
+    - curl
+    - libzlib
+    - openssl
+    - xz
+  run:
+    - bzip2
+    - curl
+    - libzlib
+    - openssl
+    - xz
+
+test:
+  commands:
+    - turbo-picard --version
+    - turbo-picard MarkDuplicates --help
+    - turbo-picard SortSam --help
+    - turbo-picard CleanSam --help
+    - turbo-picard MergeSamFiles --help
+    - turbo-picard BuildBamIndex --help
+    - turbo-picard SamToFastq --help
+    - turbo-picard AddOrReplaceReadGroups --help
+    - turbo-picard CollectAlignmentSummaryMetrics --help
+    - turbo-picard CollectBaseDistributionByCycle --help
+    - turbo-picard CollectGcBiasMetrics --help
+    - turbo-picard CollectQualityYieldMetrics --help
+    - turbo-picard CollectWgsMetrics --help
+    - turbo-picard QualityScoreDistribution --help
+    - turbo-picard MeanQualityByCycle --help
+    - turbo-picard CollectInsertSizeMetrics --help
+    - turbo-picard CollectMultipleMetrics --help
+    - turbo-picard FixMateInformation --help
+    - turbo-picard IntervalListTools --help
+    - turbo-picard RevertSam --help
+    - turbo-picard SetNmMdAndUqTags --help
+    - turbo-picard ValidateSamFile --help
+    - turbo-picard LiftoverVcf --help
+    - turbo-picard CreateSequenceDictionary --help
+    - turbo-picard FastqToSam --help
+    - turbo-picard NormalizeFasta --help
+    - turbo-picard BedToIntervalList --help
+    - turbo-picard ViewSam --help
+    - turbo-picard ReplaceSamHeader --help
+    - turbo-picard UpdateVcfSequenceDictionary --help
+    - turbo-picard GatherVcfs --help
+    - turbo-picard SortVcf --help
+    - turbo-picard MergeVcfs --help
+
+about:
+  home: https://github.com/dnncha/turbo-picard
+  doc_url: https://turbo-picard.readthedocs.io/
+  dev_url: https://github.com/dnncha/turbo-picard
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Picard-compatible Rust toolkit with selected native command surfaces.
+  description: |
+    turbo-picard is a Rust implementation of selected Picard command surfaces.
+    The current native engines cover documented SAM/BAM, metrics, FASTA, VCF,
+    and interval workflows. This package installs the non-shadowing
+    turbo-picard command entrypoint only; install turbo-picard-picard-shim to
+    opt into a picard compatibility shim. See CITATION.cff for the software
+    citation and the documentation for the separate real-data evidence
+    citations.
+
+extra:
+  recipe-maintainers:
+    - dnncha
