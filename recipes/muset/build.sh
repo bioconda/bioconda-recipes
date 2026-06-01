@@ -10,6 +10,11 @@ echo "Current directory: ${PWD}"
 echo "Building version: ${VERSION}"
 ls -lh
 
+# Initialize git submodules (vendored dependencies).
+# git_submodules: True in meta.yaml should handle this, but we do it here
+# as a fallback in case the conda-build version does not support that field.
+git submodule update --init --recursive
+
 # Create the output directory
 mkdir -p ${PREFIX}/bin
 
