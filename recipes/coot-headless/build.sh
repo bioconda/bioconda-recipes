@@ -27,7 +27,7 @@ popd
 mkdir -p "${PREFIX}/share/doxy-sphinx"
 cp -r api/doxy-sphinx/* "${PREFIX}/share/doxy-sphinx"
 
-# Boost 1.86.0 still needs `system` component
+# Boost 1.88.0 still needs `system` component
 sed -i 's|Boost COMPONENTS iostreams|Boost COMPONENTS iostreams system|' CMakeLists.txt
 sed -i 's|Boost::thread Boost::iostreams|Boost::thread Boost::iostreams Boost::system|' CMakeLists.txt
 
@@ -64,6 +64,7 @@ cmake -S . -B build -G Ninja \
   -DCLIPPER-MINIMOL_LIBRARY="${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
   -DCLIPPER-CONTRIB_LIBRARY="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
   -DCLIPPER-CIF_LIBRARY="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
+  -DOSPRAY_PREFIX=${PREFIX} \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -DPython_SITELIB="${SP_DIR}" \
   -DMAKE_COOT_HEADLESS_API_PYI=ON \
@@ -74,7 +75,13 @@ cmake --install build --parallel "${CPU_COUNT}"
 
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
-install -m 755 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/coot-headless_activate.sh"
-install -m 755 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/coot-headless_deactivate.sh"
-install -m 755 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/coot-headless_activate.fish"
-install -m 755 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/coot-headless_deactivate.fish"
+install -m 755 "${RECIPE_DIR}/scripts/activate.sh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+install -m 755 "${RECIPE_DIR}/scripts/activate.fish" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.fish"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.fish"
+install -m 755 "${RECIPE_DIR}/scripts/activate.ps1" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.ps1"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.ps1" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.ps1"
+install -m 755 "${RECIPE_DIR}/scripts/activate.xsh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.xsh"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.xsh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.xsh"
+install -m 755 "${RECIPE_DIR}/scripts/activate.csh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.csh"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.csh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.csh"

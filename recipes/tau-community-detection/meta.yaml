@@ -1,0 +1,48 @@
+{% set name = "tau-community-detection" %}
+{% set version = "1.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/t/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: 72e919c19a8a2742e919b840d8e0d14c0e94214859e09152c9754211e844f75f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - networkx >=3.4
+    - numpy >=2.0
+    - python-igraph >=0.10
+    - scikit-learn >=1.6
+
+test:
+  imports:
+    - tau_community_detection
+  commands:
+    - tau --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/tau-community-detection/
+  summary: Community detection via Louvain/Leiden + Genetic Algorithm
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - HillelCharbit
