@@ -3,9 +3,11 @@ set -euxo pipefail
 
 cd ConSTRain
 
-cargo build --release --bin ConSTRain
-
-mkdir -p "${PREFIX}/bin"
-cp target/release/ConSTRain "${PREFIX}/bin/ConSTRain"
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+cargo install \
+  --no-track \
+  --path . \
+  --root "${PREFIX}" \
+  --bin ConSTRain
 
 "${STRIP}" "${PREFIX}/bin/ConSTRain"
