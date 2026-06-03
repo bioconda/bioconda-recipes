@@ -1,40 +1,42 @@
-{% set version = "1.74.0" %}
+{% set version = "1.82.0" %}
 {% set name = "fdrame" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: d7fafba89f784f421a43b4b4d9a10000
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 6870046d24259cf94750e22f11d6609a
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-fdrame", max_pin="x.x") }}'
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
-  build:
-    - {{ compiler('c') }}
-    - make
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'FDR adjustments of Microarray Experiments (FDR-AME)'
-  description: 'This package contains two main functions. The first is fdr.ma which takes normalized expression data array, experimental design and computes adjusted p-values It returns the fdr adjusted p-values and plots, according to the methods described in (Reiner, Yekutieli and Benjamini 2002). The second, is fdr.gui() which creates a simple graphic user interface to access fdr.ma'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: FDR adjustments of Microarray Experiments (FDR-AME)
+  description: This package contains two main functions. The first is fdr.ma which takes normalized expression data array, experimental design and computes adjusted p-values It returns the fdr adjusted p-values and plots, according to the methods described in (Reiner, Yekutieli and Benjamini 2002). The second, is fdr.gui() which creates a simple graphic user interface to access fdr.ma
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

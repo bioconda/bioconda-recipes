@@ -1,4 +1,5 @@
-{% set version = "2.0.9" %}
+{% set version = "2.0.13" %}
+{% set seqan_version = "2.5.2" %}
 
 package:
   name: mason
@@ -6,44 +7,48 @@ package:
 
 source:
   # Note, version numbers for SeqAn and Mason are different.
-  # SeqAn 2.4.0 contains Mason 2.0.9
-  - url:  http://packages.seqan.de/seqan-src/seqan-src-2.4.0.tar.gz
-    sha256: d7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7
+  # SeqAn 2.5.2 contains Mason 2.0.13
+  url: https://github.com/seqan/seqan/archive/refs/tags/seqan-v{{ seqan_version }}.tar.gz
+  sha256: 4974dfbf802a3e3b63c3e34855e331a7545f8def1c9f4a4dc6712c4d3812179e
 
 build:
-  number: 3
+  number: 0
   run_exports:
-  - {{ pin_subpackage("mason", max_pin="x.y") }}
+    - {{ pin_subpackage('mason', max_pin="x.x") }}
 
 requirements:
   build:
-    - make
+    - ninja
     - {{ compiler('cxx') }}
     - cmake
   host:
+    - bzip2
     - zlib
-  run:
-    - zlib
+    - llvm-openmp # [osx]
 
 test:
   commands:
-    - mason_frag_sequencing --help 2>&1 > /dev/null
-    - mason_genome --help 2>&1 > /dev/null
-    - mason_materializer --help 2>&1 > /dev/null
-    - mason_methylation --help 2>&1 > /dev/null
-    - mason_simulator --help 2>&1 > /dev/null
-    - mason_splicing --help 2>&1 > /dev/null
-    - mason_variator --help 2>&1 > /dev/null
+    - mason_frag_sequencing --version
+    - mason_genome --version
+    - mason_materializer --version
+    - mason_methylation --version
+    - mason_simulator --version
+    - mason_splicing --version
+    - mason_variator --version
 
 about:
-  home: https://github.com/seqan/seqan/tree/master/apps/mason2/README
-  license: https://github.com/seqan/seqan/tree/master/apps/mason2/LICENSE
-  summary: Mason is a collection of tools for the simulation of biological sequences.
+  home: "https://www.seqan.de/apps/mason.html"
+  summary: "Mason is a collection of tools for the simulation of biological sequences."
+  license: BSD 3-Clause
+  license_family: BSD
   license_file: LICENSE
+  dev_url: "https://github.com/seqan/seqan/tree/main/apps/mason2"
+  doc_url: "https://github.com/seqan/seqan/tree/seqan-v{{ seqan_version }}/apps/mason2/README"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:mason
     - doi:10.1371/journal.pone.0049110

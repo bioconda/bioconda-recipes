@@ -1,17 +1,19 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "Nebulosa" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e71c21bbda87365578a49f21dd915fa4
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 21dfb39952381d96504ee13d3517ce1e
+
 build:
   number: 0
   rpaths:
@@ -19,33 +21,38 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-nebulosa", max_pin="x.x") }}'
   noarch: generic
-# Suggests: testthat, BiocStyle, knitr, rmarkdown, covr, scater, scran, DropletUtils, igraph, BiocFileCache, SeuratObject
+
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, covr, scater, scran, DropletUtils, igraph, BiocFileCache, Seurat
 requirements:
   host:
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-ggplot2
+    - r-ggrastr
     - r-ks
     - r-matrix
     - r-patchwork
-    - r-seurat
+    - r-seuratobject
   run:
-    - 'bioconductor-singlecellexperiment >=1.24.0,<1.25.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-ggplot2
+    - r-ggrastr
     - r-ks
     - r-matrix
     - r-patchwork
-    - r-seurat
+    - r-seuratobject
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Single-Cell Data Visualisation Using Kernel Gene-Weighted Density Estimation'
-  description: 'This package provides a enhanced visualization of single-cell data based on gene-weighted density estimation. Nebulosa recovers the signal from dropped-out features and allows the inspection of the joint expression from multiple features (e.g. genes). Seurat and SingleCellExperiment objects can be used within Nebulosa.'
+  summary: Single-Cell Data Visualisation Using Kernel Gene-Weighted Density Estimation
+  description: This package provides a enhanced visualization of single-cell data based on gene-weighted density estimation. Nebulosa recovers the signal from dropped-out features and allows the inspection of the joint expression from multiple features (e.g. genes). Seurat and SingleCellExperiment objects can be used within Nebulosa.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

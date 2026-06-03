@@ -1,0 +1,37 @@
+{% set version = "1.4.0" %}
+{% set name = "assorthead" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 8ec7798fdb26c24973ba4da2944122ed
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-assorthead", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Assorted Header-Only C++ Libraries
+  description: Vendors an assortment of useful header-only C++ libraries. Bioconductor packages can use these libraries in their own C++ code by LinkingTo this package without introducing any additional dependencies. The use of a central repository avoids duplicate vendoring of libraries across multiple R packages, and enables better coordination of version updates across cohorts of interdependent C++ libraries.
+  license_file: LICENSE
+

@@ -1,51 +1,58 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "runibic" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: e67e1067d80c06f72208fca94d7a2e52
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: beab7c81ce7cfea5d84f1637786b6a46
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-runibic", max_pin="x.x") }}'
+
 # Suggests: knitr, rmarkdown, GEOquery, affy, airway, QUBIC
 # SystemRequirements: C++11, GNU make
 requirements:
-  host:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - r-base
-    - r-biclust
-    - 'r-rcpp >=0.12.12'
-    - r-testthat
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - r-base
-    - r-biclust
-    - 'r-rcpp >=0.12.12'
-    - r-testthat
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-biclust
+    - r-rcpp >=0.12.12
+    - r-testthat
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-biclust
+    - r-rcpp >=0.12.12
+    - r-testthat
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
   summary: 'runibic: row-based biclustering algorithm for analysis of gene expression data in R'
-  description: 'This package implements UbiBic algorithm in R. This biclustering algorithm for analysis of gene expression data was introduced by Zhenjia Wang et al. in 2016. It is currently considered the most promising biclustering method for identification of meaningful structures in complex and noisy data.'
+  description: This package implements UbiBic algorithm in R. This biclustering algorithm for analysis of gene expression data was introduced by Zhenjia Wang et al. in 2016. It is currently considered the most promising biclustering method for identification of meaningful structures in complex and noisy data.
   license_file: LICENSE
 

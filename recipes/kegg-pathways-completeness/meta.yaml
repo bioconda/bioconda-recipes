@@ -1,25 +1,26 @@
 {% set name = "kegg-pathways-completeness" %}
-{% set version = "1.0.5" %}
+{% set version = "1.4.3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kegg_pathways_completeness-{{ version }}.tar.gz
-  sha256: b7ec0b1ceabd168296a18ab1184a26e40cfa4fdcaf156cd1d75b0e12c51f8aaa
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/kegg_pathways_completeness-{{ version }}.tar.gz
+  sha256: 43be373c1bf77960185e7066b8af4a6d16a84332ad661d95c33fd50c05153c81
 
 build:
-  entry_points:
-    - give_pathways = kegg_pathways_completeness.bin.give_pathways:main
-    - plot_completeness_graphs = kegg_pathways_completeness.bin.plot_completeness_graphs:main
-    - generate_hmmtable = kegg_pathways_completeness.bin.generate_hmmtable.hmmscan_tab:main
-    - parsing_hmmscan = kegg_pathways_completeness.bin.generate_hmmtable.parsing_hmmscan:main
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - give_completeness = kegg_pathways_completeness.bin.give_completeness:main
+    - plot_modules_graphs = kegg_pathways_completeness.bin.plot_modules_graphs:main
+    - make_graphs = kegg_pathways_completeness.bin.make_graphs:main
+    - fetch_modules_data = kegg_pathways_completeness.bin.fetch_modules_data:main
+    - parse_hmmer_table = kegg_pathways_completeness.bin.parse_hmmer_table:main
   run_exports:
-    - {{ pin_subpackage('kegg-pathways-completeness', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -28,27 +29,32 @@ requirements:
     - pip
   run:
     - python >=3.10
-    - biopython ==1.83
-    - networkx ==3.3
-    - python-graphviz ==0.20.3
+    - biopython >=1.83
+    - networkx >=3.3
+    - python-graphviz >=0.20.3
+    - pydot >=3.0.3
+    - click >=8.0.0
+    - requests >=2.25.0
+    - tqdm >=4.60.0
 
 test:
   imports:
     - kegg_pathways_completeness
   commands:
-    - pip check
-    - give_pathways --help
-    - plot_completeness_graphs --help
-    - generate_hmmtable --help
-    - parsing_hmmscan --help
-  requires:
-    - pip
+    - give_completeness --help
+    - plot_modules_graphs --help
+    - make_graphs --help
+    - fetch_modules_data --help
+    - parse_hmmer_table --help
 
 about:
-  summary: The tool counts completeness of each KEGG pathway for protein sequences.
-  home: https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool
-  license: Apache-2.0
+  summary: "The tool counts completeness of each KEGG pathway for protein sequences."
+  home: "https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool"
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: LICENSE
+  dev_url: "https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool"
+  doc_url: "https://github.com/EBI-Metagenomics/kegg-pathways-completeness-tool/blob/{{ version }}/README.md"
 
 extra:
   recipe-maintainers:

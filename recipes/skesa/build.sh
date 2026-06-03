@@ -1,28 +1,34 @@
 #!/bin/bash
-
 set -xe
 
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [ "$(uname)" == "Darwin" ]; then
-  sed -i.bak 's/-Wl,-Bstatic//' Makefile.nongs
-  sed -i.bak 's/-Wl,-Bdynamic -lrt//' Makefile.nongs
+mkdir -p "${PREFIX}/bin"
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	sed -i.bak 's/-Wl,-Bstatic//' Makefile.nongs
+	sed -i.bak 's/-Wl,-Bdynamic -lrt//' Makefile.nongs
 fi
+sed -i.bak 's/-lpthread/-pthread/' Makefile.nongs
+rm -rf *.bak
 
-LDFLAGS=-L${PREFIX}/lib
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
 make -f Makefile.nongs \
-    BOOST_PATH=${PREFIX} \
-    CC="$CXX -std=c++11 $CXXFLAGS" \
-    LDFLAGS=$LDFLAGS
+	BOOST_PATH="${PREFIX}" \
+	CC="${CXX} -std=c++14 ${CXXFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
 
-mkdir -p ${PREFIX}/bin
-mv skesa ${PREFIX}/bin/
-mv saute ${PREFIX}/bin/
-mv saute_prot ${PREFIX}/bin/
-mv gfa_connector ${PREFIX}/bin/
-mv kmercounter ${PREFIX}/bin/
+install -v -m 0755 skesa saute saute_prot gfa_connector kmercounter "${PREFIX}/bin"

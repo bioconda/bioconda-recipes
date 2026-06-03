@@ -1,0 +1,29 @@
+diff --git a/fermi-lite/Makefile b/fermi-lite/Makefile
+index 53255ba..d62b987 100644
+--- a/fermi-lite/Makefile
++++ b/fermi-lite/Makefile
+@@ -1,7 +1,7 @@
+-CC=			gcc
+-CFLAGS=		-g -Wall -O2 -Wno-unused-function #-fno-inline-functions -fno-inline-functions-called-once
+-CPPFLAGS=
+-INCLUDES=
++CC=			$(CC)
++CFLAGS=		-g -Wall -O3 -fPIC -Wno-unused-function #-fno-inline-functions -fno-inline-functions-called-once
++CPPFLAGS=	-I$(PREFIX)/include
++INCLUDES=	
+ OBJS=		kthread.o misc.o \
+ 			bseq.o htab.o bfc.o \
+ 			rle.o rope.o mrope.o rld0.o \
+@@ -17,10 +17,10 @@ LIBS=		-lm -lz -lpthread
+ all:$(PROG)
+ 
+ fml-asm:libfml.a example.o
+-		$(CC) $(CFLAGS) $^ -o $@ -L. -lfml $(LIBS)
++		$(CC) $(CFLAGS) example.o -o $@ -L. -L$(PREFIX)/lib -lfml $(LIBS)
+ 
+ libfml.a:$(OBJS)
+-		$(AR) -csru $@ $(OBJS)
++		$(AR) -rcs $@ $(OBJS)
+ 
+ clean:
+ 		rm -fr gmon.out *.o ext/*.o a.out $(PROG) *~ *.a *.dSYM session*

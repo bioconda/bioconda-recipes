@@ -1,0 +1,48 @@
+{% set name = "genomemask" %}
+{% set version = "0.0.3" %}
+
+package:
+ name: {{ name }}
+ version: {{ version }}
+
+source:
+ url: https://github.com/alejandrogzi/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+ sha256: c7d49f1ed6a9e49dcc2a28586217d0b30c0be5503e4afcf7eb60a49ebb1959f5
+
+build:
+ number: 0
+ run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+
+test:
+ commands:
+   - genomemask --help
+   - genomemask --version
+
+about:
+ home: "https://github.com/alejandrogzi/genomemask"
+ license: "Apache-2.0"
+ license_family: APACHE
+ license_file:
+   - LICENSE
+   - THIRDPARTY.yml
+ summary: "mask specific regions of a genome in any format"
+ dev_url: "https://github.com/alejandrogzi/genomemask"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - alejandrogzi
+  skip-lints:
+    - compiler_needs_stdlib_c

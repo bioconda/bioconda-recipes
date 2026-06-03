@@ -1,64 +1,72 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "clipper" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 551f3c6ad3a56f2a70439f48a4aef431
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: f88ddbe41368cfbeeaa28789076116fd
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-clipper", max_pin="x.x") }}'
+
 # Suggests: RUnit, BiocGenerics, graphite, ALL, hgu95av2.db, MASS, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-kegggraph >=1.62.0,<1.63.0'
-    - 'bioconductor-qpgraph >=2.36.0,<2.37.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-kegggraph >=1.70.0,<1.71.0
+    - bioconductor-qpgraph >=2.44.0,<2.45.0
     - r-base
     - r-corpcor
-    - 'r-grbase >=1.6.6'
+    - r-grbase >=1.6.6
     - r-igraph
     - r-matrix
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-kegggraph >=1.62.0,<1.63.0'
-    - 'bioconductor-qpgraph >=2.36.0,<2.37.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-kegggraph >=1.70.0,<1.71.0
+    - bioconductor-qpgraph >=2.44.0,<2.45.0
     - r-base
     - r-corpcor
-    - 'r-grbase >=1.6.6'
+    - r-grbase >=1.6.6
     - r-igraph
     - r-matrix
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: AGPL-3.0-only
-  summary: 'Gene Set Analysis Exploiting Pathway Topology'
-  description: 'Implements topological gene set analysis using a two-step empirical approach. It exploits graph decomposition theory to create a junction tree and reconstruct the most relevant signal path. In the first step clipper selects significant pathways according to statistical tests on the means and the concentration matrices of the graphs derived from pathway topologies. Then, it "clips" the whole pathway identifying the signal paths having the greatest association with a specific phenotype.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  summary: Gene Set Analysis Exploiting Pathway Topology
+  description: Implements topological gene set analysis using a two-step empirical approach. It exploits graph decomposition theory to create a junction tree and reconstruct the most relevant signal path. In the first step clipper selects significant pathways according to statistical tests on the means and the concentration matrices of the graphs derived from pathway topologies. Then, it "clips" the whole pathway identifying the signal paths having the greatest association with a specific phenotype.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
 
 extra:
   additional-platforms:
     - linux-aarch64
   identifiers:
-    - biotools:{{ name|lower }}
+    - biotools:clipper
+

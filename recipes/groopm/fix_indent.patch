@@ -1,0 +1,2077 @@
+--- groopm/refine.py.orig	2025-09-12 14:32:36.045099500 +0800
++++ groopm/refine.py	2025-09-12 14:34:01.569099500 +0800
+@@ -100,10 +100,12 @@
+ ###############################################################################
+ 
+ # dimension of our SOM
+-SOMDIM = 4 # trans cov  + 1st pca kmers
++SOMDIM = 4  # trans cov  + 1st pca kmers
++
+ 
+ class RefineEngine:
+     """Workhorse wrapper for bin refinement"""
++
+     def __init__(self,
+                  timer,
+                  BM=None,
+@@ -134,49 +136,58 @@
+         # make pretty ellipses for fun and profit
+         self.ET = EllipsoidTool()
+ 
+-        # pay attention to contig lengths when including in bins use grubbs test
++        # pay attention to contig lengths when including in bins use grubbs
++        # test
+         self.GT = GrubbsTester()
+ 
+         self.transform = transform        # are we going to transform the data
+ 
+-#------------------------------------------------------------------------------
++# ------------------------------------------------------------------------------
+ # REFINING
+ 
+-    def refineBins(self, timer, auto=False, saveBins=False, plotFinal="", gf=""):
++    def refineBins(
++            self,
++            timer,
++            auto=False,
++            saveBins=False,
++            plotFinal="",
++            gf=""):
+         """Iterative wrapper for the refine function"""
+         if self.transform:      # do we want to plot to 1000*1000*1000
+-            ignoreRanges=False
++            ignoreRanges = False
+         else:
+-            ignoreRanges=True
++            ignoreRanges = True
+ 
+         if auto:
+             print "    Start automatic bin refinement"
+             num_binned = len(self.PM.binnedRowIndices.keys())
+-            perc = "%.2f" % round((float(num_binned)/float(self.PM.numContigs))*100,2)
+-            print "   ",num_binned,"contigs across",len(self.BM.bins.keys()),"cores (",perc,"% )"
++            perc = "%.2f" % round(
++                (float(num_binned) / float(self.PM.numContigs)) * 100, 2)
++            print "   ", num_binned, "contigs across", len(self.BM.bins.keys()), "cores (", perc, "% )"
+ 
+-            graph = self.autoRefineBins(timer, makeGraph=gf!="")
++            graph = self.autoRefineBins(timer, makeGraph=gf != "")
+             if graph is not None:
+                 print "    Writing graph to:", gf
+                 try:
+                     with open(gf, "w") as gv_fh:
+                         gv_fh.write(graph)
+-                except:
++                except BaseException:
+                     print "Error writing graph to:", gf
+ 
+             num_binned = len(self.PM.binnedRowIndices.keys())
+-            perc = "%.2f" % round((float(num_binned)/float(self.PM.numContigs))*100,2)
+-            print "   ",num_binned,"contigs across",len(self.BM.bins.keys()),"cores (",perc,"% )"
++            perc = "%.2f" % round(
++                (float(num_binned) / float(self.PM.numContigs)) * 100, 2)
++            print "   ", num_binned, "contigs across", len(self.BM.bins.keys()), "cores (", perc, "% )"
+ 
+             if plotFinal != "":
+                 bids = self.BM.getBids()
+                 for bid in bids:
+                     self.BM.bins[bid].makeBinDist(self.PM.transformedCP,
+-                                               self.PM.averageCoverages,
+-                                               self.PM.kmerNormPC1,
+-                                               self.PM.kmerPCs,
+-                                               self.PM.contigGCs,
+-                                               self.PM.contigLengths)
++                                                  self.PM.averageCoverages,
++                                                  self.PM.kmerNormPC1,
++                                                  self.PM.kmerPCs,
++                                                  self.PM.contigGCs,
++                                                  self.PM.contigLengths)
+                 self.BM.plotBins(FNPrefix=plotFinal, ET=self.ET)
+ 
+             if saveBins:
+@@ -190,16 +201,16 @@
+         show_chimeric_bins = False
+         ET = self.ET
+         self.printRefinePlotterInstructions()
+-        #self.BM.plotBinIds(ignoreRanges=ignoreRanges)
++        # self.BM.plotBinIds(ignoreRanges=ignoreRanges)
+         continue_merge = True
+-        while(continue_merge):
++        while (continue_merge):
+             user_option = self.promptOnPlotterRefine()
+ 
+-            if(user_option == 'Q'):
++            if (user_option == 'Q'):
+                 print '\nBye!'
+                 return
+ 
+-            elif(user_option == 'C'):
++            elif (user_option == 'C'):
+                 print "Select colormap:"
+                 print "  1. HSV"
+                 print "  2. Accent"
+@@ -210,9 +221,10 @@
+                 print "  7. Discrete paired (14 colors)"
+ 
+                 bValid = False
+-                while(not bValid):
++                while (not bValid):
+                     try:
+-                        colormap_id = int(raw_input(" Enter colormap number (e.g., 1): "))
++                        colormap_id = int(
++                            raw_input(" Enter colormap number (e.g., 1): "))
+                         if colormap_id < 1 or colormap_id > 7:
+                             raise ValueError('Invalid colormap id.')
+                         bValid = True
+@@ -234,7 +246,7 @@
+                 elif colormap_id == 7:
+                     self.PM.setColorMap('DiscretePaired')
+ 
+-            elif(user_option == 'E'):
++            elif (user_option == 'E'):
+                 if use_elipses:
+                     ET = None
+                     use_elipses = False
+@@ -244,7 +256,7 @@
+                     use_elipses = True
+                     print "\nEllipses on"
+ 
+-            elif(user_option == 'X'):
++            elif (user_option == 'X'):
+                 if show_chimeric_bins:
+                     show_chimeric_bins = False
+                     print "\nHiding likely chimeric bins."
+@@ -252,17 +264,21 @@
+                     show_chimeric_bins = True
+                     print "\nShowing likely chimeric bins."
+ 
+-            elif(user_option == 'R'):
+-                self.BM.plotBinIds(ignoreRanges=ignoreRanges, showChimeric=show_chimeric_bins)
+-
+-            elif(user_option == 'P'):
+-                self.BM.plotBinPoints(ignoreRanges=ignoreRanges, showChimeric=show_chimeric_bins)
+-            elif(user_option == 'U'):
+-                self.BM.plotBinCoverage(plotEllipses = use_elipses)
+-            elif(user_option == 'M'):
++            elif (user_option == 'R'):
++                self.BM.plotBinIds(
++                    ignoreRanges=ignoreRanges,
++                    showChimeric=show_chimeric_bins)
++
++            elif (user_option == 'P'):
++                self.BM.plotBinPoints(
++                    ignoreRanges=ignoreRanges,
++                    showChimeric=show_chimeric_bins)
++            elif (user_option == 'U'):
++                self.BM.plotBinCoverage(plotEllipses=use_elipses)
++            elif (user_option == 'M'):
+                 # merge bins
+                 merge_bids = self.BM.getPlotterMergeIds()
+-                if(not len(merge_bids) == 0):
++                if (not len(merge_bids) == 0):
+                     self.BM.merge(merge_bids,
+                                   auto=False,
+                                   manual=True,
+@@ -272,12 +288,13 @@
+                                   printInstructions=False,
+                                   use_elipses=use_elipses)
+ 
+-            elif(user_option == 'G'):
++            elif (user_option == 'G'):
+                 # display a subset only!
+                 have_range = False
+-                while(not have_range):
++                while (not have_range):
+                     try:
+-                        gc_range_str = raw_input(" Enter GC range to examine (e.g., 0.5-0.6): ")
++                        gc_range_str = raw_input(
++                            " Enter GC range to examine (e.g., 0.5-0.6): ")
+ 
+                         if '-' not in gc_range_str:
+                             raise ValueError('Incorrectly formatted GC range.')
+@@ -285,21 +302,24 @@
+                             values = gc_range_str.split('-')
+                             start = float(values[0])
+                             end = float(values[1])
+-                            gc_range=[start,end]
++                            gc_range = [start, end]
+ 
+                         have_range = True
+                     except ValueError:
+                         print "GC ranges must be entered as 'a-b' (e.g., 0.5-0.6)."
+-                self.BM.plotBinIds(gc_range=gc_range, ignoreRanges=ignoreRanges)
++                self.BM.plotBinIds(
++                    gc_range=gc_range,
++                    ignoreRanges=ignoreRanges)
+ 
+-            elif(user_option == 'B'):
++            elif (user_option == 'B'):
+                 # print subset of bins
+                 have_bid = False
+                 bids = []
+-                while(not have_bid):
++                while (not have_bid):
+                     have_bid = True
+                     try:
+-                        usr_bids = raw_input(" Enter 'space' seperated bin id(s) to plot: ")
++                        usr_bids = raw_input(
++                            " Enter 'space' seperated bin id(s) to plot: ")
+                         bids = [int(i) for i in usr_bids.split(" ")]
+                         if bids == [-1]:
+                             bids = self.BM.getBids()
+@@ -314,11 +334,11 @@
+                 if len(bids) > 0:
+                     self.BM.plotSelectBins(bids, plotMers=True, ET=ET)
+ 
+-            elif(user_option == 'S'):
++            elif (user_option == 'S'):
+                 # split bins
+                 have_bid = False
+                 have_parts = False
+-                while(not have_bid):
++                while (not have_bid):
+                     try:
+                         bid = int(raw_input(" Enter bid to split: "))
+                         if bid not in self.BM.bins:
+@@ -327,10 +347,11 @@
+                             have_bid = True
+                     except ValueError:
+                         print "You need to enter an integer value!"
+-                while(not have_parts):
++                while (not have_parts):
+                     try:
+-                        parts = int(raw_input(" Enter number of parts to split into: "))
+-                        if(parts < 2):
++                        parts = int(
++                            raw_input(" Enter number of parts to split into: "))
++                        if (parts < 2):
+                             print "ERROR: Need to choose 2 or more parts"
+                         else:
+                             have_parts = True
+@@ -344,11 +365,11 @@
+                               printInstructions=False,
+                               use_elipses=use_elipses)
+ 
+-            elif(user_option == 'V'):
++            elif (user_option == 'V'):
+                 """plot in vicinity of a bin"""
+                 have_bid = False
+                 have_radius = False
+-                while(not have_bid):
++                while (not have_bid):
+                     try:
+                         bid = int(raw_input(" Enter bid of interest: "))
+                         if bid not in self.BM.bins:
+@@ -357,9 +378,10 @@
+                             have_bid = True
+                     except ValueError:
+                         print "You need to enter an integer value!"
+-                while(not have_radius):
++                while (not have_radius):
+                     try:
+-                        usr_radius = raw_input(" Enter radius to select from [default 100]: ")
++                        usr_radius = raw_input(
++                            " Enter radius to select from [default 100]: ")
+                         if usr_radius == "":
+                             radius = 100
+                         else:
+@@ -386,9 +408,13 @@
+                     if np_norm(self.PM.transformedCP[row_index] -
+                                self.BM.bins[bid].covMedians) <= radius:
+                         num_points += 1
+-                        disp_vals = np_append(disp_vals, self.PM.transformedCP[row_index])
+-                        disp_lens = np_append(disp_lens, np_sqrt(self.PM.contigLengths[row_index]))
+-                        disp_gc = np_append(disp_gc, self.PM.contigGCs[row_index])
++                        disp_vals = np_append(
++                            disp_vals, self.PM.transformedCP[row_index])
++                        disp_lens = np_append(
++                            disp_lens, np_sqrt(
++                                self.PM.contigLengths[row_index]))
++                        disp_gc = np_append(
++                            disp_gc, self.PM.contigGCs[row_index])
+                         try:
+                             seen_bids[self.PM.binIds[row_index]].append(1)
+                         except KeyError:
+@@ -402,16 +428,17 @@
+                     print "    %d - %d occurances" % (seen_bid, len(seen_bids[seen_bid]))
+ 
+                 fig = plt.figure()
+-                ax = fig.add_subplot(1,1,1, projection='3d')
+-                sc = ax.scatter(disp_vals[:,0],
+-                           disp_vals[:,1],
+-                           disp_vals[:,2],
+-                           edgecolors='k',
+-                           c=disp_gc,
+-                           cmap=self.PM.colorMapGC,
+-                           s=disp_lens,
+-                           marker='.')
+-                sc.set_edgecolors = sc.set_facecolors = lambda *args:None # disable depth transparency effect
++                ax = fig.add_subplot(1, 1, 1, projection='3d')
++                sc = ax.scatter(disp_vals[:, 0],
++                                disp_vals[:, 1],
++                                disp_vals[:, 2],
++                                edgecolors='k',
++                                c=disp_gc,
++                                cmap=self.PM.colorMapGC,
++                                s=disp_lens,
++                                marker='.')
++                # disable depth transparency effect
++                sc.set_edgecolors = sc.set_facecolors = lambda *args: None
+ 
+                 self.BM.bins[bid].plotOnAx(ax,
+                                            self.PM.transformedCP,
+@@ -422,7 +449,7 @@
+                                            ET=ET)
+                 try:
+                     plt.show()
+-                except:
++                except BaseException:
+                     print "Error showing image:", sys.exc_info()[0]
+                     raise
+                 plt.close(fig)
+@@ -454,7 +481,8 @@
+                 centroid_color = self.PM.colorMapGC(centroid_gc)
+                 ncc = [int(i) for i in centroid_color * 255]
+                 hex_color = '#%02x%02x%02x' % (ncc[0], ncc[1], ncc[2])
+-                graph[0][bid] = '\t%d [fontcolor="%s" color="%s"];\n' % (bid, hex_color, hex_color)
++                graph[0][bid] = '\t%d [fontcolor="%s" color="%s"];\n' % (
++                    bid, hex_color, hex_color)
+ 
+         # identify and remove outlier bins
+         if markLikelyChimeric:
+@@ -523,11 +551,11 @@
+         gc_stdev_distrb = []
+         for bid in self.BM.getBids():
+             self.BM.bins[bid].makeBinDist(self.PM.transformedCP,
+-                                       self.PM.averageCoverages,
+-                                       self.PM.kmerNormPC1,
+-                                       self.PM.kmerPCs,
+-                                       self.PM.contigGCs,
+-                                       self.PM.contigLengths)
++                                          self.PM.averageCoverages,
++                                          self.PM.kmerNormPC1,
++                                          self.PM.kmerPCs,
++                                          self.PM.contigGCs,
++                                          self.PM.contigLengths)
+             gc_stdev_distrb.append(self.BM.bins[bid].gcStdev)
+ 
+         # now we work out the distribution of stdevs
+@@ -537,7 +565,7 @@
+         dead_bins = []
+         num_chimeric_bins = 0
+         for bid in self.BM.getBids():
+-            Z = (self.BM.bins[bid].gcStdev - stdmean)/stdstd
++            Z = (self.BM.bins[bid].gcStdev - stdmean) / stdstd
+             if Z > 2:
+                 if self.BM.bins[bid].totalBP < 100000:
+                     dead_bins.append(bid)
+@@ -568,18 +596,30 @@
+             print "    Merging similar bins (%d) with kCut %0.2f (+/-%0.3f) cCut %0.2f (+/-%0.3f)" % (orig_num_bins, kCutMedian, kCutStd, cCutMedian, cCutStd)
+ 
+         # identify merging groups and then merge them
+-        mergers = self.findMergeGroups(kCutMedian, kCutStd, cCutMedian, cCutStd, verbose=verbose)
++        mergers = self.findMergeGroups(
++            kCutMedian,
++            kCutStd,
++            cCutMedian,
++            cCutStd,
++            verbose=verbose)
+ 
+         num_bins_removed = 0
+         for merge in mergers:
+-            bins_removed = self.combineMergers(merge, kCutMedian, kCutStd, cCutMedian, cCutStd, graph=graph)
++            bins_removed = self.combineMergers(
++                merge, kCutMedian, kCutStd, cCutMedian, cCutStd, graph=graph)
+             num_bins_removed += len(bins_removed)
+         if not silent:
+             print "    Merged %d of %d cores leaving %d cores total" % (num_bins_removed, orig_num_bins, len(self.BM.getNonChimericBinIds()))
+ 
+         return num_bins_removed
+ 
+-    def findMergeGroups(self, kCutMedian, kCutStd, cCutMedian, cCutStd, verbose=False):
++    def findMergeGroups(
++            self,
++            kCutMedian,
++            kCutStd,
++            cCutMedian,
++            cCutStd,
++            verbose=False):
+         """Identify groups of contigs which could be merged"""
+         cov_tdm = []                # these are used in the neighbor search
+         kmer_tdm = []
+@@ -588,8 +628,8 @@
+         tdm_index_2_bid = {}
+ 
+         K = 6                   # number of neighbours to test,
+-                                # 6 seems reasonable since this allows
+-                                # for 1 neighbour per side in a 3D space
++        # 6 seems reasonable since this allows
++        # for 1 neighbour per side in a 3D space
+         if K > len(self.BM.getNonChimericBinIds()):
+             K = len(self.BM.getNonChimericBinIds())
+ 
+@@ -602,7 +642,7 @@
+         bin_k_ellipse_areas = {}        # area of the minimum bounding KMER ellipse
+         bin_k_ellipses = {}             # the matrix A representing the bins KMER ellipse
+ 
+-#-----
++# -----
+ # PREP DATA STRUCTURES
+ 
+         index = 0
+@@ -616,19 +656,19 @@
+                             self.PM.contigGCs,
+                             self.PM.contigLengths)
+ 
+-            # build coverage and kmer vectors for each bin (normalized as required)
++            # build coverage and kmer vectors for each bin (normalized as
++            # required)
+             cov_tdm.append(bin.covMedians)
+             kmer_tdm.append(bin.kMedian)
+ 
+-            # work out the volume of the minimum bounding coverage ellipsoid and kmer ellipse
+-            (bin_c_ellipsoids[bid], bin_c_ellipsoid_volumes[bid]) = bin.getBoundingCEllipsoidVol(self.PM.transformedCP,
+-                                                                                                 ET=self.ET,
+-                                                                                                 retA=True)
+-
+-            BP = self.PM.kmerPCs[bin.rowIndices,0:3]
+-            (bin_k_ellipses[bid], bin_k_ellipse_areas[bid]) = bin.getBoundingKEllipseArea(BP,
+-                                                                                          ET=self.ET,
+-                                                                                          retA=True)
++            # work out the volume of the minimum bounding coverage ellipsoid
++            # and kmer ellipse
++            (bin_c_ellipsoids[bid], bin_c_ellipsoid_volumes[bid]) = bin.getBoundingCEllipsoidVol(
++                self.PM.transformedCP, ET=self.ET, retA=True)
++
++            BP = self.PM.kmerPCs[bin.rowIndices, 0:3]
++            (bin_k_ellipses[bid], bin_k_ellipse_areas[bid]) = bin.getBoundingKEllipseArea(
++                BP, ET=self.ET, retA=True)
+ 
+             bin_c_lengths[bid] = self.PM.contigLengths[bin.rowIndices]
+ 
+@@ -640,14 +680,15 @@
+             # we also wish to avoid checking if a bin will merge with itself
+             processed_pairs[self.BM.makeBidKey(bid, bid)] = True
+ 
+-#-----
++# -----
+ # ALL Vs ALL
+ 
+         # make a search tree from whitened coverage medians and kmer medians
+         cp_cov_tdm = np_copy(cov_tdm)
+         c_mean_tdm = np_mean(cp_cov_tdm, axis=0)
+         c_std_tdm = np_std(cp_cov_tdm, axis=0)
+-        c_std_tdm += np_where(c_std_tdm == 0, 1, 0) # make sure std dev is never zero
++        # make sure std dev is never zero
++        c_std_tdm += np_where(c_std_tdm == 0, 1, 0)
+         c_whiten_tdm = (cp_cov_tdm - c_mean_tdm) / c_std_tdm
+ 
+         cov_search_tree = kdt(c_whiten_tdm)
+@@ -661,9 +702,12 @@
+             base_bin = self.BM.bins[base_bid]
+ 
+             # get the K closest bins in coverage and kmer space
+-            cov_neighbor_list = [tdm_index_2_bid[i] for i in cov_search_tree.query(c_whiten_tdm[bid_2_tdm_index[bid]], k=K)[1]]
+-            kmer_neighbor_list = [tdm_index_2_bid[i] for i in kmer_search_tree.query(kmer_tdm[bid_2_tdm_index[bid]], k=K)[1]]
+-            common_neighbors = set(cov_neighbor_list).intersection(set(kmer_neighbor_list))
++            cov_neighbor_list = [tdm_index_2_bid[i] for i in cov_search_tree.query(
++                c_whiten_tdm[bid_2_tdm_index[bid]], k=K)[1]]
++            kmer_neighbor_list = [tdm_index_2_bid[i] for i in kmer_search_tree.query(
++                kmer_tdm[bid_2_tdm_index[bid]], k=K)[1]]
++            common_neighbors = set(cov_neighbor_list).intersection(
++                set(kmer_neighbor_list))
+ 
+             if verbose:
+                 print "++++++++++"
+@@ -682,12 +726,14 @@
+                 if verbose:
+                     print "++++++++++"
+                     print base_bid, query_bid, merged_base_bid, merged_query_bid
+-#-----
++# -----
+ # TIME WASTERS
+ 
+-                # process each BID pair once only (takes care of self comparisons too!)
++                # process each BID pair once only (takes care of self
++                # comparisons too!)
+                 seen_key = self.BM.makeBidKey(base_bid, query_bid)
+-                if(seen_key in processed_pairs or merged_base_bid == merged_query_bid):
++                if (seen_key in processed_pairs or merged_base_bid ==
++                        merged_query_bid):
+                     if verbose:
+                         print "TW"
+                     continue
+@@ -695,23 +741,21 @@
+ 
+                 query_bin = self.BM.bins[query_bid]
+ 
+-#-----
++# -----
+ # CONTIG LENGTH SANITY
+                 # Test the smaller bin against the larger
+                 if query_bin.binSize < base_bin.binSize:
+-                    lengths_wrong = self.GT.isMaxOutlier(np_median(bin_c_lengths[query_bid]),
+-                                                         bin_c_lengths[base_bid]
+-                                                         )
++                    lengths_wrong = self.GT.isMaxOutlier(np_median(
++                        bin_c_lengths[query_bid]), bin_c_lengths[base_bid])
+                 else:
+-                    lengths_wrong = self.GT.isMaxOutlier(np_median(bin_c_lengths[base_bid]),
+-                                                         bin_c_lengths[query_bid]
+-                                                         )
++                    lengths_wrong = self.GT.isMaxOutlier(np_median(
++                        bin_c_lengths[base_bid]), bin_c_lengths[query_bid])
+                 if lengths_wrong:
+                     if verbose:
+                         print "LW"
+                     continue
+ 
+-#-----
++# -----
+ # K and C SPACE SIMILARITY CHECK
+                 # If the bins are highly similar in their coverage and kmer distances
+                 # compared to other core bins than just merge them now
+@@ -723,7 +767,6 @@
+                     print k_dist_bw, c_dist_bw
+                     print '---------------------'
+ 
+-
+                 if k_dist_bw < kCutMedian and c_dist_bw < cCutMedian:
+                     if verbose:
+                         print 'MERGED'
+@@ -731,42 +774,47 @@
+ 
+                     if merged_query_bid < merged_base_bid:
+                         merged_bins[merged_base_bid] = merged_query_bid
+-                        break # we just nuked the base bid
++                        break  # we just nuked the base bid
+                     else:
+                         merged_bins[merged_query_bid] = merged_base_bid
+                         continue
+ 
+-#-----
++# -----
+ # KMER ELLIPSE OVERLAP
+-                if (bin_k_ellipse_areas[base_bid] <= bin_k_ellipse_areas[query_bid]):
+-                    INTT = self.ET.doesIntersect3D(bin_k_ellipses[query_bid][0],
+-                                                   bin_k_ellipses[query_bid][1],
+-                                                   bin_k_ellipses[base_bid][0],
+-                                                   bin_k_ellipses[base_bid][1])
++                if (bin_k_ellipse_areas[base_bid] <=
++                        bin_k_ellipse_areas[query_bid]):
++                    INTT = self.ET.doesIntersect3D(
++                        bin_k_ellipses[query_bid][0],
++                        bin_k_ellipses[query_bid][1],
++                        bin_k_ellipses[base_bid][0],
++                        bin_k_ellipses[base_bid][1])
+                 else:
+-                    INTT = self.ET.doesIntersect3D(bin_k_ellipses[base_bid][0],
+-                                                   bin_k_ellipses[base_bid][1],
+-                                                   bin_k_ellipses[query_bid][0],
+-                                                   bin_k_ellipses[query_bid][1])
++                    INTT = self.ET.doesIntersect3D(
++                        bin_k_ellipses[base_bid][0],
++                        bin_k_ellipses[base_bid][1],
++                        bin_k_ellipses[query_bid][0],
++                        bin_k_ellipses[query_bid][1])
+ 
+                 if verbose:
+                     fig = plt.figure()
+                     ax = fig.add_subplot(1, 1, 1)
+                     base_bin.plotMersOnAx(ax,
+-                                          self.PM.kmerPCs[:,0],
+-                                          self.PM.kmerPCs[:,1],
++                                          self.PM.kmerPCs[:, 0],
++                                          self.PM.kmerPCs[:, 1],
+                                           self.PM.contigGCs,
+                                           self.PM.contigLengths,
+                                           self.PM.colorMapGC,
+                                           ET=self.ET)
+                     query_bin.plotMersOnAx(ax,
+-                                           self.PM.kmerPCs[:,0],
+-                                           self.PM.kmerPCs[:,1],
++                                           self.PM.kmerPCs[:, 0],
++                                           self.PM.kmerPCs[:, 1],
+                                            self.PM.contigGCs,
+                                            self.PM.contigLengths,
+                                            self.PM.colorMapGC,
+                                            ET=self.ET)
+-                    plt.title("MERGE: %d -> %d (%d)" % (base_bid, query_bid, INTT))
++                    plt.title(
++                        "MERGE: %d -> %d (%d)" %
++                        (base_bid, query_bid, INTT))
+                     plt.show()
+                     plt.close(fig)
+                     del fig
+@@ -775,27 +823,45 @@
+                     if verbose:
+                         print "KINTT"
+                     continue
+-#-----
++# -----
+ # MINIMUM BOUNDING COVERAGE ELLIPSOID
+ 
+                 # determine if intersection exists
+                 if bin_c_ellipsoid_volumes[base_bid] <= bin_c_ellipsoid_volumes[query_bid]:
+-                    intersects = self.ET.doesIntersect3D(bin_c_ellipsoids[query_bid][0],
+-                                                         bin_c_ellipsoids[query_bid][1],
+-                                                         bin_c_ellipsoids[base_bid][0],
+-                                                         bin_c_ellipsoids[base_bid][1])
++                    intersects = self.ET.doesIntersect3D(
++                        bin_c_ellipsoids[query_bid][0],
++                        bin_c_ellipsoids[query_bid][1],
++                        bin_c_ellipsoids[base_bid][0],
++                        bin_c_ellipsoids[base_bid][1])
+                 else:
+-                    intersects = self.ET.doesIntersect3D(bin_c_ellipsoids[base_bid][0],
+-                                                         bin_c_ellipsoids[base_bid][1],
+-                                                         bin_c_ellipsoids[query_bid][0],
+-                                                         bin_c_ellipsoids[query_bid][1])
++                    intersects = self.ET.doesIntersect3D(
++                        bin_c_ellipsoids[base_bid][0],
++                        bin_c_ellipsoids[base_bid][1],
++                        bin_c_ellipsoids[query_bid][0],
++                        bin_c_ellipsoids[query_bid][1])
+ 
+                 if verbose:
+                     fig = plt.figure()
+                     ax = fig.add_subplot(1, 1, 1, projection='3d')
+-                    base_bin.plotOnAx(ax, self.PM.transformedCP, self.PM.contigGCs, self.PM.contigLengths, self.PM.colorMapGC, self.PM.isLikelyChimeric, ET=self.ET)
+-                    query_bin.plotOnAx(ax, self.PM.transformedCP, self.PM.contigGCs, self.PM.contigLengths, self.PM.colorMapGC, self.PM.isLikelyChimeric, ET=self.ET)
+-                    plt.title("MERGE: %d -> %d (%d)" % (base_bid, query_bid, intersects))
++                    base_bin.plotOnAx(
++                        ax,
++                        self.PM.transformedCP,
++                        self.PM.contigGCs,
++                        self.PM.contigLengths,
++                        self.PM.colorMapGC,
++                        self.PM.isLikelyChimeric,
++                        ET=self.ET)
++                    query_bin.plotOnAx(
++                        ax,
++                        self.PM.transformedCP,
++                        self.PM.contigGCs,
++                        self.PM.contigLengths,
++                        self.PM.colorMapGC,
++                        self.PM.isLikelyChimeric,
++                        ET=self.ET)
++                    plt.title(
++                        "MERGE: %d -> %d (%d)" %
++                        (base_bid, query_bid, intersects))
+                     plt.show()
+                     plt.close(fig)
+                     del fig
+@@ -812,7 +878,7 @@
+                     break
+                 else:
+                     merged_bins[merged_query_bid] = merged_base_bid
+-#-----
++# -----
+ # CREATE FINAL MERGE GROUPS
+ 
+         # now make a bunch of possible mergers
+@@ -851,7 +917,14 @@
+ 
+         return mergers
+ 
+-    def combineMergers(self, bidList, kCutMedian, kCutStd, cCutMedian, cCutStd, graph=None):
++    def combineMergers(
++            self,
++            bidList,
++            kCutMedian,
++            kCutStd,
++            cCutMedian,
++            cCutStd,
++            graph=None):
+         """Merge similar bins in the given list"""
+         merged_bids = []
+ 
+@@ -859,7 +932,7 @@
+             # sort bins by length in bp
+             length_and_bid = []
+             for bid in bidList:
+-                length_and_bid.append([self.BM.getBin(bid).totalBP,bid])
++                length_and_bid.append([self.BM.getBin(bid).totalBP, bid])
+ 
+             length_and_bid.sort(reverse=True)
+             sorted_bid = [x[1] for x in length_and_bid]
+@@ -888,7 +961,13 @@
+             closest_frag_cdist = dists[0][2]
+             closest_frag_bid = dists[0][3]
+ 
+-            if closest_frag_kdist < (kCutMedian + 2*kCutStd) and closest_frag_cdist < (cCutMedian + 2*cCutStd):
++            if closest_frag_kdist < (
++                    kCutMedian +
++                    2 *
++                    kCutStd) and closest_frag_cdist < (
++                    cCutMedian +
++                    2 *
++                    cCutStd):
+                 # merge bins
+                 merged_bids.append(closest_frag_bid)
+                 bidList.remove(closest_frag_bid)
+@@ -910,7 +989,7 @@
+         when given an index into a condensed distance matrix
+         """
+         step = 0
+-        while index >= (side-step):
++        while index >= (side - step):
+             index = index - side + step
+             step += 1
+         return (step, step + index + 1)
+@@ -935,16 +1014,17 @@
+             closest = np_argmin(dists)
+             if dists[closest] == too_big:
+                 break
+-            (i,j) = self.PM.small2indices(closest, side-1)
++            (i, j) = self.PM.small2indices(closest, side - 1)
+             bid1 = bidList[i]
+             bid2 = bidList[j]
+             should_merge = False
+ 
+             # test if the mer dist is teensy tiny.
+             # this is a time saver...
+-            k_diff = np_median(cdist(self.PM.kmerPCs[self.BM.bins[bid1].rowIndices], self.PM.kmerPCs[self.BM.bins[bid2].rowIndices], 'cityblock'))
++            k_diff = np_median(cdist(
++                self.PM.kmerPCs[self.BM.bins[bid1].rowIndices], self.PM.kmerPCs[self.BM.bins[bid2].rowIndices], 'cityblock'))
+ 
+-            #if VVB:
++            # if VVB:
+             #    print bid1, bid2, k_diff,
+             if k_diff <= kCut:
+                 should_merge = True
+@@ -960,16 +1040,18 @@
+                 try:
+                     c1 = raw_coverage_centroids[bid1]
+                 except KeyError:
+-                    c1 = np_mean([self.PM.covProfiles[row_index] for row_index in self.BM.bins[bid1].rowIndices], axis=0)
++                    c1 = np_mean([self.PM.covProfiles[row_index]
++                                 for row_index in self.BM.bins[bid1].rowIndices], axis=0)
+                     raw_coverage_centroids[bid1] = c1
+ 
+                 try:
+                     c2 = raw_coverage_centroids[bid2]
+                 except KeyError:
+-                    c2 = np_mean([self.PM.covProfiles[row_index] for row_index in self.BM.bins[bid2].rowIndices], axis=0)
++                    c2 = np_mean([self.PM.covProfiles[row_index]
++                                 for row_index in self.BM.bins[bid2].rowIndices], axis=0)
+                     raw_coverage_centroids[bid2] = c2
+                 try:
+-                    ang = np_arccos(np_dot(c1,c2) / np_norm(c1) / np_norm(c2))
++                    ang = np_arccos(np_dot(c1, c2) / np_norm(c1) / np_norm(c2))
+                 except FloatingPointError:
+                     ang = 0.0
+ 
+@@ -999,23 +1081,28 @@
+ 
+                 # we use the weighted average of the two previous pca positions
+                 # to determine where the newly merged bin should reside
+-                bin_mer_PCAs[i] = (bin_mer_PCAs[i] * b1_size + bin_mer_PCAs[j] * b2_size) / (b1_size + b2_size)
+-                raw_coverage_centroids[bid1] = (raw_coverage_centroids[bid1] * b1_size + raw_coverage_centroids[bid2] * b2_size) / (b1_size + b2_size)
++                bin_mer_PCAs[i] = (bin_mer_PCAs[i] * b1_size +
++                                   bin_mer_PCAs[j] * b2_size) / (b1_size + b2_size)
++                raw_coverage_centroids[bid1] = (
++                    raw_coverage_centroids[bid1] * b1_size + raw_coverage_centroids[bid2] * b2_size) / (
++                    b1_size + b2_size)
+ 
+                 # re-calc the distances
+                 new_dists = cdist([bin_mer_PCAs[i]], bin_mer_PCAs, 'cityblock')
+ 
+                 # we need to fix the distance matrix
+-                sq_dists[j,:] = too_big
+-                sq_dists[:,j] = too_big
+-                sq_dists[j,j] = 0.0
+-                sq_dists[i,:] = np_where(sq_dists[i,:] == too_big, sq_dists[i,:], new_dists)
+-                sq_dists[:,i] = np_where(sq_dists[:,i] == too_big, sq_dists[:,i], new_dists)
++                sq_dists[j, :] = too_big
++                sq_dists[:, j] = too_big
++                sq_dists[j, j] = 0.0
++                sq_dists[i, :] = np_where(
++                    sq_dists[i, :] == too_big, sq_dists[i, :], new_dists)
++                sq_dists[:, i] = np_where(
++                    sq_dists[:, i] == too_big, sq_dists[:, i], new_dists)
+                 dists = squareform(sq_dists)
+             else:
+                 # we won't check this again
+-                sq_dists[i,j] = too_big
+-                sq_dists[j,i] = too_big
++                sq_dists[i, j] = too_big
++                sq_dists[j, i] = too_big
+                 dists = squareform(sq_dists)
+ 
+         return merged_bids
+@@ -1032,15 +1119,17 @@
+         # produce the actual training data
+         # this is the bin centroid values
+         bids = self.BM.getBids()
+-        #bids = self.BM.getNonChimericBinIds()
++        # bids = self.BM.getNonChimericBinIds()
+         training_data = np_zeros((len(bids), SOMDIM))
+         i = 0
+         for bid in bids:
+-            training_data[i,:-1] = np_mean(self.PM.transformedCP[self.BM.bins[bid].rowIndices], axis=0)
+-            training_data[i,-1] = np_mean(self.PM.kmerNormPC1[self.BM.bins[bid].rowIndices], axis=0)
++            training_data[i, :-1] = np_mean(
++                self.PM.transformedCP[self.BM.bins[bid].rowIndices], axis=0)
++            training_data[i, -1] = np_mean(
++                self.PM.kmerNormPC1[self.BM.bins[bid].rowIndices], axis=0)
+             i += 1
+ 
+-        som_side = np_max([100, len(bids)*5])
++        som_side = np_max([100, len(bids) * 5])
+ 
+         # normalise the data so it fits between 0 and 1
+         # but make sure that the max global CP and mer values are
+@@ -1105,7 +1194,9 @@
+                 print "    Retraining SOM classifier"
+             for i in range(len(bids)):
+                 bid = bids[i]
+-                sys_stdout.write("\r    Retraining on bin: %d (%d of %d)" % (bid, i+1, len(bids)))
++                sys_stdout.write(
++                    "\r    Retraining on bin: %d (%d of %d)" %
++                    (bid, i + 1, len(bids)))
+                 sys_stdout.flush()
+                 self.retrainSOM(SS,
+                                 bid,
+@@ -1138,9 +1229,9 @@
+         bin = self.BM.bins[bid]
+ 
+         # make a training set of just this node's contigs
+-        block = np_zeros((bin.binSize,SOMDIM))
+-        block[:,:-1] = self.PM.transformedCP[bin.rowIndices]
+-        block[:,-1] = self.PM.kmerNormPC1[bin.rowIndices]
++        block = np_zeros((bin.binSize, SOMDIM))
++        block[:, :-1] = self.PM.transformedCP[bin.rowIndices]
++        block[:, -1] = self.PM.kmerNormPC1[bin.rowIndices]
+ 
+         # global normalisation
+         block -= minz
+@@ -1152,15 +1243,16 @@
+         max_p = np_max(maskPoints.keys(), axis=0)
+         diffs = max_p - min_p
+         small_side = np_min(diffs)
+-        sweights = np_copy(SS.weights.nodes[min_p[0]:min_p[0]+diffs[0]+1,min_p[1]:min_p[1]+diffs[1]+1])
+-        #SS.weights.renderSurface("C_%d.png"%bid, nodes=sweights)
++        sweights = np_copy(
++            SS.weights.nodes[min_p[0]:min_p[0] + diffs[0] + 1, min_p[1]:min_p[1] + diffs[1] + 1])
++        # SS.weights.renderSurface("C_%d.png"%bid, nodes=sweights)
+ 
+         # shift and mask out all other bins
+         shifted_mask_points = {}
+-        shifted_bin_mask = np_ones((diffs[0]+1,diffs[1]+1))
+-        for (r,c) in maskPoints.keys():
+-            shift = maskPoints[(r,c)] - min_p
+-            shifted_bin_mask[shift[0],shift[1]] = 0
++        shifted_bin_mask = np_ones((diffs[0] + 1, diffs[1] + 1))
++        for (r, c) in maskPoints.keys():
++            shift = maskPoints[(r, c)] - min_p
++            shifted_bin_mask[shift[0], shift[1]] = 0
+             shifted_mask_points[(shift[0], shift[1])] = shift
+         SS.maskBoundaries(weights=sweights, mask=shifted_bin_mask)
+ 
+@@ -1169,19 +1261,18 @@
+                             weights=sweights,
+                             iterations=50,
+                             mask=shifted_mask_points,
+-                            radius=small_side/3,
++                            radius=small_side / 3,
+                             influenceRate=0.1)
+ 
+-        #SS.weights.renderSurface("D_%d.png"%bid, nodes=sweights)
++        # SS.weights.renderSurface("D_%d.png"%bid, nodes=sweights)
+         # update the torusMesh values appropriately
+-        for (r,c) in maskPoints.keys():
+-            shift = maskPoints[(r,c)] - min_p
+-            SS.weights.nodes[r,c] = sweights[shift[0], shift[1]]
++        for (r, c) in maskPoints.keys():
++            shift = maskPoints[(r, c)] - min_p
++            SS.weights.nodes[r, c] = sweights[shift[0], shift[1]]
+         SS.weights.fixFlatNodes()
+ 
+         if render:
+-            SS.renderWeights("S_%d"%bid)
+-
++            SS.renderWeights("S_%d" % bid)
+ 
+     def shuffleRefineContigs(self, timer, inclusivity=2):
+         """refine bins by shuffling contigs around"""
+@@ -1191,7 +1282,8 @@
+         bids = self.BM.getBids()
+         bin_c_lengths = {}      # bid => [len,len,...]
+         for bid in bids:
+-            bin_c_lengths[bid] = [self.PM.contigLengths[row_index] for row_index in self.BM.bins[bid].rowIndices]
++            bin_c_lengths[bid] = [self.PM.contigLengths[row_index]
++                                  for row_index in self.BM.bins[bid].rowIndices]
+ 
+         (SS, minz, maxz, side) = self.buildSOM(timer,
+                                                maskBoundaries=True,
+@@ -1208,9 +1300,9 @@
+         nones = {}
+ 
+         # we load all contigs into the block
+-        block = np_zeros((len(self.PM.transformedCP),SOMDIM))
+-        block[:,:-1] = self.PM.transformedCP
+-        block[:,-1] = self.PM.kmerNormPC1
++        block = np_zeros((len(self.PM.transformedCP), SOMDIM))
++        block[:, :-1] = self.PM.transformedCP
++        block[:, -1] = self.PM.kmerNormPC1
+ 
+         # apply sane normalisation
+         block -= minz
+@@ -1240,7 +1332,7 @@
+                                                     )
+                 if not length_wrong:
+                     # fits length cutoff
+-                    (covZ,merZ) = self.BM.scoreContig(i, putative_bid)
++                    (covZ, merZ) = self.BM.scoreContig(i, putative_bid)
+                     if covZ <= inclusivity and merZ <= inclusivity:
+                         # we can recruit
+                         try:
+@@ -1249,7 +1341,7 @@
+                             new_assignments[putative_bid] = [i]
+                         assigned = True
+ 
+-                        #----------------------
++                        # ----------------------
+                         if old_bid != 0:
+                             if putative_bid != old_bid:
+                                 try:
+@@ -1266,7 +1358,7 @@
+                                 news[putative_bid] += 1
+                             except KeyError:
+                                 news[putative_bid] = 1
+-                        #----------------------
++                        # ----------------------
+             if not assigned:
+                 # could not put it anwhere
+                 # assign to the old bin
+@@ -1279,8 +1371,7 @@
+                 except KeyError:
+                     nones[old_bid] = 1
+ 
+-
+-	if False:
++        if False:
+             print "    ------------------------------------------------------"
+             print "     BID    ORIG    CHGE    SAME    NEWS    NONE    TOTAL"
+             print "    ------------------------------------------------------"
+@@ -1307,15 +1398,21 @@
+ 
+         # now get ready for saving.
+         # first, we nuke all non-chimeric bins
+-        self.BM.deleteBins(bids, force=True, freeBinnedRowIndices=False, saveBins=False)
++        self.BM.deleteBins(
++            bids,
++            force=True,
++            freeBinnedRowIndices=False,
++            saveBins=False)
+         self.BM.bins = {}
+ 
+         # these are profile manager variables. We will overwrite
+         # these here so that everything stays in sync..
+-        self.PM.binIds = np_zeros((len(self.PM.indices))) # list of bin IDs
++        self.PM.binIds = np_zeros((len(self.PM.indices)))  # list of bin IDs
+         self.PM.validBinIds = {}              # { bid : numMembers }
+-        self.PM.binnedRowIndices = {}         # dictionary of those indices which belong to some bin
+-        self.PM.restrictedRowIndices = {}     # dictionary of those indices which can not be binned yet
++        # dictionary of those indices which belong to some bin
++        self.PM.binnedRowIndices = {}
++        # dictionary of those indices which can not be binned yet
++        self.PM.restrictedRowIndices = {}
+         self.PM.isLikelyChimeric = {}
+ 
+         # now we rebuild all the bins but with the new assignments
+@@ -1352,7 +1449,7 @@
+         print "    Removed %d cores leaving %d cores" % (len(deleters), len(self.BM.bins))
+         return deleters
+ 
+-#------------------------------------------------------------------------------
++# ------------------------------------------------------------------------------
+ # UTILITIES
+ 
+     def rePCA(self,
+@@ -1421,15 +1518,14 @@
+ 
+         signal = np_reshape(signal, (num_ss, pc_len))
+ 
+-
+         # do the PCA analysis
+-        Center(signal,verbose=0)
++        Center(signal, verbose=0)
+         p = PCA(signal)
+         components = p.pc()
+ 
+         # now make the color profile based on PC1
+-        PC1 = np_array([float(i) for i in components[:,0]])
+-        PC2 = np_array([float(i) for i in components[:,1]])
++        PC1 = np_array([float(i) for i in components[:, 0]])
++        PC2 = np_array([float(i) for i in components[:, 1]])
+ 
+         # normalise to fit between 0 and 1
+         PC1 -= np_min(PC1)
+@@ -1439,7 +1535,7 @@
+ 
+         if doContigs:
+             return np_reshape([[PC1[i], PC2[i]] for i in range(len(PC1))],
+-                              (num_ss,2))
++                              (num_ss, 2))
+         if doBoth:
+             # make the actual return dict
+             for i in range(num_ss):
+@@ -1450,9 +1546,8 @@
+         index_start = 0
+         for bid in bidList:
+             nri = len(self.BM.bins[bid].rowIndices)
+-            mPCA = np_mean(np_reshape([[PC1[i], PC2[i]] for i in range(index_start, index_start+nri)],
+-                                      (nri,2)),
+-                           axis=0)
++            mPCA = np_mean(np_reshape([[PC1[i], PC2[i]] for i in range(
++                index_start, index_start + nri)], (nri, 2)), axis=0)
+ 
+             index_start += nri
+             ml_2d = np_append(ml_2d, mPCA)
+@@ -1463,18 +1558,18 @@
+             ml_2d = np_append(ml_2d, [PC1[-2], PC2[-2]])
+             ml_2d = np_append(ml_2d, [PC1[-1], PC2[-1]])
+             if doBoth:
+-                return (np_reshape(ml_2d, (len(bidList)+2,2)), both_ret)
+-            return np_reshape(ml_2d, (len(bidList)+2,2))
++                return (np_reshape(ml_2d, (len(bidList) + 2, 2)), both_ret)
++            return np_reshape(ml_2d, (len(bidList) + 2, 2))
+         elif addZeros:
+             # last index is the 0 - PCA stylez!
+             ml_2d = np_append(ml_2d, [PC1[-1], PC2[-1]])
+             if doBoth:
+-                return (np_reshape(ml_2d, (len(bidList)+1,2)), both_ret)
+-            return np_reshape(ml_2d, (len(bidList)+1,2))
++                return (np_reshape(ml_2d, (len(bidList) + 1, 2)), both_ret)
++            return np_reshape(ml_2d, (len(bidList) + 1, 2))
+         else:
+             if doBoth:
+-                return (np_reshape(ml_2d, (len(bidList),2)), both_ret)
+-            return np_reshape(ml_2d, (len(bidList),2))
++                return (np_reshape(ml_2d, (len(bidList), 2)), both_ret)
++            return np_reshape(ml_2d, (len(bidList), 2))
+ 
+     def getKCut(self):
+         """Work out the easy cutoff for kmerVal distance"""
+@@ -1482,7 +1577,7 @@
+         for bid in self.BM.getNonChimericBinIds():
+             if len(self.BM.getBin(bid).rowIndices) > 1:
+                 kdist = self.kDist(self.BM.getBin(bid).rowIndices)
+-                if kdist != None:
++                if kdist is not None:
+                     median_k_vals.append(kdist)
+ 
+         return np_median(median_k_vals), np_std(median_k_vals)
+@@ -1500,7 +1595,8 @@
+         return self.kDist(merged_indices)
+ 
+     def kDistBetweenBins(self, bin1, bin2):
+-        return np_median(cdist(self.PM.kmerPCs[bin1.rowIndices], self.PM.kmerPCs[bin2.rowIndices], 'cityblock'))
++        return np_median(cdist(
++            self.PM.kmerPCs[bin1.rowIndices], self.PM.kmerPCs[bin2.rowIndices], 'cityblock'))
+ 
+     def getEvenlySpacedPtsZ(self, row_indices, sample_size):
+         # select samples evenly along Z-axis of coverage space
+@@ -1538,12 +1634,15 @@
+         # select a few at random
+         angles = []
+         for i in range(sample_size):
+-            for j in range(i+1, sample_size):
++            for j in range(i + 1, sample_size):
+                 r1 = si[i]
+                 r2 = si[j]
+                 try:
+-                    ang = np_arccos(np_dot(self.PM.covProfiles[r1],self.PM.covProfiles[r2]) /
+-                                             (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                    ang = np_arccos(
++                        np_dot(
++                            self.PM.covProfiles[r1],
++                            self.PM.covProfiles[r2]) / (
++                            self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                     angles.append(ang)
+                 except FloatingPointError:
+                     pass
+@@ -1574,22 +1673,25 @@
+             for j in xrange(0, min(len(bin2.rowIndices), max_in_bin)):
+                 r2 = indices2[j]
+                 try:
+-                    ang = np_arccos(np_dot(self.PM.covProfiles[r1], self.PM.covProfiles[r2]) /
+-                                             (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                    ang = np_arccos(
++                        np_dot(
++                            self.PM.covProfiles[r1],
++                            self.PM.covProfiles[r2]) / (
++                            self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                     angles.append(ang)
+                 except FloatingPointError:
+                     pass
+ 
+         return np_median(angles)
+ 
+-#-----------------------------
++# -----------------------------
+ # MERGE TESTING BASED ON KMERS
+ 
+     def testMergeMer(self,
+                      bid1,
+                      bid2,
+                      merPCAs,
+-                     maxSample = 200,
++                     maxSample=200,
+                      confidence=0.97,
+                      verbose=False):
+         """Determine if a merge makes sense in mer land"""
+@@ -1631,7 +1733,7 @@
+         else:
+             C_funct = self.calculateMerAlphaPartSample
+ 
+-        merAlphas={}
++        merAlphas = {}
+         # test the given split against it
+         if maxSample != 0:
+             shuffle(front_RIs)
+@@ -1641,25 +1743,40 @@
+         else:
+             FRI = front_RIs
+             RRI = rear_RIs
+-        test_T_score = C_funct(FRI,RRI,merPCAs,merAlphas) / ( F_funct(FRI,FRI,merPCAs,merAlphas) + R_funct(RRI,RRI,merPCAs,merAlphas))
++        test_T_score = C_funct(FRI,
++                               RRI,
++                               merPCAs,
++                               merAlphas) / (F_funct(FRI,
++                                                     FRI,
++                                                     merPCAs,
++                                                     merAlphas) + R_funct(RRI,
++                                                                          RRI,
++                                                                          merPCAs,
++                                                                          merAlphas))
+ 
+         T_scores = []
+         index_array = np_arange(x_size)
+         fsi = np_arange(front_sample_size)
+-        rsi = np_arange(front_sample_size, front_sample_size+rear_sample_size)
++        rsi = np_arange(
++            front_sample_size,
++            front_sample_size +
++            rear_sample_size)
+         for i in range(null_loops):
+             # select two sets of bins at random
+             shuffle(index_array)
+             FRI = x[index_array[fsi]]
+             RRI = x[index_array[rsi]]
+-            T_scores.append(C_funct(FRI,RRI,merPCAs,merAlphas) / ( F_funct(FRI,FRI,merPCAs,merAlphas) + R_funct(RRI,RRI,merPCAs,merAlphas)))
++            T_scores.append(C_funct(FRI, RRI, merPCAs, merAlphas) /
++                            (F_funct(FRI, FRI, merPCAs, merAlphas) +
++                             R_funct(RRI, RRI, merPCAs, merAlphas)))
+ 
+         T_scores = sorted(T_scores)
+-        index = int(np_around(float(null_loops+1)*confidence))
++        index = int(np_around(float(null_loops + 1) * confidence))
+ 
+         return (test_T_score, T_scores[index])
+ 
+-    def calculateMerAlphaPartSampleNoSame(self, RI1, RI2, profile, alphas, sampleSize=2000):
++    def calculateMerAlphaPartSampleNoSame(
++            self, RI1, RI2, profile, alphas, sampleSize=2000):
+         """Calculate one part of an alpha score
+ 
+         Subsample of all vs all, assumes RI1 == RI2"""
+@@ -1678,20 +1795,26 @@
+             num_samples_complete += 1
+             try:
+                 # try to pull the value out
+-                score += alphas[(r1,r2)]
++                score += alphas[(r1, r2)]
+             except KeyError:
+                 try:
+                     # try to pull the value out
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     # calculate it if it's not there...
+                     # inline this because we call it alot!
+                     dist = np_sum(np_abs(profile[r1] - profile[r2]))
+-                    alphas[(r1,r2)] = dist
++                    alphas[(r1, r2)] = dist
+                     score += dist
+         return score / sampleSize
+ 
+-    def calculateMerAlphaPartSample(self, RI1, RI2, profile, alphas, sampleSize=2000):
++    def calculateMerAlphaPartSample(
++            self,
++            RI1,
++            RI2,
++            profile,
++            alphas,
++            sampleSize=2000):
+         """Calculate one part of an alpha score
+ 
+         Subsample of all vs all, assumes RI1 != RI2
+@@ -1711,16 +1834,16 @@
+             num_samples_complete += 1
+             try:
+                 # try to pull the value out
+-                score += alphas[(r1,r2)]
++                score += alphas[(r1, r2)]
+             except KeyError:
+                 try:
+                     # try to pull the value out
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     # calculate it if it's not there...
+                     # inline this because we call it alot!
+                     dist = np_sum(np_abs(profile[r1] - profile[r2]))
+-                    alphas[(r1,r2)] = dist
++                    alphas[(r1, r2)] = dist
+                     score += dist
+         return score / sampleSize
+ 
+@@ -1735,16 +1858,15 @@
+         for r1 in RI1:
+             for r2 in RI2:
+                 try:
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     try:
+-                        score += alphas[(r2,r1)]
++                        score += alphas[(r2, r1)]
+                     except KeyError:
+                         dist = np_sum(np_abs(profile[r1] - profile[r2]))
+-                        alphas[(r1,r2)] = dist
++                        alphas[(r1, r2)] = dist
+                         score += dist
+-        return score / (lr1*lr2)
+-
++        return score / (lr1 * lr2)
+ 
+     def calculateMerAlphaTScore(self, RI1, RI2, profile, alphas):
+         """Measure the goodness of the separation into lists
+@@ -1757,7 +1879,7 @@
+         R2_intras = 0.0
+         inters = 0.0
+         for i in range(lr1):
+-            for j in range(i+1, lr1):
++            for j in range(i + 1, lr1):
+                 try:
+                     # try to pull the value out
+                     R1_intras += alphas[(RI1[i], RI1[j])]
+@@ -1768,46 +1890,48 @@
+                     except KeyError:
+                         # calculate it if it's not there...
+                         # inline this because we call it alot!
+-                        dist = np_sum(np_abs(profile[RI1[i]] - profile[RI1[j]]))
+-                        alphas[(RI1[i],RI1[j])] = dist
++                        dist = np_sum(
++                            np_abs(profile[RI1[i]] - profile[RI1[j]]))
++                        alphas[(RI1[i], RI1[j])] = dist
+                         R1_intras += dist
+-        R1_intras /= ((lr1 - 1)*lr1 / 2)
++        R1_intras /= ((lr1 - 1) * lr1 / 2)
+ 
+         for i in range(lr2):
+-            for j in range(i+1, lr2):
++            for j in range(i + 1, lr2):
+                 try:
+                     R2_intras += alphas[(RI2[i], RI2[j])]
+                 except KeyError:
+                     try:
+                         R2_intras += alphas[(RI2[j], RI2[i])]
+                     except KeyError:
+-                        dist = np_sum(np_abs(profile[RI2[i]] - profile[RI2[j]]))
+-                        alphas[(RI2[i],RI2[j])] = dist
++                        dist = np_sum(
++                            np_abs(profile[RI2[i]] - profile[RI2[j]]))
++                        alphas[(RI2[i], RI2[j])] = dist
+                         R2_intras += dist
+-        R2_intras /= ((lr2 - 1)*lr2 / 2)
++        R2_intras /= ((lr2 - 1) * lr2 / 2)
+ 
+         for r1 in RI1:
+             for r2 in RI2:
+                 try:
+-                    inters += alphas[(r1,r2)]
++                    inters += alphas[(r1, r2)]
+                 except KeyError:
+                     try:
+-                        inters += alphas[(r2,r1)]
++                        inters += alphas[(r2, r1)]
+                     except KeyError:
+                         dist = np_sum(np_abs(profile[r1] - profile[r2]))
+-                        alphas[(r1,r2)] = dist
++                        alphas[(r1, r2)] = dist
+                         inters += dist
+-        inters /= (lr1*lr2)
+-        return inters/(R1_intras + R2_intras)
++        inters /= (lr1 * lr2)
++        return inters / (R1_intras + R2_intras)
+ 
+ 
+-#-----------------------------
++# -----------------------------
+ # MERGE TESTING BASED ON COVERAGE
+ 
+     def testMergeCoverage(self,
+                           bid1,
+                           bid2,
+-                          maxSample = 200,
++                          maxSample=200,
+                           confidence=0.97,
+                           verbose=False):
+         """Determine if a merge based on kmer PCAs makes sense in coverage land
+@@ -1852,7 +1976,7 @@
+             C_funct = self.calculateCovAlphaPart
+         else:
+             C_funct = self.calculateCovAlphaPartSample
+-        covAlphas={}
++        covAlphas = {}
+ 
+         # test the given split against it
+         if maxSample != 0:
+@@ -1863,25 +1987,37 @@
+         else:
+             FRI = front_RIs
+             RRI = rear_RIs
+-        test_T_score = C_funct(FRI,RRI,covAlphas) / ( F_funct(FRI,FRI,covAlphas) + R_funct(RRI,RRI,covAlphas))
++        test_T_score = C_funct(FRI,
++                               RRI,
++                               covAlphas) / (F_funct(FRI,
++                                                     FRI,
++                                                     covAlphas) + R_funct(RRI,
++                                                                          RRI,
++                                                                          covAlphas))
+ 
+         T_scores = []
+         index_array = np_arange(x_size)
+         fsi = np_arange(front_sample_size)
+-        rsi = np_arange(front_sample_size, front_sample_size+rear_sample_size)
++        rsi = np_arange(
++            front_sample_size,
++            front_sample_size +
++            rear_sample_size)
+         for i in range(null_loops):
+             # select two sets of bins at random
+             shuffle(index_array)
+             FRI = x[index_array[fsi]]
+             RRI = x[index_array[rsi]]
+-            T_scores.append(C_funct(FRI,RRI,covAlphas) / ( F_funct(FRI,FRI,covAlphas) + R_funct(RRI,RRI,covAlphas)))
++            T_scores.append(C_funct(FRI, RRI, covAlphas) /
++                            (F_funct(FRI, FRI, covAlphas) +
++                             R_funct(RRI, RRI, covAlphas)))
+ 
+         T_scores = sorted(T_scores)
+-        index = int(np_around(float(null_loops+1)*confidence))
++        index = int(np_around(float(null_loops + 1) * confidence))
+ 
+         return (test_T_score, T_scores[index])
+ 
+-    def calculateCovAlphaPartSampleNoSame(self, RI1, RI2, alphas, sampleSize=2000):
++    def calculateCovAlphaPartSampleNoSame(
++            self, RI1, RI2, alphas, sampleSize=2000):
+         """Calculate one part of an alpha score
+ 
+         Subsample of all vs all, assumes RI1 == RI2
+@@ -1901,20 +2037,23 @@
+             num_samples_complete += 1
+             try:
+                 # try to pull the value out
+-                score += alphas[(r1,r2)]
++                score += alphas[(r1, r2)]
+             except KeyError:
+                 try:
+                     # try to pull the value out
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     # calculate it if it's not there...
+                     # inline this becuase we call it alot!
+                     try:
+-                        ang = np_arccos(np_dot(self.PM.covProfiles[r1],self.PM.covProfiles[r2]) /
+-                                        (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                        ang = np_arccos(
++                            np_dot(
++                                self.PM.covProfiles[r1],
++                                self.PM.covProfiles[r2]) / (
++                                self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                     except FloatingPointError:
+                         ang = 0.0
+-                    alphas[(r1,r2)] = ang
++                    alphas[(r1, r2)] = ang
+                     score += ang
+         return score / sampleSize
+ 
+@@ -1938,20 +2077,23 @@
+             num_samples_complete += 1
+             try:
+                 # try to pull the value out
+-                score += alphas[(r1,r2)]
++                score += alphas[(r1, r2)]
+             except KeyError:
+                 try:
+                     # try to pull the value out
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     # calculate it if it's not there...
+                     # inline this becuase we call it alot!
+                     try:
+-                        ang = np_arccos(np_dot(self.PM.covProfiles[r1],self.PM.covProfiles[r2]) /
+-                                        (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                        ang = np_arccos(
++                            np_dot(
++                                self.PM.covProfiles[r1],
++                                self.PM.covProfiles[r2]) / (
++                                self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                     except FloatingPointError:
+                         ang = 0.0
+-                    alphas[(r1,r2)] = ang
++                    alphas[(r1, r2)] = ang
+                     score += ang
+         return score / sampleSize
+ 
+@@ -1966,20 +2108,22 @@
+         for r1 in RI1:
+             for r2 in RI2:
+                 try:
+-                    score += alphas[(r1,r2)]
++                    score += alphas[(r1, r2)]
+                 except KeyError:
+                     try:
+-                        score += alphas[(r2,r1)]
++                        score += alphas[(r2, r1)]
+                     except KeyError:
+                         try:
+-                            ang = np_arccos(np_dot(self.PM.covProfiles[r1],self.PM.covProfiles[r2]) /
+-                                            (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                            ang = np_arccos(
++                                np_dot(
++                                    self.PM.covProfiles[r1],
++                                    self.PM.covProfiles[r2]) / (
++                                    self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                         except FloatingPointError:
+                             ang = 0.0
+-                        alphas[(r1,r2)] = ang
++                        alphas[(r1, r2)] = ang
+                         score += ang
+-        return score / (lr1*lr2)
+-
++        return score / (lr1 * lr2)
+ 
+     def calculateCovAlphaTScore(self, RI1, RI2, alphas):
+         """Measure the goodness of the separation into lists
+@@ -1992,7 +2136,7 @@
+         R2_intras = 0.0
+         inters = 0.0
+         for i in range(lr1):
+-            for j in range(i+1, lr1):
++            for j in range(i + 1, lr1):
+                 try:
+                     # try to pull the value out
+                     R1_intras += alphas[(RI1[i], RI1[j])]
+@@ -2004,16 +2148,16 @@
+                         # calculate it if it's not there...
+                         # inline this becuase we call it alot!
+                         try:
+-                            ang = np_arccos(np_dot(self.PM.covProfiles[RI1[i]],self.PM.covProfiles[RI1[j]]) /
+-                                            (self.PM.normCoverages[RI1[i]]*self.PM.normCoverages[RI1[j]]))
++                            ang = np_arccos(np_dot(self.PM.covProfiles[RI1[i]], self.PM.covProfiles[RI1[j]]) /
++                                            (self.PM.normCoverages[RI1[i]] * self.PM.normCoverages[RI1[j]]))
+                         except FloatingPointError:
+                             ang = 0.0
+-                        alphas[(RI1[i],RI1[j])] = ang
++                        alphas[(RI1[i], RI1[j])] = ang
+                         R1_intras += ang
+-        R1_intras /= ((lr1 - 1)*lr1 / 2)
++        R1_intras /= ((lr1 - 1) * lr1 / 2)
+ 
+         for i in range(lr2):
+-            for j in range(i+1, lr2):
++            for j in range(i + 1, lr2):
+                 try:
+                     R2_intras += alphas[(RI2[i], RI2[j])]
+                 except KeyError:
+@@ -2021,35 +2165,44 @@
+                         R2_intras += alphas[(RI2[j], RI2[i])]
+                     except KeyError:
+                         try:
+-                            ang = np_arccos(np_dot(self.PM.covProfiles[RI2[i]],self.PM.covProfiles[RI2[j]]) /
+-                                            (self.PM.normCoverages[RI2[i]]*self.PM.normCoverages[RI2[j]]))
++                            ang = np_arccos(np_dot(self.PM.covProfiles[RI2[i]], self.PM.covProfiles[RI2[j]]) /
++                                            (self.PM.normCoverages[RI2[i]] * self.PM.normCoverages[RI2[j]]))
+                         except FloatingPointError:
+                             ang = 0.0
+-                        alphas[(RI2[i],RI2[j])] = ang
++                        alphas[(RI2[i], RI2[j])] = ang
+                         R2_intras += ang
+-        R2_intras /= ((lr2 - 1)*lr2 / 2)
++        R2_intras /= ((lr2 - 1) * lr2 / 2)
+         for r1 in RI1:
+             for r2 in RI2:
+                 try:
+-                    inters += alphas[(r1,r2)]
++                    inters += alphas[(r1, r2)]
+                 except KeyError:
+                     try:
+-                        inters += alphas[(r2,r1)]
++                        inters += alphas[(r2, r1)]
+                     except KeyError:
+                         try:
+-                            ang = np_arccos(np_dot(self.PM.covProfiles[r1],self.PM.covProfiles[r2]) /
+-                                            (self.PM.normCoverages[r1]*self.PM.normCoverages[r2]))
++                            ang = np_arccos(
++                                np_dot(
++                                    self.PM.covProfiles[r1],
++                                    self.PM.covProfiles[r2]) / (
++                                    self.PM.normCoverages[r1] * self.PM.normCoverages[r2]))
+                         except FloatingPointError:
+                             ang = 0.0
+-                        alphas[(r1,r2)] = ang
++                        alphas[(r1, r2)] = ang
+                         inters += ang
+-        inters /= (lr1*lr2)
+-        return inters/(R1_intras + R2_intras)
++        inters /= (lr1 * lr2)
++        return inters / (R1_intras + R2_intras)
+ 
+-#------------------------------------------------------------------------------
++# ------------------------------------------------------------------------------
+ # RECRUITMENT
+ 
+-    def recruitWrapper(self, timer, inclusivity=2, step=200, nukeAll=False, saveBins=False):
++    def recruitWrapper(
++            self,
++            timer,
++            inclusivity=2,
++            step=200,
++            nukeAll=False,
++            saveBins=False):
+         """Recuit more contigs to the bins"""
+         print "Recruiting unbinned contigs"
+ 
+@@ -2065,7 +2218,7 @@
+         # for stats, work out number binned and unbinned and relative lengths
+         unbinned = {}
+         for row_index in range(len(self.PM.indices)):
+-            if(row_index in self.PM.binnedRowIndices):
++            if (row_index in self.PM.binnedRowIndices):
+                 if self.PM.contigLengths[row_index] < shortest_binned:
+                     shortest_binned = self.PM.contigLengths[row_index]
+                 total_binned += 1
+@@ -2078,20 +2231,25 @@
+         # work out how many iterations we'll do
+         if shortest_binned > shortest_unbinned:
+             size_range = shortest_binned - shortest_unbinned
+-            num_steps = size_range/step
++            num_steps = size_range / step
+             if num_steps == 0:
+                 steps = [shortest_unbinned]
+             else:
+-                step_size = size_range/num_steps
+-                steps = [shortest_binned - i*step_size for i in range(1,num_steps)]
++                step_size = size_range / num_steps
++                steps = [
++                    shortest_binned -
++                    i *
++                    step_size for i in range(
++                        1,
++                        num_steps)]
+                 steps.append(shortest_unbinned)
+         else:
+             steps = [shortest_unbinned]
+ 
+         # talk to the user
+-        perc_binned = float(total_binned)/float(total_contigs)
++        perc_binned = float(total_binned) / float(total_contigs)
+         print "    Planned steps = ", steps
+-        print "    BEGIN: %0.4f" % perc_binned +"%"+" of %d requested contigs in bins" % total_contigs
++        print "    BEGIN: %0.4f" % perc_binned + "%" + " of %d requested contigs in bins" % total_contigs
+         print "    %d contigs unbinned" % total_unbinned
+ 
+         # build the classifier on all the existing bins
+@@ -2107,13 +2265,14 @@
+         for cutoff in steps:
+             # work out the bin length, mer, etc stats
+             for bid in affected_bids:
+-                bin_c_lengths[bid] = [self.PM.contigLengths[row_index] for row_index in self.BM.bins[bid].rowIndices]
++                bin_c_lengths[bid] = [self.PM.contigLengths[row_index]
++                                      for row_index in self.BM.bins[bid].rowIndices]
+                 self.BM.bins[bid].makeBinDist(self.PM.transformedCP,
+-                                           self.PM.averageCoverages,
+-                                           self.PM.kmerNormPC1,
+-                                           self.PM.kmerPCs,
+-                                           self.PM.contigGCs,
+-                                           self.PM.contigLengths)
++                                              self.PM.averageCoverages,
++                                              self.PM.kmerNormPC1,
++                                              self.PM.kmerPCs,
++                                              self.PM.contigGCs,
++                                              self.PM.contigLengths)
+             affected_bids = []
+             this_step_binned = 0
+             new_binned = []
+@@ -2125,9 +2284,9 @@
+                 if unbinned[row_index] >= cutoff:
+                     unbinned_rows.append(row_index)
+                     unbinned_lens.append(unbinned[row_index])
+-            block = np_zeros((len(unbinned_rows),SOMDIM))
+-            block[:,:-1] = self.PM.transformedCP[unbinned_rows]
+-            block[:,-1] = self.PM.kmerNormPC1[unbinned_rows]
++            block = np_zeros((len(unbinned_rows), SOMDIM))
++            block[:, :-1] = self.PM.transformedCP[unbinned_rows]
++            block[:, -1] = self.PM.kmerNormPC1[unbinned_rows]
+             # apply sane normalisation
+             block -= minz
+             block /= maxz
+@@ -2138,17 +2297,16 @@
+                 putative_bid = SS.classifyContig(block[i])
+                 if self.BM.bins[putative_bid].binSize > 1:
+                     # stats f**k up on single contig bins, soz...
+-                    length_wrong = self.GT.isMaxOutlier(unbinned_lens[i],
+-                                                        bin_c_lengths[putative_bid]
+-                                                        )
++                    length_wrong = self.GT.isMaxOutlier(
++                        unbinned_lens[i], bin_c_lengths[putative_bid])
+                     if not length_wrong:
+                         # fits length cutoff
+-                        (covZ,merZ) = self.BM.scoreContig(unbinned_rows[i], putative_bid)
++                        (covZ, merZ) = self.BM.scoreContig(
++                            unbinned_rows[i], putative_bid)
+                         if covZ <= inclusivity and merZ <= inclusivity:
+                             # we can recruit
+-                            self.BM.bins[putative_bid].rowIndices = np_append(self.BM.bins[putative_bid].rowIndices,
+-                                                                              unbinned_rows[i]
+-                                                                              )
++                            self.BM.bins[putative_bid].rowIndices = np_append(
++                                self.BM.bins[putative_bid].rowIndices, unbinned_rows[i])
+                             affected_bids.append(putative_bid)
+                             this_step_binned += 1
+                             total_binned += 1
+@@ -2164,19 +2322,19 @@
+             sys_stdout.flush()
+ 
+         # talk to the user
+-        perc_recruited = float(total_expanded)/float(total_unbinned)
+-        perc_binned = float(total_binned)/float(total_contigs)
+-        print "    Recruited %0.4f" % perc_recruited +"%"+" of %d unbinned contigs" % total_unbinned
+-        print "    END: %0.4f" % perc_binned +"%"+" of %d requested contigs in bins" % total_contigs
++        perc_recruited = float(total_expanded) / float(total_unbinned)
++        perc_binned = float(total_binned) / float(total_contigs)
++        print "    Recruited %0.4f" % perc_recruited + "%" + " of %d unbinned contigs" % total_unbinned
++        print "    END: %0.4f" % perc_binned + "%" + " of %d requested contigs in bins" % total_contigs
+         print "    %s" % timer.getTimeStamp()
+         sys_stdout.flush()
+ 
+         # now save
+-        if(saveBins):
++        if (saveBins):
+             print "Saving bins"
+             self.BM.saveBins()
+ 
+-#------------------------------------------------------------------------------
++# ------------------------------------------------------------------------------
+ # UI and IMAGE RENDERING
+ 
+     def writeGV(self, graph):
+@@ -2191,197 +2349,213 @@
+         return op
+ 
+     def printRefinePlotterInstructions(self):
+-        raw_input( "****************************************************************\n"
+-                   " REFINING INSTRUCTIONS - PLEASE READ CAREFULLY\n"+
+-                   "****************************************************************\n"
+-                   " You have chosen to refine in plotter mode. Congratulations!\n"
+-                   " You will be shown a 3d plot of all the bins, colored by kmer\n"
+-                   " profile. Bin Ids in close proximity and similar color may need\n"
+-                   " to be merged. Conversely, you can split bins which appear chimeric\n"
+-                   " Follow the instructions to merge or split these bins\n\n"
+-                   " Good Luck!\n\n"
+-                   " Press return to continue...")
++        raw_input(
++            "****************************************************************\n"
++            " REFINING INSTRUCTIONS - PLEASE READ CAREFULLY\n" +
++            "****************************************************************\n"
++            " You have chosen to refine in plotter mode. Congratulations!\n"
++            " You will be shown a 3d plot of all the bins, colored by kmer\n"
++            " profile. Bin Ids in close proximity and similar color may need\n"
++            " to be merged. Conversely, you can split bins which appear chimeric\n"
++            " Follow the instructions to merge or split these bins\n\n"
++            " Good Luck!\n\n"
++            " Press return to continue...")
+         print "****************************************************************"
+ 
+     def promptOnPlotterRefine(self, minimal=False):
+         """Find out what the user wishes to do next when refining bins"""
+         input_not_ok = True
+-        valid_responses = ['R','P','G','U','B','V','M','S', 'C','E','X','Q']
++        valid_responses = [
++            'R',
++            'P',
++            'G',
++            'U',
++            'B',
++            'V',
++            'M',
++            'S',
++            'C',
++            'E',
++            'X',
++            'Q']
+         vrs = ",".join([str.lower(str(x)) for x in valid_responses])
+-        while(input_not_ok):
+-            if(minimal):
+-                option = raw_input(" What next? ("+vrs+") : ")
++        while (input_not_ok):
++            if (minimal):
++                option = raw_input(" What next? (" + vrs + ") : ")
+             else:
+-                option = raw_input("\n Please choose from the following options:\n" \
+-                                   "------------------------------------------------------------\n" \
+-                                   " r = plot entire space using bin ids\n" \
+-                                   " p = plot entire space with bins as points\n" \
+-                                   " g = plot entire space for bins within a specific GC range\n" \
+-                                   " u = plot all contigs in untransformed coverage space (first 3 stoits only)\n"
+-                                   " b = plot one or more bins\n" \
+-                                   " v = plot all contigs in vincinity of bin\n" \
+-                                   " m = merge two or more bins\n" \
+-                                   " s = split a bin into multiple pieces\n" \
+-                                   " c = change colormap\n" \
+-                                   " e = toggle elipses (default = on)\n" \
+-                                   " x = toggle chimeric bins (default = hidden)\n" \
+-                                   " q = quit\n" \
+-                                   "------------------------------------------------------------\n" \
+-                                   " What next? ("+vrs+") : ")
+-            if(option.upper() in valid_responses):
++                option = raw_input(
++                    "\n Please choose from the following options:\n"
++                    "------------------------------------------------------------\n"
++                    " r = plot entire space using bin ids\n"
++                    " p = plot entire space with bins as points\n"
++                    " g = plot entire space for bins within a specific GC range\n"
++                    " u = plot all contigs in untransformed coverage space (first 3 stoits only)\n"
++                    " b = plot one or more bins\n"
++                    " v = plot all contigs in vincinity of bin\n"
++                    " m = merge two or more bins\n"
++                    " s = split a bin into multiple pieces\n"
++                    " c = change colormap\n"
++                    " e = toggle elipses (default = on)\n"
++                    " x = toggle chimeric bins (default = hidden)\n"
++                    " q = quit\n"
++                    "------------------------------------------------------------\n"
++                    " What next? (" + vrs + ") : ")
++            if (option.upper() in valid_responses):
+                 return option.upper()
+             else:
+-                print "Error, unrecognised choice '"+option+"'"
+-                minimal=True
++                print "Error, unrecognised choice '" + option + "'"
++                minimal = True
+ 
+     def PCA2Col(self, PCAs):
+         """Convert a set of PCA coords into a color"""
+         # use HSV to RGB to generate colors
+         S = 1       # SAT and VAL remain fixed at 1. Reduce to make
+         V = 1       # Pastels if that's your preference...
+-        return np_reshape(np_array([htr(val, S, V) for val in PCAs[:,0]]),
+-                          (len(PCAs),3))
++        return np_reshape(np_array([htr(val, S, V) for val in PCAs[:, 0]]),
++                          (len(PCAs), 3))
+ 
+ ###############################################################################
+ ###############################################################################
+ ###############################################################################
+ ###############################################################################
+ 
++
+ class GrubbsTester:
+     """Data and methods for performing Grubbs test
+ 
+     cutoff values taken from qgrubs from R package outliers
+     using command: qgrubbs(0.99, c(3:1002), 10)
+     """
++
+     def __init__(self):
+         # cutoff values for n degress of freedom
+         # If you have 8 sample points then self.cutoffs[6]
+         # is what you want!
+-        self.critVs = np_array([1.154637,1.492500,1.748857,1.944245,2.097304,2.220833,2.323148,2.409725,
+-                                2.484279,2.549417,2.607020,2.658480,2.704855,2.746963,2.785445,2.820817,
+-                                2.853495,2.883821,2.912078,2.938503,2.963296,2.986628,3.008645,3.029473,
+-                                3.049223,3.067989,3.085855,3.102897,3.119180,3.134761,3.149694,3.164026,
+-                                3.177798,3.191049,3.203813,3.216121,3.228002,3.239482,3.250585,3.261332,
+-                                3.271744,3.281839,3.291634,3.301145,3.310386,3.319372,3.328114,3.336624,
+-                                3.344914,3.352993,3.360872,3.368558,3.376061,3.383388,3.390546,3.397543,
+-                                3.404385,3.411078,3.417628,3.424041,3.430321,3.436474,3.442505,3.448417,
+-                                3.454215,3.459902,3.465484,3.470963,3.476342,3.481626,3.486816,3.491917,
+-                                3.496930,3.501859,3.506706,3.511474,3.516164,3.520780,3.525324,3.529797,
+-                                3.534201,3.538539,3.542812,3.547022,3.551171,3.555260,3.559292,3.563266,
+-                                3.567186,3.571051,3.574865,3.578627,3.582340,3.586004,3.589620,3.593190,
+-                                3.596715,3.600196,3.603634,3.607030,3.610384,3.613698,3.616973,3.620209,
+-                                3.623407,3.626569,3.629695,3.632785,3.635840,3.638862,3.641851,3.644807,
+-                                3.647731,3.650624,3.653486,3.656319,3.659122,3.661896,3.664642,3.667360,
+-                                3.670050,3.672714,3.675352,3.677964,3.680551,3.683113,3.685650,3.688164,
+-                                3.690654,3.693121,3.695565,3.697986,3.700386,3.702764,3.705121,3.707457,
+-                                3.709773,3.712068,3.714344,3.716600,3.718836,3.721054,3.723253,3.725434,
+-                                3.727597,3.729742,3.731869,3.733979,3.736072,3.738149,3.740209,3.742253,
+-                                3.744281,3.746293,3.748289,3.750270,3.752237,3.754188,3.756125,3.758047,
+-                                3.759955,3.761849,3.763729,3.765595,3.767448,3.769287,3.771114,3.772928,
+-                                3.774728,3.776516,3.778292,3.780056,3.781807,3.783546,3.785274,3.786990,
+-                                3.788694,3.790387,3.792069,3.793740,3.795400,3.797049,3.798687,3.800315,
+-                                3.801932,3.803540,3.805137,3.806723,3.808300,3.809868,3.811425,3.812973,
+-                                3.814511,3.816040,3.817560,3.819071,3.820572,3.822065,3.823549,3.825024,
+-                                3.826490,3.827948,3.829397,3.830838,3.832271,3.833696,3.835112,3.836521,
+-                                3.837921,3.839314,3.840699,3.842076,3.843446,3.844808,3.846163,3.847510,
+-                                3.848850,3.850183,3.851509,3.852827,3.854139,3.855444,3.856742,3.858033,
+-                                3.859317,3.860595,3.861866,3.863131,3.864389,3.865640,3.866886,3.868125,
+-                                3.869358,3.870585,3.871805,3.873020,3.874229,3.875431,3.876628,3.877819,
+-                                3.879005,3.880184,3.881358,3.882526,3.883689,3.884846,3.885998,3.887144,
+-                                3.888285,3.889421,3.890551,3.891677,3.892797,3.893911,3.895021,3.896126,
+-                                3.897226,3.898321,3.899411,3.900496,3.901576,3.902651,3.903722,3.904788,
+-                                3.905849,3.906906,3.907958,3.909005,3.910048,3.911087,3.912121,3.913150,
+-                                3.914176,3.915197,3.916213,3.917226,3.918234,3.919238,3.920238,3.921233,
+-                                3.922225,3.923212,3.924196,3.925175,3.926151,3.927122,3.928090,3.929054,
+-                                3.930014,3.930970,3.931922,3.932871,3.933815,3.934756,3.935694,3.936627,
+-                                3.937558,3.938484,3.939407,3.940326,3.941242,3.942155,3.943064,3.943969,
+-                                3.944871,3.945770,3.946665,3.947557,3.948445,3.949331,3.950213,3.951091,
+-                                3.951967,3.952839,3.953708,3.954574,3.955437,3.956297,3.957154,3.958007,
+-                                3.958858,3.959705,3.960550,3.961391,3.962229,3.963065,3.963898,3.964727,
+-                                3.965554,3.966378,3.967199,3.968017,3.968833,3.969645,3.970455,3.971262,
+-                                3.972066,3.972868,3.973667,3.974463,3.975256,3.976047,3.976836,3.977621,
+-                                3.978404,3.979184,3.979962,3.980738,3.981510,3.982280,3.983048,3.983813,
+-                                3.984576,3.985336,3.986094,3.986849,3.987602,3.988353,3.989101,3.989847,
+-                                3.990590,3.991331,3.992070,3.992806,3.993541,3.994272,3.995002,3.995729,
+-                                3.996454,3.997177,3.997898,3.998616,3.999332,4.000046,4.000758,4.001468,
+-                                4.002175,4.002880,4.003584,4.004285,4.004984,4.005681,4.006376,4.007069,
+-                                4.007759,4.008448,4.009135,4.009820,4.010502,4.011183,4.011862,4.012539,
+-                                4.013213,4.013886,4.014557,4.015226,4.015893,4.016558,4.017222,4.017883,
+-                                4.018543,4.019200,4.019856,4.020510,4.021162,4.021812,4.022461,4.023108,
+-                                4.023752,4.024395,4.025037,4.025676,4.026314,4.026950,4.027585,4.028217,
+-                                4.028848,4.029477,4.030105,4.030730,4.031354,4.031977,4.032597,4.033217,
+-                                4.033834,4.034450,4.035064,4.035676,4.036287,4.036896,4.037504,4.038110,
+-                                4.038715,4.039318,4.039919,4.040519,4.041117,4.041714,4.042309,4.042903,
+-                                4.043495,4.044085,4.044674,4.045262,4.045848,4.046433,4.047016,4.047597,
+-                                4.048178,4.048756,4.049334,4.049909,4.050484,4.051057,4.051628,4.052198,
+-                                4.052767,4.053334,4.053900,4.054465,4.055028,4.055590,4.056150,4.056709,
+-                                4.057267,4.057823,4.058378,4.058932,4.059484,4.060035,4.060585,4.061133,
+-                                4.061680,4.062226,4.062771,4.063314,4.063856,4.064396,4.064935,4.065474,
+-                                4.066010,4.066546,4.067080,4.067613,4.068145,4.068676,4.069205,4.069733,
+-                                4.070260,4.070786,4.071310,4.071834,4.072356,4.072877,4.073396,4.073915,
+-                                4.074432,4.074949,4.075464,4.075977,4.076490,4.077002,4.077512,4.078022,
+-                                4.078530,4.079037,4.079543,4.080047,4.080551,4.081054,4.081555,4.082056,
+-                                4.082555,4.083053,4.083550,4.084046,4.084541,4.085035,4.085528,4.086019,
+-                                4.086510,4.087000,4.087488,4.087976,4.088462,4.088948,4.089432,4.089915,
+-                                4.090398,4.090879,4.091359,4.091839,4.092317,4.092794,4.093271,4.093746,
+-                                4.094220,4.094693,4.095166,4.095637,4.096107,4.096577,4.097045,4.097513,
+-                                4.097979,4.098445,4.098909,4.099373,4.099836,4.100297,4.100758,4.101218,
+-                                4.101677,4.102135,4.102592,4.103048,4.103503,4.103958,4.104411,4.104864,
+-                                4.105315,4.105766,4.106216,4.106665,4.107113,4.107560,4.108006,4.108452,
+-                                4.108896,4.109340,4.109783,4.110225,4.110666,4.111106,4.111545,4.111984,
+-                                4.112421,4.112858,4.113294,4.113729,4.114163,4.114597,4.115029,4.115461,
+-                                4.115892,4.116322,4.116751,4.117180,4.117608,4.118034,4.118460,4.118886,
+-                                4.119310,4.119734,4.120157,4.120579,4.121000,4.121421,4.121840,4.122259,
+-                                4.122677,4.123095,4.123511,4.123927,4.124342,4.124757,4.125170,4.125583,
+-                                4.125995,4.126406,4.126817,4.127226,4.127635,4.128044,4.128451,4.128858,
+-                                4.129264,4.129669,4.130074,4.130478,4.130881,4.131284,4.131685,4.132086,
+-                                4.132487,4.132886,4.133285,4.133683,4.134081,4.134477,4.134873,4.135269,
+-                                4.135663,4.136057,4.136451,4.136843,4.137235,4.137626,4.138017,4.138407,
+-                                4.138796,4.139184,4.139572,4.139959,4.140346,4.140732,4.141117,4.141501,
+-                                4.141885,4.142268,4.142651,4.143033,4.143414,4.143794,4.144174,4.144554,
+-                                4.144932,4.145310,4.145688,4.146064,4.146440,4.146816,4.147191,4.147565,
+-                                4.147938,4.148311,4.148684,4.149055,4.149427,4.149797,4.150167,4.150536,
+-                                4.150905,4.151273,4.151640,4.152007,4.152373,4.152739,4.153104,4.153468,
+-                                4.153832,4.154195,4.154558,4.154920,4.155282,4.155643,4.156003,4.156363,
+-                                4.156722,4.157080,4.157438,4.157796,4.158153,4.158509,4.158865,4.159220,
+-                                4.159574,4.159928,4.160282,4.160635,4.160987,4.161339,4.161690,4.162041,
+-                                4.162391,4.162740,4.163089,4.163438,4.163786,4.164133,4.164480,4.164826,
+-                                4.165172,4.165517,4.165862,4.166206,4.166550,4.166893,4.167235,4.167577,
+-                                4.167919,4.168260,4.168600,4.168940,4.169280,4.169619,4.169957,4.170295,
+-                                4.170632,4.170969,4.171306,4.171641,4.171977,4.172311,4.172646,4.172980,
+-                                4.173313,4.173646,4.173978,4.174310,4.174641,4.174972,4.175302,4.175632,
+-                                4.175962,4.176290,4.176619,4.176947,4.177274,4.177601,4.177927,4.178253,
+-                                4.178579,4.178904,4.179228,4.179552,4.179876,4.180199,4.180522,4.180844,
+-                                4.181166,4.181487,4.181808,4.182128,4.182448,4.182767,4.183086,4.183405,
+-                                4.183723,4.184040,4.184357,4.184674,4.184990,4.185306,4.185621,4.185936,
+-                                4.186250,4.186564,4.186878,4.187191,4.187503,4.187815,4.188127,4.188438,
+-                                4.188749,4.189060,4.189370,4.189679,4.189988,4.190297,4.190605,4.190913,
+-                                4.191220,4.191527,4.191834,4.192140,4.192446,4.192751,4.193056,4.193360,
+-                                4.193664,4.193968,4.194271,4.194574,4.194876,4.195178,4.195479,4.195781,
+-                                4.196081,4.196381,4.196681,4.196981,4.197280,4.197578,4.197877,4.198175,
+-                                4.198472,4.198769,4.199066,4.199362,4.199658,4.199953,4.200248,4.200543,
+-                                4.200837,4.201131,4.201424,4.201718,4.202010,4.202303,4.202594,4.202886,
+-                                4.203177,4.203468,4.203758,4.204048,4.204338,4.204627,4.204916,4.205204,
+-                                4.205493,4.205780,4.206068,4.206355,4.206641,4.206927,4.207213,4.207499,
+-                                4.207784,4.208068,4.208353,4.208637,4.208920,4.209204,4.209487,4.209769,
+-                                4.210051,4.210333,4.210615,4.210896,4.211176,4.211457,4.211737,4.212016,
+-                                4.212296,4.212575,4.212853,4.213132,4.213409,4.213687,4.213964,4.214241,
+-                                4.214517,4.214794,4.215069,4.215345,4.215620,4.215895,4.216169,4.216443,
+-                                4.216717,4.216990,4.217263,4.217536,4.217808,4.218080,4.218352,4.218623,
+-                                4.218894,4.219165,4.219436,4.219706,4.219975,4.220245,4.220514,4.220782,
+-                                4.221051,4.221319,4.221586,4.221854,4.222121,4.222388,4.222654,4.222920,
+-                                4.223186,4.223451,4.223716,4.223981,4.224246,4.224510,4.224774,4.225037,
+-                                4.225300,4.225563,4.225826,4.226088,4.226350,4.226611,4.226873,4.227134,
+-                                4.227394,4.227655,4.227915,4.228175,4.228434,4.228693,4.228952,4.229211,
+-                                4.229469,4.229727,4.229984,4.230242,4.230499,4.230755,4.231012,4.231268,
+-                                4.231524,4.231779,4.232034,4.232289,4.232544,4.232798,4.233052,4.233306,
+-                                4.233559,4.233813,4.234065,4.234318,4.234570,4.234822,4.235074,4.235325,
+-                                4.235576,4.235827,4.236078,4.236328,4.236578,4.236827,4.237077,4.237326,
+-                                4.237575,4.237823,4.238071,4.238319,4.238567,4.238815,4.239062,4.239308,
+-                                4.239555,4.239801,4.240047,4.240293,4.240538,4.240784,4.241028,4.241273,
+-                                4.241517,4.241761,4.242005,4.242249,4.242492,4.242735,4.242978,4.243220,
+-                                4.243462,4.243704,4.243946,4.244187,4.244428,4.244669,4.244910,4.245150,
+-                                4.245390,4.245630,4.245869,4.246108,4.246347,4.246586,4.246825,4.247063]
++        self.critVs = np_array([1.154637, 1.492500, 1.748857, 1.944245, 2.097304, 2.220833, 2.323148, 2.409725,
++                                2.484279, 2.549417, 2.607020, 2.658480, 2.704855, 2.746963, 2.785445, 2.820817,
++                                2.853495, 2.883821, 2.912078, 2.938503, 2.963296, 2.986628, 3.008645, 3.029473,
++                                3.049223, 3.067989, 3.085855, 3.102897, 3.119180, 3.134761, 3.149694, 3.164026,
++                                3.177798, 3.191049, 3.203813, 3.216121, 3.228002, 3.239482, 3.250585, 3.261332,
++                                3.271744, 3.281839, 3.291634, 3.301145, 3.310386, 3.319372, 3.328114, 3.336624,
++                                3.344914, 3.352993, 3.360872, 3.368558, 3.376061, 3.383388, 3.390546, 3.397543,
++                                3.404385, 3.411078, 3.417628, 3.424041, 3.430321, 3.436474, 3.442505, 3.448417,
++                                3.454215, 3.459902, 3.465484, 3.470963, 3.476342, 3.481626, 3.486816, 3.491917,
++                                3.496930, 3.501859, 3.506706, 3.511474, 3.516164, 3.520780, 3.525324, 3.529797,
++                                3.534201, 3.538539, 3.542812, 3.547022, 3.551171, 3.555260, 3.559292, 3.563266,
++                                3.567186, 3.571051, 3.574865, 3.578627, 3.582340, 3.586004, 3.589620, 3.593190,
++                                3.596715, 3.600196, 3.603634, 3.607030, 3.610384, 3.613698, 3.616973, 3.620209,
++                                3.623407, 3.626569, 3.629695, 3.632785, 3.635840, 3.638862, 3.641851, 3.644807,
++                                3.647731, 3.650624, 3.653486, 3.656319, 3.659122, 3.661896, 3.664642, 3.667360,
++                                3.670050, 3.672714, 3.675352, 3.677964, 3.680551, 3.683113, 3.685650, 3.688164,
++                                3.690654, 3.693121, 3.695565, 3.697986, 3.700386, 3.702764, 3.705121, 3.707457,
++                                3.709773, 3.712068, 3.714344, 3.716600, 3.718836, 3.721054, 3.723253, 3.725434,
++                                3.727597, 3.729742, 3.731869, 3.733979, 3.736072, 3.738149, 3.740209, 3.742253,
++                                3.744281, 3.746293, 3.748289, 3.750270, 3.752237, 3.754188, 3.756125, 3.758047,
++                                3.759955, 3.761849, 3.763729, 3.765595, 3.767448, 3.769287, 3.771114, 3.772928,
++                                3.774728, 3.776516, 3.778292, 3.780056, 3.781807, 3.783546, 3.785274, 3.786990,
++                                3.788694, 3.790387, 3.792069, 3.793740, 3.795400, 3.797049, 3.798687, 3.800315,
++                                3.801932, 3.803540, 3.805137, 3.806723, 3.808300, 3.809868, 3.811425, 3.812973,
++                                3.814511, 3.816040, 3.817560, 3.819071, 3.820572, 3.822065, 3.823549, 3.825024,
++                                3.826490, 3.827948, 3.829397, 3.830838, 3.832271, 3.833696, 3.835112, 3.836521,
++                                3.837921, 3.839314, 3.840699, 3.842076, 3.843446, 3.844808, 3.846163, 3.847510,
++                                3.848850, 3.850183, 3.851509, 3.852827, 3.854139, 3.855444, 3.856742, 3.858033,
++                                3.859317, 3.860595, 3.861866, 3.863131, 3.864389, 3.865640, 3.866886, 3.868125,
++                                3.869358, 3.870585, 3.871805, 3.873020, 3.874229, 3.875431, 3.876628, 3.877819,
++                                3.879005, 3.880184, 3.881358, 3.882526, 3.883689, 3.884846, 3.885998, 3.887144,
++                                3.888285, 3.889421, 3.890551, 3.891677, 3.892797, 3.893911, 3.895021, 3.896126,
++                                3.897226, 3.898321, 3.899411, 3.900496, 3.901576, 3.902651, 3.903722, 3.904788,
++                                3.905849, 3.906906, 3.907958, 3.909005, 3.910048, 3.911087, 3.912121, 3.913150,
++                                3.914176, 3.915197, 3.916213, 3.917226, 3.918234, 3.919238, 3.920238, 3.921233,
++                                3.922225, 3.923212, 3.924196, 3.925175, 3.926151, 3.927122, 3.928090, 3.929054,
++                                3.930014, 3.930970, 3.931922, 3.932871, 3.933815, 3.934756, 3.935694, 3.936627,
++                                3.937558, 3.938484, 3.939407, 3.940326, 3.941242, 3.942155, 3.943064, 3.943969,
++                                3.944871, 3.945770, 3.946665, 3.947557, 3.948445, 3.949331, 3.950213, 3.951091,
++                                3.951967, 3.952839, 3.953708, 3.954574, 3.955437, 3.956297, 3.957154, 3.958007,
++                                3.958858, 3.959705, 3.960550, 3.961391, 3.962229, 3.963065, 3.963898, 3.964727,
++                                3.965554, 3.966378, 3.967199, 3.968017, 3.968833, 3.969645, 3.970455, 3.971262,
++                                3.972066, 3.972868, 3.973667, 3.974463, 3.975256, 3.976047, 3.976836, 3.977621,
++                                3.978404, 3.979184, 3.979962, 3.980738, 3.981510, 3.982280, 3.983048, 3.983813,
++                                3.984576, 3.985336, 3.986094, 3.986849, 3.987602, 3.988353, 3.989101, 3.989847,
++                                3.990590, 3.991331, 3.992070, 3.992806, 3.993541, 3.994272, 3.995002, 3.995729,
++                                3.996454, 3.997177, 3.997898, 3.998616, 3.999332, 4.000046, 4.000758, 4.001468,
++                                4.002175, 4.002880, 4.003584, 4.004285, 4.004984, 4.005681, 4.006376, 4.007069,
++                                4.007759, 4.008448, 4.009135, 4.009820, 4.010502, 4.011183, 4.011862, 4.012539,
++                                4.013213, 4.013886, 4.014557, 4.015226, 4.015893, 4.016558, 4.017222, 4.017883,
++                                4.018543, 4.019200, 4.019856, 4.020510, 4.021162, 4.021812, 4.022461, 4.023108,
++                                4.023752, 4.024395, 4.025037, 4.025676, 4.026314, 4.026950, 4.027585, 4.028217,
++                                4.028848, 4.029477, 4.030105, 4.030730, 4.031354, 4.031977, 4.032597, 4.033217,
++                                4.033834, 4.034450, 4.035064, 4.035676, 4.036287, 4.036896, 4.037504, 4.038110,
++                                4.038715, 4.039318, 4.039919, 4.040519, 4.041117, 4.041714, 4.042309, 4.042903,
++                                4.043495, 4.044085, 4.044674, 4.045262, 4.045848, 4.046433, 4.047016, 4.047597,
++                                4.048178, 4.048756, 4.049334, 4.049909, 4.050484, 4.051057, 4.051628, 4.052198,
++                                4.052767, 4.053334, 4.053900, 4.054465, 4.055028, 4.055590, 4.056150, 4.056709,
++                                4.057267, 4.057823, 4.058378, 4.058932, 4.059484, 4.060035, 4.060585, 4.061133,
++                                4.061680, 4.062226, 4.062771, 4.063314, 4.063856, 4.064396, 4.064935, 4.065474,
++                                4.066010, 4.066546, 4.067080, 4.067613, 4.068145, 4.068676, 4.069205, 4.069733,
++                                4.070260, 4.070786, 4.071310, 4.071834, 4.072356, 4.072877, 4.073396, 4.073915,
++                                4.074432, 4.074949, 4.075464, 4.075977, 4.076490, 4.077002, 4.077512, 4.078022,
++                                4.078530, 4.079037, 4.079543, 4.080047, 4.080551, 4.081054, 4.081555, 4.082056,
++                                4.082555, 4.083053, 4.083550, 4.084046, 4.084541, 4.085035, 4.085528, 4.086019,
++                                4.086510, 4.087000, 4.087488, 4.087976, 4.088462, 4.088948, 4.089432, 4.089915,
++                                4.090398, 4.090879, 4.091359, 4.091839, 4.092317, 4.092794, 4.093271, 4.093746,
++                                4.094220, 4.094693, 4.095166, 4.095637, 4.096107, 4.096577, 4.097045, 4.097513,
++                                4.097979, 4.098445, 4.098909, 4.099373, 4.099836, 4.100297, 4.100758, 4.101218,
++                                4.101677, 4.102135, 4.102592, 4.103048, 4.103503, 4.103958, 4.104411, 4.104864,
++                                4.105315, 4.105766, 4.106216, 4.106665, 4.107113, 4.107560, 4.108006, 4.108452,
++                                4.108896, 4.109340, 4.109783, 4.110225, 4.110666, 4.111106, 4.111545, 4.111984,
++                                4.112421, 4.112858, 4.113294, 4.113729, 4.114163, 4.114597, 4.115029, 4.115461,
++                                4.115892, 4.116322, 4.116751, 4.117180, 4.117608, 4.118034, 4.118460, 4.118886,
++                                4.119310, 4.119734, 4.120157, 4.120579, 4.121000, 4.121421, 4.121840, 4.122259,
++                                4.122677, 4.123095, 4.123511, 4.123927, 4.124342, 4.124757, 4.125170, 4.125583,
++                                4.125995, 4.126406, 4.126817, 4.127226, 4.127635, 4.128044, 4.128451, 4.128858,
++                                4.129264, 4.129669, 4.130074, 4.130478, 4.130881, 4.131284, 4.131685, 4.132086,
++                                4.132487, 4.132886, 4.133285, 4.133683, 4.134081, 4.134477, 4.134873, 4.135269,
++                                4.135663, 4.136057, 4.136451, 4.136843, 4.137235, 4.137626, 4.138017, 4.138407,
++                                4.138796, 4.139184, 4.139572, 4.139959, 4.140346, 4.140732, 4.141117, 4.141501,
++                                4.141885, 4.142268, 4.142651, 4.143033, 4.143414, 4.143794, 4.144174, 4.144554,
++                                4.144932, 4.145310, 4.145688, 4.146064, 4.146440, 4.146816, 4.147191, 4.147565,
++                                4.147938, 4.148311, 4.148684, 4.149055, 4.149427, 4.149797, 4.150167, 4.150536,
++                                4.150905, 4.151273, 4.151640, 4.152007, 4.152373, 4.152739, 4.153104, 4.153468,
++                                4.153832, 4.154195, 4.154558, 4.154920, 4.155282, 4.155643, 4.156003, 4.156363,
++                                4.156722, 4.157080, 4.157438, 4.157796, 4.158153, 4.158509, 4.158865, 4.159220,
++                                4.159574, 4.159928, 4.160282, 4.160635, 4.160987, 4.161339, 4.161690, 4.162041,
++                                4.162391, 4.162740, 4.163089, 4.163438, 4.163786, 4.164133, 4.164480, 4.164826,
++                                4.165172, 4.165517, 4.165862, 4.166206, 4.166550, 4.166893, 4.167235, 4.167577,
++                                4.167919, 4.168260, 4.168600, 4.168940, 4.169280, 4.169619, 4.169957, 4.170295,
++                                4.170632, 4.170969, 4.171306, 4.171641, 4.171977, 4.172311, 4.172646, 4.172980,
++                                4.173313, 4.173646, 4.173978, 4.174310, 4.174641, 4.174972, 4.175302, 4.175632,
++                                4.175962, 4.176290, 4.176619, 4.176947, 4.177274, 4.177601, 4.177927, 4.178253,
++                                4.178579, 4.178904, 4.179228, 4.179552, 4.179876, 4.180199, 4.180522, 4.180844,
++                                4.181166, 4.181487, 4.181808, 4.182128, 4.182448, 4.182767, 4.183086, 4.183405,
++                                4.183723, 4.184040, 4.184357, 4.184674, 4.184990, 4.185306, 4.185621, 4.185936,
++                                4.186250, 4.186564, 4.186878, 4.187191, 4.187503, 4.187815, 4.188127, 4.188438,
++                                4.188749, 4.189060, 4.189370, 4.189679, 4.189988, 4.190297, 4.190605, 4.190913,
++                                4.191220, 4.191527, 4.191834, 4.192140, 4.192446, 4.192751, 4.193056, 4.193360,
++                                4.193664, 4.193968, 4.194271, 4.194574, 4.194876, 4.195178, 4.195479, 4.195781,
++                                4.196081, 4.196381, 4.196681, 4.196981, 4.197280, 4.197578, 4.197877, 4.198175,
++                                4.198472, 4.198769, 4.199066, 4.199362, 4.199658, 4.199953, 4.200248, 4.200543,
++                                4.200837, 4.201131, 4.201424, 4.201718, 4.202010, 4.202303, 4.202594, 4.202886,
++                                4.203177, 4.203468, 4.203758, 4.204048, 4.204338, 4.204627, 4.204916, 4.205204,
++                                4.205493, 4.205780, 4.206068, 4.206355, 4.206641, 4.206927, 4.207213, 4.207499,
++                                4.207784, 4.208068, 4.208353, 4.208637, 4.208920, 4.209204, 4.209487, 4.209769,
++                                4.210051, 4.210333, 4.210615, 4.210896, 4.211176, 4.211457, 4.211737, 4.212016,
++                                4.212296, 4.212575, 4.212853, 4.213132, 4.213409, 4.213687, 4.213964, 4.214241,
++                                4.214517, 4.214794, 4.215069, 4.215345, 4.215620, 4.215895, 4.216169, 4.216443,
++                                4.216717, 4.216990, 4.217263, 4.217536, 4.217808, 4.218080, 4.218352, 4.218623,
++                                4.218894, 4.219165, 4.219436, 4.219706, 4.219975, 4.220245, 4.220514, 4.220782,
++                                4.221051, 4.221319, 4.221586, 4.221854, 4.222121, 4.222388, 4.222654, 4.222920,
++                                4.223186, 4.223451, 4.223716, 4.223981, 4.224246, 4.224510, 4.224774, 4.225037,
++                                4.225300, 4.225563, 4.225826, 4.226088, 4.226350, 4.226611, 4.226873, 4.227134,
++                                4.227394, 4.227655, 4.227915, 4.228175, 4.228434, 4.228693, 4.228952, 4.229211,
++                                4.229469, 4.229727, 4.229984, 4.230242, 4.230499, 4.230755, 4.231012, 4.231268,
++                                4.231524, 4.231779, 4.232034, 4.232289, 4.232544, 4.232798, 4.233052, 4.233306,
++                                4.233559, 4.233813, 4.234065, 4.234318, 4.234570, 4.234822, 4.235074, 4.235325,
++                                4.235576, 4.235827, 4.236078, 4.236328, 4.236578, 4.236827, 4.237077, 4.237326,
++                                4.237575, 4.237823, 4.238071, 4.238319, 4.238567, 4.238815, 4.239062, 4.239308,
++                                4.239555, 4.239801, 4.240047, 4.240293, 4.240538, 4.240784, 4.241028, 4.241273,
++                                4.241517, 4.241761, 4.242005, 4.242249, 4.242492, 4.242735, 4.242978, 4.243220,
++                                4.243462, 4.243704, 4.243946, 4.244187, 4.244428, 4.244669, 4.244910, 4.245150,
++                                4.245390, 4.245630, 4.245869, 4.246108, 4.246347, 4.246586, 4.246825, 4.247063]
+                                )
+ 
+     def isMaxOutlier(self, maxVal, compVals, verbose=False):
+@@ -2392,13 +2566,13 @@
+         """
+         # get Z score for the maxValue
+         try:
+-            mm = np_mean(compVals+[maxVal])
+-            ss = np_std(compVals+[maxVal])
++            mm = np_mean(compVals + [maxVal])
++            ss = np_std(compVals + [maxVal])
+         except FloatingPointError:
+             return False
+ 
+         try:
+-            v = (maxVal - mm)/ss
++            v = (maxVal - mm) / ss
+         except FloatingPointError:
+             # ss == 0
+             return False
+@@ -2409,7 +2583,7 @@
+             idx = 999
+ 
+         if verbose:
+-            print np_mean(compVals+[maxVal]), np_std(compVals+[maxVal], ddof=1), maxVal, v, idx, self.critVs[idx], v > self.critVs[idx]
++            print np_mean(compVals + [maxVal]), np_std(compVals + [maxVal], ddof=1), maxVal, v, idx, self.critVs[idx], v > self.critVs[idx]
+ 
+         return v > self.critVs[idx]
+ 

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Copying the tools bin 
+# Copying the tools bin
 cp -r bin $PREFIX
 cp -r bin $PREFIX/bin  # Tool hardcoded the path of other used scripts to $Bin/bin/<tool>.pl
-cp SSPACE_Basic.pl $PREFIX/bin 
+cp SSPACE_Basic.pl $PREFIX/bin
 cp -r tools/* $PREFIX/bin
 
-# Copy dotlib 
+# Copy dotlib
 cp -r dotlib $PREFIX/bin
 
 # Making the scripts executable

@@ -1,0 +1,66 @@
+{% set name = "LotuS3" %}
+{% set version = "3.10" %}
+{% set sha256 = "57450aa84e1f1336828d21ac8a3edd5f281bd937e978071fe9dfa05cb6f81fb0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hildebra/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  run:
+    - r-base
+    - bioconductor-dada2
+    - bioconductor-phyloseq
+    - blast
+    - cd-hit
+    - clustalo
+    - fasttree
+    - hmmer >=3.1
+    - infernal
+    - iqtree
+    - itsx
+    - lambda >=3,<4
+    - lca >=0.27
+    - mafft
+    - minimap2
+    - perl
+    - perl-getopt-long
+    - pigz
+    - r-dplyr
+    - rdp_classifier
+    - rtk
+    - sdm ==3.26
+    - swarm
+    - unzip
+    - usearch >=12.0_beta,<13
+    - vsearch
+    - wget
+    - zip  # workaround for the Galaxy wrapper (mulled conda env creation fails)
+
+test:
+  commands:
+    - lotus3 -v
+
+about:
+  home: https://lotus3.earlham.ac.uk/
+  dev_url: https://github.com/hildebra/LotuS3/
+  license: GPL-2.0-only
+  license_file: LICENSE
+  summary: LotuS3 is a lightweight amplicon sequencing pipeline supporting 16S/18S/ITS
+
+extra:
+  identifiers:
+    - doi:10.1186/s40168-022-01365-1
+    - biotools:lotus3
+  recipe-maintainers:
+    - nsoranzo

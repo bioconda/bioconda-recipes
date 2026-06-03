@@ -10,7 +10,7 @@ source:
   sha256: b7f3996f3de0b0b0a09eec949281a8f3e665a20827fcb3cbbd7546b94574a088
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
@@ -20,7 +20,7 @@ requirements:
   host:
     - pip
     - python >=3.5
-    - setuptools
+    - setuptools <81
   run:
     - bx-python
     - numpy
@@ -28,6 +28,7 @@ requirements:
     - pysam
     - python >=3.5
     - logomaker
+    - r-base # Rscript is an undeclared runtime dependency of a number of the rseqc scripts: https://github.com/snakemake-workflows/rna-seq-star-deseq2/pull/91#issuecomment-3253583847
 
 test:
   imports:
@@ -37,6 +38,7 @@ test:
   commands:
     - read_distribution.py 2>&1 | grep Usage > /dev/null
     - geneBody_coverage.py 2>&1 | grep Usage > /dev/null
+    - Rscript --help
 
 about:
   home: "https://rseqc.sourceforge.net"

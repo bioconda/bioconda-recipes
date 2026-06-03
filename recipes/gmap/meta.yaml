@@ -1,6 +1,6 @@
 {% set name = "GMAP" %}
-{% set version = "2024.10.20" %}
-{% set sha256 = "0983bc956c094af01b3733f02eb8d30849fd9171b68114e9cd3b8e20e0df17fe" %}
+{% set version = "2025.07.31" %}
+{% set sha256 = "cc7212446683785a5b94aba79861212360d421ea409cd7cbf287f1dc63ed844d" %}
 
 package:
   name: {{ name|lower }}
@@ -11,10 +11,10 @@ source:
   sha256: {{ sha256 }}
   patches:
     - single_quote_paths.patch
+    - bsr.patch   # workaround clang falsely detected bsr mnemomic on osx-arm64
 
 build:
-  number: 0
-  skip: True  # [osx and x86_64]
+  number: 1
   run_exports:
     - {{ pin_subpackage('gmap', max_pin=None) }}
 
@@ -25,6 +25,7 @@ requirements:
     - autoconf
     - automake
     - libtool
+    - pkg-config
   host:
     - perl
     - zlib
@@ -50,6 +51,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gmap
     - biotools:gsnap

@@ -1,34 +1,41 @@
 {% set name = "mustang" %}
-{% set version = "3.2.3" %}
-
+{% set version = "3.2.4" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-
 source:
-  url: http://lcb.infotech.monash.edu.au/mustang/mustang_v3.2.3.tgz
-  md5: 8ace0194a374a60dbce15fa0b1579b44
+  url: https://lcb.infotech.monash.edu.au/mustang/mustang_v{{ version }}.tgz
+  sha256: c05e91c955f491a1fddc404a36ef963b057fd725bcc6d22ef6df1c23b26ce237
+  patches:
+    - 0001-Makefile.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mustang', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-  run:
 
 test:
   commands:
     - mustang -h
 
 about:
-  home: http://lcb.infotech.monash.edu.au/mustang/
+  home: https://lcb.infotech.monash.edu.au/mustang
   license: file
   license_file: COPYING
   summary: "Mustang is a program that implements an algorithm for structural alignment of multiple protein structures."
+  doc_url: https://lcb.infotech.monash.edu.au/mustang
+
 extra:
   identifiers:
     - biotools:mustang
     - doi:10.1002/prot.20921
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

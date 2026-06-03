@@ -6,25 +6,37 @@ package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 4
-  skip: True # [osx]
-
 source:
   url: https://github.com/wwood/{{ name }}/archive/v{{version}}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 requirements:
   build:
-    - rust >=1.19
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
 
 test:
   commands:
     - mfqe --help
 
 about:
-  home: https://github.com/wwood/mfqe
-  license: GPL3
-  license_file: LICENSE.txt
-  summary: mfqe is a tool for quickly seperating fasta and fastq files
+  home: "https://github.com/wwood/mfqe"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "mfqe is a tool for quickly seperating fasta and fastq files."
+  dev_url: "https://github.com/wwood/mfqe"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
