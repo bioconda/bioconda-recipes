@@ -8,12 +8,14 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 cargo fetch --locked
 
+mkdir -p bioconda-patches
+cp -R "${CARGO_HOME:-${HOME}/.cargo}"/registry/src/*/rust-htslib-1.0.0 \
+  bioconda-patches/rust-htslib
+
 python - <<'PY'
-import os
 import pathlib
 
-cargo_home = pathlib.Path(os.environ.get("CARGO_HOME", pathlib.Path.home() / ".cargo"))
-manifest = next(cargo_home.glob("registry/src/*/rust-htslib-1.0.0/Cargo.toml"))
+manifest = pathlib.Path("bioconda-patches/rust-htslib/Cargo.toml")
 text = manifest.read_text()
 old = (
     '[dependencies.hts-sys]\n'
@@ -29,7 +31,15 @@ new = (
 if old not in text:
     raise SystemExit("rust-htslib hts-sys dependency block was not found")
 manifest.write_text(text.replace(old, new))
+
+workspace = pathlib.Path("Cargo.toml")
+workspace.write_text(
+    workspace.read_text()
+    + '\n[patch.crates-io]\nrust-htslib = { path = "bioconda-patches/rust-htslib" }\n'
+)
 PY
+
+cargo update -p rust-htslib --precise 1.0.0 --offline
 
 cargo install \
   --locked \
