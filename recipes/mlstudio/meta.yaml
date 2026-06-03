@@ -1,0 +1,86 @@
+{% set name = "mlstudio" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iowa69/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e99bc4bae8472c1d7e536b5caf4e52c68f4369b983c0c8d39501958616befc53
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - mlstudio = mlstudio.cli:app
+  run_exports:
+    - {{ pin_subpackage('mlstudio', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling >=1.21
+  run:
+    - python >=3.11
+    # Python deps (mirror of pyproject.toml [project.dependencies])
+    - typer >=0.12
+    - rich >=13.7
+    - httpx >=0.27
+    - fastapi >=0.111
+    - uvicorn-standard >=0.30
+    - websockets >=12
+    - python-multipart >=0.0.9
+    - pydantic >=2.7
+    - numpy >=1.26
+    - pandas >=2.2
+    - pyarrow >=16
+    - biopython >=1.83
+    - pysam >=0.22
+    - networkx >=3.3
+    - platformdirs >=4.2
+    # External CLI binaries invoked via subprocess
+    - blast >=2.14         # blastn, makeblastdb
+    - prodigal >=2.6.3     # ad-hoc scheme CDS prediction
+    - fastp >=0.23         # paired-read QC + platform autodetect
+    - ncbi-amrfinderplus >=3.12   # AMR scanning alongside typing
+
+test:
+  imports:
+    - mlstudio
+    - mlstudio.api.server
+    - mlstudio.calling.cgmlst
+    - mlstudio.calling.mlst
+    - mlstudio.profiles.distance
+    - mlstudio.profiles.mst
+  commands:
+    - mlstudio --version
+    - mlstudio --help
+    # Confirm the required external binaries are co-installed
+    - blastn -version
+    - makeblastdb -version
+    - prodigal -v 2>&1 | grep -i prodigal
+    - fastp --version 2>&1 | grep -i fastp
+    - amrfinder --version
+
+about:
+  home: https://github.com/iowa69/mlstudio
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Free, open-source MLST/cgMLST typing with an interactive minimum-spanning-tree GUI for Linux.
+  description: |
+    MLSTudio is an integrated MLST and cgMLST typing tool for bacterial isolates,
+    bundling scheme management (PubMLST, BIGSdb-Pasteur, cgMLST.org, ad-hoc),
+    BLAST-based allele calling, AMRFinderPlus integration, and a local web UI
+    with a Cytoscape.js minimum-spanning-tree viewer. Aimed at filling the gap
+    between calling-only tools (chewBBACA) and visualization-only tools
+    (GrapeTree) without a SeqSphere-style licence cost.
+  doc_url: https://github.com/iowa69/mlstudio
+  dev_url: https://github.com/iowa69/mlstudio
+
+extra:
+  recipe-maintainers:
+    - iowa69
