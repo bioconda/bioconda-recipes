@@ -1,0 +1,54 @@
+{% set name = "logan_blaster" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pierrepeterlongo/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: aecacb749ea44fa8ac88d887fb25e1144e412847d4b536cef992fce12dfa5944
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage('logan_blaster', max_pin="x.x") }}
+  entry_points:
+    - logan_blaster = logan_blaster:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - blast
+    - jq
+    - back_to_sequences
+    - wget
+    - count_logan_tig_coverage
+
+test:
+  commands:
+    - logan_blaster --version
+    - logan_blaster --help
+
+about:
+  home: https://github.com/pierrepeterlongo/logan_blaster
+  summary: Align genomic sequences against Logan contigs or unitigs
+  description: |
+    logan_blaster downloads Logan contigs or unitigs for a list of SRA accessions,
+    recruits sequences sharing k-mers with a query using back_to_sequences, and
+    aligns them against the query with BLAST. It can also process a session ID
+    from the Logan search portal (logan-search.org).
+  license: GPL-3.0-only
+  license_file: LICENSE
+  doc_url: https://github.com/pierrepeterlongo/logan_blaster/blob/main/README.md
+  dev_url: https://github.com/pierrepeterlongo/logan_blaster
+
+extra:
+  recipe-maintainers:
+    - pierrepeterlongo
