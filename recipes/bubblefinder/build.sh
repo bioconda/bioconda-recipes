@@ -22,6 +22,10 @@ rm -rf "$SRC_DIR/external/gbz/sdsl-lite/external/googletest"
 mv "$SRC_DIR/libdivsufsort-src" "$SRC_DIR/external/gbz/sdsl-lite/external/libdivsufsort"
 mv "$SRC_DIR/googletest-src" "$SRC_DIR/external/gbz/sdsl-lite/external/googletest"
 
+rm -rf "$SRC_DIR/external/spqr-rust"
+mkdir -p "$SRC_DIR/external"
+mv "$SRC_DIR/spqr-rust-src" "$SRC_DIR/external/spqr-rust"
+
 cd "$SRC_DIR"
 rm -rf build
 mkdir -p build
