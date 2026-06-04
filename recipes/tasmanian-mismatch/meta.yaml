@@ -1,5 +1,5 @@
 {% set name = "tasmanian-mismatch" %}
-{% set version = "2.0.0" %}
+{% set version = "2.0.1" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: d7d5694559a5cdd3f61b41ca7d4aac8d4b4ebecfaba22ba84890aa90b8452b1e
+  sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 
 build:
   number: 0
@@ -48,6 +48,11 @@ build:
 
     cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     cargo build --release --locked
+    
+    # Ensure binaries prefer conda libs at runtime
+    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-mismatch
+    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-diagnostics
+    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-rescale-quality
 
     install -Dm755 target/release/tasmanian-mismatch        "$PREFIX/bin/tasmanian-mismatch"
     install -Dm755 target/release/tasmanian-diagnostics     "$PREFIX/bin/tasmanian-diagnostics"
