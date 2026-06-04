@@ -1,0 +1,45 @@
+{% set name = "lrSAGA" %}
+{% set version = "0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jamiemcg/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 6ebac32e7454f41663dd95eb054b9af185f1edda4f2bf72bc5e05953a742850a
+
+build:
+  number: 0
+  noarch: python
+  script: bash conda_build_package.sh
+
+  run_exports:
+    - {{ pin_subpackage('lrSAGA', max_pin=None) }}
+
+requirements:
+  build:
+    - python
+  run:
+    - python
+    - gfapy
+    - mbg
+    - networkx
+
+test:
+  commands:
+    - lrSAGA.py -h
+    - gfa_stats.py -h
+    - gfa_to_fasta.py -h
+    - preprocess_mbg_gfa.py -h
+
+about:
+  home: https://github.com/jamiemcg/lrSAGA
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: 'lrSAGA (long-read Single Amplified Genome Assembly).'
+
+extra:
+  maintainers:
+    - jamiemcg
