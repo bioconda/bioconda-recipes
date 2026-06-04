@@ -26,6 +26,9 @@ rm -rf "$SRC_DIR/external/spqr-rust"
 mkdir -p "$SRC_DIR/external"
 mv "$SRC_DIR/spqr-rust-src" "$SRC_DIR/external/spqr-rust"
 
+unset CARGO_BUILD_TARGET
+unset CARGO_TARGET_DIR
+
 cd "$SRC_DIR"
 rm -rf build
 mkdir -p build
