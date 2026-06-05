@@ -1,0 +1,41 @@
+{% set name = "sushie" %}
+{% set version = "0.18" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mancusolab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 48b6c2b25a091ad56e632231e1dd8105f8f888d6c4eee49dd2c0042b2366695a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
+  entry_points:
+    - sushie = sushie.cli:run_cli
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >=3.10
+    - jax
+    - jaxlib
+    - pandas
+    - pandas-plink
+    - equinox
+    - scipy
+    - glimix-core
+    - bgen-reader
+    - cyvcf2
+
+test:
+  imports:
+    - sushie
+  commands:
+    - sushie --help
