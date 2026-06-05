@@ -17,6 +17,7 @@ build:
     set -euxo pipefail
 
     export CARGO_PROFILE_RELEASE_LTO=false
+    export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 
     # Determine cargo target triple used for env var names (cc-rs convention)
     export TARGET="${TARGET:-$(rustc -vV | sed -n 's/^host: //p')}"
@@ -47,16 +48,22 @@ build:
     fi
 
     cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    cargo build --release --locked
+    cargo build --release --locked -vv
     
-    # Ensure binaries prefer conda libs at runtime
-    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-mismatch
-    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-diagnostics
-    patchelf --set-rpath "$PREFIX/lib" target/release/tasmanian-rescale-quality
 
-    install -Dm755 target/release/tasmanian-mismatch        "$PREFIX/bin/tasmanian-mismatch"
-    install -Dm755 target/release/tasmanian-diagnostics     "$PREFIX/bin/tasmanian-diagnostics"
-    install -Dm755 target/release/tasmanian-rescale-quality "$PREFIX/bin/tasmanian-rescale-quality"
+    echo "=== DEBUG ==="
+    ls -R target || true
+
+    
+    for bin in tasmanian-mismatch tasmanian-diagnostics tasmanian-rescale-quality; do
+      if [[ -f "target/release/$bin" ]]; then
+        patchelf --set-rpath "$PREFIX/lib" "target/release/$bin"
+        install -Dm755 "target/release/$bin" "$PREFIX/bin/$bin"
+      else
+        echo "ERROR: missing binary $bin"
+        exit 1
+      fi
+    done
 
 requirements:
   host:
@@ -64,6 +71,7 @@ requirements:
     - clangdev  # for bindgen
     - llvmdev
     - cmake
+    - zlib
 
   build:
     - {{ compiler('rust') }}
@@ -71,7 +79,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-
+    - pkg-config
     - clangdev
     - make
     - cmake
