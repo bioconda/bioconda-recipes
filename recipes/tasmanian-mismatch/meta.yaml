@@ -17,10 +17,9 @@ build:
     set -euxo pipefail
 
     export CARGO_PROFILE_RELEASE_LTO=false
-    export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
+    export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$BUILD_PREFIX/lib/pkgconfig:$BUILD_PREFIX/share/pkgconfig"
 
     # Determine cargo target triple used for env var names (cc-rs convention)
-    export TARGET="${TARGET:-$(rustc -vV | sed -n 's/^host: //p')}"
     target_env="${TARGET//-/_}"
 
     # Only set toolchain vars if they exist (avoid exporting empty strings)
@@ -48,7 +47,7 @@ build:
     fi
 
     cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    cargo build --release --locked -vv
+    cargo build --release --locked -vv 2>&1 | tee build.log
     
 
     echo "=== DEBUG ==="
