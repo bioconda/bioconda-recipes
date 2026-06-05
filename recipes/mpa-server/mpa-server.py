@@ -307,7 +307,7 @@ def prompt_user_for_data_dir():
 
     - Press ENTER to confirm the location
     - Press CTRL-C to abort the installation
-    - Or specifiy a different, absolute location below
+    - Or specify a different, absolute location below
 
     absolute path: """)
     except KeyboardInterrupt:
