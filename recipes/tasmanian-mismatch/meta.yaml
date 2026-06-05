@@ -53,17 +53,17 @@ build:
     cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     cargo build --release --locked -vv 2>&1 | tee build.log
     
-
     echo "=== DEBUG ==="
     ls -R target || true
 
-    
+    CARGO_TARGET_DIR="target/${TARGET}/release"
+
     for bin in tasmanian-mismatch tasmanian-diagnostics tasmanian-rescale-quality; do
-      if [[ -f "target/release/$bin" ]]; then
-        patchelf --set-rpath "$PREFIX/lib" "target/release/$bin"
-        install -Dm755 "target/release/$bin" "$PREFIX/bin/$bin"
+      if [[ -f "$CARGO_TARGET_DIR/$bin" ]]; then
+        patchelf --set-rpath "$PREFIX/lib" "$CARGO_TARGET_DIR/$bin"
+        install -Dm755 "$CARGO_TARGET_DIR/$bin" "$PREFIX/bin/$bin"
       else
-        echo "ERROR: missing binary $bin"
+        echo "ERROR: missing binary $bin in $CARGO_TARGET_DIR"
         exit 1
       fi
     done
