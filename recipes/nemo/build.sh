@@ -60,3 +60,7 @@ else
 fi
 
 make install BIN_INSTALL="$PREFIX/bin/" LIB_INSTALL="$PREFIX/lib/"
+
+# The Makefile installs a version-stamped binary (nemo<MAJOR>.<MINOR>.<REV>);
+# expose it under the package's command name.
+# mv "${PREFIX}/bin/nemo2.4.0" "${PREFIX}/bin/nemo"
