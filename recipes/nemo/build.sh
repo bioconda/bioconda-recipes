@@ -59,8 +59,11 @@ else
 	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" -j"${CPU_COUNT}"
 fi
 
-make install BIN_INSTALL="$PREFIX/bin/" LIB_INSTALL="$PREFIX/lib/"
-
-# The Makefile installs a version-stamped binary (nemo<MAJOR>.<MINOR>.<REV>);
-# expose it under the package's command name.
-# mv "${PREFIX}/bin/nemo2.4.0" "${PREFIX}/bin/nemo"
+mkdir -p "${PREFIX}/bin"
+# `make` builds a single version-stamped binary into bin/. On macOS the
+# MAC_ARM / MAC_x86 flags suffix its name (e.g. nemo<ver>-macARM); the
+# Makefile's `install` target recomputes BIN_NAME *without* those flags and
+# looks for the unsuffixed name, which fails on osx-arm64. Install the binary
+# that was actually produced, under the canonical command name (nemo<version>).
+built="$(ls -1 bin/nemo* | head -n1)"
+cp "${built}" "${PREFIX}/bin/nemo${PKG_VERSION}"
