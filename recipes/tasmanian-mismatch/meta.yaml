@@ -19,7 +19,11 @@ build:
     export CARGO_PROFILE_RELEASE_LTO=false
     export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$BUILD_PREFIX/lib/pkgconfig:$BUILD_PREFIX/share/pkgconfig"
 
-    # Determine cargo target triple used for env var names (cc-rs convention)
+    TARGET="${TARGET:-${HOST:-}}"
+    if [[ -z "$TARGET" ]]; then
+      echo "ERROR: TARGET/HOST not set"
+      exit 1
+    fi
     target_env="${TARGET//-/_}"
 
     # Only set toolchain vars if they exist (avoid exporting empty strings)
