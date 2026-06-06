@@ -1,0 +1,56 @@
+{% set name = "tangram-sc" %}
+{% set version = "1.0.4" %}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+source:
+  url: https://pypi.io/packages/source/t/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6ced24573e288fa01a8070e3c7600058de51296bac1702515db87c310da6ac13
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+requirements:
+  host:
+    - python >=3.8.5
+    - pip
+    - setuptools
+  run:
+    - python >=3.8.5
+    - pytorch
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+    - seaborn
+    - scanpy
+    - scikit-learn
+    - tqdm
+    - squidpy
+    - libpysal
+test:
+  imports:
+    - tangram
+    - tangram.mapping_utils
+    - tangram.utils
+    - tangram.plot_utils
+    - tangram.mapping_optimizer
+    - tangram.spatial_weights
+  commands:
+    - python -c "import tangram as tg; assert tg.__version__ == '{{ version }}'"
+about:
+  home: https://github.com/broadinstitute/Tangram
+  dev_url: https://github.com/broadinstitute/Tangram
+  doc_url: https://tangram-sc.readthedocs.io/en/latest/
+  license: BSD-3-Clause
+  license_file: LICENSE.md
+  summary: Spatial alignment of single-cell transcriptomic data onto spatial gene expression data.
+  description: |
+    Tangram is a Python package, written in PyTorch and based on scanpy, for
+    mapping single-cell (or single-nucleus) gene expression data onto spatial
+    gene expression data collected from the same anatomical region or tissue type.
+  identifiers:
+    - doi:10.1038/s41592-021-01264-7
+extra:
+  recipe-maintainers:
+    - LuisHeinzlmeier
