@@ -16,3 +16,6 @@ cat > "$PREFIX/bin/TIR-Learner" << EOF
 exec python3 "$PREFIX/lib/tir-learner4/TIR-Learner.py" "\$@"
 EOF
 chmod +x "$PREFIX/bin/TIR-Learner"
+
+# Also expose tirlearner4 as an alias of the default TIR-Learner command
+ln -sf TIR-Learner "$PREFIX/bin/tirlearner4"
