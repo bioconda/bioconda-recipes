@@ -1,0 +1,64 @@
+{% set name = "bamboo-hts" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 30551a54dde231a268eaa40c0077d6e60e689911d837656701832e8b469d9383
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('bamboo-hts', max_pin="x.x") }}
+  missing_dso_whitelist:
+    - "**/*.so"
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - pkg-config
+  host:
+    - python
+    - pip
+    - maturin >=1.5,<2
+    - pyarrow >=16
+    - zlib
+    - bzip2
+    - xz
+    - libdeflate
+    - libcurl
+    - openssl  # [not osx]
+  run:
+    - python
+    - pyarrow >=16
+
+test:
+  imports:
+    - bamboo
+  commands:
+    - python -c "import bamboo as bm; print(bm.__version__)"
+    - python -c "from bamboo.compat import pysam"
+
+about:
+  home: https://github.com/donncha/bamboo
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: High-performance Python library for HTS data (BAM, CRAM, VCF)
+  description: |
+    Bamboo provides fast, pysam-compatible BAM/CRAM/VCF reading with native
+    Arrow columnar export for modern genomics workflows.
+  dev_url: https://github.com/donncha/bamboo
+  doc_url: https://github.com/donncha/bamboo/blob/main/MIGRATION.md
+
+extra:
+  recipe-maintainers:
+    - dnncha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
