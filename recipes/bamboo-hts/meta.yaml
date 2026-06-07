@@ -1,3 +1,11 @@
+# Submit this file to bioconda-recipes as recipes/bamboo-hts/meta.yaml
+# Update version, sha256, and build number on each release.
+#
+#   1. Tag and push: git tag v0.1.0 && git push origin v0.1.0
+#   2. Wait for PyPI publish (release workflow)
+#   3. sha256sum dist/bamboo-0.1.0.tar.gz  (or curl PyPI sdist)
+#   4. Open PR: https://github.com/bioconda/bioconda-recipes (recipes/bamboo-hts/)
+
 {% set name = "bamboo-hts" %}
 {% set version = "0.1.0" %}
 
@@ -11,9 +19,7 @@ source:
 
 build:
   number: 0
-  script:
-    - export LIBCLANG_PATH="$BUILD_PREFIX/lib"
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  script: build.sh
   run_exports:
     - {{ pin_subpackage('bamboo-hts', max_pin="x.x") }}
   missing_dso_whitelist:
@@ -25,8 +31,10 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - clangdev >=18,<19
-    - llvm-tools >=18,<19
+    - clangdev >=18,<19  # [linux]
+    - llvm-tools >=18,<19  # [linux]
+    - clang  # [osx]
+    - libclang  # [osx]
     - pkg-config
   host:
     - python >=3.10,<3.13
