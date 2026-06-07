@@ -10,8 +10,10 @@ source:
   sha256: f281221bdc0b7b1275a585f8b32ce81abfc5bd47a2e7ef6186e335781c28480f
 
 build:
-  number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  number: 1
+  script:
+    - export LIBCLANG_PATH="$BUILD_PREFIX/lib"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
   run_exports:
     - {{ pin_subpackage('bamboo-hts', max_pin="x.x") }}
   missing_dso_whitelist:
@@ -23,7 +25,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - clangdev
+    - clangdev >=18,<19
+    - llvm-tools >=18,<19
     - pkg-config
   host:
     - python
