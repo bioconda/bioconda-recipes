@@ -10,6 +10,7 @@ else
 fi
 
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+export BINDGEN_EXTRA_CLANG_ARGS="-I${PREFIX}/include"
 TARGET_LIB="${LIBCLANG_PATH}/libclang.${SHLIB_EXT}"
 
 if [ ! -f "${TARGET_LIB}" ]; then
