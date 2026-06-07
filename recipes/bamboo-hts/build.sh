@@ -3,13 +3,15 @@ set -exuo pipefail
 
 if [ "$(uname)" == "Darwin" ]; then
     SHLIB_EXT="dylib"
-    export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
+    CLANG_ROOT="${PREFIX}"
+    export DYLD_FALLBACK_LIBRARY_PATH="${CLANG_ROOT}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
 else
     SHLIB_EXT="so"
-    export LD_LIBRARY_PATH="${BUILD_PREFIX}/lib:${LD_LIBRARY_PATH:-}"
+    CLANG_ROOT="${BUILD_PREFIX}"
+    export LD_LIBRARY_PATH="${CLANG_ROOT}/lib:${LD_LIBRARY_PATH:-}"
 fi
 
-export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+export LIBCLANG_PATH="${CLANG_ROOT}/lib"
 export BINDGEN_EXTRA_CLANG_ARGS="-I${PREFIX}/include"
 TARGET_LIB="${LIBCLANG_PATH}/libclang.${SHLIB_EXT}"
 
