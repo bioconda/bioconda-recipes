@@ -254,7 +254,7 @@ target_compile_options(bcftools PRIVATE -fPIC -w)
 set(PANMAP_SOURCES_MAIN
     src/main.cpp src/conversion.cpp src/panmap_utils.cpp
     src/genotyping.cpp src/index_single_mode.cpp src/placement.cpp
-    src/seeding.cpp src/index_utils.cpp src/mgsr.cpp
+    src/seeding.cpp src/mgsr.cpp
     src/mm_align.c src/pileup.c src/zstd_compression.cpp
 )
 
