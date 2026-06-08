@@ -1,0 +1,54 @@
+{% set name = "peakqc" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "cd41369c31caaa0dedd38080dae56de599ebebb9b1b7b2829ca805c7d2f2044c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - setuptools-scm >=9.0.3
+    - pip
+  run:
+    - python
+    - tqdm
+    - beartype
+    - scanpy >=1.9
+    - pysam
+    - scipy
+
+test:
+  imports:
+    - {{ name }}
+  commands:
+    - pip check
+    - python -c "import {{ name }}; print({{ name }}.__version__)"
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/loosolab/{{ name | upper }}
+  dev_url: https://github.com/loosolab/{{ name | upper }}
+  doc_url: https://loosolab.pages.gwdg.de/software/{{ name }}/
+  summary: Quality control of single cell ATAC-seq data based on fragment length distributions.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jan1034

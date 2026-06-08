@@ -1,37 +1,60 @@
 {% set name = "merfin" %}
-{% set version = "1.0" %}
-{% set sha256 = "842262cd3d636c22c7eb0ea4e00b2aee87541b291ab5e247c67251b04478355a" %}
+{% set version = "1.1" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/arangrhie/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.xz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/arangrhie/merfin.git
+  git_rev: 04c4332
+  sha256: unused
   patches:
-    - macos.patch # [osx]
+    - macos.patch  # [osx]
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - llvm-openmp # [osx]
-  run:
-    - meryl >=1.3,<2000
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - gzip >=1.11
     - pigz >=2.6
     - bzip2 >=1.0.8
     - xz >=5.2.5
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - meryl >=1.3,<2
+    - genomescope2
 
 test:
   commands:
     - merfin 2>&1 | grep 'usage:'
 
 about:
-  home: https://github.com/arangrhie/{{ name }}
-  license: Apache-2.0
-  summary: Improved variant filtering and polishing via k-mer validation.
+  home: "https://github.com/arangrhie/{{ name }}"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Improved variant filtering and polishing via k-mer validation."
+  dev_url: "https://github.com/arangrhie/{{ name }}"
+  doc_url: "https://github.com/arangrhie/merfin/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41592-022-01445-y
+    - doi:10.1101/2022.12.01.518724
+    - biotools:merfin
+  skip-lints:
+    - compiler_needs_stdlib_c
+    - uses_vcs_url

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rheumaticconditionwollbold-1.44.0"
+installBiocDataPackage.sh "rheumaticconditionwollbold-1.48.0"
