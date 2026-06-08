@@ -1,0 +1,88 @@
+{% set name = "vcfclick" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/v/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  # SHA256 of the v0.3.1 sdist published to PyPI on 2026-06-08.
+  # Verified to match `shasum -a 256 dist/vcfclick-0.3.1.tar.gz` from
+  # the local `uv build` (deterministic for this version's metadata).
+  sha256: a2707612651b62c58452dfcbb3db6d3d78d90d9affa3852ca985e32981f1648f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - vcfclick = cli.main:cli
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    # Variant store. We ship DuckDB only on bioconda; the chDB
+    # ClickHouse engine isn't packageable for conda-forge (see
+    # https://github.com/chdb-io/chdb/issues/189 — closed wontfix
+    # in 2024 because chDB only releases binary wheels and conda
+    # requires source builds with non-clang toolchains). vcfclick
+    # auto-detects: with chdb absent, it runs on DuckDB.
+    - duckdb >=1.0
+    # VCF parsing (htslib via Python).
+    - cyvcf2 >=0.31
+    # Columnar interchange + chDB-compatible Parquet schemas.
+    - pyarrow >=15
+    # MCP server for natural-language queries.
+    - mcp >=1.0
+    # CLI framework.
+    - click >=8.1
+
+test:
+  imports:
+    - storage
+    - ingest
+    - cli
+    - vcfclick_mcp
+  commands:
+    - vcfclick --version
+    - vcfclick db --help
+    # The smoke test below confirms the DuckDB backend actually
+    # works end-to-end inside the conda environment — catches the
+    # case where one of duckdb / cyvcf2 / pyarrow / mcp has a
+    # binary-incompatibility on a target platform.
+    - VCFCLICK_BACKEND=duckdb vcfclick db create smoke
+    - VCFCLICK_BACKEND=duckdb vcfclick db rm --yes smoke
+
+about:
+  home: https://github.com/nuin/vcfclick
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: Embedded VCF databases with auditable natural-language queries
+  description: |
+    vcfclick is an embedded analytical store for cohort Variant Call Format
+    (VCF) data. One cohort lives in one directory; queries run in the calling
+    process with no daemon, no client/server hop. Variants, genotypes, and
+    samples are held in DuckDB (the bioconda variant) or chDB (an optional pip
+    extra), alongside a DuckDB file of gene and ClinVar annotations. A bundled
+    Model Context Protocol server exposes a small set of tools that lets a
+    language-model client query the cohort in natural language and see the SQL
+    it generated.
+
+    Designed for the gap between bcftools/cyvcf2 (single-file, no persistence)
+    and Hail/TileDB-VCF (cluster-scale). Atomic two-phase ingest with rollback;
+    sparse-aware cohort allele-frequency math; Arrow/Parquet as a public
+    interchange format via `db dump` and `db ingest-parquet`.
+  doc_url: https://github.com/nuin/vcfclick/blob/main/docs/SCHEMA.md
+  dev_url: https://github.com/nuin/vcfclick
+
+extra:
+  recipe-maintainers:
+    - nuin
