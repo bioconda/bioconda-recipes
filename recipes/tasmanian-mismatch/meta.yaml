@@ -62,7 +62,9 @@ build:
     
     for bin in tasmanian-mismatch tasmanian-diagnostics tasmanian-rescale-quality; do
       if [[ -f "$CARGO_TARGET_DIR/$bin" ]]; then
-        patchelf --set-rpath "$PREFIX/lib" "$CARGO_TARGET_DIR/$bin"
+        if [[ "$(uname)" == "Linux" ]]; then
+          patchelf --set-rpath "$PREFIX/lib" "$CARGO_TARGET_DIR/$bin"
+        fi
         install -Dm755 "$CARGO_TARGET_DIR/$bin" "$PREFIX/bin/$bin"
       else
         echo "ERROR: missing binary $bin in $CARGO_TARGET_DIR"
