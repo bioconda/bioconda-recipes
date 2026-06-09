@@ -1,0 +1,97 @@
+{% set name = "dotmatch" %}
+{% set version = "0.1.7" %}
+{% set sha256 = "eb68691651dc1c408aa0f94b2aff58ed6f9cf7f58a3b5ea4def0e4cd6c6279ac" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dnncha/dotmatch/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("dotmatch", max_pin="x.x") }}
+  skip: true  # [win or py<39]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+    - wheel
+    - zlib
+  run:
+    - python >=3.9
+    - tomli  # [py<311]
+
+test:
+  commands:
+    - python -c "import dotmatch; assert dotmatch.distance('ACGT', 'AGGT') == 1"
+    - python -c "from dotmatch.native import find_native_cli; p=find_native_cli(); assert p.name == 'dotmatch-native' and p.exists()"
+    - dotmatch --version | grep '^dotmatch {{ version }}$'
+    - dotmatch dist ACGT AGGT | grep '^1$'
+    - dotmatch leq 1 ACGT AGGT | grep '^true$'
+    - dotmatch --help | grep 'Workflow namespaces'
+    - dotmatch count --help | grep 'Hamming supports k=0..3'
+    - dotmatch crispr-count --help | grep 'MAGeCK-ready'
+    - dotmatch audit --help | grep 'safe_at_hamming_k3'
+    - dotmatch assay --help | grep 'dotmatch assay'
+    - dotmatch barcode --help | grep 'dotmatch barcode'
+    - dotmatch panel --help | grep 'dotmatch panel'
+    - test -f "${PREFIX}/include/qdalign.h"
+    - test -f "${PREFIX}/lib/libdotmatch.a"
+    - test -f "${PREFIX}/lib/libdotmatch.so" || test -f "${PREFIX}/lib/libdotmatch.dylib"
+    - dotmatch assay init --template crispr --out assay.toml
+    - grep 'assay_type = "crispr"' assay.toml
+    - printf 'target_id\ttarget_seq\nbc0\tACGT\n' > targets.tsv
+    - printf '@r0\nACGT\n+\nIIII\n' > reads.fastq
+    - dotmatch count --targets targets.tsv --reads reads.fastq --sample-label sample --target-start 0 --target-length 4 --k 0 --metric hamming --out counts.tsv
+    - awk -F '\t' 'NR==2 { exit !($1=="bc0" && $2=="ACGT" && $3=="" && $4=="0" && $5=="1" && $10=="1") }' counts.tsv
+    - printf 'target_id\ttarget_seq\na\tAAAAAAAA\nb\tCCCCCCCC\n' > audit_targets.tsv
+    - dotmatch audit --targets audit_targets.tsv --k 3 --audit-mode exact --out-dir audit_out
+    - awk -F '\t' '$1=="safe_at_hamming_k2" { exit !($2=="yes") }' audit_out/audit_summary.tsv
+    - awk -F '\t' '$1=="safe_at_hamming_k3" { exit !($2=="yes") }' audit_out/audit_summary.tsv
+    - chmod -R a+rwX audit_out
+    - printf 'fastq_path,sample\nreads.fastq,treated\n' > samples.csv
+    - printf 'sgRNA,sgRNA_sequence,gene_symbol\ng0,ACGT,GENE0\n' > crispr_guides.csv
+    - dotmatch crispr-count --library crispr_guides.csv --samples samples.csv --guide-start 0 --guide-length 4 --k 2 --metric hamming --ambiguity-policy best --out crispr_counts.tsv --summary crispr_summary.json --sample-qc crispr_sample_qc.tsv
+    - awk -F '\t' 'NR==2 { exit !($1=="g0" && $2=="GENE0" && $3=="1") }' crispr_counts.tsv
+    - awk -F '\t' 'NR==2 { exit !($1=="treated" && $2=="reads.fastq" && $3=="1" && $4=="1" && $5=="1" && $6=="1") }' crispr_sample_qc.tsv
+    - printf 'guide\tbases\tgene\ng0\tACGT\tGENE0\n' > guides.tsv
+    - dotmatch guide-counter count --input reads.fastq --samples sample --library guides.tsv --offset-sample-size 1 --offset-min-fraction 0.1 --output gc_out
+    - awk -F '\t' 'NR==2 { exit !($1=="g0" && $2=="GENE0" && $3=="1") }' gc_out.counts.txt
+    - awk -F '\t' 'NR==1 { exit !($1=="guide" && $2=="gene" && $3=="guide_type" && $4=="sample") }' gc_out.extended-counts.txt
+    - awk -F '\t' 'NR==2 { exit !($1=="reads.fastq" && $2=="sample" && $3=="1" && $4=="1" && $5=="1" && $6=="1.0000") }' gc_out.stats.txt
+    - printf 'barcode_id\tbarcode_seq\ns1\tACGT\ns2\tTTTT\n' > barcodes.tsv
+    - printf '@r1\nNACGTAAAA\n+\nIIIIIIIII\n@r2\nNTTTTAAAA\n+\nIIIIIIIII\n' > barcode_reads.fastq
+    - dotmatch barcode infer --barcodes barcodes.tsv --reads barcode_reads.fastq --scan-starts 0:2 --barcode-length 4 --sample-reads 10 --out offset_scan.tsv --summary barcode_summary.json
+    - "grep '\"recommended_start\": 1' barcode_summary.json"
+    - dotmatch panel design --n 2 --length 4 --candidate-pool-size 100 --restarts 1 --min-hamming-distance 2 --min-levenshtein-distance 2 --out-dir panel_out
+    - test -f panel_out/barcodes.tsv
+    - test -f panel_out/design_report.json
+    - chmod -R a+rwX panel_out
+
+about:
+  home: https://github.com/dnncha/dotmatch
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Fast exact short-DNA known-target assignment
+  description: |
+    DotMatch is a deterministic known-target short-DNA assignment engine for
+    CRISPR guides, barcodes, primers, panels, and whitelist-style target sets.
+    It is not a genome aligner and does not emit SAM/BAM or CIGAR output.
+  dev_url: https://github.com/dnncha/dotmatch
+  doc_url: https://github.com/dnncha/dotmatch#readme
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - dnncha

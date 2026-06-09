@@ -1,0 +1,44 @@
+{% set name = "barena" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/quadram-institute-bioscience/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 931729d3b6a40964b944081967dcaead4b475af942737b1f16b6887756770513
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim >=2.0.4  # [not arm64]
+  host:
+    - curl
+    - pcre
+    - zlib
+
+test:
+  commands:
+    - barena --version | grep {{ version }}
+
+about:
+  home: "https://github.com/quadram-institute-bioscience/barena/"
+  dev_url: "https://github.com/quadram-institute-bioscience/barena#barena"
+  doc_url: "https://github.com/quadram-institute-bioscience/barena/blob/v{{ version }}/README.md"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Barena is a tool to filter FASTQ reads by taxon using Kraken2 classification output"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -17,7 +17,7 @@ make CC="${CXX}" \
      CFLAGS="${CFLAGS}" \
      CXXFLAGS="${CXXFLAGS}" \
      LDFLAGS="${LDFLAGS}" \
-     LIBS="-L${PREFIX}/lib -lm -lz -lpthread ./libminimap2.a" \
+     LIBS="-L${PREFIX}/lib -lm -lz -lpthread ${SRC_DIR}/lib/libminimap2.a" \
      VERBOSE=1
 
 install -m 0755 HapFold ${PREFIX}/bin/HapFold
