@@ -1,5 +1,5 @@
 {% set name = "drevalpy" %}
-{% set version = "1.4.1" %}
+{% set version = "1.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,11 @@ package:
 
 source:
   url: https://github.com/daisybio/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 466b06a3c0922126d2d6c299f29e6e372d510c5a3d4695442cda90302c65ca86
+  sha256: ef6afc448674738aebfd73428aa8f25c72fd7304ac93682692ddce9caeb5aaef
 
 build:
   entry_points:
-    - drevalpy = drevalpy.cli:cli_main
-    - drevalpy-report = drevalpy.visualization.create_report:main
+    - drevalpy = drevalpy.cli.main:cli_main
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
@@ -45,20 +44,25 @@ requirements:
     - toml >=0.10.2,<0.11.0
     - poetry >=2.0.1,<3.0.0
     - starlette >=0.49.1
+    - wandb >=0.24.0
+    - typer >=0.26
     - ray
   run_constrained:
     - pydantic >=2.5
+    - xgboost >=3.2.0
+    - gseapy >=1.1.0
+    - subword-nmt >=0.3.8
 
 test:
   imports:
     - drevalpy
   commands:
     - drevalpy --help
-    - drevalpy-report --help
+    - drevalpy report --help
 
 about:
   home: https://github.com/daisybio/drevalpy
-  summary: Drug response evaluation of cancer drug response models in a fair setting
+  summary: Drug response evaluation of drug response prediction models in a fair setting
   license: MIT
   license_file: LICENSE
   doc_url: https://drevalpy.readthedocs.io/en/latest/index.html
@@ -69,4 +73,4 @@ extra:
     - JudithBernett
     - PascalIversen
   identifiers:
-    - https://www.biorxiv.org/content/10.1101/2025.05.26.655288v1
+    - https://doi.org/10.1038/s41467-026-72903-w
