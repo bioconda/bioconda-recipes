@@ -10,14 +10,19 @@ export LC_ALL="en_US.UTF-8"
 
 # configure
 cd ${RM_DIR}
-perl ./configure -libdir "${RM_DIR}/Libraries" -trf_prgm "${PREFIX}/bin/trf" \
-	-rmblast_dir "${PREFIX}/bin" -hmmer_dir "${PREFIX}/bin" \
-	-abblast_dir "${PREFIX}/bin" -crossmatch_dir "${PREFIX}/bin" \
-	-default_search_engine rmblast
+perl ./configure \
+	-trf_prgm "${PREFIX}/bin/trf" \
+	-rmblast_dir "${PREFIX}/bin" \
+	-hmmer_dir "${PREFIX}/bin" \
+	-abblast_dir "${PREFIX}/bin" \
+	-crossmatch_dir "${PREFIX}/bin" \
+	-default_search_engine rmblast \
+	-famdb_dir "${PREFIX}/bin"
 
+# BELOW NOT NEEDED FOR 4.2.4
 # Delete huge Dfam file, will be downloaded by post-link.sh
 # Do it now only, because configure needs the full version
-echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
+#echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
 
 # ----- add tools within the bin ------
 
