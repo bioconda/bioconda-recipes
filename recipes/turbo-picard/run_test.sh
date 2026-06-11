@@ -2,6 +2,7 @@
 set -euo pipefail
 
 turbo-picard --version
+turbo-picard AccelerationStatus
 turbo-picard MarkDuplicates --help
 turbo-picard SortSam --help
 turbo-picard CleanSam --help

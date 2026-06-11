@@ -2,6 +2,7 @@
 set -euo pipefail
 
 picard --version
+turbo-picard AccelerationStatus
 picard MarkDuplicates --help
 
 cat > input.sam <<'SAM'
