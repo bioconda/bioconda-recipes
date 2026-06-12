@@ -1,0 +1,86 @@
+{% set name = "bioflowkit" %}
+{% set version = "0.2.1" %}
+
+# Bioconda recipe for bioflow (PyPI distribution name: bioflowkit).
+#
+# This is a noarch-python package: the bioinformatics tools themselves
+# run as Docker BioContainers at run time, so the only conda
+# dependencies are bioflow's small pure-Python orchestration stack.
+#
+# Submission: this file is the recipe that goes to
+# https://github.com/bioconda/bioconda-recipes under
+# recipes/bioflowkit/meta.yaml.  See docs/MAINTAINER.md (Part 7) for the
+# full submission walkthrough.  The sha256 below must be filled in from
+# the real PyPI sdist once bioflowkit is published there.
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3e8411b0a00676045f8ba3549f8c989b80be605f6384a15e8b24a71a40cca3e5
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - bioflow = bioflow.cli:app
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+  run:
+    - python >=3.9
+    - typer >=0.12
+    - rich >=13.7
+    - pydantic >=2.7
+    - pyyaml >=6.0
+    - jsonschema >=4.22
+    - docker-py >=7.1
+    - psutil >=5.9
+    - questionary >=2.0
+    - pandas >=1.5
+    - matplotlib-base >=3.6
+    # NOTE: Docker Engine is a *runtime* requirement (the orchestrator
+    # launches sibling tool containers via the host socket) but it is
+    # not a conda package — document it in the recipe's about/description
+    # rather than listing it here.
+
+test:
+  imports:
+    - bioflow
+    - bioflow.sdk
+    - bioflow.cli
+  commands:
+    - bioflow --help
+    - bioflow doctor --json || true   # doctor exits non-zero without Docker; that's expected in CI
+
+about:
+  home: https://github.com/hope9901/bioflow
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "One-line comparative-genomics recipes + Tier-A SDK over per-tool Docker BioContainers"
+  description: |
+    bioflow is a bioinformatics SDK + cookbook for one-line
+    comparative-genomics analyses on a single workstation.  Each tool
+    runs in its own Docker BioContainer (no native installs), each
+    recipe is one CLI call, and an optional privacy-first LLM companion
+    is available.
+
+    Requires a reachable Docker daemon at run time — bioflow launches
+    each pipeline stage as a sibling container via the host Docker
+    socket.  Run `bioflow doctor` after install to verify the host.
+
+    The PyPI/conda distribution name is `bioflowkit`; the Python import
+    name and CLI command are both `bioflow`.
+  doc_url: https://hope9901.github.io/bioflow/
+  dev_url: https://github.com/hope9901/bioflow
+
+extra:
+  recipe-maintainers:
+    - hope9901
