@@ -1,0 +1,65 @@
+{% set name = "autobarcoder" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abachu2005/AutoBarcoder-OS-/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 977cc266aa67b46fb0ab9e8f7937ac883a52872dccb5a1a7d5557db0c94ce93d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - autobarcoder-gui = main:main
+    - autobarcoder-web = webapp.backend.main:main
+    - autobarcoder-setup = autobarcoder_cli.setup_wizard:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9
+    - matplotlib-base >=3.5
+    - networkx >=2.8
+    - python-levenshtein >=0.20
+    - pandas >=1.4
+    - numpy >=1.22
+
+test:
+  imports:
+    - barcodes
+    - barcodes.processing
+    - barcodes.clustering
+    - barcodes.analysis
+    - autobarcoder_cli.setup_wizard
+  commands:
+    - autobarcoder-setup --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/abachu2005/AutoBarcoder-OS-
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Demultiplex and cluster RNA barcodes from 96-well-plate sequencing reads.
+  description: |
+    AutoBarcoder is a Python tool for demultiplexing and clustering RNA
+    barcodes from 96-well-plate sequencing reads. Ships with a Tkinter
+    desktop GUI, a FastAPI web UI, and a command-line setup wizard.
+  doc_url: https://github.com/abachu2005/AutoBarcoder-OS-#readme
+  dev_url: https://github.com/abachu2005/AutoBarcoder-OS-
+
+extra:
+  recipe-maintainers:
+    - abachu2005
