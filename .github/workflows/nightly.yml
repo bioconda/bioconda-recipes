@@ -49,3 +49,44 @@ jobs:
           bioconda-utils build recipes config.yml \
               --anaconda-upload \
               --prelint --exclude bioconda-repodata-patches
+
+  nightly-linux-arm:
+    name: Nightly Linux ARM64 Builds
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Build and push leftover packages
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          source common.sh
+          bioconda-utils build recipes config.yml \
+            --docker --mulled-test \
+            --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+            --container-platform linux/arm64 \
+            --anaconda-upload \
+            --prelint --exclude bioconda-repodata-patches
