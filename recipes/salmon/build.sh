@@ -82,7 +82,7 @@ cmake -S . -B "${BUILD_DIR}" -G Ninja \
   -DSALMON_USE_HTSLIB=REQUIRED \
   -DSALMON_BOOST_USE_STATIC_LIBS=OFF \
   -DSALMON_PUFFERFISH_GIT_REPOSITORY="https://github.com/COMBINE-lab/pufferfish.git" \
-  -DSALMON_PUFFERFISH_GIT_TAG="ace68c1c022816ba8c50a1a07c5d08f2abd597d6" \
+  -DSALMON_PUFFERFISH_GIT_TAG="5dce7f41a772aa3845095cd9a0539c5cd1cf5716" \
   -DSALMON_FQFEEDER_GIT_REPOSITORY="https://github.com/rob-p/FQFeeder.git" \
   -DSALMON_FQFEEDER_GIT_TAG="f5b08d1002351c192b69048ac9f6cf4c7c116265"
 
@@ -99,3 +99,4 @@ if [[ ! -f "${BUILD_DIR}/libgff.a" ]]; then
 fi
 
 cmake --install "${BUILD_DIR}"
+
