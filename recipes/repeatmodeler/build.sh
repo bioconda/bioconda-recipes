@@ -35,7 +35,8 @@ CONFIG_OPTIONS=" \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin \
     -ucsctools_dir ${PREFIX}/bin \
-    -repeatafterme_dir ${PREFIX}/bin"
+    -repeatafterme_dir ${PREFIX}/bin" \
+    -ninja_dir ${PREFIX}/bin
     
 if [[ "$(uname -s)" == "Linux" ]]; then
     LTR_STRUCTURAL_SEARCH="y"
