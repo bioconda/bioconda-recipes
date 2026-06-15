@@ -10,6 +10,16 @@ export LC_ALL="en_US.UTF-8"
 
 # configure
 cd ${RM_DIR}
+
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
+# configure with the famdb dir
 perl ./configure \
 	-trf_prgm "${PREFIX}/bin/trf" \
 	-rmblast_dir "${PREFIX}/bin" \
@@ -17,7 +27,7 @@ perl ./configure \
 	-abblast_dir "${PREFIX}/bin" \
 	-crossmatch_dir "${PREFIX}/bin" \
 	-default_search_engine rmblast \
-	-famdb_dir "${PREFIX}/bin"
+	-famdb_dir "${famdb_dir}"
 
 # BELOW NOT NEEDED FOR 4.2.4
 # Delete huge Dfam file, will be downloaded by post-link.sh
@@ -35,6 +45,23 @@ RM_OTHER_PROGRAMS="DupMasker ProcessRepeats RepeatProteinMask"
 for name in ${RM_OTHER_PROGRAMS}; do
 	ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
+
+# add all utils
+for name in ${RM_DIR}/util/*; do
+	ln -sf $name ${PREFIX}/bin/$(basename $name)
+done
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
+
+rm -f ${RM_DIR}/util/*.bak
+rm -f ${RM_DIR}/*.bakdone
 
 # add all utils
 for name in ${RM_DIR}/util/*; do
