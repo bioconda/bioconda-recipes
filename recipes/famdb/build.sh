@@ -1,18 +1,16 @@
 #!/bin/bash
 
 FDB_DIR="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p $FDB_DIR
+
+mkdir -p "${FDB_DIR}"
 mkdir -p "${PREFIX}/bin"
-mv * ${FDB_DIR}
 
-export LC_ALL="en_US.UTF-8"
+cp -a . "${FDB_DIR}/"
 
-# ----- add tools within the bin ------
+chmod +x "${FDB_DIR}/famdb.py"
 
-# add famdb.py
-ln -sf ${FDB_DIR}/famdb.py ${PREFIX}/bin/famdb.py
+ln -sf "${FDB_DIR}/famdb.py" "${PREFIX}/bin/famdb.py"
 
-# add all utils
-for name in ${FDB_DIR}/util/*; do
-	ln -sf $name ${PREFIX}/bin/$(basename $name)
+for name in "${FDB_DIR}"/util/*; do
+    ln -sf "$name" "${PREFIX}/bin/$(basename "$name")"
 done
