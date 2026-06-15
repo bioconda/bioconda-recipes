@@ -11,6 +11,6 @@ chmod +x "${FDB_DIR}/famdb.py"
 
 ln -sf "${FDB_DIR}/famdb.py" "${PREFIX}/bin/famdb.py"
 
-for name in "${FDB_DIR}"/util/*; do
+for name in "${FDB_DIR}"/utils/*; do
     ln -sf "$name" "${PREFIX}/bin/$(basename "$name")"
 done
