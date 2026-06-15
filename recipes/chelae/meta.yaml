@@ -10,7 +10,7 @@ source:
   sha256: 39cb2c912da5f411d05a8f8b6b2c38561bfb945d5bdebade7360594ba6853d13
 
 build:
-  number: 0
+  number: 1
   # The cargo-multivers launcher is a single statically-linked binary that
   # embeds zstd-compressed CPU-variant payloads. conda-build's macOS rpath
   # post-processing runs `llvm-otool -l` on every binary and intermittently
@@ -22,7 +22,10 @@ build:
     # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
     # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
     # in Cargo.toml).
-    - cargo install --locked cargo-multivers                                       # [x86_64]
+    # Floor of 0.12.0: that release carries the fexecve/memfd fix required for
+    # the launcher to run (and preserve argv[0]) under binfmt emulation -- see
+    # fulcrumgenomics/chelae#7 and fulcrumgenomics/riker#38.
+    - cargo install --locked --version '>=0.12.0' cargo-multivers                  # [x86_64]
     - cargo multivers --profile dist --out-dir "${PREFIX}/bin"                     # [x86_64]
     # aarch64: a single portable ARMv8-A binary built with the dist profile.
     # Do NOT use cargo-multivers here -- on non-x86_64 it would expand to every
