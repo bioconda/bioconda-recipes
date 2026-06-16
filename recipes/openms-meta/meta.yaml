@@ -1,5 +1,5 @@
 {% set name = "OpenMS" %}
-{% set version = "3.5.0" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.6.0dev" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
 
 package:
   name: {{ name|lower  }}-meta
@@ -46,10 +46,12 @@ requirements:
       - coin-or-cgl
       - coin-or-cbc
       - eigen >=3.4.0
-      - libarrow =21  # Just to reduce build matrix/time. You can change it from time to time to build for other versions
+      - libarrow =23=*_cpu  # Just to reduce build matrix/time. You can change it from time to time to build for other versions
       - libboost-devel
+      - libcurl
       - libparquet
       - libsvm
+      - libzip
       - qt6-main
       - xerces-c
       - yaml-cpp
@@ -84,7 +86,9 @@ outputs:
           - coin-or-cbc
           - eigen >=3.4.0
           - libboost-devel
+          - libcurl
           - libsvm
+          - libzip
           - qt6-main
           - xerces-c
           - yaml-cpp
@@ -97,6 +101,7 @@ outputs:
     build:
       run_exports:
           # We only need to export things that we expose in our library!
+          - {{ pin_compatible('libcurl', max_pin='x') }}
           - {{ pin_compatible('xerces-c', max_pin='x.x') }}
           - {{ pin_compatible('eigen', max_pin='x.x') }}
           - {{ pin_compatible('qt6-main', max_pin='x.x') }}
@@ -130,13 +135,14 @@ outputs:
         - cmake
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
+        - libcurl
         - xerces-c
         - eigen
         - qt6-main
         - libsvm
         # Tools also use it directly
         - libparquet
-        - libarrow =21
+        - libarrow =23=*_cpu
       ignore_run_exports:
         - libsvm
       run:
@@ -147,6 +153,7 @@ outputs:
         # Note that for this to work, 
         # I could not get the "resolved_packages" jinja function to gather dependencies from other subpackages.
         - {{ pin_subpackage('libopenms', exact=True) }}
+        - {{ pin_compatible('libcurl', max_pin='x') }}
         - {{ pin_compatible('xerces-c', max_pin='x.x') }}
         - {{ pin_compatible('eigen', max_pin='x.x') }}
         - {{ pin_compatible('qt6-main', max_pin='x.x') }}
@@ -182,7 +189,7 @@ outputs:
        - comet-ms ==2024011
        - luciphor2 ==2020_04_03
        - msgf_plus ==2024.03.26
-       - percolator ==3.7.1
+       - percolator ==3.9
        - sirius-ms >=6.1.0
        - thermorawfileparser ==1.4.3
        - sage-proteomics ==0.14.7

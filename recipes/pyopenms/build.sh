@@ -45,5 +45,13 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 #cmake --build . --clean-first --target pyopenms -j 1
 ninja pyopenms -j"${CPU_COUNT}"
 
-echo "wheels are in `find . | grep whl`"  >&2
-${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --use-pep517 --no-binary=pyopenms -vvv
+# `ninja pyopenms` builds the nanobind extension modules but does NOT produce a
+# wheel (pyOpenMS only builds wheels through py-build-cmake / PEP 517, which we
+# cannot use here: the bioconda build is offline and would need py-build-cmake +
+# nanobind as host deps). Instead install the already-built `python_modules`
+# CMake component straight into the environment's site-packages -- this is the
+# exact same content a wheel would carry (the install(... COMPONENT
+# python_modules ...) rules in src/pyOpenMS/CMakeLists.txt install to
+# <prefix>/pyopenms).
+SITE_PACKAGES=$(${PYTHON} -c "import sysconfig; print(sysconfig.get_path('platlib'))")
+cmake --install . --component python_modules --prefix "${SITE_PACKAGES}" --strip
