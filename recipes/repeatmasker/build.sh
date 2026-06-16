@@ -61,21 +61,4 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
 
 rm -f ${RM_DIR}/util/*.bak
-rm -f ${RM_DIR}/*.bakdone
-
-# add all utils
-for name in ${RM_DIR}/util/*; do
-	ln -sf $name ${PREFIX}/bin/$(basename $name)
-done
-
-# Fix perl shebang
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatMasker
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
-
-rm -f ${RM_DIR}/util/*.bak
 rm -f ${RM_DIR}/*.bak
