@@ -59,18 +59,12 @@ BLAST_SRC_DIR="$SRC_DIR/c++"
 RESULT_PATH="$BLAST_SRC_DIR/Release"
 
 if [[ `uname` == "Linux" ]]; then
-	export CONFIG_ARGS="--with-runpath=\"${LIB_INSTALL_DIR}\" --with-openmp --with-hard-runpath --with-dll --without-zstd"
+	export CONFIG_ARGS="--with-runpath=\"${LIB_INSTALL_DIR}\" --with-openmp --with-hard-runpath --with-dll --without-zstd --with-vdb=${PREFIX}"
 	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
 else
 	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt'
-fi
-
-if [[ `uname` == "Linux" ]]; then
-    VDB_ARG="--with-vdb=${PREFIX}"
-else
-    VDB_ARG="--without-vdb"
 fi
 
 # not building with boost as it's only used for unit tests
@@ -88,7 +82,6 @@ fi
     --without-debug \
     --with-experimental=Int8GI \
     --with-strip \
-    ${VDB_ARG} \
     --with-z="${PREFIX}" \
     --with-bz2="${PREFIX}" \
     --with-sqlite3="${PREFIX}" \
