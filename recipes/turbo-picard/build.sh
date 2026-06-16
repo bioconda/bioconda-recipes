@@ -11,31 +11,30 @@ cargo fetch --locked
 python - <<'PY'
 import os
 import pathlib
+import shutil
 
 cargo_home = pathlib.Path(os.environ.get("CARGO_HOME", pathlib.Path.home() / ".cargo"))
 crate_dir = next(cargo_home.glob("registry/src/*/rust-htslib-1.0.0"))
-replacements = {
-    "Cargo.toml": (
-        '[dependencies.hts-sys]\n'
-        'version = "2.2.0"\n'
-        'features = ["bindgen"]\n'
-        'default-features = false',
-        '[dependencies.hts-sys]\n'
-        'version = "2.2.0"\n'
-        'default-features = false',
-    ),
-    "Cargo.toml.orig": (
-        'hts-sys = {version = "2.2.0", default-features = false, features = ["bindgen"]}',
-        'hts-sys = {version = "2.2.0", default-features = false}',
-    ),
-}
-for name, (old, new) in replacements.items():
-    manifest = crate_dir / name
+patched_dir = pathlib.Path("target/bioconda-patches/rust-htslib-1.0.0").resolve()
+if patched_dir.exists():
+    shutil.rmtree(patched_dir)
+shutil.copytree(crate_dir, patched_dir)
+for name in ("Cargo.toml", "Cargo.toml.orig"):
+    manifest = patched_dir / name
     text = manifest.read_text()
-    if old not in text:
+    updated = text.replace('features = ["bindgen"]\n', '').replace(', features = ["bindgen"]', '')
+    if updated == text:
         raise SystemExit(f"rust-htslib hts-sys dependency block was not found in {name}")
-    manifest.write_text(text.replace(old, new))
+    manifest.write_text(updated)
+
+workspace_manifest = pathlib.Path("Cargo.toml")
+workspace_manifest.write_text(
+    workspace_manifest.read_text()
+    + f'\n[patch.crates-io]\nrust-htslib = {{ path = "{patched_dir.as_posix()}" }}\n'
+)
 PY
+
+cargo update --offline -p rust-htslib --precise 1.0.0
 
 cargo install \
   --locked \
