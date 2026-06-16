@@ -1,0 +1,51 @@
+{% set name = "krepp" %}
+{% set version = "0.8.2" %}
+{% set sha256 = "986552001f651b870939bdd30b3f6a89e6c411f5081c2beeabf03df690b275bd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bo1929/krepp/releases/download/v{{ version }}/krepp-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - pkg-config
+  host:
+    - zlib
+    - libcurl
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - krepp --help &> /dev/null
+
+about:
+  home: "https://github.com/bo1929/krepp"
+  dev_url: "https://github.com/bo1929/krepp"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "krepp: a k-mer-based maximum pseudo-likelihood method for estimating read distances and genome-wide phylogenetic placement."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s13059-026-03999-y
+    - doi:10.5281/zenodo.15466359

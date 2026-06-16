@@ -9,11 +9,13 @@ source:
   sha256: 0dba5ca4a4ed098c129a7558115d6d48bbb9ce2f0fe508e46181b017ef51eb85
 
 build:
-  number: 1
-  binary_relocation: true
+  number: 2
+  binary_relocation: True
   script:
-    - cmake -H. -Bbuild_conda -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX=${PREFIX}
-    - cmake --build build_conda --target install
+    - cmake -S . -B build_conda -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release
+    - cmake --build build_conda --target install -j "${CPU_COUNT}"
+  run_exports:
+    - {{ pin_subpackage('oligomap', max_pin="x") }}
 
 requirements:
   build:
@@ -21,11 +23,10 @@ requirements:
     - {{ compiler('cxx') }}
     - libtool
     - automake
+    - autoconf
     - cmake
-    - m4
+    - pkg-config
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -33,11 +34,16 @@ test:
     - oligomap 2>&1 | grep Usage
 
 about:
-  home: https://github.com/zavolanlab/oligomap
-  license: GNU Affero General Public License v3.0
+  home: "https://github.com/zavolanlab/oligomap"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: LICENSE
-  summary: Oligomap is a program for fast identification of nearly-perfect matches of small RNAs in sequence databases.
+  summary: "Oligomap is a program for fast identification of nearly-perfect matches of small RNAs in sequence databases."
+  dev_url: "https://github.com/zavolanlab/oligomap"
 
 extra:
   identifiers:
-    - doi:10.1016/j.ymeth.2007.10.002 
+    - doi:10.1016/j.ymeth.2007.10.002
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

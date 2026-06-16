@@ -7,18 +7,24 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/deltapd-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    - 0001-setup-py.patch
     - pdm.patch
 
 build:
-  number: 6
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vvv
+  number: 7
+  script:
+    - sed -i.bak 's|-march=native|-march=armv8-a|' setup.py  # [aarch64]
+    - sed -i.bak 's|-march=native|-march=armv8.4-a|' setup.py  # [arm64]
+    - sed -i.bak 's|-march=native|-march=x86-64-v3|' setup.py  # [x86_64]
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
   entry_points:
     - deltapd = deltapd.__main__:main
   run_exports:
-    - {{ pin_subpackage("deltapd", max_pin="x.x") }}
+    - {{ pin_subpackage('deltapd', max_pin="x.x") }}
 
 requirements:
   build:
@@ -30,14 +36,14 @@ requirements:
     - numpy
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - phylodm
     - tqdm
     - ete3
     - dendropy
     - matplotlib-base
     - jinja2
-    - seaborn
+    - seaborn-base
+    - numpy
 
 test:
   imports:
@@ -49,11 +55,15 @@ test:
 
 about:
   home: https://github.com/Ecogenomics/DeltaPD
-  license: AGPL-3.0-only
+  license: "AGPL-3.0-only"
   license_family: AGPL
   license_file: LICENSE
   summary: 'DeltaPD is a tool used to determine outliers in a gene tree when compared against a reference tree.'
+  dev_url: https://github.com/Ecogenomics/DeltaPD
 
 extra:
   identifiers:
     - doi:10.5281/zenodo.4107213
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

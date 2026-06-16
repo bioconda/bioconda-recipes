@@ -1,18 +1,56 @@
 #!/bin/bash
+set -xe
 
-set -xe 
-
-#sed -i.bak "s/set(Boost_USE_STATIC_LIBS   ON)/set(Boost_USE_STATIC_LIBS   OFF)/g" src/CMakeLists.txt
-mkdir build
-cd build
-
-export CXXFLAGS=-ldeflate
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -ldeflate"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-deprecated-declarations -Wno-c++11-narrowing-const-reference -Wno-non-pod-varargs"
+export CFLAGS="${CFLAGS} -O3"
 
 # Fix the version
-make check_git_repository
-sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/'  ../metabat_version.h
+sed -i.bak 's|2.17|2.18|' VERSION
+# make check_git_repository
+sed -i.bak 's/GIT-NOTFOUND/'$PKG_VERSION' (Bioconda)/' version.h
+
+sed -i.bak 's|VERSION 3.5.1|VERSION 3.5|' CMakeLists.txt
+rm -f *.bak
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' *.pl
+rm -f *.bak
+
+case $(uname -s) in
+	Darwin)
+	mv VERSION VERSION.txt
+	sed -i.bak 's|cat VERSION|cat VERSION.txt|' cmake/Modules/GetGitVersion.cmake
+	rm -f cmake/Modules/*.bak
+	;;
+esac
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+if [[ `uname -s` == "Darwin" ]]; then
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CXXFLAGS="${CXXFLAGS} -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY -D_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION -D_LIBCPP_ENABLE_CXX17_REMOVED_BINDERS"
+else
+	export CONFIG_ARGS=""
+fi
+
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_C_COMPILER="${CC}" -DCMAKE_C_FLAGS="${CFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
 
 # Build & install
-make VERBOSE=1 -j ${CPU_COUNT}
-make install
+cmake --build build --target install -j "${CPU_COUNT}"

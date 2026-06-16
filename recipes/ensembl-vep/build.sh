@@ -42,7 +42,7 @@ mv VEP_plugins*/config .
 rm -rf VEP_plugins*
 
 # Install loftee
-curl -L -s -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.3.tar.gz
+curl -L -s -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.4_GRCh38.tar.gz
 tar -xzvpf loftee.tar.gz
 mv loftee-*/*.pl .
 mv loftee-*/*.pm .

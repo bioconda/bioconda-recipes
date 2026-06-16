@@ -1,48 +1,77 @@
 {% set name = "Nerpa" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "cbd506fe82370938255223bfd3c5c2631f3390e428a3ae0297a4db1bfc62c985" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "c0f1fddd13d877a1ab0880be43fe044239a1430e5e01587842f28aeff00d79b3" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    url: https://github.com/ablab/nerpa/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
-    sha256: {{ sha256 }}
-    
+  url: https://github.com/gurevichlab/nerpa/releases/download/{{ name|lower }}_{{ version }}/nerpa-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-algorithm.patch
 
 build:
-    number: 6
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
-    build:
-      - {{ compiler('cxx') }}
-      - cmake
-      - make
-    host:
-      - python
-    run:
-      - python
-      - rdkit
-      - networkx
-      - openjdk
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - wget
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - python
+    - rdkit
+    - networkx
+    - openjdk
+    - biopython
+    - cairosvg
+    - pulp
+    - scikit-learn >=1.2.0
+    - pandas >=1.5
+    - polars >=0.19
+    - pyarrow
+    - more-itertools
+    - dacite
+    - pyyaml
+    - python-graphviz
+    - prettytable
+    - requests
+    - bs4
+    - parse
 
 test:
-    commands:
-      - nerpa.py --help
-      - nerpa.py -a $PREFIX/share/nerpa/test_data/MIBiG_subset/genome_predictions --smiles-tsv $PREFIX/share/nerpa/test_data/MIBiG_subset/structures_info.tsv -o nerpa_test_out && rm -rf nerpa_test_out
+  commands:
+    - nerpa.py -h
 
 about:
-    home: https://cab.spbu.ru/software/nerpa/
-    dev_url: https://github.com/ablab/nerpa
-    doc_url: https://github.com/ablab/nerpa
-    license: Dual-licensed under GPLv3 or CC BY-NC-SA 4.0
-    license_file: LICENSE.txt
-    summary: A tool for discovering biosynthetic gene clusters of nonribosomal peptides
-    description: Nerpa is a tool for linking biosynthetic gene clusters (BGCs) to known nonribosomal peptides (NRPs). BGCs are predicted in genome sequences (FASTA or GBK) with antiSMASH (Medema et al, 2011). Known NRPs are accepted in the SMILES format and processed with rBAN (Ricart et al, 2019).
+  home: "https://github.com/gurevichlab/nerpa"
+  dev_url: "https://github.com/gurevichlab/nerpa"
+  doc_url: "https://github.com/gurevichlab/nerpa/blob/{{ name|lower }}_{{ version }}/README.md"
+  license: "Dual-licensed under GPLv3 or CC BY-NC-SA 4.0"
+  license_file: "LICENSE.txt"
+  summary: "A tool for discovering biosynthetic gene clusters of nonribosomal peptides."
+  description: "Nerpa is a tool for linking biosynthetic gene clusters (BGCs) to known nonribosomal peptides (NRPs). BGCs are predicted in genome sequences (FASTA or GBK) with antiSMASH (Medema et al, 2011). Known NRPs are accepted in the SMILES format and processed with rBAN (Ricart et al, 2019)."
 
 extra:
   recipe-maintainers:
     - alexeigurevich
   identifiers:
+    - doi:10.1101/2024.11.19.624380v3
+    - doi:10.3390/metabo11100693
     - biotools:nerpa
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

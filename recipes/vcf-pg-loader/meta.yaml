@@ -1,0 +1,60 @@
+{% set name = "vcf-pg-loader" %}
+{% set version = "0.5.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: 65e61fa286e57d32f9e6de031cc62bd810a3bca4f0d255313faaedd3c7d5253b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - vcf-pg-loader = vcf_pg_loader.cli:app
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+  run:
+    - python >=3.9
+    - cyvcf2 >=0.31.0
+    - asyncpg >=0.29.0
+    - typer >=0.12.0
+    - rich >=13.7.0
+    - pydantic >=2.6.0
+    - anyio >=4.3.0
+    - docker-py >=7.0.0
+
+test:
+  imports:
+    - vcf_pg_loader
+  commands:
+    - vcf-pg-loader --help
+    - vcf-pg-loader --version
+
+about:
+  home: https://github.com/Zacharyr41/vcf-pg-loader
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "High-performance VCF to PostgreSQL loader with clinical-grade compliance"
+  description: |
+    vcf-pg-loader is a command-line tool for efficiently loading VCF variant data
+    into PostgreSQL databases. It features streaming VCF parsing with cyvcf2,
+    variant normalization using the vt algorithm, proper Number=A/R/G field handling
+    during multi-allelic decomposition, and binary COPY protocol via asyncpg for
+    maximum insert performance.
+  dev_url: https://github.com/Zacharyr41/vcf-pg-loader
+  doc_url: https://github.com/Zacharyr41/vcf-pg-loader/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - Zacharyr41

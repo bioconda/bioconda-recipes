@@ -2,20 +2,18 @@
 
 set -euo pipefail
 
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -O3"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-sed -i.bak -e "s|INCLUDE\s*:=|INCLUDE := -I${PREFIX}/include |" \
-           -e "s|LIB_DEPENDENCIES\s*:=\s*-lpopt|LIB_DEPENDENCIES := -L${PREFIX}/lib -lpopt|" \
-           Makefile
+mkdir -p "${PREFIX}/share/rDock"
+cp -rf lib data tests "${PREFIX}/share/rDock"
+rm -f lib/*
+make CXX="${CXX}" CXX_EXTRA_FLAGS="-I${PREFIX}/include -Wno-deprecated-declarations" PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+PREFIX="${PREFIX}" make install
 
-install -d ${PREFIX}/share/rDock
-cp -r lib data tests ${PREFIX}/share/rDock
-rm lib/*
-make -j${CPU_COUNT}
-PREFIX=${PREFIX} make install
-
-mkdir -p ${PREFIX}/etc/conda/activate.d
-mkdir -p ${PREFIX}/etc/conda/deactivate.d
-cp ${RECIPE_DIR}/activate.sh ${PREFIX}/etc/conda/activate.d/activate.sh
-cp ${RECIPE_DIR}/deactivate.sh ${PREFIX}/etc/conda/deactivate.d/deactivate.sh
+mkdir -p "${PREFIX}/etc/conda/activate.d"
+mkdir -p "${PREFIX}/etc/conda/deactivate.d"
+install -m 755 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+install -m 755 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+install -m 755 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.fish"
+install -m 755 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.fish"

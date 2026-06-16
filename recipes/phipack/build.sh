@@ -1,16 +1,21 @@
-#!/bin/sh
+#!/bin/bash
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+
+mkdir -p "$PREFIX/bin"
 
 # There's a . directory that's ignored on OSX but not Linux
-if [[ $(uname -s) == "Darwin" ]]; then
-cd src
+#
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+	cd src
 else
-cd PhiPack/src/
+	cd PhiPack/src/
 fi
-mkdir -p $PREFIX/bin
 
-make CXX=$CC CXXFLAGS="$CFLAGS"
-cp Phi $PREFIX/bin
-cp -r ppma_2_bmp $PREFIX/bin
-cp Profile $PREFIX/bin
+make CXX="${CC}" CXXFLAGS="${CFLAGS}"
 
-chmod -R +x $PREFIX/bin/*
+install -v -m 0755 Phi Profile "${PREFIX}/bin"
+
+cp -rf ppma_2_bmp $PREFIX/bin/

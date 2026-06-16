@@ -1,29 +1,32 @@
+{% set name = "short-read-connector" %}
+{% set version = "1.2.0" %}
+
 package:
-  name: short-read-connector
-  version: '1.2.0'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/GATB/short_read_connector/releases/download/v1.2.0/rconnector-v1.2.0-Source.tar.gz"
-  md5: "2b7a3c9bdb5a3d3e2d3c9fdd9b496323"
+  url: https://github.com/GATB/short_read_connector/releases/download/v{{ version }}/rconnector-v{{ version }}-Source.tar.gz
+  sha256: e31dedfbdf22a1d18d08a2c150d8e1ba74369b8fcee43b70387bea4f87b505ee
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 3
   run_exports:
-    - {{ pin_subpackage('short-read-connector', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
+    - pkg-config
   host:
     - zlib
     - dsk
   run:
-    - zlib
     - dsk
+
 test:
   commands:
     - short_read_connector_linker.sh index -h
@@ -32,12 +35,14 @@ test:
     - short_read_connector_counter.sh query -h
 
 about:
-  home: https://github.com/GATB/short_read_connector
-  license: AGPL-3.0
+  home: "https://github.com/GATB/short_read_connector"
+  license: "AGPL-3.0-or-later"
   license_family: AGPL
   license_file: LICENSE
-  summary: Short read connector enables the comparisons of two read sets
+  summary: "Short read connector enables the comparisons of two read sets."
+  dev_url: "https://github.com/GATB/short_read_connector"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

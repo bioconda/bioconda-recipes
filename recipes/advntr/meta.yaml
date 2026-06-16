@@ -1,49 +1,52 @@
-{% set version="1.5.0" %}
+{% set version = "1.5.0" %}
 
 package:
   name: advntr
   version: {{ version }}
 
-build:
-  skip: True  # [py>=37]
-  number: 0 
-  script:
-    - make install CXX="${CXX} ${CXXFLAGS}" PREFIX=${PREFIX}
-    - python -m pip install --no-deps --ignore-installed .
-  entry_points:
-    - advntr=advntr.__main__:main
-
 source:
   url: https://github.com/mehrdadbakhtiari/adVNTR/archive/{{ version }}.tar.gz
   sha256: 440ea416e6ac003c9249fa104b4f15284ced1a311f2689243bb5ca2564bc91dc
+
+build:
+  number: 1
+  skip: True  # [py > 311 or py < 310]
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -O3"
+    - make install CXX="${CXX} ${CXXFLAGS}" PREFIX="${PREFIX}" -j"${CPU_COUNT}"
+    - {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir --use-pep517 . -vvv
+  entry_points:
+    - advntr = advntr.__main__:main
+  run_exports:
+    - {{ pin_subpackage('advntr', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - python
     - pip
     - setuptools
-    - cython
+    - cython <3
     - numpy
     - scipy
   run:
     - python
-    - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('scipy') }}
+    - numpy
+    - scipy
     - matplotlib-base
-    - networkx 1.11
+    - networkx
     - joblib
     - scikit-learn
-    - cython
+    - cython <3
     - biopython
-    - muscle 3.8.1551
-    - pysam 0.15.1
-    - htslib 1.9
-    - keras 2.2.4
-    - tensorflow 1.13.1
+    - muscle
+    - pysam
+    - htslib
+    - tensorflow
 
 test:
   commands:
@@ -51,11 +54,16 @@ test:
     - adVNTR-Filtering --help
 
 about:
-  home: https://github.com/mehrdadbakhtiari/adVNTR
-  license: BSD 3-Clause
+  home: "https://github.com/mehrdadbakhtiari/adVNTR"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: A tool for genotyping Variable Number Tandem Repeats (VNTR) from sequence data
+  summary: "A tool for genotyping Variable Number Tandem Repeats (VNTR) from sequence data."
+  dev_url: "https://github.com/mehrdadbakhtiari/adVNTR"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - cython_must_be_in_host

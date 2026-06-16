@@ -5,23 +5,24 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  skip: True  # [osx]
-  number: 1
-  run_exports:
-    - {{ pin_compatible(name|lower) }}
-
 source:
   url: https://github.com/CBDD/{{ name|lower }}/archive/refs/tags/v{{ version.replace('_', '-') }}.tar.gz
   sha256: cf5bf35d60254ae74c45f0c5ed3050513bbc8ae8df9c665157eb26f6b5a33d16
   patches:
     - NMObjective.h.patch
+    - 0001-RbtTypes.patch
+
+build:
+  number: 4
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage("rdock", max_pin=None) }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-    - popt
+    - pkg-config
   host:
     - popt
   run:
@@ -37,16 +38,16 @@ test:
     - rbcavity --help
 
 about:
-  home: https://rdock.github.io/
-  summary: A Fast, Versatile and Open Source Program for Docking Ligands to Proteins and Nucleic Acids
+  home: "https://rdock.github.io"
+  summary: "A Fast, Versatile and Open Source Program for Docking Ligands to Proteins and Nucleic Acids."
   description: |
     rDock is a fast and versatile Open Source docking program that can be used to dock small molecules against proteins and nucleic acids.
     It is designed for High Throughput Virtual Screening (HTVS) campaigns and Binding Mode prediction studies.
-  license: LGPL-3
+  license: "LGPL-3.0-or-later"
   license_family: LGPL
-  license_file: license.txt
-  dev_url: https://github.com/CBDD/rDock
-  doc_url: https://rdock.github.io/documentation/
+  license_file: "license.txt"
+  dev_url: "https://github.com/CBDD/rDock"
+  doc_url: "https://rdock.github.io/documentation"
 
 extra:
   additional-platforms:
