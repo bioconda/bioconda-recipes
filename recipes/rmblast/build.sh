@@ -67,6 +67,12 @@ else
 	export CONFIG_ARGS='--without-openmp --without-dll --without-gcrypt'
 fi
 
+if [[ `uname` == "Linux" ]]; then
+    VDB_ARG="--with-vdb=${PREFIX}"
+else
+    VDB_ARG="--without-vdb"
+fi
+
 # not building with boost as it's only used for unit tests
 ./configure CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
     --prefix="${PREFIX}" \
@@ -82,7 +88,7 @@ fi
     --without-debug \
     --with-experimental=Int8GI \
     --with-strip \
-    --with-vdb="${PREFIX}" \
+    ${VDB_ARG} \
     --with-z="${PREFIX}" \
     --with-bz2="${PREFIX}" \
     --with-sqlite3="${PREFIX}" \
