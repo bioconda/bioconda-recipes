@@ -1,0 +1,61 @@
+{% set name = "opt" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JEFworks-Lab/off-target-probe-tracker/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d5cc25ccf7b46c3892b7728cc343e8733d1c99fe358217840e6402b30885608e
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - opt = opt.run_opt:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=82.0.1
+  run:
+    - python >=3.8
+    - bowtie2 >=2.5.5
+    - samtools >=1.23.1
+    - mummer4 >=4.0.1
+    - gffread >=0.12.9
+    - pysam >=0.24.0
+    - numpy >=1.24,<2
+    - scipy >=1.17.1
+    - matplotlib-base >=3.10.9
+    - scikit-learn >=1.8.0
+    - pandas >=3.0.3
+    - biopython >=1.87
+    - pyfastx >=2.3.0
+    - requests >=2.34.2
+
+test:
+  imports:
+    - opt
+  commands:
+    - opt --help
+
+about:
+  home: https://github.com/JEFworks-Lab/off-target-probe-tracker
+  summary: Pipeline to predict off-target binding of probe sequences via nucleotide alignment
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE.md
+  doc_url: https://github.com/JEFworks-Lab/off-target-probe-tracker#readme
+  dev_url: https://github.com/JEFworks-Lab/off-target-probe-tracker
+
+extra:
+  recipe-maintainers:
+    - khersameesh24
+  skip-lints:
+    - gpl_requires_license_distributed

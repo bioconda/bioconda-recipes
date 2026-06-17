@@ -1,5 +1,5 @@
 {% set name = "selenzy_wrapper" %}
-{% set version = "0.3.0" %}
+{% set version = "0.3.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,23 +7,27 @@ package:
 
 source:
   url: https://github.com/brsynth/selenzy-wrapper/archive/{{ version }}.tar.gz
-  sha256: d2845077e14531d6412456dd135345778b9f959ba0c04b09123e81d17817dead
+  sha256: d4289dce74f2792c4f22c784b69de731ed5518a19b76d5f2c14d578e6819926a
 
 build:
   number: 1
   noarch: python
-  script: {{ PYTHON }} -m pip install -vv .
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation -vv .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.7,<3.10
     - pip
+    - setuptools
   run:
     - python >=3.7,<3.10
-    - biopython >1.70,<=1.77
-    - brs_utils
+    - biopython
+    - brs_utils <=1.24.2
     - emboss
-    - rptools >=6.2.3
+    - rptools <=6.0.2
+    - pandas
 test:
   source_files:
     - tests/
@@ -38,6 +42,6 @@ about:
 
 extra:
   recipe-maintainers:
+    - ramez17khaled
     - breakthewall
     - kenza12
-
