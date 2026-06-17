@@ -1,0 +1,55 @@
+{% set version = "0.1.8" %}
+
+package:
+  name: mozaiko
+  version: {{ version }}
+
+source:
+  url: https://github.com/CIBIO-BU/mozaiko/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 6157d5d7c3826744bc7f2d0b822bd7a434318f544972187cfb83e7ea7e161efd
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('mozaiko', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+    - wheel
+
+  run:
+    - python >=3.9
+    - biopython >=1.80
+    - numpy
+    - pandas
+    - matplotlib-base
+    - tqdm
+    - vsearch ==2.16
+    - cutadapt ==4.9
+    - catnip-seq
+    - crabs ==0.1.7
+
+test:
+  imports:
+    - mozaiko
+  commands:
+    - mozaiko --version
+    - crabs --version
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/CIBIO-BU/mozaiko
+  summary: Piecing Together Complete Genetic Coverage for Biomonitoring
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - camilababo

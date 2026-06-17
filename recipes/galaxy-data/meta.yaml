@@ -1,5 +1,5 @@
-{% set version = "25.1.2" %}
-{% set sha256 = "52931c88bdefd9d6b4dfd79ba30428bc9dcf246c413d67d608d1d9e47945c979" %}
+{% set version = "26.0.1" %}
+{% set sha256 = "e4a6fb3c26d1ff426058b1adcb1a00b65c4d46343d81f84a92607d62e7247afb" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
@@ -12,7 +12,7 @@ source:
 
 build:
   noarch: python
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('galaxy-data', max_pin="x") }}
@@ -21,29 +21,31 @@ build:
     - galaxy-load-objects=galaxy.model.store.load_objects:main
     - galaxy-manage-db=galaxy.model.orm.scripts:manage_db
     - galaxy-prune-histories=galaxy.model.scripts:prune_history_table
+    - galaxy-delete-sessions = galaxy.model.scripts:delete_galaxy_sessions
+    - galaxy-delete-job-metrics = galaxy.model.scripts:delete_job_metrics
 
 requirements:
   host:
     - pip
-    - python >=3.8
+    - python >={{ python_min }}
     - setuptools
   run:
-    - python >=3.8
+    - python >={{ python_min }}
     - galaxy-files >={{ galaxy_version }}
     - galaxy-objectstore >={{ galaxy_version }}
     - galaxy-schema >={{ galaxy_version }}
     - galaxy-tool-util >={{ galaxy_version }}
     - galaxy-util >={{ galaxy_version }}
     - alembic
-    - alembic-utils
     - bdbag >=1.6.3
     - bx-python
     - dnspython
     - galaxy_sequence_utils
     - h5grove >=1.2.1
     - h5py
-    - isa-rwval >=0.10.10
-    - python-isal
+    - ijson
+    - isa-rwval >=0.10.11
+    - python-isal >=1.7.0
     - markupsafe
     - mrcfile
     - msal
@@ -52,28 +54,32 @@ requirements:
     - pycryptodome
     - pydantic >=2.7.4
     - email-validator
+    - pydicom
     # - pylibmagic # Pending https://github.com/kratsg/pylibmagic/issues/54
+    - pypng
     - pysam >=0.21
     - python-magic
-    - rocrate
-    - social-auth-core ==4.0.3
-    - sqlalchemy >=2.0,<2.1
+    - rocrate <0.15.0
+    - social-auth-core >=4.5.0
+    - sqlalchemy >=2.0.37,<2.1
     - tifffile
     - typing-extensions
-    - webob
 
 test:
   imports:
     - galaxy
+    - galaxy.datatypes
+    - galaxy.datatypes.dataproviders
+    - galaxy.datatypes.images
     - galaxy.exceptions
     - galaxy.model
-    - galaxy.datatypes.dataproviders
     - galaxy.quota
     - galaxy.security
 
 about:
   home: https://galaxyproject.org
-  license: AFL-3.0
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: The Galaxy models, datatype framework, and datatype implementations.
   doc_url: https://docs.galaxyproject.org
@@ -85,3 +91,4 @@ extra:
     - doi:10.1093/nar/gky379
   recipe-maintainers:
     - bernt-matthias
+    - nsoranzo
