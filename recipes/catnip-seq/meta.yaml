@@ -1,0 +1,51 @@
+{% set version = "0.1.10" %}
+
+package:
+  name: catnip-seq
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/c/catnip-seq/catnip_seq-{{ version }}.tar.gz
+  sha256: 9a09af1d2130aa55c7bdda9d9f2e1f332b46fea16f2307e94ac9c1ad24e77bc1
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('catnip-seq', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=45
+    - wheel
+    - pip
+  run:
+    - python >=3.9
+    - pysam
+    - pandas
+    - numpy
+    - cd-hit
+    - bowtie2
+    - samtools
+
+test:
+  imports:
+    - catnip
+  commands:
+    - pip check
+    - catnip --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/CIBIO-BU/catnip
+  summary: Explore nucleotide divergence and sequence resolution across user-defined categories.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - camilababo

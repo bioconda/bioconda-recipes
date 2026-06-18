@@ -1,41 +1,49 @@
-{% set version = "0.3" %}
+{% set name = "metamdbg" %}
+{% set version = "1.4" %}
 
 package:
-  name: metamdbg
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/GaetanBenoitDev/metaMDBG/archive/refs/tags/metaMDBG-{{ version }}.tar.gz
-  sha256: 24b34fcc7416b44081963a470059209c7f0592bd597a25388a94dae5edb2b09d
+  sha256: 43d09f1e7169b504ec9a1df522ad2b1c7e302122cf20f2fa64a50827ab1c58b2
 
 build:
-  skip: True  # [osx]
   number: 0
   run_exports:
-    - {{ pin_subpackage('metamdbg', max_pin="x.x") }}
+    - {{ pin_subpackage('metamdbg', max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - zlib
   host:
     - zlib
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
-    - zlib
-    - openmp
-    - wfmash =0.8.2
-    - samtools =1.6
-    - minimap2 =2.24
-    - gsl =2.7 =he838d99_0
+    - libgomp # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - metaMDBG 2>&1 | grep 'Usage'
 
 about:
-  home: https://github.com/GaetanBenoitDev/metaMDBG
+  home: "https://github.com/GaetanBenoitDev/metaMDBG"
   license: MIT
+  license_family: MIT
+  license_file: "LICENSE.md"
   summary: 'MetaMDBG: a lightweight assembler for long and accurate metagenomics reads.'
+  dev_url: "https://github.com/GaetanBenoitDev/metaMDBG"
+  doc_url: "https://github.com/GaetanBenoitDev/metaMDBG/blob/metaMDBG-{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01983-6
+
 

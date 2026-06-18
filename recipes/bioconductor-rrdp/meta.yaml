@@ -1,17 +1,19 @@
-{% set version = "1.36.0" %}
+{% set version = "1.44.0" %}
 {% set name = "rRDP" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 1a6dbbc2c3e31aa382c312202e85ce62
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0c204596aa38308b1012464818517f62
+
 build:
   number: 0
   rpaths:
@@ -19,24 +21,30 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-rrdp", max_pin="x.x") }}'
   noarch: generic
-# Suggests: rRDPData
+
+# Suggests: rRDPData, knitr, rmarkdown
 # SystemRequirements: Java JDK 1.4 or higher
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
+    - bioconductor-biostrings >=2.78.0,<2.79.0
     - r-base
+    - r-rjava
   run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
+    - bioconductor-biostrings >=2.78.0,<2.79.0
     - r-base
+    - r-rjava
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-2 | file LICENSE'
-  summary: 'Interface to the RDP Classifier'
-  description: 'Seamlessly interfaces RDP classifier (version 2.9).'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2 + file LICENSE
+  summary: Interface to the RDP Classifier
+  description: This package installs and interfaces the naive Bayesian classifier for 16S rRNA sequences developed by the Ribosomal Database Project (RDP). With this package the classifier trained with the standard training set can be used or a custom classifier can be trained.
   license_file: LICENSE
+
 extra:
   identifiers:
     - biotools:rrdp

@@ -1,0 +1,53 @@
+{% set name = "hackgap" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 28b407fc65e29defd9d03117dcb29a1f61543f5ccf4f18cac6a8490e9882f509
+
+build:
+  number: 0
+  entry_points:
+    - hackgap = hackgap.hackgap.hackgap_main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.12
+    - setuptools
+  run:
+    - python >=3.12
+    - numpy >=2
+    - numba >=0.60
+    - pigz
+    - xz
+    - bzip2
+
+test:
+  imports:
+    - hackgap
+  commands:
+    - hackgap --help
+    - hackgap count --help
+
+about:
+  home: https://gitlab.com/rahmannlab/hackgap
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "hackgap (hash-based counting of k-mers with gaps) provides a fast jit-compiled k-kmer counter which supports gapped k-mers."
+  dev_url: https://gitlab.com/rahmannlab/hackgap
+
+extra:
+  identifiers:
+    - doi:10.4230/LIPICS.WABI.2022.12
+  recipe-maintainers:
+    - JZentgraf

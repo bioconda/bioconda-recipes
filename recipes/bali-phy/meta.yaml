@@ -1,49 +1,56 @@
+{% set version = "4.2" %}
+
 package:
   name: bali-phy
-  version: '3.6.0'
+  version: {{ version }}
 
 source:
-  url: https://github.com/bredelings/bali-phy/archive/3.6.0.tar.gz
-  sha256: 88f1922f80d0376ec2a0929d72d69258eac3dfba0eef13aab3f9c460db1ac0b6
+  url: https://github.com/bredelings/bali-phy/archive/{{ version }}.tar.gz
+  sha256: d4fa2e7dc04587231933cf1c1b70ddd69d67a011235ad5fdf8658fea085b7ece
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bali-phy', max_pin='x') }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - meson >=0.57.1
+    - {{ stdlib('c') }}
+    - meson >=1.1.0
     - ninja
     - pkg-config
+    - pandoc
   host:
-    - eigen >=3.3.7
-    - boost-cpp
+    - eigen >=3.4.0
+    - libboost-devel >=1.91
+    - cereal
+    - fmt >=12
     - glib
     - cairo
-    - pandoc
+    - xxhash
   run:
-    - eigen >=3.3.7
-    - boost-cpp
-    - glib
-    - cairo
-    - pandoc
     - gnuplot
     - r-base
     - perl
-    - python
+    - python >=3
 
 about:
   home: http://www.bali-phy.org
   dev_url: https://github.com/bredelings/BAli-Phy/
-  license: GPL2
-  summary: 'Phylogenetics - Bayesian estimation of phylogenies and multiple sequence alignments.'
-
+  license: GPL-2.0-only
+  license_family: GPL
+  summary: Bayesian co-estimation of phylogenies and multiple sequence alignments.
 
 test:
   commands:
     - bali-phy help
+    - bali-phy $PREFIX/share/doc/bali-phy/examples/5S-rRNA/25-muscle.fasta --test
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/bioinformatics/btab129
     - biotools:bali-phy

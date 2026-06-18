@@ -1,0 +1,77 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: r-bmix
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/caravagnalab/BMix/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4288c202a7e735661b8d3da7b21c31b8af4daf6548c13e718df731428220a71a
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("r-bmix", max_pin="x.x") }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - git
+  
+  host:
+    - r-base
+    - r-ggplot2
+    - r-cli
+    - r-VGAM
+    - r-cowplot
+    - r-dplyr
+    - r-tibble
+    - r-crayon
+    - r-easypar
+    - r-pio
+    - r-knitr
+    - r-markdown
+  run:
+    - r-base
+    - r-ggplot2
+    - r-cli
+    - r-VGAM
+    - r-cowplot
+    - r-dplyr
+    - r-tibble
+    - r-crayon
+    - r-easypar
+    - r-pio
+    - r-knitr
+    - r-markdown
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library(BMix)"           # [not win]
+    - "\"%R%\" -e \"library(BMix)\""  # [win]
+
+about:
+  home: https://github.com/caravagnalab/BMix
+  license: GPL-3.0-or-later
+  summary: "Binomial and Beta-Binomial mixture models for counts data."
+  description: |
+    BMix provides univariate Binomial and Beta-Binomial mixture models. 
+    Count-based mixtures can be used in a variety of settings, for instance 
+    to model genome sequencing data of somatic mutations in cancer. BMix fits 
+    these mixtures by maximum likelihood exploiting the Expectation Maximization 
+    algorithm. Model selection for the number of mixture components is by the 
+    Integrated Classification Likelihood, an extension of the Bayesian Information 
+    Criterion that includes the entropy of the latent variables.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: https://caravagnalab.github.io/BMix/
+
+extra:
+  recipe-maintainers:
+    - elena-buscaroli
+    - valerianilucrezia

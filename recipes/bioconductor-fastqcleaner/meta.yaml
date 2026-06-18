@@ -1,60 +1,73 @@
-{% set version = "1.20.0" %}
+{% set version = "1.28.0" %}
 {% set name = "FastqCleaner" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: bace77f4e33bd7fe58cbbadaefd896d8
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: b52e54d2a3e5f34d0434b5e8ad1e7109
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-fastqcleaner", max_pin="x.x") }}'
+
 # Suggests: BiocStyle, testthat, knitr, rmarkdown
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-shortread >=1.60.0,<1.61.0'
-    - r-base
-    - r-dt
-    - r-htmltools
-    - 'r-rcpp >=0.12.12'
-    - r-shiny
-    - r-shinybs
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-shortread >=1.60.0,<1.61.0'
-    - r-base
-    - r-dt
-    - r-htmltools
-    - 'r-rcpp >=0.12.12'
-    - r-shiny
-    - r-shinybs
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-shortread >=1.68.0,<1.69.0
+    - r-base
+    - r-dt
+    - r-htmltools
+    - r-rcpp >=0.12.12
+    - r-shiny
+    - r-shinybs
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-shortread >=1.68.0,<1.69.0
+    - r-base
+    - r-dt
+    - r-htmltools
+    - r-rcpp >=0.12.12
+    - r-shiny
+    - r-shinybs
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'A Shiny Application for Quality Control, Filtering and Trimming of FASTQ Files'
-  description: 'An interactive web application for quality control, filtering and trimming of FASTQ files. This user-friendly tool combines a pipeline for data processing based on Biostrings and ShortRead infrastructure, with a cutting-edge visual environment. Single-Read and Paired-End files can be locally processed. Diagnostic interactive plots (CG content, per-base sequence quality, etc.) are provided for both the input and output files.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: A Shiny Application for Quality Control, Filtering and Trimming of FASTQ Files
+  description: An interactive web application for quality control, filtering and trimming of FASTQ files. This user-friendly tool combines a pipeline for data processing based on Biostrings and ShortRead infrastructure, with a cutting-edge visual environment. Single-Read and Paired-End files can be locally processed. Diagnostic interactive plots (CG content, per-base sequence quality, etc.) are provided for both the input and output files.
   license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:fastqcleaner
 

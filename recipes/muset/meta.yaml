@@ -1,0 +1,45 @@
+{% set name = "muset" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/camiladuitama/muset.git
+  git_rev: v{{ version }}
+ 
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.15
+    - make    
+  host:
+    - zlib
+  run:
+    - ggcat >=1.1.0
+
+test:
+  commands:
+    - muset --version 2>&1 | grep {{ version }}
+    - muset --help 2>&1 | grep "show this message and exit"
+about:
+  home: "https://github.com/CamilaDuitama/muset"
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: "A pipeline for building an abundance unitig matrix from FASTA/FASTQ files"  # Added summary
+  description: "MUSET is a software for generating an abundance unitig matrix from a collection of input samples (in FASTA/Q format)."
+  dev_url: "https://github.com/CamilaDuitama/muset"
+
+extra:
+  recipe-maintainers:
+    - CamilaDuitama
+  skip-lints:
+    - missing_hash
+    - uses_vcs_url  # Explicitly tell linter to ignore VCS URL warning

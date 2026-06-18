@@ -13,7 +13,7 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
 cmake -B build -DBUILD_SHARED_LIBS=ON --install-prefix=$PREFIX
-cmake --build build --target all
+cmake --build build --target all -j ${CPU_COUNT}
 cmake --install build
 
 ls $PREFIX/bin

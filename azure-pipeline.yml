@@ -1,10 +1,13 @@
-pr:
-  autoCancel: true
-trigger:
-  branches:
-    exclude:
-      - master
-      - "*"
+# Disable Azure checks in favor of GitHub Actions due to memory issues
+# pr:
+#   autoCancel: true
+pr: none
+trigger: none
+# trigger: 
+  # branches:
+  #   exclude:
+  #     - master
+  #     - "*"
 
 stages:
   - stage: "lint"
@@ -23,28 +26,10 @@ stages:
               wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch bioconda install script
 
-          - bash: |
-              sudo mkdir -p /opt
-              sudo chown -R $USER /opt
-            displayName: Ensure cache has path to restore to
-
-          - task: Cache@2
-            inputs:
-              path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
-              cacheHitVar: CACHE_RESTORED
-            displayName: Restore cache
-
           - script: bash install-and-set-up-conda.sh
-            condition: ne(variables.CACHE_RESTORED, 'true')
             displayName: Install bioconda-utils
 
           # We reconfigure conda to use the right channel setup.
-          # This has to be done after the cache is restored, because
-          # the channel setup is not cached as it resides in the home directory.
-          # We could use a system-wide (and therefore cached) channel setup,
-          # but mamba does not support that at the time of implementation
-          # (it ignores settings made by --system).
           - script: bash configure-conda.sh
             displayName: Configure conda
 
@@ -59,6 +44,8 @@ stages:
   - stage: "test_linux"
     jobs:
       - job: "test_linux"
+        ##timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+        ##cancelTimeoutInMinutes: 40 # how much time to give 'run always even if cancelled tasks' before stopping them
         pool:
           vmImage: "ubuntu-latest"
         strategy:
@@ -73,28 +60,10 @@ stages:
               wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch bioconda install script
 
-          - bash: |
-              sudo mkdir -p /opt
-              sudo chown -R $USER /opt
-            displayName: Ensure cache has path to restore to
-
-          - task: Cache@2
-            inputs:
-              path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
-              cacheHitVar: CACHE_RESTORED
-            displayName: Restore cache
-
           - script: bash install-and-set-up-conda.sh
-            condition: ne(variables.CACHE_RESTORED, 'true')
             displayName: Install bioconda-utils
 
           # We reconfigure conda to use the right channel setup.
-          # This has to be done after the cache is restored, because
-          # the channel setup is not cached as it resides in the home directory.
-          # We could use a system-wide (and therefore cached) channel setup,
-          # but mamba does not support that at the time of implementation
-          # (it ignores settings made by --system).
           - script: bash configure-conda.sh
             displayName: Configure conda
 
@@ -102,13 +71,11 @@ stages:
               set -e
               eval "$(conda shell.bash hook)"
               conda activate bioconda
-              docker pull quay.io/dpryan79/mulled_container:latest
               export OSTYPE="linux-gnu"
               export CI="true"
               bioconda-utils build recipes config.yml \
                   --docker --mulled-test \
                   --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
-              docker rmi quay.io/dpryan79/mulled_container:latest
             displayName: Test
 
           - bash: |
@@ -154,28 +121,10 @@ stages:
               wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
             displayName: Fetch setup scripts
 
-          - bash: |
-              sudo mkdir -p /opt
-              sudo chown -R $USER /opt
-            displayName: Ensure cache has path to restore to
-
-          - task: Cache@2
-            inputs:
-              path: "/opt/mambaforge"
-              key: '"$(Agent.OS)" | install-and-set-up-conda.sh | configure-conda.sh | common.sh'
-              cacheHitVar: CACHE_RESTORED
-            displayName: Restore cache
-
           - script: bash install-and-set-up-conda.sh
-            condition: ne(variables.CACHE_RESTORED, 'true')
             displayName: Install bioconda-utils
 
           # We reconfigure conda to use the right channel setup.
-          # This has to be done after the cache is restored, because
-          # the channel setup is not cached as it resides in the home directory.
-          # We could use a system-wide (and therefore cached) channel setup,
-          # but mamba does not support that at the time of implementation
-          # (it ignores settings made by --system).
           - script: bash configure-conda.sh
             displayName: Configure conda
 
@@ -185,6 +134,10 @@ stages:
               conda activate bioconda
               export OSTYPE="darwin"
               export CI="true"
+
+              # Get MACOSX vars
+              source common.sh
+
               bioconda-utils build recipes config.yml \
                   --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
             displayName: Test

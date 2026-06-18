@@ -11,16 +11,19 @@ source:
   sha256: {{ sha256 }}
   patches:
     - Makefile.patch
+    - 0001-configure.sh.patch
 
 build:
-  number: 6
-  skip: True  # [osx or not py2k]
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - python
     - perl
@@ -28,13 +31,18 @@ requirements:
   run:
     - python
     - perl
-    - bzip2
 
 test:
   commands:
-    - ESTmapper.pl 2>&1 | grep ESTmapper
+    - ESTmapper.pl 2>&1 | grep "ESTmapper"
 
 about:
-  home: http://kmer.sourceforge.net/wiki/index.php/Getting_Started_with_ESTmapper
-  license: GPL
+  home: "https://sourceforge.net/projects/kmer"
+  license: "GPL-3.0-or-later"
   summary: "Software package for the high-throughput alignment of large cDNA (EST, mRNA) sequence sets to a large eukaryotic genome of the same species."
+  dev_url: "https://sourceforge.net/projects/kmer"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

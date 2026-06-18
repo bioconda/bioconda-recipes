@@ -1,0 +1,110 @@
+{% set version = '0.3.1' %}
+{% set github = 'https://github.com/bnprks/BPCells' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-bpcells
+  version: {{ version|replace('-', '_') }}
+
+source:
+  url: {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 76f55ec77c9784d4b4ad80e7a0fc5c8139fa8101857edd5772ece70cbd8ae584
+  patches:
+    - patches/0001-fix-libhwy-config.patch
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-bpcells', max_pin='x.x') }}
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+  host:
+    - r-base
+    - r-dplyr >=1.0.0
+    - r-ggplot2 >=3.4.0
+    - r-ggrepel
+    - r-hexbin
+    - r-lifecycle
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - r-readr
+    - r-rlang
+    - r-scales
+    - r-scattermore
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-vctrs
+    - hdf5
+    - libhwy
+    - zlib
+  run:
+    - r-base
+    - r-dplyr >=1.0.0
+    - r-ggplot2 >=3.4.0
+    - r-ggrepel
+    - r-hexbin
+    - r-lifecycle
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-readr
+    - r-rlang
+    - r-scales
+    - r-scattermore
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-vctrs
+
+test:
+  requires:
+    - r-testthat
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-igraph
+    - r-matrixstats
+    - r-rspectra
+    - r-withr
+    - macs3
+  commands:
+    - $R -e "library('BPCells')"
+    ## NB: this tightly-couples to `macs2` coming from `test.requires` and avoids running against the container
+    - if command -v macs3; then $R -e "testthat::test_package('BPCells', stop_on_failure=TRUE)"; fi
+
+about:
+  home: "https://bnprks.github.io/BPCells"
+  dev_url: {{ github }}
+  license: "Apache-2.0 or MIT"
+  summary: Efficient operations for single cell ATAC-seq fragments and
+    RNA counts matrices. Interoperable with standard file formats, and introduces
+    efficient bit-packed formats that allow large storage savings and increased
+    read speeds.
+  license_family: MIT
+  license_file:
+    - COPYRIGHT
+    - LICENSE-APACHE
+    - LICENSE-MIT
+  doc_url: "https://bnprks.github.io/BPCells"
+
+extra:
+  recipe-maintainers:
+    - mfansler
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

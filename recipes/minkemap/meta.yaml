@@ -1,0 +1,52 @@
+{% set name = "minkemap" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/minkemap-{{ version }}.tar.gz
+  sha256: e4d3643d5fd447cb3208503f87cfb806e68cb57bf6ea715166e7fbb3384d03bf
+
+build:
+  entry_points:
+    - minkemap = minkemap.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+    
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - numpy
+    - matplotlib-base
+    - pandas
+    - biopython
+    - mappy
+    - pycirclize
+
+test:
+  imports:
+    - minkemap
+  commands:
+    - pip check
+    - minkemap --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/erinyoung/MinkeMap"
+  summary: A Python-based Circular Genome Visualization Tool
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - erinyoung

@@ -1,0 +1,42 @@
+{% set name = "pymethylation_utils" %}
+{% set version = "0.5.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pymethylation_utils-{{ version }}.tar.gz
+  sha256: 8276c3bc87406a0fafd415e01bd697590a59098f4c6cd5a4ded7bf192dc91585
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pymethylation_utils', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - pymethylation_utils
+  commands:
+    - python -c "import pymethylation_utils; print(pymethylation_utils.__version__)"  # Verify the version
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/SebastianDall/pymethylation_utils"
+  summary: Python wrapper for the methylation_utils Rust binary
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - SebastianDall

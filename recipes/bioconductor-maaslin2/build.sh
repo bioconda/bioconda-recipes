@@ -9,3 +9,7 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 $R CMD INSTALL --build .
+
+# copy additional scripts
+chmod +x R/*.R
+cp R/*.R ${PREFIX}/bin/

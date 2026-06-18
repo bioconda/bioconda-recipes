@@ -1,0 +1,54 @@
+{% set name = "schpl" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scHPL-{{ version }}.tar.gz
+  sha256: 3eb62b2e65b1faba04b7bcb86f7bf6967a6301866a605551211b8f14fd27eced
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('schpl', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - numpy >=1.19.2
+    - scipy >=1.5.2
+    - scikit-learn >=0.23.2
+    - pandas >=1.1.2,<2
+    - python-newick >=1.0.0,<1.1.dev0
+    - anndata >=0.7.4
+    - matplotlib-base >=3.3.1
+    - seaborn >=0.11.1
+
+test:
+  imports:
+    - scHPL
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/lcmmichielsen/scHPL
+  summary: Hierarchical progressive learning pipeline for single-cell RNA-sequencing datasets
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1038/s41467-021-23196-8
+  recipe-maintainers:
+    - jdblischak
+    - nictru
+    - lcmmichielsen

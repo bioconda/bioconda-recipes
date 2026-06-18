@@ -1,15 +1,16 @@
-{% set version = "1.08" %}
+{% set name = "recon" %}
+{% set version = "1.10" %}
 
 package:
-  name: "recon"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://www.repeatmasker.org/RepeatModeler/RECON-{{ version }}.tar.gz
-  sha256: 699765fa49d18dbfac9f7a82ecd054464b468cb7521abe9c2bd8caccf08ee7d8
+  url: https://github.com/Dfam-consortium/RECON/archive/refs/tags/{{ version }}.tar.gz
+  sha256: d40bcbe2b842b3bde31e6f460176ea8d1facece89920568f12a1f7abe6a9c42c
 
 build:
-  number: 7
+  number: 0
   run_exports:
     - {{ pin_subpackage('recon', max_pin="x") }}
 
@@ -17,17 +18,25 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
 
 test:
   commands:
-    - imagespread 2>&1 | grep usage
+    - run_recon.sh 2>&1 | grep 'usage'
+    - eledef 2>&1 | grep 'usage'
 
 about:
-  home: http://eddylab.org/software/recon/
-  license: GPL2
+  home: "http://eddylab.org/software/recon"
+  doc_url: "http://eddylab.org/software/recon"
+  license: "GPL-2.0-or-later"
+  license_family: GPL2
   license_file: LICENSE
   summary: 'The RECON package performs de novo identification and classification of repeat sequence families from genomic sequences.'
+  dev_url: "https://github.com/Dfam-consortium/RepeatModeler"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.88502

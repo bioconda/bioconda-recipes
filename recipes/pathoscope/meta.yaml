@@ -1,23 +1,33 @@
+{% set name = "pathoscope" %}
+{% set version = "2.0.7" %}
+
 package:
-  name: pathoscope
-  version: 2.0.7
+  name: {{ name }}
+  version: {{ version }}
 
 build:
+  number: 2
   noarch: python
-  number: 1
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - 2to3 -w -n pathoscope
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-  url: https://github.com/PathoScope/PathoScope/archive/v2.0.7.tar.gz
+  url: https://github.com/PathoScope/PathoScope/archive/v{{ version }}.tar.gz
   sha256: 59e473d5671b310da9bf9a541b78d15148f279df0635b016503a861905f11bb0
 
 requirements:
   host:
-    - python <3
+    - python >=3
+    - setuptools
     - pip
   run:
-    - python <3
-    - samtools <1.0
+    - python >=3
+    - samtools
     - bowtie2
 
 test:
@@ -29,10 +39,13 @@ test:
     - pathoscope REP -h &> /dev/null
 
 about:
-  home: 'https://github.com/PathoScope/PathoScope'
-  license: GPLv3
-  summary: Species identification and strain attribution with unassembled sequencing data
+  home: "https://github.com/PathoScope/PathoScope"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Species identification and strain attribution with unassembled sequencing data."
+  dev_url: "https://github.com/PathoScope/PathoScope"
+  doc_url: "https://github.com/PathoScope/PathoScope/wiki"
     
 extra:
-  maintainers:
+  recipe-maintainers:
     - davebx

@@ -1,0 +1,53 @@
+{% set name = "strdust" %}
+{% set version = "0.18.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wdecoster/STRdust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9f287b0e9a8286517e0ef55963b34f1eb30afd274020fa439d692b4b2014739a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - clangdev <22 
+    - make
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+    - htslib
+
+test:
+  commands:
+    - STRdust --help
+
+about:
+  home: "https://github.com/wdecoster/STRdust"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tandem repeat genotyper for long reads."
+  dev_url: "https://github.com/wdecoster/STRdust"
+  doc_url: "https://github.com/wdecoster/STRdust/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  identifiers:
+    - doi:10.1101/gr.279265.124
+  skip-lints:
+    - compiler_needs_stdlib_c

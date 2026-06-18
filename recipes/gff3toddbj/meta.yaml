@@ -1,5 +1,5 @@
 {% set name = "gff3toddbj" %}
-{% set version = "0.4.0" %}
+{% set version = "0.4.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 255bb2b2f57dd648e9a5115f73f4dc3ffdd2abb7296080410f49c6c233a9657f
+  sha256: 626705cf3efce51f0137c81b33a69ebc00dcb0cae763684d0aec82443823540d
 
 build:
   number: 0
@@ -20,16 +20,19 @@ build:
     - genbank-to-ddbj = gff3toddbj.genbank_to_ddbj:main
     - compare-ddbj = gff3toddbj.evaluate:main
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage("gff3toddbj", max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.9,<3.14
+    - setuptools
 
   run:
-    - bcbio-gff >=0.6.6
-    - biopython >=1.75
-    - python
+    - bcbio-gff <=0.7.1
+    - biopython <=1.86
+    - python >=3.9,<3.14
     - toml
     - pysam
     - samtools

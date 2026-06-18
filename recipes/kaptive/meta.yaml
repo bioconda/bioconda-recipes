@@ -1,5 +1,5 @@
 {% set name = "kaptive" %}
-{% set version = "3.0.0b1" %}
+{% set version = "3.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/kaptive-{{ version }}.tar.gz
-  sha256: ee3f4dc710b91580db84f9eb24bfc8adf6bc9d52871a018f0aabb0c4b6dd5790
+  sha256: 9b83666360f8842c7bbeca6043e6d111e8eba9b29242424f652225d8f0ef50d0
 
 build:
   entry_points:
-    - kaptive = kaptive.__main__:main
+    - kaptive = kaptive.cli:cli
   noarch: python
   script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
@@ -22,16 +22,21 @@ requirements:
   host:
     - python >=3.9
     - pip
+    - hatchling
+    - hatch-vcs
   run:
     - python >=3.9
-    - biopython
+    - biopython >=1.83
+    - numpy
     - dna_features_viewer
+    - minimap2
 
 test:
   imports:
     - kaptive
   commands:
     - kaptive --help
+    - minimap2 --help
 
 about:
   home: "https://kaptive.readthedocs.io/en/latest"

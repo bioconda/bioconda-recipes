@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 case "${target_platform}" in osx-*) export MACOSX_DEPLOYMENT_TARGET=10.12 ; esac
 #sed -i.bak 's/Boost_USE_STATIC_LIBS OFF/Boost_USE_STATIC_LIBS ON/' CMakeLists.txt
 
@@ -15,7 +17,7 @@ popd
 
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make 
+make -j ${CPU_COUNT}
 popd
 
 mkdir -p $PREFIX/bin

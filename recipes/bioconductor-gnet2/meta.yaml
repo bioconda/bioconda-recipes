@@ -1,27 +1,34 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "GNET2" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 06382e36858e9d55d44aabba748d49b8
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 5605d6c87e4979f44d50cc212f217d39
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-gnet2", max_pin="x.x") }}'
+
 # Suggests: knitr, rmarkdown
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-diagrammer
     - r-dplyr
@@ -33,8 +40,10 @@ requirements:
     - r-xgboost
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-diagrammer
     - r-dplyr
@@ -44,16 +53,20 @@ requirements:
     - r-rcpp
     - r-reshape2
     - r-xgboost
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'Apache License 2.0'
-  summary: 'Constructing gene regulatory networks from expression data through functional module inference'
-  description: 'Cluster genes to functional groups with E-M process. Iteratively perform TF assigning and Gene assigning, until the assignment of genes did not change, or max number of iterations is reached.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Apache License 2.0
+  summary: Constructing gene regulatory networks from expression data through functional module inference
+  description: Cluster genes to functional groups with E-M process. Iteratively perform TF assigning and Gene assigning, until the assignment of genes did not change, or max number of iterations is reached.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:gnet2
 

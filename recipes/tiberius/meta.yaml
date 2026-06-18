@@ -1,0 +1,48 @@
+{% set version = "2.0.5" %}
+{% set name = "tiberius" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Gaius-Augustus/Tiberius/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cfeab56870a295d3931608ab1c03156fd4153626e2250a39af57b93ae5407c72
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - hatchling
+  run:
+    - python >=3.12
+    - learnmsa
+    - numpy
+    - tensorflow >=2.17
+    - biopython
+    - transformers
+
+test:
+  imports:
+    - tiberius
+
+about:
+  home: "https://github.com/Gaius-Augustus/Tiberius"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tiberius is a deep learning gene-finder."
+  dev_url: "https://github.com/Gaius-Augustus/Tiberius"
+  doc_url: "https://github.com/Gaius-Augustus/Tiberius/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btae685
+    - biotools:tiberius

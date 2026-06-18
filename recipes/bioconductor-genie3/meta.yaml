@@ -1,45 +1,52 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "GENIE3" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fb7d197e0e34175eba7dd31608aa67d6
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: f92fe8d0fa845875695dc39f181cf35b
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-genie3", max_pin="x.x") }}'
+
 # Suggests: knitr, rmarkdown, foreach, doRNG, doParallel, Biobase, SummarizedExperiment, testthat, methods, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - r-dplyr
     - r-reshape2
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
     - r-dplyr
     - r-reshape2
-  build:
-    - {{ compiler('c') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'GEne Network Inference with Ensemble of trees'
-  description: 'This package implements the GENIE3 algorithm for inferring gene regulatory networks from expression data.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: GEne Network Inference with Ensemble of trees
+  description: This package implements the GENIE3 algorithm for inferring gene regulatory networks from expression data.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
