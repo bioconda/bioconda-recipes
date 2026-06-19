@@ -245,15 +245,12 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          # Do not upload ARM mulled images to biocontainers yet (matches the
-          # prior CircleCI behavior, which deliberately omitted this flag);
-          # x86-64 bulk builds DO upload them via --mulled-upload-target biocontainers.
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 5 \
             --docker --mulled-test \
             --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
             --container-platform linux/arm64 \
-            --anaconda-upload \
+            --anaconda-upload --mulled-upload-target biocontainers \
             --lint --record-build-failures --skiplist-leafs \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
           conda clean -y --all
