@@ -152,9 +152,33 @@ jobs:
           conda activate bioconda
           source common.sh
 
-          bioconda-utils build recipes config.yml \
-            --docker --mulled-test \
-            --git-range origin/"$GITHUB_BASE_REF" HEAD
+          attempt=1
+          max_attempts=2
+          retry_delay=15
+          log_file=$(mktemp "${RUNNER_TEMP:-/tmp}/bioconda-build.XXXXXX")
+          trap 'rm -f "$log_file"' EXIT
+          # Retry only known transient network fetch failures from conda/docker downloads.
+          transient_pattern='IncompleteRead|Connection broken|ReadTimeout|timed out|Temporary failure|Connection reset by peer'
+          while true; do
+            if bioconda-utils build recipes config.yml \
+              --docker --mulled-test \
+              --git-range origin/"$GITHUB_BASE_REF" HEAD >"$log_file" 2>&1; then
+              cat "$log_file"
+              break
+            fi
+            cat "$log_file"
+            if [ "$attempt" -ge "$max_attempts" ]; then
+              echo "bioconda-utils build failed after ${max_attempts} attempts."
+              exit 1
+            fi
+            if ! grep -Eqi "$transient_pattern" "$log_file"; then
+              echo "Non-transient build failure detected; not retrying."
+              exit 1
+            fi
+            attempt=$((attempt + 1))
+            echo "Transient download failure detected; retrying..."
+            sleep "$retry_delay"
+          done
 
       - name: Prepare artifacts
         run: |
