@@ -1,0 +1,56 @@
+{% set name = "cs-tag" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiangyun-fun/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cb2bd6bc6d3714f6f6d4815e3ce282d6ceeef025ac7fe73807b8a2b8e2d206fe
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - clangdev
+    - cmake
+    - make
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - openssl
+    - libcurl
+
+test:
+  commands:
+    - cs-tag --help
+    - cs-tag --version
+
+about:
+  home: https://github.com/jiangyun-fun/cs-tag
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - cs-tag/THIRDPARTY.yml
+  summary: "Generate minimap2-like CS tags for BAM files."
+  description: |
+    CS tags encode the alignment between query and reference sequences in a
+    compact string representation. cs-tag computes CS tags from an existing
+    BAM alignment and a reference FASTA, then writes them as auxiliary tags
+    into the output BAM.
+  dev_url: https://github.com/jiangyun-fun/cs-tag
+
+extra:
+  recipe-maintainers:
+    - jiangyun-fun
