@@ -8,7 +8,7 @@ from bioconda_utils import utils
 
 def getRepoData():
     res = set()
-    for subdir in ["linux-64", "noarch", "osx-64", "linux-aarch64", "osx-arm64"]:
+    for subdir in ["linux-64", "noarch", "linux-aarch64", "osx-arm64"]:
         for channel in ["conda-forge", "bioconda"]:
             r = requests.get(f"https://conda.anaconda.org/{channel}/{subdir}/repodata.json")
             for k, v in chain(r.json()["packages"].items(), r.json()["packages.conda"].items()):
