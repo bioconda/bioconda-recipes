@@ -53,12 +53,21 @@ jobs:
 
           export OSTYPE="linux-gnu"
           export CI="true"
+          mkdir -p /tmp/mulled-images
+          touch /tmp/mulled-images/images.jsonl
 
           # build and push all leftover packages
           bioconda-utils build recipes config.yml \
               --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --container-platform linux/amd64 \
+              --mulled-upload-records /tmp/mulled-images/images.jsonl \
               --prelint --exclude bioconda-repodata-patches
+
+          printf '%s' "$QUAY_OAUTH_TOKEN" |
+            docker login quay.io --username '$oauthtoken' --password-stdin
+          bioconda-utils create-mulled-manifests /tmp/mulled-images
         env:
+          QUAY_LOGIN: $(QUAY_LOGIN)
           QUAY_OAUTH_TOKEN: $(QUAY_OAUTH_TOKEN)
           ANACONDA_TOKEN: $(ANACONDA_TOKEN)
           INVOLUCRO_AUTH: $(INVOLUCRO_AUTH)

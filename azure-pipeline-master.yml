@@ -37,11 +37,20 @@ jobs:
 
           export OSTYPE="linux-gnu"
           export CI="true"
+          mkdir -p /tmp/mulled-images
+          touch /tmp/mulled-images/images.jsonl
 
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
             --git-range $(Build.SourceVersion)~1 $(Build.SourceVersion) \
-            --quay-upload-target biocontainers
+            --quay-upload-target biocontainers \
+            --container-platform linux/amd64 \
+            --package-platform linux-64 \
+            --mulled-upload-records /tmp/mulled-images/images.jsonl
+
+          printf '%s' "$QUAY_OAUTH_TOKEN" |
+            docker login quay.io --username '$oauthtoken' --password-stdin
+          bioconda-utils create-mulled-manifests /tmp/mulled-images
 
         env:
           QUAY_LOGIN: $(QUAY_LOGIN)
