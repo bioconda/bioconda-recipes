@@ -1,0 +1,97 @@
+{% set name = "salmon" %}
+{% set version = "1.12.0" %}
+# salmon 1.12.0 is the final C++ release. This is a *version-pinned subrecipe*: it
+# builds the same `salmon` package as recipes/salmon/meta.yaml (the Rust 2.0 line),
+# but at the legacy 1.12.x C++ version. Users who need the C++ build install it
+# explicitly with `conda install "salmon=1.12"`. v1.12.0 is an immutable tag; the
+# C++ tree also lives on the `cpp` branch for future maintenance.
+{% set sha256 = "acef41e166ee60697f7199f9fd28c63f835f188638629795d2509e9a56bfced4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  # 1.12.0 build 0 (linux-64/osx-64) was published from the old top-level C++
+  # recipe before salmon moved to the Rust 2.0 build. This subrecipe rebuilds the
+  # same version at a higher build number (also adding linux-aarch64/osx-arm64).
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("salmon", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake <4.0.0
+    - ninja
+    - make
+    - pkg-config
+  host:
+    - cereal >=1.3.2
+    - boost-cpp >=1.84
+    - tbb >=2021.4
+    - htslib >=1.23
+    - mimalloc >=3.2.8
+    - tbb-devel >=2022.3.0
+    - libiconv
+    - bzip2
+    - xz
+    - curl
+  run:
+    - {{ pin_compatible('htslib') }}
+    - {{ pin_compatible('boost-cpp') }}
+    - tbb
+    - bzip2
+    - xz
+    - curl
+    - boost-cpp
+    - icu
+
+test:
+  commands:
+    - salmon --help
+    - salmon --version | grep -q 1.12.0
+
+about:
+  home: "https://github.com/COMBINE-lab/salmon"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Transcript-level quantification from RNA-seq reads (final C++ salmon, 1.12.0)."
+  description: |
+    salmon 1.12.0 is the final C++ release of salmon (selective-alignment
+    transcript quantification). The default `salmon` package is the maintained
+    Rust 2.0 build; install this legacy C++ line explicitly with
+    `conda install "salmon=1.12"`, ideally in a dedicated environment.
+  dev_url: "https://github.com/COMBINE-lab/salmon"
+  doc_url: "https://salmon.readthedocs.io"
+
+extra:
+  # Version-pinned subrecipe: frozen w.r.t. the autobump bot (subrecipes are
+  # excluded by default; this makes the intent explicit). Future C++ bugfixes are
+  # bumped here by hand from a new tag cut off the `cpp` branch.
+  autobump:
+    enable: false
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p
+    - k3yavi
+    - mjsteinbaugh
+  identifiers:
+    - doi:10.1038/nmeth.4197
+  notes: |
+    This subrecipe builds the `salmon` binary from the final C++ release (1.12.0).
+    Because it is the same package name as the Rust 2.0 build, conda installs one
+    or the other in a given environment — `conda install salmon` gets the latest
+    (Rust 2.0); `conda install "salmon=1.12"` (e.g. in a dedicated env) gets this
+    C++ line. The C++ build uses a new index format incompatible with Rust 2.0
+    indices, so rebuild indices when switching. The pufferfish dependency is pinned
+    to 5dce7f41 (the streaming getRefPos k-mer orientation fix shipped in 1.12.0).

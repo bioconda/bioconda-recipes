@@ -1,26 +1,27 @@
 {% set name = "zipstrain" %}
-{% set version = "0.9.20" %}
+{% set version = "0.11.0" %}   
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d1c3c624290f18aae3e577e6c68f82f1e88e07518605a8176102896773297686  
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5f8a99f5475afb977bc36702b2310236d6001bde5e205abaa0c61d510e0149a7
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps --no-cache-dir --no-build-isolation -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage('zipstrain', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.12
     - poetry-core   
     - pip
+    
   run:
     - python >=3.12
     - samtools 
@@ -28,26 +29,31 @@ requirements:
     - polars
     - plotly
     - numpy
-    - python-duckdb
-    - seaborn-base
+    - seaborn
     - scipy
     - pyarrow
-    - intervaltree
     - aiofiles
-    - pydantic
+    - pydantic >=2,<3
     - rich
     - psutil
-
+    - duckdb
+    - pandas
+    - matplotlib-base
+    - h5py
+    - pytorch
 test:
   imports:
     - zipstrain
   commands:
     - zipstrain --help
     - samtools --version
+    - zipstrain compare --help
+    - zipstrain utilities --help
 
 about:
-  home: "https://github.com/OlmLab/ZipStrain"
-  summary: "Fast strain-level metagenomics."
-  license: MIT
+  home: https://github.com/OlmLab/ZipStrain  
+  summary: Fast strain-level metagenomics
+  license: MIT     
   license_family: MIT
-  dev_url: "https://github.com/OlmLab/ZipStrain"
+  dev_url: https://github.com/OlmLab/ZipStrain
+

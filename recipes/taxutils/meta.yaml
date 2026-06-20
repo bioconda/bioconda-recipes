@@ -1,0 +1,44 @@
+{% set name = "taxutils" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: a963025af4a2f1035273edc79037dd2f382e414e34b6c94f212f06e8115e36c9
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - numpy
+    - pandas
+
+test:
+  imports:
+    - taxutils
+
+about:
+  home: https://github.com/SwabSeq/taxutils
+  license: MIT
+  license_file: LICENSE
+  summary: "Utilities for working with NCBI taxonomic data."
+
+extra:
+  recipe-maintainers:
+    - "wgobrien"
+  authors:
+    - "William O'Brien"
