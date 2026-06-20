@@ -1,6 +1,7 @@
 {% set name = "trnascan-py" %}
 {% set version = "0.1.0" %}
 
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -12,6 +13,8 @@ source:
 build:
   noarch: python
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - trnascan-py = trnascan_py.cli:main
@@ -23,8 +26,8 @@ requirements:
     - hatchling
   run:
     - python >=3.10
-    - trnascan-se >=2.0
-    - infernal >=1.1
+    - trnascan-se >=2.0   # provides the tRNAscan-SE covariance models and pulls in Infernal
+    - infernal >=1.1      # cmsearch (also a dependency of trnascan-se; listed explicitly)
 
 test:
   imports:
