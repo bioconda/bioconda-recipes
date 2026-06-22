@@ -16,7 +16,6 @@ cp fungar_benchmark.py ${PREFIX}/bin/
 chmod +x ${PREFIX}/bin/fungar
 chmod +x ${PREFIX}/bin/fungar_report.py
 chmod +x ${PREFIX}/bin/fungar_benchmark.py
-chmod +x ${PREFIX}/bin/make_synthetic.py
 
 # Copy database files to the share directory
 cp -r database/* ${PREFIX}/share/${PKG_NAME}/database/
