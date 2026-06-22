@@ -11,7 +11,6 @@ mkdir -p ${PREFIX}/share/${PKG_NAME}/database
 cp fungar ${PREFIX}/bin/
 cp fungar_report.py ${PREFIX}/bin/
 cp fungar_benchmark.py ${PREFIX}/bin/
-cp make_synthetic.py ${PREFIX}/bin/
 
 # Ensure they are executable
 chmod +x ${PREFIX}/bin/fungar
