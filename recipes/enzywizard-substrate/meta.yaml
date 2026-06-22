@@ -1,0 +1,59 @@
+{% set name = "enzywizard-substrate" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-substrate/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 65c99f6e939a9f61fcb3090b5bd94bb4822dcdf93d2a7dd254124bbf39832786
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - rdkit
+    - numpy
+    - biopython
+    - requests
+    - packaging
+
+test:
+  imports:
+    - enzywizard_substrate
+    - enzywizard_substrate.cli
+    - enzywizard_substrate.services.substrate_service
+    - enzywizard_substrate.algorithms.substrate_algorithms
+  commands:
+    - enzywizard-substrate --help
+  # Note: Some functionality (name-to-SMILES resolution) requires internet access to ChEBI/PubChem APIs.
+  # RDKit is used for 3D conformer generation and SDF output.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-substrate
+  summary: "Command-line tool to process small-molecule substrates (from name or SMILES), generate 3D structures (SDF), and produce a detailed JSON report with physicochemical properties."
+  description: |
+    EnzyWizard-Substrate processes small-molecule substrates either from common names
+    (resolved via ChEBI/PubChem) or direct SMILES strings. It uses RDKit to generate
+    3D conformations and computes physicochemical properties. Outputs a structured JSON
+    report plus SDF files for the 3D substrate structures.
+    Designed to work alongside other EnzyWizard tools for complete enzyme-substrate analysis.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14
