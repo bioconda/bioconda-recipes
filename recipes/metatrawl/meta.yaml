@@ -1,0 +1,64 @@
+{% set name = "metatrawl" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 883cc9af585f2f152a03a730a4231dca70201e542090fc00fac3d7ddbc90dac6
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - metatrawl = metatrawl.cli:cli
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - poetry-core >=2.0
+  run:
+    - python >=3.12
+    - click >=8.1
+    - duckdb >=1.1
+    - polars >=1.0
+    - rich >=13.0
+    - zipstrain >=0.10.0
+    - sylph
+    - samtools
+    - bowtie2
+    - prodigal
+    - sra-tools >=2.11
+    - ncbi-datasets-cli
+
+test:
+  imports:
+    - metatrawl
+  commands:
+    - metatrawl --help
+    - zipstrain --help
+    - sylph --version
+    - samtools --version
+    - bowtie2 --version
+    - datasets --version
+    - command -v prodigal
+    - command -v prefetch
+    - command -v fasterq-dump
+
+about:
+  home: https://github.com/parsaghadermarzi/MetaTrawl
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Mutable registry and workflow bookkeeping for large ZipStrain/SRA profiling projects."
+  dev_url: https://github.com/parsaghadermarzi/MetaTrawl
+
+extra:
+  recipe-maintainers:
+    - parsaghadermarzi
