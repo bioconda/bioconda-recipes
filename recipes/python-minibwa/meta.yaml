@@ -1,0 +1,71 @@
+{% set name = "python-minibwa" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Full-repo tarball: the Python package (minibwa-py) depends on the sibling
+  # `minibwa`/`minibwa-sys` crates via path, and minibwa-sys vendors the
+  # minibwa C source. A maturin sdist of minibwa-py alone would miss those, so
+  # the recipe builds from the release source archive of the whole workspace.
+  url: https://github.com/fg-labs/minibwa-bindings/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6d506c604b7f81ee05e4aae8c666b609f99868f437119fc0fad61bb216f5edf3
+
+build:
+  number: 0
+  run_exports:
+    # 0.x: API is not yet stable, so pin downstream consumers to the minor.
+    - {{ pin_subpackage('python-minibwa', max_pin="x.x") }}
+  # Skip Intel macOS: minibwa-sys's x86 SIMD runtime dispatch (ksw_extd2)
+  # references __cpu_model, which the macOS linker rejects as an illegal text
+  # relocation on x86_64-apple-darwin. Upstream ships no x86_64-darwin artifact
+  # either; supported targets are linux-64, linux-aarch64, and osx-arm64.
+  skip: True  # [py < 39 or (osx and x86_64)]
+  # Build steps live in build.sh (bioconda is unix-only). minibwa-py depends on
+  # the sibling `minibwa`/`minibwa-sys` crates by path, so the build cds into it.
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    # minibwa-sys runs bindgen at build time, which needs libclang.
+    - clangdev
+  host:
+    - python
+    - pip
+    - maturin >=1.5,<2
+    - zlib
+  run:
+    - python
+
+test:
+  imports:
+    - minibwa
+  commands:
+    # Exercise the compiled pyo3 extension, not just the import machinery.
+    - python -c "import minibwa; minibwa.Opts()"
+
+about:
+  home: https://github.com/fg-labs/minibwa-bindings
+  # The default build statically links libsais (Apache-2.0) and the vendored
+  # minibwa C (MIT) into the extension. The GPL bwtgen path is an opt-in Cargo
+  # feature (minibwa-sys `default = []`) and is NOT enabled here.
+  license: MIT AND Apache-2.0
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRD-PARTY.md
+    - minibwa-sys/vendor/minibwa/LICENSE.txt
+  summary: Python bindings for minibwa (Heng Li's lightweight bwa-mem successor)
+  dev_url: https://github.com/fg-labs/minibwa-bindings
+  doc_url: https://github.com/fg-labs/minibwa-bindings/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - nh13
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
