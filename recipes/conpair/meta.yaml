@@ -47,12 +47,17 @@ test:
     - MathOperations
   commands:
     - run_gatk_pileup_for_sample.py --help
+    - verify_concordance.py --help
+    - estimate_tumor_normal_contamination.py --help
     # GATK3 + the `Pileup` walker that run_gatk_pileup shells out to are installed and runnable.
-    - gatk3 -T Pileup --help 2>&1 | grep -q Pileup
-    # End-to-end on Conpair's bundled NA12878 pileups, with markers resolved via the install
-    # default; reproduces upstream's published concordance (7363/7387 markers) + contamination.
-    - verify_concordance.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -qF 7363/7387
-    - estimate_tumor_normal_contamination.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -qF 0.016%
+    - gatk3 -T Pileup --help 2>&1 | grep Pileup
+    # End-to-end on Conpair's bundled NA12878 pileups (markers resolved via the install default),
+    # reproducing upstream's published concordance (7363/7387 markers) + contamination (0.016%).
+    # Guarded on the input's presence: the example pileups are source_files, staged in the
+    # conda-build test but absent from the minimal biocontainer test, so this runs in the former
+    # and is skipped in the latter.
+    - if [ -f data/example/pileup/NA12878_tumor80x.gatk.pileup.txt ]; then verify_concordance.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -F 7363/7387; fi
+    - if [ -f data/example/pileup/NA12878_tumor80x.gatk.pileup.txt ]; then estimate_tumor_normal_contamination.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -F 0.016%; fi
 
 about:
   home: https://github.com/nygenome/Conpair
