@@ -1,0 +1,49 @@
+{% set version = "1.0.3" %}
+
+package:
+  name: winnow-fdr
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/w/winnow-fdr/winnow_fdr-{{ version }}.tar.gz
+  sha256: da1081f2eec67c05f6ce7fabbfcc87aeef43c17cbd4129bb81fcd4bf898bb19a
+
+build:
+  entry_points:
+    - winnow = winnow.scripts.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - pip
+  run:
+    - python >=3.10
+    - jax >=0.5.2
+    - koinapy >=0.0.10
+    - tomli >=2.2.1
+    - typer >=0.15.2
+    - instanovo >=1.1.4
+
+test:
+  imports:
+    - winnow
+  commands:
+    - pip check
+    - winnow --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/instadeepai/winnow
+  summary: Score calibration and false discovery estimation for de novo peptide sequencing.
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  recipe-maintainers:
+    - BioGeek
