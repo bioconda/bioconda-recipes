@@ -1,0 +1,73 @@
+{% set name = "enzywizard-batch" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-batch/archive/refs/tags/{{ version }}.tar.gz
+  sha256: cc4fe9107925e6b671be58b29fe0602f256258361c53ea087befa6133fb4b05e
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - numpy
+    - rdkit
+    - openmm
+    - prody
+    - fair-esm
+    - bio-pyvol
+    - meeko
+    - pdbfixer
+    - requests
+    - packaging
+    # External binaries required by dependencies or modules:
+    - hmmer          # for conservation analysis
+    - dssp           # for secondary structure (via Biopython)
+    - vina           # for docking (AutoDock Vina)
+
+test:
+  imports:
+    - enzywizard_batch
+    - enzywizard_batch.cli
+  commands:
+    - enzywizard-batch --help
+    - vina --help
+    - hmmbuild -h
+  # Note: This is a meta-workflow tool that orchestrates many EnzyWizard components.
+  # It requires a large set of dependencies (Python packages + external binaries).
+  # Some packages (pdbfixer, meeko, fair-esm) may need separate conda recipes.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-batch
+  summary: "Command-line meta-workflow tool that runs the complete EnzyWizard pipeline (properties, clusters, energy, flexibility, disorder, conservation, embeddings, pockets, docking, interactions) on a cleaned protein + MSA and produces an integrated graph JSON dataset."
+  description: |
+    EnzyWizard-Batch executes a full end-to-end enzyme analysis workflow.
+    It takes a cleaned protein structure and a matched MSA, then runs:
+    residue properties, hydrophobic clustering, energy evaluation, flexibility (ANM/GNM),
+    disorder prediction, conservation (HMMER), ESM-2 embeddings, pocket detection (PyVOL),
+    optional substrate preparation + AutoDock Vina docking, molecular interaction detection,
+    and finally graph integration.
+    Outputs integrated graph JSON files (report, nodes, edges) ready for machine learning
+    or systems biology analysis. Supports both protein-only and enzyme-substrate modes.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14
