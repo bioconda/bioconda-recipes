@@ -1,6 +1,6 @@
-{% set version = "0.2.1" %}
+{% set version = "0.2.2" %}
 {% set name = "kmertools" %}
-{% set sha256 = "1df4d8a1fee913e6f8781626d8da9f24bbb6cd20f8a3e330ec12eeec46de5086" %}
+{% set sha256 = "0260d69aa48ee88d90d0e6f9f404dd5ed64cc0ef823dbb9b3674cf79699cd5f0" %}
 
 package:
   name: {{ name }}
@@ -8,7 +8,7 @@ package:
 
 build:
   number: 0
-  skip: True  # [py < 39]
+  skip: true  # [py < 310]
   run_exports:
     - {{ pin_subpackage('kmertools', max_pin="x.x") }}
 
@@ -19,13 +19,19 @@ source:
 requirements:
   build:
     - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
     - python
   host:
     - maturin >=1.7,<2.0
     - python
     - pip
+  run:
+    - python
 
 test:
+  imports:
+    - pykmertools
   commands:
     - {{ name }} --help
 
@@ -33,6 +39,9 @@ about:
   home: https://github.com/anuradhawick/kmertools
   license: GPL-3.0-only
   license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   summary: "kmertools: DNA Vectorisation Tool"
   description: "kmertools is a k-mer based feature extraction tool designed to support metagenomics and other bioinformatics analytics."
   doc_url: https://github.com/anuradhawick/kmertools/wiki
@@ -42,6 +51,6 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  recipe-maintainers: 
+  recipe-maintainers:
     - anuradhawick
     - Vini2
