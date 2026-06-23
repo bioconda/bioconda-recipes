@@ -9,9 +9,10 @@ set -euo pipefail
 mkdir -p "${SP_DIR}"
 cp modules/*.py "${SP_DIR}/"
 
-# Move marker & genome data to /share.
-mkdir -p "${PREFIX}/share/conpair"
-cp -r data "${PREFIX}/share/conpair/"
+# Move marker data to /share (scripts default CONPAIR_DIR here). The example/ pileups are
+# test-only and intentionally not installed.
+mkdir -p "${PREFIX}/share/conpair/data"
+cp -r data/markers "${PREFIX}/share/conpair/data/"
 
 # Move the primary and helper scripts to /bin.
 mkdir -p "${PREFIX}/bin"
