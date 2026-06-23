@@ -1,5 +1,5 @@
 {% set name = "tasmanian-mismatch" %}
-{% set version = "1.0.9" %}
+{% set version = "2.0.2" %}
 
 package:
   name: {{ name }}
@@ -7,41 +7,57 @@ package:
 
 source:
   url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: cb9bf57720ab9031a2cbcd8520ba099328d855f65fb68f71c6c158d058859f42
+  sha256: 31f2a3c662af4bcf6b726c1f74e795e4784a7e68bb96b91bdf0e6988f38da328
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('tasmanian-mismatch', max_pin="x") }}
+    - {{ pin_subpackage('tasmanian-mismatch', max_pin='x') }}
 
 requirements:
   host:
-    - python <3.13
-    - pip
+    - htslib
+    - zlib
+
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - llvmdev
+    - pkg-config
+    - clangdev
+    - make
+    - cmake
+    - patchelf  # [linux]
+
   run:
-    - python <3.13
-    - numpy
+    - python >=3.10
+    - bokeh >=3,<4
+    - polars >=0.20,<2
     - pandas
-    - scipy
-    - plotly
-    - matplotlib-base
-    - scikit-learn
-    - seaborn-base
-    - statsmodels
-    - termcolor
 
 test:
-  imports:
-    - tasmanian
-    - tasmanian.utils
+  commands:
+    - tasmanian-mismatch --help
+    - tasmanian-diagnostics --help
+    - tasmanian-rescale-quality --help
 
 about:
   home: "https://github.com/nebiolabs/tasmanian-mismatch"
   license: "LGPL-2.1-or-later"
   license_family: LGPL
-  summary: "Tasmanian tool to analyze mismatches at read and position in high throughput sequencing data."
+  license_file:
+    - LICENCE.txt
+    - THIRDPARTY.yml
+  summary: "Tasmanian tool to analyze mismatches in sequencing data (Rust + Python hybrid)."
+  description: |
+    Version 2.x is a Rust-based rewrite of tasmanian-mismatch.
+    Some functionality relies on Python components, which are installed
+    via Conda (pixi is not used in this environment).
+
+    The original Python-only implementation is available in 1.x releases.
   dev_url: "https://github.com/nebiolabs/tasmanian-mismatch"
 
 extra:
