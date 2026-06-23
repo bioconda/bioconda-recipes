@@ -1,0 +1,55 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: mmaseq
+  version: {{ version }}
+
+source:
+  url: https://github.com/ssi-dk/MMASeq/archive/v{{ version }}.tar.gz
+  sha256: 9ef07fa77abbab5f555178eea98dfcd4482bcc9f843df673da93551b1635394e
+
+build:
+  entry_points:
+    - mmadeploy = mmaseq.deploy:launcher
+    - mmacreate = mmaseq.create:launcher
+    - mmaseq = mmaseq.mmaseq:launcher
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("mmaseq", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.13
+    - hatchling >=1.25
+    - pip
+  run:
+    - python >=3.13
+    - packaging <26,>=24.0
+    - snakemake 
+    - pandas
+    - conda  # required: pipeline uses snakemake --use-conda internally
+
+
+test:
+  imports:
+    - mmaseq
+  commands:
+    - pip check
+    - mmadeploy --help
+    - mmacreate --help
+    - mmaseq --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/ssi-dk/MMASeq
+  summary: Mixed Microbial Analysis on Sequencing data
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - SimoneScrima

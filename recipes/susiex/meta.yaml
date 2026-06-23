@@ -1,0 +1,49 @@
+{% set name = "susiex" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "87bb8bb6dcc73dce00e9be694e5eadc106b070eb2e05b71244a1d5a7fcde07d2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/getian107/SuSiEx/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+  host:
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - plink
+
+test:
+  commands:
+    - "SuSiEx --help | grep 'Usage: SuSiEx'"
+
+about:
+  home: https://github.com/getian107/SuSiEx
+  license: MIT
+  license_file: LICENSE
+  summary: Cross-ancestry fine-mapping using GWAS summary statistics and LD reference panels
+  dev_url: https://github.com/getian107/SuSiEx
+
+extra:
+  identifiers:
+    - doi:10.1038/s41588-024-01870-z
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - lyh970817
