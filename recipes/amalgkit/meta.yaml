@@ -1,5 +1,6 @@
 {% set name = "amalgkit" %}
-{% set version = "0.14.0" %}
+{% set version = "0.16.25" %}
+{% set python_min = "3.9" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +8,12 @@ package:
 
 source:
   url: https://github.com/kfuku52/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: dc180688258c6112dfca02cfca2cf66b11fc8db74f2ef112990a18a3357ac503
+  sha256: 3d6de6110673ce9dfe821ee42c530a38f02d4fa8b12ee360f9d98d02b8666a44
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-build-isolation -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
   run_exports:
     - {{ pin_subpackage("amalgkit", max_pin="x.x") }}
 
@@ -26,26 +27,23 @@ requirements:
   run:
     - python >={{ python_min }}
     - biopython
+    - matplotlib-base
     - numpy
     - pandas
+    - scikit-learn
+    - scipy
+    - statsmodels
     - ete4
-    # Additional dependencies for amalgkit
     - seqkit
-    - sra-tools
+    - sra-tools >=3
     - fastp
     - kallisto
-    - r-base
-    - bioconductor-edger
-    - r-ggplot2
-    - bioconductor-sva
-    - r-rtsne
-    # Optional runtime dependencies:
-    # - busco, compleasm (required only for `amalgkit busco`)
-    # - bioconductor-ruvseq (required only for `amalgkit curate --batch_effect_alg ruvseq`)
 
 test:
   commands:
     - amalgkit --help
+    - amalgkit help finalize
+    - amalgkit dataset --list
   imports:
     - amalgkit
 
@@ -56,5 +54,12 @@ about:
   summary: "Tools for transcriptome amalgamation"
 
 extra:
+  notes: |
+    Optional runtime dependencies:
+      - inmoose: required for `amalgkit finalize --batch_effect_alg combatseq`
+      - oarfish: required for `amalgkit quant --quant_backend oarfish`
+      - mmseqs2: required for `amalgkit getfastq --rrna_filter yes` or `--contam_filter yes`
+      - busco: required for `amalgkit busco --tool busco`
+      - compleasm: required for `amalgkit busco --tool compleasm`, or selected `--tool auto`
   recipe-maintainers:
     - kfuku52
