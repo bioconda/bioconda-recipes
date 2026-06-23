@@ -1,17 +1,16 @@
 {% set name = "percolator" %}
-{% set version = "3.7.1" %}
+{% set version = "3.9" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-07-01.tar.gz
-  sha256: f1c9833063cb4e99c51a632efc3f80c6b8f48a43fd440ea3eb0968af5c84b97a
-  patches:
-    - boost-dynamic.patch
+  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-09.tar.gz
+  sha256: 2caed6362638f401a1527b09dcb2888320dab10fe003f76f584cfd395ed30f73
+
 build:
-  number: 2
+  number: 0
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage('percolator', max_pin="x") }}
@@ -20,27 +19,21 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
   host:
     - boost-cpp
     - sqlite
     - bzip2
-    - xerces-c
-    - xsd
     - zlib
   run:
     - boost-cpp
     - sqlite
-    - xerces-c
-    - xsd
     - zlib
 
 test:
   commands:
-    #- sqt2pin -o testsqt.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
-    #- tandem2pin -o testtandem.txt $PREFIX/testdata/target.t.xml $PREFIX/testdata/target.t.xml
-    #- msgf2pin -o testmzid.txt $PREFIX/testdata/target.mzid $PREFIX/testdata/target.mzid
-    - percolator -X test.xml $PREFIX/testdata/percolatorTab
+    - percolator $PREFIX/testdata/percolatorTab > /dev/null
 
 about:
   home: "https://github.com/percolator/percolator"
@@ -54,9 +47,6 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
-
-  container:
-    extended-base: True  # Add UTF-8 for percolator converters
   identifiers:
     - biotools:Percolator
     - doi:10.1007/s13361-016-1460-7
