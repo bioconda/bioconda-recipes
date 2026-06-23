@@ -1,0 +1,59 @@
+{% set name = "reglscatterpy" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 82e1563a032d2584f7498579158790a2c432081e83dc207968213534c6f3eed4
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - reglscatterpy-report = reglscatterpy.__main__:main
+  run_exports:
+    - {{ pin_subpackage('reglscatterpy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - pip
+  run:
+    - python >=3.9
+    - numpy
+    - pandas
+    - anywidget >=0.9
+
+test:
+  imports:
+    - reglscatterpy
+  commands:
+    - reglscatterpy-report --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/george123ya/reglscatterpy
+  summary: Interactive WebGL scatterplots for single-cell data (AnnData/MuData/SpatialData) in Jupyter, VS Code and Colab
+  description: |
+    Interactive WebGL scatterplots for single-cell / spatial data in Python
+    (AnnData, MuData, SpatialData, pandas, numpy). Renders millions of points in
+    the browser via regl-scatterplot, with a draggable legend, distribution-slider
+    filtering, lasso selection with round-trip to Python, tooltips and PNG/SVG/PDF
+    export. The Python companion to the R package reglScatterplotR; both drive the
+    same compiled widget so plots look identical across R and Python.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/george123ya/reglscatterpy
+  doc_url: https://github.com/george123ya/reglscatterpy
+
+extra:
+  recipe-maintainers:
+    - george123ya

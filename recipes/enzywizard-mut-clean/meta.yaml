@@ -1,0 +1,60 @@
+{% set name = "enzywizard-mut-clean" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-mut-clean/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 5bd564963a13d1b3e83a2ef1c2db72d07e326c0b98f86609926f91f364413fe5
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - pdbfixer
+    - openmm
+    - biopython
+    - numpy
+
+test:
+  imports:
+    - enzywizard_mut_clean
+    - enzywizard_mut_clean.cli
+    - enzywizard_mut_clean.services.mut_clean_service
+    - enzywizard_mut_clean.algorithms.mut_clean_algorithms
+  commands:
+    - enzywizard-mut-clean --help
+  # Note: Depends on `pdbfixer` (PyPI only). A conda recipe for pdbfixer is recommended.
+  # Cleans both wild-type and mutant structures and remaps mutation numbering.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-mut-clean
+  summary: "Command-line tool to clean wild-type and mutant protein structures, remap amino acid substitutions to cleaned numbering, output multi-format files (CIF/PDB/FASTA), and generate a detailed JSON cleaning + mutation report."
+  description: |
+    EnzyWizard-Mut-Clean processes a wild-type structure and its corresponding mutant
+    structure using PDBFixer and OpenMM. It removes heterogens, repairs missing atoms,
+    optionally adds hydrogens, standardizes chains, and remaps the input mutation(s)
+    (e.g. S70G) to the new continuous residue numbering. Outputs cleaned structures
+    in CIF, PDB, and FASTA formats plus a comprehensive JSON report with residue
+    mappings and cleaning statistics for both WT and mutant.
+    Essential for consistent preprocessing of mutant protein pairs in structural bioinformatics.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14
