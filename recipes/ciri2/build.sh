@@ -9,9 +9,13 @@ mkdir -p $PREFIX/bin
 
 unzip download
 
-# Copy the perl script to binary
+# Insert the perl shebang into the final destination file 
 
-cp CIRI_v*/CIRI*.pl $PREFIX/bin/CIRI2.pl
+echo '#!/usr/bin/env perl' > $PREFIX/bin/CIRI2.pl
+
+# Append the contents of unzipped script to it
+
+cat CIRI_v*/CIRI*.pl >> $PREFIX/bin/CIRI2.pl
 
 # Make it executable 
 
