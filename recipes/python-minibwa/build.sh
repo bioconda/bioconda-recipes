@@ -30,3 +30,12 @@ fi
 export MATURIN_PEP517_ARGS="--locked"
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation -vv
+
+# Capture the verbatim license text of every Cargo dependency into a bundle that
+# ships with the package (see meta.yaml `license_file`). Run after the build so
+# the crate sources are already fetched into CARGO_HOME. NOTE: this covers the
+# Rust crate closure ONLY -- libsais is vendored C compiled by minibwa-sys's
+# build script, not a crates.io dependency, so it never appears here. Its
+# Apache-2.0 text is shipped separately via the recipe's
+# LICENSE.libsais-Apache-2.0.txt (also listed in meta.yaml `license_file`).
+cargo-bundle-licenses --format yaml --output THIRD-PARTY.yml
