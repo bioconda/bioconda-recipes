@@ -1,0 +1,24 @@
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -85,8 +85,10 @@
+ 
+ emit_domain_entries_header() {
+   local header_name="$1" domain_dir="$2" keys_ref="$3" headers_ref="$4"
+-  declare -n domain_keys="$keys_ref"
+-  declare -n domain_headers="$headers_ref"
++  local -a domain_keys
++  local -a domain_headers
++  eval "domain_keys=(\"\${$keys_ref[@]}\")"
++  eval "domain_headers=(\"\${$headers_ref[@]}\")"
+   local out="${domain_dir}/launcher/${header_name}"
+   local k h i n cont
+   {
+@@ -294,7 +296,7 @@
+           if [[ "$libadd" == *.la ]]; then
+             lib_target="${libadd/\$\(top_srcdir\)/\$(top_builddir)}"
+             # Avoid emitting duplicate rules.
+-            if [[ ! " ${SUITE_LIB_TARGETS[*]} " =~ " ${lib_target} " ]]; then
++            if [[ ! " ${SUITE_LIB_TARGETS[*]:-} " =~ " ${lib_target} " ]]; then
+               SUITE_LIB_TARGETS+=("$lib_target")
+               lib_dir="$(dirname "$lib_target")"
+               lib_file="$(basename "$lib_target")"

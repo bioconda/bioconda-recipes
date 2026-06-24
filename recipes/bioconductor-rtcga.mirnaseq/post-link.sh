@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rtcga.mirnaseq-1.34.0"
+installBiocDataPackage.sh "rtcga.mirnaseq-1.38.0"

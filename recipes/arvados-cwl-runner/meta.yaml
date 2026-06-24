@@ -1,34 +1,55 @@
-{% set version="2.7.0" %}
+{% set name = "arvados-cwl-runner" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "61c47006df53cf483fcd01c7691083089582e46d588eb9a49ca2c70c4b883e83" %}
+
 package:
-  name: arvados-cwl-runner
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/a/arvados-cwl-runner/arvados-cwl-runner-{{ version }}.tar.gz
-  sha256: 56ef085f06e33ee0d4bead6dc5be03d47cc04d6fbde78b8798bd42d38a0352af
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - cwl-runner = arvados_cwl:main
+    - arvados-cwl-runner = arvados_cwl:main
   run_exports:
-    - {{ pin_subpackage("arvados-cwl-runner", max_pin="x.x") }}
+    - {{ pin_subpackage('arvados-cwl-runner', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8
+    - setuptools
   run:
-    - python
-    - ruamel.yaml >=0.15.54
-    - cwltool >=3.1
-    - schema-salad >=3.0.20181129082112
-    - arvados-python-client >=2.6
+    - python >=3.8
+    - cwltool ==3.1.20240508115724
+    - schema-salad ==8.5.20240503091721
+    - arvados-python-client <={{ version }}
+    - crunchstat-summary <={{ version }}
+    - ciso8601 >=2.0.0
+    - networkx <2.6
+    - msgpack-python ==1.0.3
+    - importlib-metadata <5
+    - zipp <3.16.0  # [py < 38]
+    - lxml <5.2  # [py < 38]
+    - pydot <2
 
 test:
   imports:
     - arvados_cwl
+  commands:
+    - cwl-runner --help
+    - arvados-cwl-runner --help
 
 about:
-  home: https://github.com/curoverse/arvados/tree/master/sdk/cwl
-  license: Apache 2.0
-  summary: 'Arvados Common Workflow Language runner'
+  home: "https://arvados.org"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE-2.0.txt"
+  summary: "Arvados Common Workflow Language runner."
+  dev_url: "https://github.com/curoverse/arvados/tree/master/sdk/cwl"
+  doc_url: "https://doc.arvados.org"

@@ -1,0 +1,66 @@
+{% set version = "1.2.0" %}
+{% set name = "barbieQ" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 6aa75f8cb3fc853dc85a2432978bba7f
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-barbieq", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), BiocStyle
+requirements:
+  host:
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-circlize
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-igraph
+    - r-logistf
+    - r-magrittr
+    - r-tidyr
+  run:
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-circlize
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-igraph
+    - r-logistf
+    - r-magrittr
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Analyze Barcode Data from Clonal Tracking Experiments
+  description: The barbieQ package provides a series of robust statistical tools for analysing barcode count data generated from cell clonal tracking (i.e., lineage tracing) experiments. In these experiments, an initial cell and its offspring collectively form a clone (i.e., lineage). A unique barcode sequence, incorporated into the DNA of the inital cell, is inherited within the clone. This one-to-one mapping of barcodes to clones enables clonal tracking of their behaviors. By counting barcodes, researchers can quantify the population abundance of individual clones under specific experimental perturbations. barbieQ supports barcode count data preprocessing, statistical testing, and visualization.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

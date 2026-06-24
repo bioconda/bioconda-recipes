@@ -1,0 +1,49 @@
+{% set name = "darkprofiler" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/darkprofiler-{{ version }}.tar.gz
+  sha256: a76f7c61d66bcc13a153402eae6d80049998bfd488cb291d3e87ecdc5cdc4f90
+
+build:
+  entry_points:
+    - darkprofiler = darkprofiler.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.7
+    - setuptools >=61
+    - wheel
+    - pip
+  run:
+    - python >=3.7
+    - biopython >=1.78
+    - matplotlib-base >=3.3
+
+test:
+  imports:
+    - darkprofiler
+  commands:
+    - pip check
+    - darkprofiler --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/darkprofiler/
+  summary: 'DarkProfiler: Alignment and Classification of Peptides from Reference-Independent De Novo Peptide Sequencing Experiments.'
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - LeeHanJun00

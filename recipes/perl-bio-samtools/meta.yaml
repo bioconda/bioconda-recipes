@@ -1,17 +1,18 @@
 {% set name = "perl-bio-samtools" %}
+{% set version = "1.43" %}
+
 package:
   name: {{ name }}
-  version: "1.43"
+  version: {{ version }}
 
 source:
-  url: 'http://www.cpan.org/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz'
-  md5: d36d7bfe91d6eaa8d220a2cb08d04a94
+  url: https://cpan.metacpan.org/authors/id/L/LD/LDS/Bio-SamTools-{{ version }}.tar.gz
+  sha256: 7085ee5e97ad75dbbebd8583072d67b2b06d29e7a9f9741c9ac58dabe300d3fd
   patches:
     - build-pl.patch
 
 build:
-  number: 5
-  skip: True  # [osx]
+  number: 6
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -19,17 +20,16 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - pkg-config
   host:
     - perl
     - perl-bioperl-core
     - perl-module-build
     - samtools =0.1.19  # 0.1.18 is broken - missing files;  0.1.19 has diff directory structure to 0.1.17
     - zlib
-
   run:
     - perl
     - perl-bioperl-core
-    - zlib
 
 test:
   imports:
@@ -42,13 +42,13 @@ test:
     - Bio::DB::Sam
     - Bio::DB::Sam::Constants
 
+about:
+  home: "https://metacpan.org/pod/Bio::DB::Sam"
+  license: "Perl_5"
+  summary: "Read SAM/BAM files."
+  doc_url: "https://metacpan.org/pod/Bio::DB::Sam"
+
 extra:
   additional-platforms:
     - linux-aarch64
-    # requires perl-data-dumper, perl-db_file
-    #    - osx-arm64
-
-about:
-  home: 'http://search.cpan.org/~lds/Bio-SamTools-1.43/'
-  license: perl_5
-  summary: 'Read SAM/BAM files'
+    - osx-arm64

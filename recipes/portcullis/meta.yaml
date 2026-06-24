@@ -8,10 +8,20 @@ package:
 source:
   url: https://github.com/EI-CoreBioinformatics/portcullis/archive/refs/tags/Release-{{ version }}.tar.gz
   sha256: 9183c4e8108af1e813dbc35e537e16e5d0e13f53ed4c0a36b182c3f8bfcea438
+  patches:
+    - 0001-boost-leaf.patch
+    - 0002-ax_python_devel.patch
+    - 0003-src.patch
+    - 0004-python_helper.patch
+    - m64.patch
 
 build:
-  number: 2
-  skip: True # [osx or py27 or py == 310]
+  number: 5
+  entry_points:
+    - junctools = junctools.__main__:main
+    - portcullis_rule_filter = portcullis.rule_filter:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,30 +29,47 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - autoconf
-    - automake >=1.15.1
+    - automake
     - libtool
-    - perl
+    - pkg-config
+    - gnuconfig
   host:
+    - python
+    - pip
+    - setuptools <82
+    - boost-cpp
+    - samtools >=1.9
     - zlib
     - pandas
-    - python
-    - samtools >=1.9
-    - boost-cpp
+    - sphinx
   run:
     - python
     - boost-cpp
     - tabulate
+    - sphinx
+    - matplotlib-base
     - numpy
     - pandas
     - samtools >=1.9
+    - setuptools <82
 
 test:
   commands:
     - portcullis --version
-    - junctools --help  
+    - junctools --help
 
 about:
-  home: https://github.com/maplesond/portcullis
-  license: GPL3
+  home: "https://github.com/maplesond/portcullis"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
-  summary: 'Splice junction analysis and filtering from BAM files'
+  summary: "Splice junction analysis and filtering from BAM files."
+  dev_url: "https://github.com/maplesond/portcullis"
+  doc_url: "https://ei-corebioinformatics.github.io/portcullis"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

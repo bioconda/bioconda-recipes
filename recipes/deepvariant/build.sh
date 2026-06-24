@@ -3,21 +3,21 @@ set -eu -o pipefail
 
 # ## Binary install with wrappers
 
-SHAREDIR="share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
-TGT="$PREFIX/$SHAREDIR"
-[ -d "$TGT" ] || mkdir -p "$TGT"
+SHAREDIR="share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
+TGT="${PREFIX}/${SHAREDIR}"
+[ -d "${TGT}" ] || mkdir -p "${TGT}"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
-mv binaries $TGT
-mv models $TGT
+#mv binaries $TGT
+#mv models $TGT
 
-cd $PREFIX
-BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
-WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
-WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
-PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
-HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
-cd $SRC_DIR
+cd ${PREFIX}
+#BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
+#WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
+#WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
+#PACBIO_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*pacbio_standard`
+#HYBRID_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*hybrid_standard`
+cd ${SRC_DIR}
 
 # TF slim is difficult because there is an existing tf-slim package in conda-forge
 # https://github.com/conda-forge/tf-slim-feedstock
@@ -25,36 +25,36 @@ cd $SRC_DIR
 # This appears to be a temporary situation: https://github.com/google-research/tf-slim/issues/6
 # so temporarily install via pip in the build.sh to avoid conflicts
 # https://github.com/google/deepvariant/blob/4b937f03a1336d1dc6fd4c0eef727e1f83d2152a/run-prereq.sh#L109
-pip install --no-deps git+https://github.com/google-research/tf-slim.git
+${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir -vvv "git+https://github.com/google-research/tf-slim.git"
 
 # models installed in post-link script
-rm -rf $TGT/models
+#rm -rf $TGT/models
 
 # Fix hardcoded python inside binary directories
-for ZIPBIN in make_examples call_variants postprocess_variants
-do
-	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
-	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
-	rm -f $ZIPBIN/*.bak
-	rm -f $ZIPBIN.zip
-	cd $ZIPBIN
-	zip -q --symlinks -r ../$ZIPBIN.zip *
-	cd ..
-	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
-done
+#for ZIPBIN in make_examples call_variants postprocess_variants
+#do
+#	unzip -d $ZIPBIN $PREFIX/$BINARY_DIR/$ZIPBIN.zip
+#	sed -i.bak "s|PYTHON_BINARY = '/usr/bin/python3.6'|PYTHON_BINARY = sys.executable|" $ZIPBIN/__main__.py
+#	rm -rf $ZIPBIN/*.bak
+#	rm -rf $ZIPBIN.zip
+#	cd $ZIPBIN
+#	zip -q --symlinks -r ../$ZIPBIN.zip *
+#	cd ..
+#	mv $ZIPBIN.zip $PREFIX/$BINARY_DIR
+#done
 
 # Copy wrapper scripts, pointing to internal binary and model directories
-cp ${RECIPE_DIR}/dv_make_examples.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
-cp ${RECIPE_DIR}/dv_call_variants.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
-cp ${RECIPE_DIR}/dv_postprocess_variants.py $PREFIX/bin
-sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
-rm -f $PREFIX/bin/*.bak
+install -v -m 0755 ${RECIPE_DIR}/dv_make_examples.py "${PREFIX}/bin"
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
+install -v -m 0755 ${RECIPE_DIR}/dv_call_variants.py "${PREFIX}/bin"
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|PACBIOMODELSUB|${PACBIO_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+#sed -i.bak "s|HYBRIDMODELSUB|${HYBRID_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+install -v -m 0755 ${RECIPE_DIR}/dv_postprocess_variants.py "${PREFIX}/bin"
+#sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
+#rm -rf $PREFIX/bin/*.bak
 
 # ## Work in progress to build from source
 # Trouble using pre-built clif so use binaries

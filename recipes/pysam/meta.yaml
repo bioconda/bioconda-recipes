@@ -1,4 +1,4 @@
-{% set version = "0.22.1" %}
+{% set version = "0.24.0" %}
 
 package:
   name: pysam
@@ -6,24 +6,25 @@ package:
 
 source:
   url: https://github.com/pysam-developers/pysam/archive/v{{ version }}.tar.gz
-  sha256: e4981524d7627c53fa0d3f8cbec2bd65c2ea7520092f25e1029af12cb7b82ff6
+  sha256: fef4c61aac288eb3775e0b468b953d44eaa560e6b88def7c403deea667161268
   patches:
     - arm_hwcap.patch
 
 build:
-  number: 3
-  skip: True # [py2k]
-  binary_relocation: False # [linux]
+  number: 1
+  skip: True  # [py2k]
+  binary_relocation: False  # [linux]
   run_exports:
     - {{ pin_subpackage('pysam', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - make
   host:
     - cython
-    - python
+    - python {{ python }}
     - setuptools
     - zlib
     - xz
@@ -32,7 +33,7 @@ requirements:
     - libcurl
     - openssl  # [not osx]
   run:
-    - python
+    - {{ pin_compatible("python") }}
 
 about:
   home: https://github.com/pysam-developers/pysam

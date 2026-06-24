@@ -1,0 +1,50 @@
+{% set name = "unetcoreograph" %}
+{% set version = "2.4.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/HMS-IDAC/UNetCoreograph/archive/refs/tags/{{ version }}.tar.gz
+  sha256: e75934695181545fa03a7cffb7f15603f0c4beacadca7be269b5a694e790ef10
+  folder: UNetCoreograph-{{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - mkdir -p "{{ SP_DIR }}/{{ name }}"
+    - cp -rf * "{{ SP_DIR }}/{{ name }}"
+  run_exports:
+    - {{ pin_subpackage('unetcoreograph', max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.7
+    - numpy
+    - pandas
+    - scikit-image
+    - scipy
+    - tqdm
+    - h5py
+    - tifffile
+    - matplotlib-base
+
+test:
+  commands:
+    - python -c "import unetcoreograph"
+
+about:
+  home: https://github.com/HMS-IDAC/UNetCoreograph
+  license: MIT
+  license_family: MIT
+  #license_file: UNetCoreograph-2.4.3/LICENSE
+  summary: "UNetCoreograph - Automated segmentation of nuclei in 3D imaging data."
+  description: |
+    UNetCoreograph is a Python tool for segmenting and analyzing nuclei in tissue images using a U-Net based model.
+  dev_url: https://github.com/HMS-IDAC/UNetCoreograph
+
+extra:
+  recipe-maintainers:
+    - jaidevjoshi83

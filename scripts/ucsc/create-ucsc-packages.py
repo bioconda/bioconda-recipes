@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import re
 import sys
 import yaml
@@ -359,7 +360,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
-                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n',
+                linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n    - osx-arm64\n',
             )
         )
 
@@ -385,7 +386,6 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
-        fout.write(open('include.patch').read())
+    shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
 
 sys.stderr.write('\n')
