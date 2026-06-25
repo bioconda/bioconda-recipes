@@ -1,0 +1,53 @@
+{% set name = "count_logan_tig_coverage" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pierrepeterlongo/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 00676a9e7fdc5ed547ab9cd0be9bdd32bba88d6faeae64b95cd167441c7816e6
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - xz
+    - bzip2
+    - zlib
+  run:
+    - xz
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - {{ name }} --help
+
+about:
+  home: https://github.com/pierrepeterlongo/{{ name }}
+  summary: Compute length-weighted mean and median coverage from Logan contig/unitig FASTA files
+  description: |
+    count_logan_tig_coverage reads coverage values from the ka:f: tag present in
+    Logan contig and unitig headers, and computes length-weighted mean and median
+    coverage statistics.
+  license: GPL-3.0-only
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://github.com/pierrepeterlongo/{{ name }}/blob/main/README.md
+  dev_url: https://github.com/pierrepeterlongo/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - pierrepeterlongo

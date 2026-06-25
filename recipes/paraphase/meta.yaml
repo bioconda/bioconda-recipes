@@ -1,47 +1,38 @@
-{% set version = "3.5.0" %}
-{% set sha256 = "6fb1797c64b90820a141909fba0fdcfb58bd53c05c644da846bf9401b199e211" %}
+{% set name = "paraphase" %}
+{% set version = "4.0.0" %}
+{% set paraphase_sha256 = "df68d18213d83ef4d6de3ea44aa5c7bcad20cfa47a934fc1b2ed290d2fd5eb24" %}
 
 package:
-  name: paraphase
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/PacificBiosciences/paraphase/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/PacificBiosciences/paraphase/releases/download/v{{ version }}/paraphase-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz  # [linux64]
+    sha256: {{ paraphase_sha256 }}  # [linux64]
 
 build:
   number: 0
-  noarch: python
-  entry_points:
-    - paraphase = paraphase.__main__:main
-  script: python -m pip install --no-deps -vv .
+  skip: true  # [not linux64]
+  noarch: false
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp paraphase ${PREFIX}/bin/
+    - chmod +x ${PREFIX}/bin/paraphase
   run_exports:
-    - {{ pin_subpackage("paraphase", max_pin="x.x") }}
-
-requirements:
-  host:
-    - python >=3.8
-    - setuptools
-    - pip
-    - pytest-runner
-  run:
-    - python >=3.8
-    - numpy >=1.16
-    - scipy >=1.2
-    - pysam >=0.15.3
-    - networkx >=2.8.2
-    - matplotlib-base
-    - pyyaml
+    - {{ pin_subpackage('paraphase', max_pin="x") }}
 
 test:
   commands:
-    - paraphase -h
+    - paraphase --version
 
 about:
   home: https://github.com/PacificBiosciences/paraphase
-  license: BSD-3-Clause-Clear
-  summary: HiFi-based caller for highly homologous genes
+  summary: HiFi-based caller for highly similar paralogous genes
+  license: Pacific Biosciences Software License (https://github.com/PacificBiosciences/paraphase/blob/main/LICENSE.md)
 
 extra:
   recipe-maintainers:
     - xiao-chen-xc
+  skip-lints:
+    - should_be_noarch_generic
+    - should_use_compilers
