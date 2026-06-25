@@ -1,0 +1,48 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: tb-consensus-aligner
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/t/tb-consensus-aligner/tb_consensus_aligner-{{ version }}.tar.gz
+  sha256: 3b097bac12c33e7e984ddec8a934b8278c7bcfd68c89c697ce4148c0cd137c66
+
+build:
+  entry_points:
+    - tb-consensus-aligner = tb_consensus_aligner.main_galaxy:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tb-consensus-aligner', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0.0
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - biopython >=1.80
+
+test:
+  imports:
+    - tb_consensus_aligner
+  commands:
+    - pip check
+    - tb-consensus-aligner --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/tb-consensus-aligner/
+  summary: Building consensus fasta files and variable multi-sequence alignments for mycobacterial genomes.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - scg40
