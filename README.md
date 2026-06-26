@@ -26,6 +26,6 @@ The nightly uploader jobs build any recipes that exist on master but were not su
 | arch | build status |
 |------|--------------|
 | linux-64 | [![Nightly linux-64](https://dev.azure.com/bioconda/bioconda-recipes/_apis/build/status/Nightly%20uploader?branchName=master&jobName=build_and_push_linux&label=Nightly%20linux-64)](https://dev.azure.com/bioconda/bioconda-recipes/_build/latest?definitionId=4) |
-| osx-64 | [![Nightly osx-64](https://dev.azure.com/bioconda/bioconda-recipes/_apis/build/status/Nightly%20uploader?branchName=master&jobName=build_and_push_osx&label=Nightly%20osx-64)](https://dev.azure.com/bioconda/bioconda-recipes/_build/latest?definitionId=4) |
+
 | osx-arm64 | [![Nightly osx-arm64](https://github.com/bioconda/bioconda-recipes/actions/workflows/nightly.yml/badge.svg)](https://github.com/bioconda/bioconda-recipes/actions/workflows/nightly.yml) |
 | linux-aarch64 |[![CircleCI](https://dl.circleci.com/insights-snapshot/gh/bioconda/bioconda-recipes/master/Nightly%20(ARM)/badge.svg?window=24h)](https://app.circleci.com/insights/github/bioconda/bioconda-recipes/workflows/Nightly%20(ARM)/overview?branch=master&reporting-window=last-24-hours) |

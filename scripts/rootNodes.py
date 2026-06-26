@@ -8,7 +8,7 @@ from bioconda_utils import utils, graph
 
 def getRepoData(ts):
     res = []
-    for subdir in ["linux-64", "noarch", "osx-64"]:
+    for subdir in ["linux-64", "noarch", "osx-arm64"]:
         r = requests.get(f"https://conda.anaconda.org/bioconda/{subdir}/repodata.json")
         js = r.json()['packages']
         s = set()
@@ -31,7 +31,7 @@ def printRootNodes(config_path, recipe_folder, sinceNDays, missing, rootNodes):
         linuxN, noarch, osx = getRepoData(timeStamp)
         arch = linuxN.intersection(osx)
         ready = noarch.union(arch)
-        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-64".format(len(ready), len(noarch), len(linuxN), len(osx)))
+        print("{} built in noarch and both archs combined: {} noarch, {} linux-64, {} osx-arm64".format(len(ready), len(noarch), len(linuxN), len(osx)))
     timeStamp = datetime.timestamp(datetime.now() - timedelta(360))
     linux, noarch, osx = getRepoData(timeStamp)
 
