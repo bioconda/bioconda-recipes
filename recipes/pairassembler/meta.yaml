@@ -1,0 +1,56 @@
+{% set name = "pairassembler" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nrminor/pairassembler/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ead4e063f9773631a09698cf89c571466e5ccbe9d478cb31530aab727ed07416
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pairassembler', max_pin="x.x") }}
+  script:
+    # Upstream's default Cargo config uses target-cpu=native for local builds.
+    # Bioconda packages must be portable across user machines.
+    - rm -f .cargo/config.toml
+    - export CARGO_INCREMENTAL=0
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path pairassembler --bin pairasm
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - pairasm --version
+    - pairasm --help
+
+about:
+  home: https://github.com/nrminor/pairassembler
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast and resource-frugal paired-end sequencing read merger.
+  description: |
+    pairassembler is a fast and resource-frugal paired-end sequencing read merger, which
+    installs under the abbreviated executable name "pairasm". pairassembler offers
+    SIMD-accelerated pair overlap discovery, optional overlap validation, pair consensus
+    calling, and pair error correction.
+  dev_url: https://github.com/nrminor/pairassembler
+  doc_url: https://github.com/nrminor/pairassembler/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nrminor
