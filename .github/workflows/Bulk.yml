@@ -47,7 +47,7 @@ jobs:
         run: bash configure-conda.sh
 
       - name: Initialize mulled image records
-        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/images.jsonl
+        run: mkdir -p /tmp/mulled-images
 
       - name: Build and upload
         env:
@@ -71,7 +71,7 @@ jobs:
             --worker-offset ${{ matrix.runner }} --n-workers 5 \
             --docker --mulled-build-and-test --anaconda-upload --mulled-upload-target biocontainers \
             --container-platform linux/amd64 \
-            --mulled-upload-records /tmp/mulled-images/images.jsonl \
+            --mulled-upload-records /tmp/mulled-images \
             --lint --record-build-failures --skiplist-leafs \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
           conda clean -y --all
@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: mulled-images-amd64-d${{ matrix.subdag_depth }}-w${{ matrix.runner }}
-          path: /tmp/mulled-images/images.jsonl
+          path: /tmp/mulled-images
 
   build-osx:
     name: Bulk OSX-64 Builds
@@ -242,7 +242,7 @@ jobs:
         run: bash configure-conda.sh
 
       - name: Initialize mulled image records
-        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/images.jsonl
+        run: mkdir -p /tmp/mulled-images
 
       - name: Build and upload
         env:
@@ -268,7 +268,7 @@ jobs:
             --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
             --container-platform linux/arm64 \
             --anaconda-upload --mulled-upload-target biocontainers \
-            --mulled-upload-records /tmp/mulled-images/images.jsonl \
+            --mulled-upload-records /tmp/mulled-images \
             --lint --record-build-failures --skiplist-leafs \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
           conda clean -y --all
