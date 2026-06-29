@@ -1,11 +1,11 @@
 {% set name = "salmon" %}
-{% set version = "1.12.0" %}
-# salmon 1.12.0 is the final C++ release. This is a *version-pinned subrecipe*: it
+{% set version = "1.12.1" %}
+# salmon 1.12.1 is the latest (and final-line) C++ release. This is a *version-pinned subrecipe*: it
 # builds the same `salmon` package as recipes/salmon/meta.yaml (the Rust 2.0 line),
-# but at the legacy 1.12.x C++ version. Users who need the C++ build install it
-# explicitly with `conda install "salmon=1.12"`. v1.12.0 is an immutable tag; the
+# but at the legacy 1.12.x C++ line. Users who need the C++ build install it
+# explicitly with `conda install "salmon=1.12"`. v1.12.1 is an immutable tag; the
 # C++ tree also lives on the `cpp` branch for future maintenance.
-{% set sha256 = "acef41e166ee60697f7199f9fd28c63f835f188638629795d2509e9a56bfced4" %}
+{% set sha256 = "cf025056ed0f6b5f8841ebd9b036076ab50c762d1c16125430cd5db3ee9600f7" %}
 
 package:
   name: {{ name }}
@@ -16,10 +16,8 @@ source:
     sha256: {{ sha256 }}
 
 build:
-  # 1.12.0 build 0 (linux-64/osx-64) was published from the old top-level C++
-  # recipe before salmon moved to the Rust 2.0 build. This subrecipe rebuilds the
-  # same version at a higher build number (also adding linux-aarch64/osx-arm64).
-  number: 1
+  # First build of the 1.12.1 C++ release (linux-64/osx-64/linux-aarch64/osx-arm64).
+  number: 0
   run_exports:
     - {{ pin_subpackage("salmon", max_pin="x") }}
 
@@ -56,16 +54,16 @@ requirements:
 test:
   commands:
     - salmon --help
-    - salmon --version | grep -q 1.12.0
+    - salmon --version | grep -q 1.12.1
 
 about:
   home: "https://github.com/COMBINE-lab/salmon"
   license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: "Transcript-level quantification from RNA-seq reads (final C++ salmon, 1.12.0)."
+  summary: "Transcript-level quantification from RNA-seq reads (final-line C++ salmon, 1.12.1)."
   description: |
-    salmon 1.12.0 is the final C++ release of salmon (selective-alignment
+    salmon 1.12.1 is the latest C++ release of salmon (selective-alignment
     transcript quantification). The default `salmon` package is the maintained
     Rust 2.0 build; install this legacy C++ line explicitly with
     `conda install "salmon=1.12"`, ideally in a dedicated environment.
@@ -88,10 +86,11 @@ extra:
   identifiers:
     - doi:10.1038/nmeth.4197
   notes: |
-    This subrecipe builds the `salmon` binary from the final C++ release (1.12.0).
+    This subrecipe builds the `salmon` binary from the final-line C++ release (1.12.1).
     Because it is the same package name as the Rust 2.0 build, conda installs one
     or the other in a given environment — `conda install salmon` gets the latest
     (Rust 2.0); `conda install "salmon=1.12"` (e.g. in a dedicated env) gets this
     C++ line. The C++ build uses a new index format incompatible with Rust 2.0
-    indices, so rebuild indices when switching. The pufferfish dependency is pinned
-    to 5dce7f41 (the streaming getRefPos k-mer orientation fix shipped in 1.12.0).
+    indices, so rebuild indices when switching. The pufferfish dependency is
+    pinned to 1c78859 (the mapping/decoy-attribution and gcBias-crash fixes
+    shipped in 1.12.1).
