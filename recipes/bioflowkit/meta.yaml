@@ -1,5 +1,5 @@
 {% set name = "bioflowkit" %}
-{% set version = "0.2.1" %}
+{% set version = "0.3.1" %}
 
 # Bioconda recipe for bioflow (PyPI distribution name: bioflowkit).
 #
@@ -19,11 +19,16 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 3e8411b0a00676045f8ba3549f8c989b80be605f6384a15e8b24a71a40cca3e5
+  sha256: 8a734662fa769168a0d2e5c6f36e4444d8e5c9cd20ed0c5f344ac1126ab32ee6
 
 build:
   noarch: python
   number: 0
+  # 0.x software → pin downstream consumers to the same minor (semver lets
+  # 0.x minors break).  Required by bioconda's missing_run_exports lint
+  # (Case 2: max_pin="x.x").
+  run_exports:
+    - {{ pin_subpackage("bioflowkit", max_pin="x.x") }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - bioflow = bioflow.cli:app
@@ -45,6 +50,7 @@ requirements:
     - questionary >=2.0
     - pandas >=1.5
     - matplotlib-base >=3.6
+    - pynvml >=11.5  # [linux]
     # NOTE: Docker Engine is a *runtime* requirement (the orchestrator
     # launches sibling tool containers via the host socket) but it is
     # not a conda package — document it in the recipe's about/description
