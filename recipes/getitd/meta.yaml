@@ -1,0 +1,65 @@
+{% set name = "getitd" %}
+{% set version = "1.5.16" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tjblaette/getitd/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 02b66853d0115ffe21c9db4e47da679055c0112b1a3198c91c93458c7b996819
+
+build:
+  number: 0
+  noarch: python
+  # getITD is distributed as standalone scripts (no setup.py); build.sh installs
+  # them into $PREFIX/share and creates launcher wrappers in $PREFIX/bin.
+
+requirements:
+  run:
+    - python >=3
+    - pandas
+    - numpy
+    # getITD uses Bio.pairwise2, which is deprecated but still shipped by Biopython.
+    - biopython
+    # Only needed for the optional `-plot_coverage True` coverage plot.
+    - matplotlib-base
+    # Only needed for the optional GUI helper make_getitd_config.
+    - easygui
+
+test:
+  source_files:
+    - test/test_R1.fastq
+    - test/test_R2.fastq
+    - anno/amplicon.txt
+    - anno/amplicon_kayser.tsv
+  commands:
+    - getitd --help
+    # getitd_from_config_wrapper has no CLI parser; it re-runs from a config.txt
+    # in the CWD, so it cannot be smoke-tested with --help. Verify it installed.
+    - test -f "$PREFIX/bin/getitd_from_config_wrapper"
+    - test -f "$PREFIX/bin/make_getitd_config"
+    - getitd -nkern 1 -reference anno/amplicon.txt -anno anno/amplicon_kayser.tsv testsample test/test_R1.fastq test/test_R2.fastq
+    - test -f testsample_getitd/stats.txt
+    - test -f testsample_getitd/config.txt
+
+about:
+  home: https://github.com/tjblaette/getitd
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Detection of FLT3-ITDs (internal tandem duplications) from amplicon NGS data"
+  description: |
+    getITD detects and characterises FLT3 internal tandem duplications (ITDs) from
+    high-throughput amplicon sequencing data, supporting minimal residual disease
+    monitoring in acute myeloid leukemia. It aligns reads to a wild-type amplicon
+    reference, identifies and merges insertions, and reports ITDs with variant allele
+    frequencies and genomic/protein annotation.
+  doc_url: https://github.com/tjblaette/getitd/blob/master/README.md
+  dev_url: https://github.com/tjblaette/getitd
+
+extra:
+  identifiers:
+    - doi:10.1038/s41375-019-0483-z
+  recipe-maintainers:
+    - tjblaette
