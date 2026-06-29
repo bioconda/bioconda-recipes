@@ -5,9 +5,6 @@
 
 mkdir -p $PREFIX/bin
 
-# Unzip the download directory
-
-unzip download
 
 # Insert the perl shebang into the final destination file 
 
