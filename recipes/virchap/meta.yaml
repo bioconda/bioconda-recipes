@@ -1,0 +1,58 @@
+{% set name = "virchap" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gaoyun-25/virCHap/archive/refs/tags/v1.0.tar.gz
+  sha256: baba2741b6df91973adcff0173495fa38d4404ed3d9178113af0c0012bd2cb20
+
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - virchap = src.phase_pipeline:main
+    - virchap_pipeline = src.virchap_pipeline:main
+
+requirements:
+  host:
+    - python >=3.8,<3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<3.9
+    - sortedcontainers
+    - karateclub =1.2.1
+    - minimap2
+    - gatk4
+    - lofreq
+    - samtools
+    - networkx
+    - pysam >=0.15,<0.23
+
+test:
+  imports:
+    - src.phase_pipeline
+    - src.virchap_pipeline
+  commands:
+    - virchap --help
+    - virchap_pipeline --help
+
+about:
+  home: https://github.com/gaoyun-25/virCHap
+  summary: "Viral haplotype reconstruction pipeline for long reads"
+  description: |
+    virCHap is a reference-based viral haplotype reconstruction algorithm
+    designed for long-read sequencing data. It provides both a complete
+    pipeline (reads + reference) and a phasing mode (BAM + VCF + reference).
+  license: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/gaoyun-25/virCHap
+
+extra:
+  recipe-maintainers:
+    - gaoyun-25
