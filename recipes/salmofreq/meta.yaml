@@ -1,0 +1,63 @@
+{% set name = "salmofreq" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/shaodongyan/SalmoFreq/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5526f8d23988e4939f53f6e761e9799b0ea68a8f805c2311bf180b38e988348d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - salmofreq = salmofreq.cli:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.9
+    - pandas >=1.3
+    - openpyxl >=3.0
+    - blast
+    # GUI dependency (`salmofreq gui`); drop this line for a CLI-only package.
+    - streamlit >=1.49
+
+test:
+  imports:
+    - salmofreq
+    - salmofreq.core
+    - salmofreq.serotyper
+  commands:
+    - salmofreq --version
+    - salmofreq --help
+    - salmofreq run --help
+
+about:
+  home: https://github.com/shaodongyan/SalmoFreq
+  license: GPL-2.0-only
+  license_family: GPL2
+  license_file: LICENSE
+  summary: Serotype-resolved Salmonella virulence-factor gene frequencies
+  description: |
+    SalmoFreq is a command-line tool for calculating serotype-resolved gene
+    frequencies in Salmonella. It serotypes assembled genomes with a bundled
+    SeqSero2-derived k-mer serotyper (or a user-provided serotype table),
+    screens each genome for genes by BLAST against a bundled virulence-factor
+    gene database (or any user-defined gene set), and produces a
+    serotype-by-gene frequency matrix. SalmoFreq was developed at the State
+    Key Laboratory of Veterinary Public Health and Safety, China Agricultural
+    University, in collaboration with the China National Center for Food
+    Safety Risk Assessment (CFSA).
+  dev_url: https://github.com/shaodongyan/SalmoFreq
+
+extra:
+  recipe-maintainers:
+    - shaodongyan
