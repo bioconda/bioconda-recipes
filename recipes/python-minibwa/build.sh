@@ -23,11 +23,11 @@ if [[ "$(uname)" != "Darwin" ]]; then
   export RUSTFLAGS="${RUSTFLAGS:-} -L native=${PREFIX}/lib"
 fi
 
-# Build the cargo dependency graph from the committed Cargo.lock (`--offline`)
+# Build the cargo dependency graph from the committed Cargo.lock (`--locked`)
 # so the wheel pins the exact crate versions the project tests against, rather
 # than re-resolving at build time. maturin forwards this cargo flag, and pip
 # (PEP 517) forwards maturin args via MATURIN_PEP517_ARGS.
-export MATURIN_PEP517_ARGS="--offline"
+export MATURIN_PEP517_ARGS="--locked"
 
 ${PYTHON} -m pip install . --no-deps --no-build-isolation -vv
 
