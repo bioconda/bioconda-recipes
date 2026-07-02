@@ -1,56 +1,71 @@
-{% set version = "0.3.4" %}
-{% set sha256 = "09e179030ab55969450d98b016856fb1f07628d5f538120ece958cfc00b72348" %}
+{% set name = "nucleoatac" %}
+{% set version = "1.0.0" %}
+{% set commit = "22edcd0d026845c94013e12e5c550a17842edb7f" %}
+{% set sha256 = "2bf6f790b294cf119d8c2f5d63ce09519ab9362328ded55ae8387c347ed68f85" %}
 
 package:
-  name: nucleoatac
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/n/nucleoatac/NucleoATAC-{{ version }}.tar.gz
+  url: https://github.com/alecethell/NucleoATAC/archive/{{ commit }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - 0001-Remove-runtime-usage-of-pyximport.patch
+    - add-console-script-main-wrappers.patch
 
 build:
-  number: 7
-  skip: True  # [py>=30]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - nucleoatac = nucleoatac.cli:main
+    - pyatac = pyatac.cli:main
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
   host:
-    - python
+    - python >=3.11
     - pip
-    - cython >=0.22
-    - numpy >=1.9.1
-    - htslib
-    - pysam >=0.10.0
-    - zlib
+    - setuptools >=68
+    - wheel
+    - cython >=3.0
+    - numpy >=1.26,<2.1
   run:
-    - python
-    - {{ pin_compatible('numpy') }}
-    - scipy
-    - matplotlib-base
-    - htslib
-    - pysam >=0.10.0
-    - zlib
+    - python >=3.11
+    - numpy >=1.26,<2.1
+    - scipy >=1.11
+    - pysam >=0.22
+    - matplotlib-base >=3.8
+    - samtools >=1.18
 
 test:
+  imports:
+    - nucleoatac
+    - pyatac
+    - pyatac.fragments
+    - nucleoatac.multinomial_cov
   commands:
+    - nucleoatac --help
     - nucleoatac run --help
     - pyatac --help
-    - MPLBACKEND=agg python -c 'import nucleoatac.run_nuc'
-  import:
-    - pyatac.fragmentsizes
 
 about:
   home: https://github.com/GreenleafLab/NucleoATAC
+  dev_url: https://github.com/alecethell/NucleoATAC/tree/py311-modernization
+  doc_url: https://nucleoatac.readthedocs.io/
   license: MIT
-  summary: 'Python package for calling nucleosomes using ATAC-Seq data. Also includes general scripts for working with paired-end ATAC-Seq data (or potentially other paired-end data).'
   license_family: MIT
-  doc_url: http://nucleoatac.readthedocs.io/en/latest/
+  summary: Nucleosome calling from ATAC-seq data
+  description: |
+    NucleoATAC calls nucleosome positions from ATAC-seq data and provides
+    helper utilities for paired-end ATAC-seq signal processing. This recipe
+    packages the Python 3 modernization fork used by nf-core/atacportray.
 
 extra:
   identifiers:
     - doi:10.1101/gr.192294.115
+  recipe-maintainers:
+    - PFRoux

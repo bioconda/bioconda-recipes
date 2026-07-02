@@ -1,0 +1,59 @@
+{% set name = "telomerehunter" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "915b0166278514fd441c819a5b03014f1908a77313546931771a42a121f9a580" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/e5/67/ce6ac292a88a078a733dc3d9adb3f153834692effbf0851b93a6f3e49b7a/telomerehunter-{{ version }}-py2-none-any.whl
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install *.whl --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python 2.7.*
+    - pip
+  run:
+    - python 2.7.*
+    - numpy >=1.16,<1.17
+    - pysam >=0.15,<0.16
+    - pypdf2 >=1.26,<2
+    - r-base
+    - r-cowplot
+    - r-ggplot2
+    - r-gridextra
+    - r-rcolorbrewer
+    - r-reshape2
+    - r-svglite
+    - samtools
+
+test:
+  imports:
+    - telomerehunter
+  commands:
+    - telomerehunter --help
+
+about:
+  home: https://www.dkfz.de/en/applied-bioinformatics/telomerehunter/telomerehunter.html
+  license: GPL
+  license_family: GPL
+  license_file: LICENSE
+  summary: Estimation of telomere content from sequencing data
+  description: |
+    TelomereHunter extracts, sorts and analyses telomeric reads from BAM files
+    to estimate telomere content. It was developed at the German Cancer
+    Research Center (DKFZ).
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-019-1760-2
+  recipe-maintainers:
+    - PFRoux
