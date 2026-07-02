@@ -1,0 +1,73 @@
+{% set name = "ngs45" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/maidinhvn/ngs45/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 53c6817e7ef633c31db9b2fc22868454c355462ca8ea5943e37b5c4df4d52a09
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ngs45', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - ngs45 = ngs45.cli:main
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.79
+    # external tools invoked via subprocess (the package itself is pure-Python)
+    - bowtie2
+    - spades
+    - seqkit
+    - blast
+    - barrnap
+    - itsx
+    - infernal
+    - bwa
+    - samtools
+    - bcftools
+    # cutadapt >=5.0 requires dnaio >=1.2.3, which has no py310 build;
+    # test env is pinned to python_min (3.10), so cap cutadapt (S0 trim only).
+    - cutadapt <5.0
+
+test:
+  imports:
+    - ngs45
+  requires:
+    - pip
+    - python {{ python_min }}
+  commands:
+    - pip check
+    - ngs45 --version
+
+about:
+  home: https://github.com/maidinhvn/ngs45
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Recover the 45S nrDNA transcribed unit from Illumina short reads"
+  description: |
+    ngs45 recovers the 45S nrDNA transcribed unit (18S-ITS1-5.8S-ITS2-26S) and
+    ITS barcode from Illumina short reads: it baits rDNA reads against a conserved
+    45S seed, assembles them with SPAdes, resolves a single repeat unit, trims to
+    the mature 18S/26S boundaries with Rfam SSU/LSU covariance models, annotates
+    the ITS regions, and reports intragenomic ribotype heterozygosity (a
+    hybridisation / allopolyploidy signal). Short-read counterpart of easy45 (HiFi).
+  dev_url: https://github.com/maidinhvn/ngs45
+  doc_url: https://github.com/maidinhvn/ngs45/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - maidinhvn
