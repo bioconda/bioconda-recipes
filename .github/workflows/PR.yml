@@ -65,7 +65,7 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF" HEAD
+          bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF" --git-range HEAD
           conda clean -y --all
 
   build-linux:
@@ -154,7 +154,7 @@ jobs:
 
           bioconda-utils build recipes config.yml \
             --docker --mulled-test \
-            --git-range origin/"$GITHUB_BASE_REF" HEAD
+            --git-range origin/"$GITHUB_BASE_REF" --git-range HEAD
 
       - name: Prepare artifacts
         run: |
@@ -267,7 +267,7 @@ jobs:
           done
 
           bioconda-utils build recipes config.yml \
-            --git-range origin/"$GITHUB_BASE_REF" HEAD
+            --git-range origin/"$GITHUB_BASE_REF" --git-range HEAD
 
       - name: Prepare artifacts
         run: |
@@ -347,7 +347,7 @@ jobs:
   #         git fetch origin "$GITHUB_BASE_REF"
 
   #         bioconda-utils build recipes config.yml \
-  #           --lint --git-range origin/"$GITHUB_BASE_REF" HEAD
+  #           --lint --git-range origin/"$GITHUB_BASE_REF" --git-range HEAD
 
   #     - name: Prepare artifacts
   #       if: steps.additional_platforms.outputs.skip_build != 'true'
