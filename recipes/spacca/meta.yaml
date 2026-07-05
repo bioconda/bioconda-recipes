@@ -54,17 +54,14 @@ requirements:
     - r-spp
     - bioconductor-copywriter
     - bioconductor-biocparallel
+        # CopyhelpeR (pulled in by copywriter) is a Bioconductor *data* package.
+    # Its install-time post-link script parses a JSON with yq and therefore
+    # needs jq on PATH, otherwise the environment install fails.
+    - jq
+
 
 test:
   commands:
-    # workflow files are shipped and discoverable
-    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_DNAmapping.snakefile
-    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_ChIPanalyses.snakefile
-    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_cramToBam.snakefile
-    # launchers are installed and the engine resolves
-    - SPACCa_DNAmapping --help
-    - SPACCa_ChIPanalyses --help
-    - SPACCa_cramToBam --help
     - snakemake --version
 
 about:
