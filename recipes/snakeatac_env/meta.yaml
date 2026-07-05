@@ -1,92 +1,84 @@
-{% set version = "0.1.1" %}
-{% set sha256 = "7d9c753aceadd0cdd2132f510375e191f1bd9de92e29e43d710433ca770e1f03" %}
+{% set name = "snakeatac_env" %}
+{% set version = "0.1.2" %}
 
 package:
-  name: snakeatac_env
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/sebastian-gregoricchio/snakeATAC/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
+  # snakeATAC tags are prefixed with "v" (unlike SPACCa)
+  url: https://github.com/sebastian-gregoricchio/snakeATAC/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4ce1391a7e7b94ed1721e351ca0b2b3fd3857c89330dba12a18553b0a0e95e28
+
 build:
-  noarch: python
   number: 0
+  noarch: generic
   run_exports:
-    - {{ pin_subpackage('snakeatac_env', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  host:
-    - python
-    - pip
-    - numpy >=1.22
-    - mpich
-
+  # No host/build section: this is a dependency-only (metapackage) recipe with
+  # no compiled code and no files to install.
   run:
-    - bcftools
-    - bedtools
-    - bioconductor-copywriter
-    - bioconductor-shortread
-    - bioinfokit
-    - bwa-mem2
-    - bzip2
-    - cutadapt
-    - deeptools >=3.5.2
-    - fastqc
-    - gatk4
-    - macs3
-    - matplotlib-base
-    - multiqc >=1.23
-    - pdfcombine
-    - pip
-    - py-bgzip
-    - py2bit
-    - pybigwig
-    - pyfaidx
-    - pysam
-    - python
-    - r-colorspace
-    - r-data.table
-    - r-dplyr
-    - r-generics
-    - r-ggplot2
-    - r-ggtext
-    - r-plyr
-    - r-rcolorbrewer
-    - r-reshape2
-    - r-scales
-    - r-snow
-    - r-stringr
-    - r-viridis
-    - samtools
-    - scipy
-    - seaborn
-    - snakemake >=7.24.0
-    - snpsift
-    - subread
-    - tobias
-    - ucsc-bedgraphtobigwig
-    - biopython
-    - docutils
-    - fastcluster
-    - logomaker
-    - numpydoc
+    # --- workflow engine -------------------------------------------------
+    - snakemake-minimal >=7.24.0
+    - python >=3.8
+    - numpy
     - pandas
-    - pybedtools
-
+    # --- trimming / QC ---------------------------------------------------
+    - cutadapt
+    - fastqc
+    - multiqc >=1.23
+    # --- alignment & BAM handling ---------------------------------------
+    - bwa-mem2
+    - samtools
+    - gatk4
+    - mawk
+    # --- peak calling / signal / counts ---------------------------------
+    - macs3
+    - deeptools >=3.5.2
+    - bedtools
+    - ucsc-bedgraphtobigwig
+    - htslib
+    - subread
+    # --- footprinting ----------------------------------------------------
+    - tobias
+    # --- variant filtering / annotation ---------------------------------
+    - snpsift
+    # --- reporting -------------------------------------------------------
+    - pdfcombine
+    # --- R stack (CopywriteR CNV + inline plotting) ---------------------
+    - r-base >=4.2
+    - r-dplyr
+    - r-ggplot2
+    - r-data.table
+    - r-reshape2
+    - r-snow
+    - bioconductor-copywriter
+    - bioconductor-biocparallel
+    # CopyhelpeR (pulled in by copywriter) is a Bioconductor *data* package;
+    # its install-time post-link script parses JSON with yq and needs jq on
+    # PATH, otherwise the environment install fails.
+    - jq
 
 test:
   commands:
-    - deeptools --help
-    - samtools --help
-    
+    - samtools --version
+    - deeptools --version
+    - macs3 --version
+    - TOBIAS --help
+    - snakemake --version
+    # verifies the CopywriteR / CopyhelpeR (jq) install actually works
+    - Rscript -e "library('CopywriteR')"
 
 about:
   home: https://github.com/sebastian-gregoricchio/snakeATAC
-  license_file: LICENSE
   license: GPL-3.0-or-later
-  summary: snakemake based ATACseq pipeline
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Snakemake-based pipeline for the analysis of ATAC-seq data"
   doc_url: https://github.com/sebastian-gregoricchio/snakeATAC/wiki
-
+  dev_url: https://github.com/sebastian-gregoricchio/snakeATAC
 
 extra:
   recipe-maintainers:
