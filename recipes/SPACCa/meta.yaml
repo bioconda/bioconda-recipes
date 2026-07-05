@@ -1,0 +1,89 @@
+{% set name = "SPACCa" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # GitHub release tarball (repo name keeps its original capitalisation)
+  url: https://github.com/sebastian-gregoricchio/SPACCa/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b129e3d206fc4b9431a76fe5124a7cda53ec33180f59e43ed4fffad469af8e15
+
+build:
+  number: 0
+  # Pure Snakemake workflow (no compiled code) -> architecture independent
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  # No host/build section is needed: build.sh only copies files into $PREFIX.
+  run:
+    # --- workflow engine -------------------------------------------------
+    - snakemake-minimal >=7.24.0
+    - python >=3.8
+    - numpy >=1.22
+    - pandas
+    # --- read trimming / QC ---------------------------------------------
+    - cutadapt
+    - fastqc
+    - multiqc >=1.23
+    - phantompeakqualtools
+    # --- alignment & BAM handling ---------------------------------------
+    - bwa
+    - bwa-mem2
+    - samtools
+    - gatk4
+    - mawk
+    # --- peak calling (both requested) ----------------------------------
+    - macs2
+    - macs3
+    # --- coverage / signal / QC plots -----------------------------------
+    - deeptools >=3.5.2
+    - bedtools
+    - ucsc-bedgraphtobigwig
+    - ucsc-fatotwobit
+    - htslib
+    # --- variant filtering / annotation ---------------------------------
+    - snpsift
+    # --- R stack (CopywriteR CNV + phantompeakqualtools + plots) ---------
+    - r-base >=4.2
+    - r-dplyr
+    - r-ggplot2
+    - r-spp
+    - bioconductor-copywriter
+    - bioconductor-biocparallel
+
+test:
+  commands:
+    # workflow files are shipped and discoverable
+    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_DNAmapping.snakefile
+    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_ChIPanalyses.snakefile
+    - test -f $PREFIX/share/{{ name }}/workflow/SPACCa_cramToBam.snakefile
+    # launchers are installed and the engine resolves
+    - SPACCa_DNAmapping --help
+    - SPACCa_ChIPanalyses --help
+    - SPACCa_cramToBam --help
+    - snakemake --version
+
+about:
+  home: https://github.com/sebastian-gregoricchio/SPACCa
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Snakemake Pipeline for the Analyses of ChIP-seq data in Cancer samples"
+  description: |
+    SPACCa (Snakemake Pipeline for the Analyses of ChIP-seq data in Cancer
+    samples) bundles three workflows: DNA mapping (SPACCa_DNAmapping),
+    ChIP-seq downstream analyses including peak calling, GC-bias correction,
+    copy-number estimation (CopywriteR) and SNP/InDel calling
+    (SPACCa_ChIPanalyses), and a CRAM-to-BAM converter (SPACCa_cramToBam).
+  doc_url: https://github.com/sebastian-gregoricchio/SPACCa/wiki
+  dev_url: https://github.com/sebastian-gregoricchio/SPACCa
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.15309654
+  recipe-maintainers:
+    - sebastian-gregoricchio
