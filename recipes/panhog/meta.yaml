@@ -1,73 +1,66 @@
-{% set version = "0.1.0" %}
+{% set name = "panhog" %}
+{% set version = "0.4.0" %}
 
 package:
-  name: panhog
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  
   url: https://github.com/yykaya/PanHOG/archive/refs/tags/v{{ version }}.tar.gz
-  
-  
-  sha256: 859b84d350f492d3e3c97827a9934e218b0c73d3aa1ab8a27c6e738a5269da89
+  sha256: cc3166397955f8e496219582f5182d36289882ccf54010e59b91dc50c6ce48df
 
 build:
- 
+  number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - panhog = PanHOG:main
+    - pangenehog = PangeneHOG:main
 
 requirements:
   host:
-    
-    - python 3.9
+    - python >=3.8
     - pip
-    - setuptools
-  
+    - setuptools >=61
   run:
-    
-    - python 3.9
-    
-    
-    - muscle
-    - iqtree
-    - panx
-    
-    
-    - diamond >=2.1,<=2.1.8
-    - orthofinder >=2.5.1,<=2.5.5
-    
-    
-    - miniprot
-    - k8
-    - biopython
-    - pandas
-    - blast
+    - python >=3.8
     - numpy
+    - pandas
+    - matplotlib-base
     - seaborn
-    - matplotlib
-    - pyyaml 
-    - seqtk
-    
-    
-    - pip
-    - pip:
-      - pangene
+    - biopython >=1.80
+    - pyyaml
+    - scipy
+    - ete3
+    - blast
+    - mafft
+    - muscle
+    - pal2nal
+    - paml
+    - raxml-ng
+    - modeltest-ng
 
 test:
- 
+  imports:
+    - panhog_dnds
   commands:
     - panhog --help
-   
-    - pangene --help
+    - pangenehog --help
 
 about:
   home: https://github.com/yykaya/PanHOG
-  summary: "A tool for pangenome analysis using HOGs"
   license: MIT
-  license_file: LICENSE 
+  license_family: MIT
+  license_file: LICENSE
+  summary: Phylogeny-aware pangenome classification toolkit
+  description: |
+    PanHOG classifies and annotates Hierarchical Orthologous Groups (HOGs) in
+    pangenomic datasets into core / shell / private compartments, then re-weights
+    and validates the classification with the species tree, per-HOG gene trees,
+    codon-based dN/dS selection, and functional annotation, producing
+    publication-ready figures from an OrthoFinder N0.tsv plus per-accession FASTA.
+  dev_url: https://github.com/yykaya/PanHOG
 
 extra:
   recipe-maintainers:
-    - yykaya 
+    - yykaya
