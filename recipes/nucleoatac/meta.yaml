@@ -12,9 +12,12 @@ source:
   sha256: {{ sha256 }}
   patches:
     - add-console-script-main-wrappers.patch
+    - relax-pyproject-requirements.patch
+    - relax-setup-requirements.patch
 
 build:
   number: 0
+  skip: true  # [py != 310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -27,18 +30,21 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
   host:
-    - python >=3.11
+    - python 3.10.*
     - pip
     - setuptools >=68
     - wheel
-    - cython >=3.0
-    - numpy >=1.26,<2.1
+    - cython <3
+    - numpy >=1.23,<2
+    - pysam >=0.19,<0.21
+    - htslib
   run:
-    - python >=3.11
-    - numpy >=1.26,<2.1
-    - scipy >=1.11
-    - pysam >=0.22
-    - matplotlib-base >=3.8
+    - {{ pin_compatible('python') }}
+    - {{ pin_compatible('numpy') }}
+    - scipy >=1.9
+    - {{ pin_compatible('pysam', max_pin="x.x") }}
+    - htslib
+    - matplotlib-base >=3.5
     - samtools >=1.18
 
 test:
