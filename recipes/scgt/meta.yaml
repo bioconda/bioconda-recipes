@@ -1,0 +1,59 @@
+{% set name = "scgt" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mobilome/scgt/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0c1a5d32291181eca9bb4caa1dede4b4e9148bf8736693cd5f6f798b14fb02fb
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - scgt = scgt_modules.cli:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - flash
+    - pigz
+    - seqkit
+    - blast
+    - bedtools
+    - samtools
+
+test:
+  imports:
+    - scgt_modules
+  commands:
+    - scgt --help
+    - scgt mkdb --help
+    - scgt genotype --help
+    - scgt merge --help
+
+about:
+  home: https://github.com/mobilome/scgt
+  license: MIT
+  license_file: LICENSE
+  summary: "scgt: SINE-RIP chip genotyper for 51k-SINE-RIP chip genotyping"
+  description: |
+    scgt is a bioinformatics tool for 51k-SINE-RIP chip genotyping.
+    It provides three subcommands:
+    - mkdb: Paired-end data processing and BLAST database construction
+    - genotype: RIP-seq genotyping analysis pipeline
+    - merge: Merge per-sample genotype results and generate summary statistics
+  dev_url: https://github.com/mobilome/scgt
+
+extra:
+  recipe-maintainers:
+    - mobilome
+  identifiers:
+    - biotools:scgt
