@@ -1,0 +1,60 @@
+{% set name = "phads" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/George-nsn/PhADS/archive/refs/tags/PhADS--V0.6.0.tar.gz
+  sha256: c967cf847d9cef98279235e4f7e880682cbee0a6dc39275c6d89a155fc6b7917
+  license: Apache-2.0
+
+build:
+  number: 0
+  skip: true  # [win]
+  script: bash ${RECIPE_DIR}/build.sh
+  entry_points:
+    - phads = phads:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - biopython
+    - foldseek
+    - hmmer
+    - huggingface_hub
+    - numpy
+    - onnxruntime
+    - pandas
+    - pyrodigal
+    - pyrodigal-gv
+    - pytorch
+    - sentencepiece
+    - tqdm
+    - transformers
+
+test:
+  commands:
+    - phads --help
+    - test -d ${PREFIX}/share/phads/database
+    - test -f ${PREFIX}/share/phads/scripts/predict_residue_pool_gate.py
+
+about:
+  home: https://github.com/George-nsn/PhADS
+  summary: PHADS-style anti-defense protein inference pipeline
+  description: |
+    PHADS provides a command-line anti-defense protein inference pipeline using
+    residue-level ESM2 and ProtT5 embeddings, HMM features, prototype inference,
+    optional Foldseek structure search, and bundled PHADS databases.
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - biotools:phads
