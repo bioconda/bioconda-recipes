@@ -1,8 +1,7 @@
-{% set name = "ngs45" %}
 {% set version = "0.1.0" %}
 
 package:
-  name: {{ name }}
+  name: ngs45
   version: {{ version }}
 
 source:
@@ -11,7 +10,7 @@ source:
 
 build:
   noarch: python
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('ngs45', max_pin="x.x") }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
@@ -20,34 +19,31 @@ build:
 
 requirements:
   host:
-    - python {{ python_min }}
+    - python
     - pip
-    - setuptools >=64
+    - setuptools
     - wheel
   run:
-    - python >={{ python_min }}
+    - python
     - biopython >=1.79
     # external tools invoked via subprocess (the package itself is pure-Python)
-    - bowtie2
-    - spades
-    - seqkit
-    - blast
     - barrnap
-    - itsx
-    - infernal
-    - bwa
-    - samtools
     - bcftools
-    # cutadapt >=5.0 requires dnaio >=1.2.3, which has no py310 build;
-    # test env is pinned to python_min (3.10), so cap cutadapt (S0 trim only).
-    - cutadapt <5.0
+    - blast
+    - bowtie2
+    - bwa
+    - cutadapt
+    - infernal
+    - itsx
+    - samtools
+    - seqkit
+    - spades
 
 test:
   imports:
     - ngs45
   requires:
     - pip
-    - python {{ python_min }}
   commands:
     - pip check
     - ngs45 --version
