@@ -1,0 +1,68 @@
+{% set name = "riborf" %}
+{% set version = "2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/zhejilab/RibORF.git
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('riborf', max_pin='x') }}
+  script: |
+    mkdir -p $PREFIX/bin
+    cp -r $SRC_DIR/RibORF.2.0/* $PREFIX/bin/
+    for pl_file in $PREFIX/bin/*.pl; do
+      if [ -f "$pl_file" ]; then
+        if ! head -1 "$pl_file" | grep -q "^#!/usr/bin/env perl"; then
+          tmp_file="${pl_file}.tmp"
+          mv "$pl_file" "$tmp_file"
+          echo "#!/usr/bin/env perl" > "$pl_file"
+          cat "$tmp_file" >> "$pl_file"
+          rm "$tmp_file"
+        fi
+        chmod +x "$pl_file"
+      fi
+    done
+
+requirements:
+  host:
+    - git
+    - perl
+  run:
+    - perl
+    - bowtie2
+    - tophat
+    - r-base
+    - r-e1071
+    - samtools
+    - bedtools
+
+test:
+  commands:
+    - test -f $PREFIX/bin/ORFannotate.pl
+    - test -x $PREFIX/bin/ORFannotate.pl
+
+about:
+  home: https://github.com/zhejilab/RibORF
+  license: MIT
+  license_file: LICENSE
+  summary: 'Tool for identifying translated open reading frames using ribosome profiling'
+  description: |
+    RibORF is a comprehensive pipeline for identifying translated open reading frames (ORFs)
+    from ribosome profiling (Ribo-seq) data. It includes steps of adapter trimming, rRNA removal,
+    read alignment, offset correction, and ORF prediction.
+
+    This recipe is based on the upstream RibORF 2.0 release. During the build phase, it
+    automatically adds a '#!/usr/bin/env perl' shebang line to all .pl scripts (if not already
+    present) and sets executable permissions. After installation, scripts can be called directly
+    from the command line without prefixing with 'perl'.
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
