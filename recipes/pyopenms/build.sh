@@ -34,7 +34,7 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-    -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=12 \
+    -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=16 \
     -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
  	${PLATFORM_CMAKE_EXTRAS}
@@ -43,9 +43,11 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 
 # Limit parallel jobs for memory usage since pyopenms has huge cython generated cpp files.
 # With 3.5.0 the generated sources grew enough that building at full CPU_COUNT parallelism
-# OOMs the CI runners (16 GB); -j2 keeps peak RAM within budget while staying reasonably fast.
+# OOMs the 16 GB CI runners (each Cython process has a large fixed cost). -j3 (paired with
+# the increased PY_NUM_MODULES above) keeps peak RAM within budget while retaining enough
+# parallelism to build in reasonable time.
 #cmake --build . --clean-first --target pyopenms -j 1
-ninja pyopenms -j2
+ninja pyopenms -j3
 
 echo "wheels are in `find . | grep whl`"  >&2
 ${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --use-pep517 --no-binary=pyopenms -vvv
