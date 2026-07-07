@@ -1,0 +1,94 @@
+{% set name = "riboss" %}
+{% set version = "0.46" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/lcscs12345/riboss.git
+
+build:
+  noarch: python
+  number: 0
+  script: |
+    pip install . --no-deps --ignore-installed -vv
+    mkdir -p $PREFIX/bin
+    cp $SRC_DIR/bin/riboprof $PREFIX/bin/
+    if ! head -1 "$PREFIX/bin/riboprof" | grep -q "^#!/"; then
+      tmp_file="${PREFIX}/bin/riboprof.tmp"
+      mv "$PREFIX/bin/riboprof" "$tmp_file"
+      echo "#!/usr/bin/env python" > "$PREFIX/bin/riboprof"
+      cat "$tmp_file" >> "$PREFIX/bin/riboprof"
+      rm "$tmp_file"
+    fi
+    chmod +x $PREFIX/bin/riboprof
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - git
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - scipy
+    - statsmodels
+    - seaborn
+    - matplotlib-base
+    - tqdm
+    - pyranges
+    - biopython
+    - pyfaidx
+    - cloudpickle
+    - pysam
+    - pybigwig
+    - logomaker
+    - ncls
+    - sorted_nearest
+    - pyvcf3
+    - openpyxl
+    - samtools
+    - bedtools
+    - bowtie2
+    - minimap2
+    - salmon
+    - star
+    - stringtie
+    - rseqc
+    - datamash
+    - fastp
+    - ucsc-bedsort
+    - ucsc-bedtobigbed
+    - ucsc-bedtogenepred
+    - ucsc-genepredtobed
+    - ucsc-genepredtobiggenepred
+    - ucsc-gff3togenepred
+    - ucsc-gtftogenepred
+
+test:
+  imports:
+    - riboss
+  commands:
+    - test -f $PREFIX/bin/riboprof
+    - test -x $PREFIX/bin/riboprof
+
+about:
+  home: https://github.com/lcscs12345/riboss
+  license: MIT
+  license_file: LICENSE
+  summary: 'Comparing translational potential of open reading frames within individual transcripts'
+  description: |
+    RIBOSS is a Python package that integrates long- and short-read RNA sequencing
+    data for reference-guided transcriptome assembly with ribosome profiling data
+    to identify and characterise novel translational events beyond annotated regions.
+
+    This recipe installs the riboss Python package via pip and also copies the
+    bin/riboprof script to $PREFIX/bin with executable permissions. If riboprof
+    lacks a shebang line, one is automatically added during the build phase.
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
