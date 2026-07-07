@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pepsnmrdata-1.24.0"
+installBiocDataPackage.sh "pepsnmrdata-1.28.0"

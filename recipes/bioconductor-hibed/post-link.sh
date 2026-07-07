@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hibed-1.4.0"
+installBiocDataPackage.sh "hibed-1.8.0"

@@ -1,0 +1,54 @@
+{% set name = "markinp" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b5442390882affbd18dd1032a1aeca01fb9609ed47e54e0d570cd3833667f6e5
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python
+    - pip
+    - hatchling
+  run:
+    - python
+    - typer >=0.9
+
+test:
+  imports:
+    - markinp
+  commands:
+    - pip check
+    - markinp --help
+    - markinp --version
+  requires:
+    - pip
+
+about:
+  home: https://github.com/leonbzt/markinp
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Read, validate, and build Program MARK encounter-history (.inp) files."
+  description: |
+    markinp is an independent, unofficial command-line utility and Python
+    library for reading, validating, and building Program MARK encounter-history
+    (.inp) files. It performs file I/O and validation only and does not fit
+    models or compute statistics. It is not affiliated with or endorsed by the
+    authors of Program MARK or RMark.
+  dev_url: https://github.com/leonbzt/markinp
+
+extra:
+  recipe-maintainers:
+    - leonbzt
