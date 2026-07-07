@@ -1,5 +1,5 @@
 {% set name = "GOTTCHA2" %}
-{% set version = "2.3.0" %}
+{% set version = "2.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -10,22 +10,22 @@ build:
   number: 0
   script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir .
   entry_points:
-    - gottcha2 = gottcha.scripts.cmd:gottcha2_command
+    - gottcha2 = gottcha.gottcha2:cli
   run_exports:
     - {{ pin_subpackage('gottcha2', max_pin='x') }}
 
 source:
-  url: https://github.com/poeli/GOTTCHA2/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 5352686f94d265022d94db2b850f99694d3bafd79985e58506951434c10e903d
+  url: https://github.com/poeli-lanl/GOTTCHA2/archive/refs/tags/{{ version }}.tar.gz
+  sha256: ba0a122d18723de4d28947d5be51c507965319eac21e6436ac4dfeb87eaf28ef
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.9
     - pip
     - setuptools
     - pandas
   run:
-    - python >=3.6
+    - python >=3.9
     - minimap2 >=2.17
     - gawk
     - biom-format >=2.1.7
@@ -33,21 +33,22 @@ requirements:
     - pandas
     - requests
     - tqdm
+    - pysam >=0.22.0
 
 test:
   commands:
     - minimap2 -h
-    - gawk -h
-    - gottcha2.py --version
+    - python -c "import gottcha.gottcha2 as g; assert g.__version__ == '{{ version }}'"
+    - gottcha2 version
 
 about:
-  home: https://github.com/poeli/GOTTCHA2
-  license: BSD-3-Clause
+  home: https://github.com/poeli-lanl/GOTTCHA2
+  license: BSD-3
   license_family: BSD
   license_file: LICENSE
   summary: 'Genomic Origin Through Taxonomic CHAllenge (GOTTCHA) v2.'
-  dev_url: https://github.com/poeli/GOTTCHA2
-  doc_url: https://github.com/poeli/GOTTCHA2/wiki
+  dev_url: https://github.com/poeli-lanl/GOTTCHA2
+  doc_url: https://github.com/poeli-lanl/GOTTCHA2/wiki
 
 extra:
   identifiers:

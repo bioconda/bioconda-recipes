@@ -1,0 +1,70 @@
+{% set name = "permutect" %}
+{% set version = "0.9.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/broadinstitute/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: c6e3d095f3dc3ee5461cf13db5d4e3a65c085ef96202e2013714b1c34aec0e0d
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - refine_artifact_model = permutect.tools.refine_artifact_model:main
+    - train_artifact_model = permutect.tools.train_artifact_model:main
+    - filter_variants = permutect.tools.filter_variants:main
+    - preprocess_dataset = permutect.tools.preprocess_dataset:main
+    - edit_dataset = permutect.tools.edit_dataset:main
+    - prune_dataset = permutect.tools.prune_dataset:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.10
+    - pytorch >=2.10,<2.11
+    - tensorboard >=2.8
+    - numpy >=1.26
+    - pymc >=5.28
+    - scikit-learn >=1.3
+    - matplotlib-base >=3.8
+    - cyvcf2 >=0.32
+    - python-intervaltree >=3.1
+    - psutil >=5.9
+    - tqdm >=4.66
+    - dill >=0.3.7
+
+test:
+  imports:
+    - permutect
+  commands:
+    - filter_variants --help
+    - train_artifact_model --help
+    - preprocess_dataset --help
+
+about:
+  home: https://github.com/broadinstitute/{{ name }}
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: "Deep learning architecture for somatic and germline variant calling"
+  description: |
+    Permutect is a pipeline for calling and filtering variants from genomic
+    sequencing data. It uses a permissive variant caller (Mutect2) followed by
+    a deep learning-based filtering model. Unlike Mutect2/FilterMutectCalls,
+    Permutect does not require a panel of normals and works across different
+    sequencing platforms for both somatic and germline variant calling.
+  dev_url: https://github.com/broadinstitute/{{ name }}
+  doc_url: https://github.com/broadinstitute/{{ name }}/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - nh13
