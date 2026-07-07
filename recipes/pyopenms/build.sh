@@ -41,9 +41,11 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 
 # NO_DEPENDENCIES since conda takes over re-linking etc
 
-# limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
+# Limit parallel jobs for memory usage since pyopenms has huge cython generated cpp files.
+# With 3.5.0 the generated sources grew enough that building at full CPU_COUNT parallelism
+# OOMs the CI runners (16 GB); -j2 keeps peak RAM within budget while staying reasonably fast.
 #cmake --build . --clean-first --target pyopenms -j 1
-ninja pyopenms -j"${CPU_COUNT}"
+ninja pyopenms -j2
 
 echo "wheels are in `find . | grep whl`"  >&2
 ${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --use-pep517 --no-binary=pyopenms -vvv
