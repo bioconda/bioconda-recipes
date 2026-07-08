@@ -15,4 +15,7 @@ export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
 # binary finds libxgboost.so without activating any env.
 make CC="${CC}" XGB_PREFIX="${PREFIX}"
 
-install -Dm755 methscope "${PREFIX}/bin/methscope"
+# Portable install: macOS ships BSD install (no GNU `-D`; the bundled `-Dm755`
+# form misparses and fails with EX_OSERR). mkdir + `-m 0755` works on both.
+mkdir -p "${PREFIX}/bin"
+install -m 0755 methscope "${PREFIX}/bin/methscope"
