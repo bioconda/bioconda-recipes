@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "grasp2db-1.1.0"
+installBiocDataPackage.sh "grasp2db-1.1.1"

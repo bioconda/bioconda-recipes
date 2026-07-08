@@ -1,0 +1,48 @@
+{% set name = "minibwa" %}
+{% set version = "0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 85040b1b25caeee6304616c2bc081c313e0ff1a29006bb0295098b8ae51973de
+  patches:
+    - override-makefile.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - minibwa version | grep {{ version }}
+    - minibwa 2>&1 | grep 'Usage'
+    - test -e $PREFIX/lib/libminibwa.a
+    - test -e $PREFIX/include/minibwa.h
+
+about:
+  home: "https://github.com/lh3/minibwa"
+  license: GPL-2.0-or-later
+  license_family: GPL2
+  license_file: "LICENSE.txt"
+  summary: 'Aligning short and accurate long reads to a reference genome, the successor of bwa-mem.'
+  dev_url: "https://github.com/lh3/minibwa"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
