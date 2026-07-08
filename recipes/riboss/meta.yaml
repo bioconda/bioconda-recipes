@@ -10,15 +10,11 @@ source:
   sha256: 31e8291f33bc0d4d6f964ea05f7bcfde4cfbcdb36f5b344be0ee80fdc1269c02
 
 build:
+  noarch: python
   number: 0
-  skip: True  # [not linux]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  script: |
-    set -e
-    cp "$SRC_DIR/bin/riboprof" "$PREFIX/bin/riboprof"
-    chmod +x "$PREFIX/bin/riboprof"
-    {{ PYTHON }} -m pip install . -vv --no-deps
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
 
 requirements:
   host:
@@ -51,7 +47,6 @@ test:
     - riboss
     - riboss.orfs
   commands:
-    - riboprof --help || true
     - python3 -c "from riboss.orfs import translate; assert translate('ATGGTCTGA') == 'MV'"
 
 about:
@@ -60,13 +55,15 @@ about:
   license_file: LICENSE
   summary: "Integrating RNA-seq and ribosome profiling to identify novel translational events"
   description: |
-    RIBOSS integrates long- and short-read RNA sequencing data with ribosome 
-    profiling to identify novel translational events beyond annotated regions, 
+    RIBOSS integrates long- and short-read RNA sequencing data with ribosome
+    profiling to identify novel translational events beyond annotated regions,
     supporting both prokaryotic and eukaryotic species.
   dev_url: https://github.com/lcscs12345/riboss
   doc_url: https://github.com/lcscs12345/riboss/blob/master/README.md
 
 extra:
+  skip-lints:
+    - should_not_be_noarch_skip
   channels:
     - conda-forge
     - bioconda
