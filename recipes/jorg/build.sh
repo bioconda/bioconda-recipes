@@ -6,7 +6,7 @@ mkdir -p "${PREFIX}/share/jorg"
 
 # Install current upstream script and manifest
 install -m 0755 jorg "${PREFIX}/bin/jorg"
-install -m 0644 manifest_template.conf "${PREFIX}/share/jorg/manifest_template.conf"
+install -m 644 Example/manifest_template.conf "${PREFIX}/share/jorg/manifest_template.conf"
 
 # Patch the installed script so it can find the packaged manifest
 sed -i '1 a\
