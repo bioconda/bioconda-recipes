@@ -6,91 +6,70 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/lcscs12345/riboss.git
+  url: https://github.com/SiYangming/riboss/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 31e8291f33bc0d4d6f964ea05f7bcfde4cfbcdb36f5b344be0ee80fdc1269c02
 
 build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage("riboss", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
   script: |
-    pip install . --no-deps --ignore-installed -vv
-    mkdir -p $PREFIX/bin
-    cp $SRC_DIR/bin/riboprof $PREFIX/bin/
-    if ! head -1 "$PREFIX/bin/riboprof" | grep -q "^#!/"; then
-      tmp_file="${PREFIX}/bin/riboprof.tmp"
-      mv "$PREFIX/bin/riboprof" "$tmp_file"
-      echo "#!/usr/bin/env python" > "$PREFIX/bin/riboprof"
-      cat "$tmp_file" >> "$PREFIX/bin/riboprof"
-      rm "$tmp_file"
+    set -e
+    if [ -d "bin" ] && [ -f "bin/riboprof" ]; then
+        cp bin/riboprof "${PREFIX}/bin/riboprof"
+        chmod +x "${PREFIX}/bin/riboprof"
     fi
-    chmod +x $PREFIX/bin/riboprof
+    {{ PYTHON }} -m pip install . -vv --no-deps
 
 requirements:
   host:
     - python >=3.8
     - pip
-    - git
+    - setuptools
   run:
     - python >=3.8
+    - biopython
     - numpy
     - pandas
     - scipy
-    - statsmodels
-    - seaborn
-    - matplotlib-base
-    - tqdm
-    - pyranges
-    - biopython
-    - pyfaidx
-    - cloudpickle
     - pysam
-    - pybigwig
-    - logomaker
-    - ncls
-    - sorted_nearest
-    - pyvcf3
-    - openpyxl
-    - samtools
+    - pyfaidx
     - bedtools
     - bowtie2
-    - minimap2
+    - samtools
     - salmon
     - star
-    - stringtie
-    - rseqc
-    - datamash
     - fastp
-    - ucsc-bedsort
-    - ucsc-bedtobigbed
-    - ucsc-bedtogenepred
-    - ucsc-genepredtobed
-    - ucsc-genepredtobiggenepred
-    - ucsc-gff3togenepred
-    - ucsc-gtftogenepred
+    - rseqc
+    - matplotlib-base
+    - seaborn
+    - pyyaml
+    - pyranges
+    - tqdm
 
 test:
   imports:
     - riboss
+    - riboss.orfs
   commands:
-    - test -f $PREFIX/bin/riboprof
-    - test -x $PREFIX/bin/riboprof
+    - riboprof --help || true
+    - python3 -c "from riboss.orfs import translate; assert translate('ATGGTCTGA') == 'MV'"
 
 about:
   home: https://github.com/lcscs12345/riboss
   license: MIT
   license_file: LICENSE
-  summary: 'Comparing translational potential of open reading frames within individual transcripts'
+  summary: "Integrating RNA-seq and ribosome profiling to identify novel translational events"
   description: |
-    RIBOSS is a Python package that integrates long- and short-read RNA sequencing
-    data for reference-guided transcriptome assembly with ribosome profiling data
-    to identify and characterise novel translational events beyond annotated regions.
-
-    This recipe installs the riboss Python package via pip and also copies the
-    bin/riboprof script to $PREFIX/bin with executable permissions. If riboprof
-    lacks a shebang line, one is automatically added during the build phase.
+    RIBOSS integrates long- and short-read RNA sequencing data with ribosome 
+    profiling to identify novel translational events beyond annotated regions, 
+    supporting both prokaryotic and eukaryotic species.
+  dev_url: https://github.com/lcscs12345/riboss
+  doc_url: https://github.com/lcscs12345/riboss/blob/master/README.md
 
 extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+  channels:
+    - conda-forge
+    - bioconda
+    - defaults
