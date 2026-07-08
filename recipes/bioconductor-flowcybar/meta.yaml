@@ -1,31 +1,26 @@
-{% set version = "1.42.0" %}
+{% set version = "1.46.0" %}
 {% set name = "flowCyBar" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: A package to analyze flow cytometric data using gate information to follow population/community dynamics
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-  summary: Analyze flow cytometric data using gate information
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3680cf1bec1cdb7b871d211c374657b0
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-flowcybar", max_pin="x.x") }}'
-
-extra:
-  parent_recipe:
-    name: bioconductor-flowcybar
-    path: recipes/bioconductor-flowcybar
-    version: 1.18.0
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  noarch: generic
 
 requirements:
   host:
@@ -37,15 +32,20 @@ requirements:
     - r-gplots
     - r-vegan
 
-source:
-  md5: 1a3b177d6f50d31ac264a2ae92be1088
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: Analyze flow cytometric data using gate information
+  description: A package to analyze flow cytometric data using gate information to follow population/community dynamics
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  parent_recipe:
+    name: bioconductor-flowcybar
+    path: recipes/bioconductor-flowcybar
+    version: 1.18.0
 

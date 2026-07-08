@@ -1,32 +1,43 @@
+{% set name = "stark" %}
 {% set version = "0.1.1" %}
 {% set sha256 = "67ad8aac82c94cee82d31aa1a68dcbfc2456b10d5a2b722b9e0c8d96524720e5" %}
 
 package:
-  name: stark
-  version: '{{version}}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/hnikaein/stark/archive/v{{version}}.tar.gz"
-  sha256: '{{sha256}}'
-  
+  url: https://github.com/hnikaein/stark/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-CMakeLists.patch
+    - 0002-main.patch
+
 build:
-  number: 6
-  
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-
-  host:
     - cmake
+    - pkg-config
 
 test:
   commands:
-    - stark | grep "stark v1.0" > /dev/null
+    - stark | grep "stark v0.1.1" > /dev/null
 
 about:
-  home: https://github.com/hnikaein/stark
+  home: "https://github.com/hnikaein/stark"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: A tool for bluntifying a bidirected de bruijn graph by removing overlaps.
+  summary: "A tool for bluntifying a bidirected de bruijn graph by removing overlaps."
+  dev_url: "https://github.com/hnikaein/stark"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

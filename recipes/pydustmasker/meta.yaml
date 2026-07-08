@@ -1,5 +1,5 @@
 {% set name = "pydustmasker" %}
-{% set version = "1.0.3" %}
+{% set version = "2.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 80ab86b7bb9cdd66aefdca3dbcbed8338f27182391105b322aa41214ed27d4b1
+  sha256: 874bfe4edc97a91bc705fb9651f09ddca44f62282ec302b0b163edde9195eb0b
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py<310]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
   script:
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --disable-pip-version-check -vvv
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 requirements:
@@ -30,7 +31,7 @@ requirements:
   host:
     - python
     - pip
-    - maturin >=1.5,<2
+    - maturin >=1.10,<2
   run:
     - python
 
@@ -39,7 +40,9 @@ test:
     - pydustmasker
 
 about:
-  home: https://github.com/apcamargo/pydustmasker
+  home: https://apcamargo.github.io/pydustmasker
+  dev_url: https://github.com/apcamargo/pydustmasker
+  doc_url: https://apcamargo.github.io/pydustmasker
   license: MIT
   license_family: MIT
   license_file: LICENSE

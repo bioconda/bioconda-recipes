@@ -3,15 +3,19 @@
 {% set sha256 = "2cddd07a2b2a6a438d1b1cb756b2b6fc8d76a0213699e035db72f265f98a6b44" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/Illumina/ExpansionHunterDenovo/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-CMakeLists.patch
 
 build:
-  number: 10
+  number: 11
+  # No rule to make target ${PREFIX}/lib/libhts.so needed by 'ExpansionHunterDenovo'
+  # catch.hpp:6317:13: error: unrecognized instruction mnemonic, did you mean: bit, cnt, hint, ins, not?
   skip: True  # [osx]
   run_exports:
       - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -46,9 +50,12 @@ about:
   home: "https://github.com/Illumina/ExpansionHunterDenovo"
   license: "Apache-2.0"
   license_family: APACHE
+  license_file: "LICENSE.txt"
   summary: "ExpansionHunter Denovo (EHdn) is a suite of tools for detecting novel expansions of short tandem repeats (STRs)."
   dev_url: "https://github.com/Illumina/ExpansionHunterDenovo"
+  doc_url: "https://github.com/Illumina/ExpansionHunterDenovo/blob/v{{ version }}/documentation/00_Introduction.md"
 
-extra: 
+extra:
   additional-platforms:
     - linux-aarch64
+    #- osx-arm64

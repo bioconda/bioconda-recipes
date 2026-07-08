@@ -1,5 +1,5 @@
-{% set version = "25.0.3" %}
-{% set sha256 = "1d353f6691e91e77182a53d3317ac9b24256cb78c1acef3046cbe658ff4aeb8d" %}
+{% set version = "26.0.1" %}
+{% set sha256 = "b2e66b1e4dc61f089f0f923fcce740679b526cfed91531f27fa103086d0e13a0" %}
 {% set galaxy_version = version.split(".")[:2]|join(".") %}
 
 package:
@@ -7,11 +7,11 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/g/galaxy-files/galaxy_files-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/g/galaxy-files/galaxy_files-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
@@ -24,16 +24,21 @@ requirements:
     - setuptools
   run:
     - python >={{ python_min }}
+    - galaxy-tool-util-models >={{ galaxy_version }}
     - galaxy-util >={{ galaxy_version }}
     - fs
+    - pydantic >=2.7.4
     - typing-extensions
+    - fsspec
     - fs.webdavfs
     - webdavclient3
+    - fs.dropboxfs
     - fs.sshfs
     - fs.googledrivefs
-    - fs-gcsfs
-    - google-cloud-storage
-    - legacy-cgi
+    - gcsfs
+    - fs.onedatarestfs
+    - fs-azureblob
+    - rspace-client
     
 test:
   imports:
@@ -42,8 +47,8 @@ test:
 
 about:
   home: "https://galaxyproject.org"
-  license: "Apache-2.0"
-  license_family: APACHE
+  license: MIT
+  license_family: MIT
   license_file: "LICENSE.txt"
   summary: "The Galaxy file sources framework and default plugins."
   doc_url: "https://docs.galaxyproject.org"

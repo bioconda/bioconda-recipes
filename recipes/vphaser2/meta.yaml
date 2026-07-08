@@ -1,34 +1,47 @@
 package:
   name: "vphaser2"
-  version: '2.0'
+  version: "2.0"
 
 source:
-  url: https://github.com/broadinstitute/v-phaser2/archive/6b5483a8e1a9bf24061a0aa211fee18e6b845668.tar.gz  #[osx or linux64]
-  md5: fd22b1c4403903576e62defb51b6ae32
+  url: https://github.com/broadinstitute/v-phaser2/archive/6b5483a8e1a9bf24061a0aa211fee18e6b845668.tar.gz
+  sha256: 25f74f2e6195e12f2e0bcdf32a15f42fb8788a934dc9b41ddb35df26a8945739
 
 build:
-  number: 15
-  skip: True  # [osx]
+  number: 16
+  run_exports:
+    - {{ pin_subpackage('vphaser2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
-    - boost-cpp
+    - pkg-config
   host:
     - zlib
     - bamtools
-  run:
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
+    - boost-cpp
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
     - bamtools
-    - zlib
 
 test:
   commands:
     - 'vphaser2 | grep "BAM file"'
 
 about:
-  home: 'https://www.broadinstitute.org/scientific-community/science/projects/viral-genomics/v-phaser-2'
-  license: 'single user license for academic non-commercial research purposes only'
-  license_file: 'V-Phaser-2.0/license/V_Phaser_2_License_v20130317.pdf'
-  summary: 'V-Phaser 2 is a tool to call variants in genetically heterogeneous populations from ultra-deep sequence data'
+  home: "https://www.broadinstitute.org/scientific-community/science/projects/viral-genomics/v-phaser-2"
+  license: "Single user license for academic non-commercial research purposes only"
+  license_file: "V-Phaser-2.0/license/V_Phaser_2_License_v20130317.pdf"
+  summary: "V-Phaser 2 is a tool to call variants in genetically heterogeneous populations from ultra-deep sequence data."
+  dev_url: "https://github.com/broadinstitute/v-phaser2"
+  doc_url: "https://www.broadinstitute.org/viral-genomics/v-phaser-2"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/1471-2164-14-674

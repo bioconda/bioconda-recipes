@@ -1,0 +1,51 @@
+{% set name = "panchip" %}
+{% set version = "3.0.14" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/panchip-{{ version }}.tar.gz
+  sha256: 73db19984149d2e249bc7485f891349132acad3869c6edae7c8da6516173dbf5
+
+build:
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=61
+    - wheel
+    - pip
+  run:
+    - python
+    - pandas
+    - scipy
+    - bash
+    - coreutils
+    - gawk
+    - sed
+
+test:
+  imports:
+    - PanChIP
+  commands:
+    - pip check
+    - panchip --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/hanjunlee21/PanChIP
+  summary: Pan-ChIP-seq Analysis of Peak Sets
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - hanjunlee21

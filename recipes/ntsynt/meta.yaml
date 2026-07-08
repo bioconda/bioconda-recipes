@@ -1,23 +1,24 @@
 {% set name = "ntSynt" %}
-{% set version = "1.0.3" %}
+{% set version = "1.0.8" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  git_url: https://github.com/bcgsc/ntsynt.git
-  git_rev: v{{ version }}
-  sha256: unused
+  url: https://github.com/BirolLab/{{ name|lower }}/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 442f02bc30788333ed5e9df5f2f80cd0d1a7db4fe0d24faef1f7c73371052c8e
 
 build:
   number: 0
+  skip: True # [py>312]
   run_exports: 
     - {{ pin_subpackage('ntsynt', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
   host:
     - python
@@ -46,16 +47,14 @@ test:
     - btllib
 
 about:
-  home: "https://github.com/bcgsc/ntsynt"
+  home: "https://github.com/BirolLab/ntsynt"
   license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Detecting multi-genome synteny blocks using minimizer graph mapping."
-  dev_url: "https://github.com/bcgsc/ntsynt"
+  dev_url: "https://github.com/BirolLab/ntsynt"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - uses_vcs_url
