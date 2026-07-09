@@ -1,29 +1,49 @@
-package:
-  name: pdfkit
-  version: "0.6.1"
+{% set name = "pdfkit" %}
+{% set version = "1.0.0" %}
 
-build:
-  noarch: python
-  number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/a1/98/6988328f72fe3be4cbfcb6cbfc3066a00bf111ca7821a83dd0ce56e2cf57/pdfkit-0.6.1.tar.gz
-  sha256: ef1da35b78d534197e7ce4a604a4a190e9aa769e56634957535f3479a50d8cd1
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 992f821e1e18fc8a0e701ecae24b51a2d598296a180caee0a24c0af181da02a9
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.9
     - pip
-    - python
+    - setuptools
   run:
-    - wkhtmltopdf
-    - python
+    - python >=3.9
+    # wkhtmltopdf is the external renderer pdfkit shells out to. It is not a
+    # python dependency (upstream declares none) and is only packaged for
+    # linux-64, so depending on it here would make this noarch package
+    # uninstallable on osx. Install it alongside pdfkit to render PDFs.
 
 test:
   imports:
     - pdfkit
 
 about:
-  home: https://pypi.python.org/pypi/pdfkit
-  license: MIT License
-  summary: 'Wkhtmltopdf python wrapper to convert html to pdf using the webkit rendering engine and qt'
+  home: https://github.com/JazzCore/python-pdfkit
+  summary: Wkhtmltopdf python wrapper to convert html to pdf using the webkit rendering engine and qt
+  description: |
+    Python wrapper around the wkhtmltopdf command line tool, used to convert
+    HTML documents into PDF files. The wkhtmltopdf executable must be
+    available on PATH at run time.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/JazzCore/python-pdfkit
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
