@@ -1,0 +1,97 @@
+{% set name = "cytozip" %}
+{% set version = "0.3.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a952626b317b407a2255f65f9ebd16e98affd308de11ea9e2718c98719ddc533 # filled in by bioconda autobump on each release
+
+build:
+  number: 0
+  skip: true  # [py<38 or win]
+  script: |
+    # htslib is guaranteed present in ``host:`` requirements below, so
+    # force setup.py to build the ``cytozip._bam_pileup`` extension even
+    # if the auto-detection based on ``$PREFIX`` / ``$CONDA_PREFIX``
+    # misses the header path for any reason. Without this, the ``test:``
+    # phase fails with ``ModuleNotFoundError: cytozip._bam_pileup``.
+    export CYTOZIP_FORCE_HTSLIB=1
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - czip = cytozip:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - python
+    - pip
+    - setuptools >=61
+    - setuptools_scm
+    - cython >=3.0
+    # Build against numpy 2.0 headers. Cython 3.x generates C that
+    # references NumPy 2.0-only C API (``PyDataType_KIND``,
+    # ``_PyUFuncObject_GET_ITEM_DATA`` …), so building against
+    # numpy 1.x fails with ``implicit declaration of function`` errors.
+    # NumPy 2.0 ABI is forward-compatible with 1.19+ at runtime, so
+    # ``run: numpy >=1.19`` keeps installability wide.
+    - numpy >=2.0
+    # C-library dependencies — both headers AND libs are needed at
+    # build time. ``htslib`` provides ``-lhts`` for cytozip._bam_pileup;
+    # ``libdeflate`` provides ``-ldeflate`` for cytozip.cz_accel;
+    # ``zlib`` provides ``zlib.h`` (Cython inserts ``#include "zlib.h"``
+    # for the ``import zlib`` in cz_accel.pyx and is also used at runtime
+    # as a pure-Python DEFLATE fallback).
+    - htslib
+    - libdeflate
+    - zlib
+  run:
+    - python
+    # ABI-compatible with the numpy 2.0 headers used at build time.
+    - numpy >=1.19
+    - pandas
+    - loguru
+    - pysam
+    - fsspec
+    - requests
+    - anndata
+    - scipy
+    # NOTE: ``fast-fisher`` is PyPI-only (not on conda-forge / bioconda).
+    # It is used only by ``cytozip.pivot.pivot_fisher`` and imported
+    # lazily inside the function, so we leave it out of ``run:``. Users
+    # who need pivot_fisher should ``pip install fast-fisher`` in the
+    # same env.
+    # Pulled in transitively via the .so's RPATH, but pin them
+    # explicitly so ``conda install cytozip`` brings them along.
+    - htslib
+    - libdeflate
+    - zlib
+
+test:
+  imports:
+    - cytozip
+    - cytozip.cz_accel
+    - cytozip._bam_pileup
+  commands:
+    - czip --help
+
+about:
+  home: https://github.com/DingWB/cytozip
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'cytozip: Chunk-based ZIP for cytosine (methylation) data'
+  description: |
+    A columnar, randomly-accessible compressed format for single-base
+    cytosine methylation data, with a fast in-process htslib pileup
+    backend for BAM → cz conversion.
+  doc_url: https://dingwb.github.io/cytozip
+  dev_url: https://github.com/DingWB/cytozip
+
+extra:
+  recipe-maintainers:
+    - DingWB
