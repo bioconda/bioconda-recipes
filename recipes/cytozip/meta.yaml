@@ -22,10 +22,22 @@ build:
     {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - czip = cytozip:main
+  # bioconda lint (``missing_run_exports``): downstream recipes that
+  # depend on cytozip should be re-pinned when we release a breaking
+  # change. Because our current version starts with ``0.``, semver
+  # allows breaking changes on minor bumps, so use ``max_pin="x.x"``
+  # (Case 2 in bioconda lint docs). Switch to ``max_pin="x"`` once we
+  # ship 1.0.0.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    # bioconda lint (``compiler_needs_stdlib_c``): recipes that request
+    # a C compiler must also request a matching C stdlib to make the
+    # build reproducible across CI images.
+    - {{ stdlib('c') }}
     - make
   host:
     - python
