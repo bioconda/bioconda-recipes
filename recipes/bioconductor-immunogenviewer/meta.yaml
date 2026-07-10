@@ -1,0 +1,51 @@
+{% set version = "1.4.0" %}
+{% set name = "immunogenViewer" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 6f1298c0a8a97ce263a2d3cc6900af84
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-immunogenviewer", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown, testthat (>= 3.0.0), DT
+requirements:
+  host:
+    - bioconductor-uniprot.ws >=2.50.0,<2.51.0
+    - r-base
+    - r-ggplot2
+    - r-httr
+    - r-jsonlite
+    - r-patchwork
+  run:
+    - bioconductor-uniprot.ws >=2.50.0,<2.51.0
+    - r-base
+    - r-ggplot2
+    - r-httr
+    - r-jsonlite
+    - r-patchwork
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Apache License (>= 2)
+  summary: Visualization and evaluation of protein immunogens
+  description: Plots protein properties and visualizes position of peptide immunogens within protein sequence. Allows evaluation of immunogens based on structural and functional annotations to infer suitability for antibody-based methods aiming to detect native proteins.
+

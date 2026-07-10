@@ -1,10 +1,18 @@
-#!/bin/bash -e
+#!/bin/bash -euo
+
+mkdir -p ${PREFIX}/bin
 
 # Build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include \
-LIBRARY_PATH=$PREFIX/lib \
-cargo build --release
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
-# Install the binary
-mkdir -p ${PREFIX}/bin
-cp target/release/smafa $PREFIX/bin
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install -v --no-track --path . --root "${PREFIX}"
+
+"${STRIP}" "$PREFIX/bin/smafa"

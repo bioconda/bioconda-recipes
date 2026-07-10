@@ -1,17 +1,19 @@
-{% set version = "1.16.1" %}
+{% set version = "1.24.1" %}
 {% set name = "ReactomeGSA" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c4ef9b68baf6957b7a3abf38bd4ffb39
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 214a4d85a6964dcafe3b86d5cf8fdad8
+
 build:
   number: 0
   rpaths:
@@ -19,35 +21,46 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-reactomegsa", max_pin="x.x") }}'
   noarch: generic
-# Suggests: testthat, knitr, rmarkdown, ReactomeGSA.data, Biobase, devtools
+
+# Suggests: devtools, knitr, ReactomeGSA.data, rmarkdown, scater, scran, scRNAseq, scuttle, Seurat (>= 3.0), SingleCellExperiment, testthat
 requirements:
   host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocsingular >=1.26.0,<1.27.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-dplyr
     - r-ggplot2
     - r-gplots
     - r-httr
+    - r-igraph
     - r-jsonlite
     - r-progress
     - r-rcolorbrewer
     - r-tidyr
   run:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocsingular >=1.26.0,<1.27.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-dplyr
     - r-ggplot2
     - r-gplots
     - r-httr
+    - r-igraph
     - r-jsonlite
     - r-progress
     - r-rcolorbrewer
     - r-tidyr
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Client for the Reactome Analysis Service for comparative multi-omics gene set analysis'
-  description: 'The ReactomeGSA packages uses Reactome''s online analysis service to perform a multi-omics gene set analysis. The main advantage of this package is, that the retrieved results can be visualized using REACTOME''s powerful webapplication. Since Reactome''s analysis service also uses R to perfrom the actual gene set analysis you will get similar results when using the same packages (such as limma and edgeR) locally. Therefore, if you only require a gene set analysis, different packages are more suited.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Client for the Reactome Analysis Service for comparative multi-omics gene set analysis
+  description: The ReactomeGSA packages uses Reactome's online analysis service to perform a multi-omics gene set analysis. The main advantage of this package is, that the retrieved results can be visualized using REACTOME's powerful webapplication.  Since Reactome's analysis service also uses R to perfrom the actual gene set analysis you will get similar results when using the same packages (such as limma and edgeR) locally.  Therefore, if you only require a gene set analysis, different packages are more suited.
   license_file: LICENSE
 

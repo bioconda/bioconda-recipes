@@ -1,45 +1,64 @@
 {% set name = "tasmanian-mismatch" %}
-{% set version = "1.0.7" %}
+{% set version = "2.0.2" %}
 
 package:
-  name: "{{ name }}" 
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 62bde0d4a25e6227e04a3f4dbea4ab3a55a7c38301c93e676a1c5bd009c3917d
+  sha256: 31f2a3c662af4bcf6b726c1f74e795e4784a7e68bb96b91bdf0e6988f38da328
 
 build:
   number: 0
-  noarch: python
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage('tasmanian-mismatch', max_pin='x') }}
 
 requirements:
   host:
-    - python >=3.6
-    - setuptools
+    - htslib
+    - zlib
+
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - llvmdev
+    - pkg-config
+    - clangdev
+    - make
+    - cmake
+    - patchelf  # [linux]
+
   run:
-    - python >=3.6
-    - numpy 
-    - matplotlib-base==3.1.1
-    - numpy==1.16.4
-    - pandas==0.25.1
-    - plotly==4.3.0
-    - scikit-learn==0.21.2
-    - scipy==1.2.1
-    - seaborn==0.9.0
-    - statsmodels==0.10.1
-    - termcolor==1.1.0
+    - python >=3.10
+    - bokeh >=3,<4
+    - polars >=0.20,<2
+    - pandas
 
 test:
-  imports:
-    - tasmanian
-    - tasmanian.utils
+  commands:
+    - tasmanian-mismatch --help
+    - tasmanian-diagnostics --help
+    - tasmanian-rescale-quality --help
 
 about:
-  home: https://github.com/nebiolabs/tasmanian-mismatch
-  license: GNU Affero General Public License
-  summary: "Tasmanian tool to analyze mismatches at read and position in high throughput sequencing data"
+  home: "https://github.com/nebiolabs/tasmanian-mismatch"
+  license: "LGPL-2.1-or-later"
+  license_family: LGPL
+  license_file:
+    - LICENCE.txt
+    - THIRDPARTY.yml
+  summary: "Tasmanian tool to analyze mismatches in sequencing data (Rust + Python hybrid)."
+  description: |
+    Version 2.x is a Rust-based rewrite of tasmanian-mismatch.
+    Some functionality relies on Python components, which are installed
+    via Conda (pixi is not used in this environment).
+
+    The original Python-only implementation is available in 1.x releases.
+  dev_url: "https://github.com/nebiolabs/tasmanian-mismatch"
 
 extra:
   recipe-maintainers:

@@ -1,0 +1,37 @@
+{% set name = "ClassPro" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "2ae4e71ca3b1f8e31d1b55d607dcde58a4de84966f1d92a3c3a04e6ead167a61" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/yoshihikosuzuki/ClassPro/releases/download/v{{ version }}/classpro-v{{ version }}_linux.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 1
+  script:
+    - "mkdir -p $PREFIX/bin"
+    - "cp $SRC_DIR/bin/*  $PREFIX/bin/"
+    - "chmod u+x $PREFIX/bin/ClassPro $PREFIX/bin/ClassGS $PREFIX/bin/prof2class $PREFIX/bin/class2acc $PREFIX/bin/class2cns"
+  run_exports:
+    - {{ pin_subpackage("classpro", max_pin="x") }}
+
+requirements:
+  host:
+    - bzip2
+    - zlib
+    - libcurl
+
+
+test:
+  commands: 
+    - which ClassPro
+
+about:
+  license: https://github.com/yoshihikosuzuki/ClassPro/blob/main/LICENSE
+  summary: A K-mer classifier for HiFi reads .
+  home: https://github.com/yoshihikosuzuki/ClassPro/

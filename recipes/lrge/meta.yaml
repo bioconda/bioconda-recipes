@@ -1,0 +1,47 @@
+{% set version = "0.3.0" %}
+{% set name = "lrge" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mbhall88/{{ name }}/archive/{{ name }}-{{ version }}.tar.gz
+  sha256: 4563e62c5ea5de9ca33d8c8cc95d1a3c1225b9c32af2a0123b624b3c30b4e2f1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('lrge', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - zlib
+  host:
+    - zlib
+    - liblzma
+
+test:
+  commands:
+    - lrge --version
+
+about:
+  home: https://github.com/mbhall88/lrge
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Genome size estimation from long read overlaps
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btaf593
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88

@@ -1,0 +1,62 @@
+{% set version = "1.4.0" %}
+{% set name = "scrapper" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 933c284316f24726c27cb57c7d19276b
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-scrapper", max_pin="x.x") }}'
+
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, MatrixGenerics, sparseMatrixStats, Matrix, S4Vectors, SummarizedExperiment, SingleCellExperiment, scRNAseq, igraph
+# SystemRequirements: C++17, GNU make
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-assorthead >=1.4.0,<1.5.0
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-rigraphlib >=1.2.0,<1.3.0
+    - r-base
+    - r-rcpp
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-assorthead >=1.4.0,<1.5.0
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-rigraphlib >=1.2.0,<1.3.0
+    - r-base
+    - r-rcpp
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Bindings to C++ Libraries for Single-Cell Analysis
+  description: Implements R bindings to C++ code for analyzing single-cell (expression) data, mostly from various libscran libraries. Each function performs an individual step in the single-cell analysis workflow, ranging from quality control to clustering and marker detection. It is mostly intended for other Bioconductor package developers to build more user-friendly end-to-end workflows.
+  license_file: LICENSE
+

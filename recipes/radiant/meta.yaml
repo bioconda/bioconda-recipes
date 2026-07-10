@@ -1,0 +1,44 @@
+{% set name = "radiant" %}
+{% set version = "1.1.5" %}
+{% set sha256 = "e3c37d15cdaf227f88ebd23e7ed55eee6d12c549a3521212f5e0d2655aa4dcad" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://zivgitlab.uni-muenster.de/domain-world/RADIANT/-/archive/{{ version }}/RADIANT-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('radiant', max_pin="x") }}
+
+requirements:
+  build:
+    - cmake >=3.15
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - sqlite
+    - bzip2
+    - zlib
+    - openmp
+    - boost-cpp >=1.77
+  run:
+    - sqlite
+    - openmp
+    - boost-cpp >=1.77
+test:
+  commands:
+    - radiant -h
+
+about:
+  home: https://domainworld.uni-muenster.de/data/radiant-db/index.html
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Annotate proteomes with protein domains
+  description: |
+    This program rapidly annotates protein sequences with Pfam domains

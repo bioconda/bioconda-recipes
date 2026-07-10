@@ -1,36 +1,51 @@
-{% set version = "0.4.0" %}
+{% set version = "0.5.2" %}
 {% set name = "galah" %}
-{% set sha256 = "9b40cc805df15461e5b07fd3108663cc92d286030c17fefe5a33716b5b8fa10a" %}
+{% set sha256 = "f420c526b4b4e2942e18d0de93f7f7ce591656a4cc0656af5c69621ad000bce2" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-  skip: True # [osx]
-  run_exports:
-    - {{ pin_subpackage('galah', max_pin="x.x") }}
-
 source:
-  url: https://github.com/wwood/{{ name }}/archive/v{{version}}.tar.gz
+  url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - rust >=1.19
+    - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
   run:
-    - dashing ==0.4.0
-    - fastani >=1.31
+    - skani >=0.2.2
+    - fastani >=1.34
+    - barrnap >=0.9
+    - trnascan-se >=2.0.12
+    - checkm2 >=1.1.0
 
 test:
   commands:
     - {{ name }} --version | grep '{{ version }}'
 
 about:
-  home: https://github.com/wwood/galah
-  license: GPL-3.0-only
+  home: "https://github.com/wwood/galah"
+  license: "GPL-3.0-only"
   license_family: GPL3
-  license_file: LICENCE.txt
-  summary: Galah aims to be a more scalable metagenome assembled genome (MAG) dereplication method.
+  license_file:
+    - LICENCE.txt
+    - THIRDPARTY.yml
+  summary: "Galah aims to be a more scalable metagenome assembled genome (MAG) dereplication method."
+  dev_url: "https://github.com/wwood/galah"
+  doc_url: "https://wwood.github.io/galah/"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  skip-lints:
+    - uses_vcs_url

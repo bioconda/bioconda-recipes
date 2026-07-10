@@ -1,34 +1,35 @@
-{% set version = "0.6" %}
+{% set version = "0.8" %}
 {% set name = "squeakr" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/splatlab/{{ name|lower }}/archive/V{{ version }}.tar.gz
-  sha256: 6738efd60a32362d98be311b949012a57787d0ee77679ac1016809267b6f29b2
+  url: https://github.com/splatlab/squeakr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: af5c04274475c3666df38eed326ee6e8bc61f577557dc30b8ec23bf808d03e03
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 5
-  skip: True #  [osx]
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - bzip2
     - zlib
-    - boost
     - boost-cpp
     - openssl
     - pthread-stubs
   run:
-    - bzip2
-    - zlib
-    - boost
     - boost-cpp
     - openssl
     - pthread-stubs
@@ -38,7 +39,8 @@ test:
     - squeakr help -v
 
 about:
-  home: https://github.com/splatlab/squeakr
-  license: BSD-3-Clause
+  home: "https://github.com/splatlab/squeakr"
+  license: "BSD-3-Clause"
   license_family: BSD
-  summary: An Exact and Approximate k-mer Counting System
+  summary: "An Exact and Approximate k-mer Counting System."
+  dev_url: "https://github.com/splatlab/squeakr"

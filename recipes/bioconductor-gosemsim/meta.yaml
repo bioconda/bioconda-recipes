@@ -1,52 +1,71 @@
-{% set version = "2.28.0" %}
+{% set version = "2.36.0" %}
 {% set name = "GOSemSim" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ea9c9c6e25cc507a2b5cff51f268d848
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3d050b825e7c1de00cafe96c99f523d3
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-gosemsim", max_pin="x.x") }}'
-# Suggests: AnnotationHub, BiocManager, clusterProfiler, DOSE, knitr, rmarkdown, org.Hs.eg.db, prettydoc, testthat, tidyr, tidyselect, ROCR
+
+# Suggests: AnnotationHub, BiocManager, clusterProfiler, DOSE, knitr, org.Hs.eg.db, prettydoc, readr, rmarkdown, testthat, tidyr, tidyselect, ROCR
 requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
-    - 'bioconductor-go.db >=3.18.0,<3.19.0'
-    - r-base
-    - r-rcpp
-    - r-rlang
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
-    - 'bioconductor-go.db >=3.18.0,<3.19.0'
-    - r-base
-    - r-rcpp
-    - r-rlang
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-go.db >=3.22.0,<3.23.0
+    - r-base
+    - r-dbi
+    - r-digest
+    - r-r.utils
+    - r-rcpp
+    - r-rlang
+    - r-yulab.utils >=0.2.1
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-go.db >=3.22.0,<3.23.0
+    - r-base
+    - r-dbi
+    - r-digest
+    - r-r.utils
+    - r-rcpp
+    - r-rlang
+    - r-yulab.utils >=0.2.1
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'GO-terms Semantic Similarity Measures'
-  description: 'The semantic comparisons of Gene Ontology (GO) annotations provide quantitative ways to compute similarities between genes and gene groups, and have became important basis for many bioinformatics analysis approaches. GOSemSim is an R package for semantic similarity computation among GO terms, sets of GO terms, gene products and gene clusters. GOSemSim implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively.'
+  summary: GO-terms Semantic Similarity Measures
+  description: The semantic comparisons of Gene Ontology (GO) annotations provide quantitative ways to compute similarities between genes and gene groups, and have became important basis for many bioinformatics analysis approaches. GOSemSim is an R package for semantic similarity computation among GO terms, sets of GO terms, gene products and gene clusters. GOSemSim implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively.
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:gosemsim
   parent_recipe:

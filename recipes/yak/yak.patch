@@ -1,0 +1,760 @@
+diff --git a/LICENSE.txt b/LICENSE.txt
+new file mode 100644
+index 0000000..d7ac24e
+--- /dev/null
++++ b/LICENSE.txt
+@@ -0,0 +1,23 @@
++The MIT License
++
++Copyright (c) 2019-     Dana-Farber Cancer Institute
++
++Permission is hereby granted, free of charge, to any person obtaining
++a copy of this software and associated documentation files (the
++"Software"), to deal in the Software without restriction, including
++without limitation the rights to use, copy, modify, merge, publish,
++distribute, sublicense, and/or sell copies of the Software, and to
++permit persons to whom the Software is furnished to do so, subject to
++the following conditions:
++
++The above copyright notice and this permission notice shall be
++included in all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
++BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
++ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
++CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++SOFTWARE.
+diff --git a/Makefile b/Makefile
+index 41c92f7..540b080 100644
+--- a/Makefile
++++ b/Makefile
+@@ -2,7 +2,7 @@ CFLAGS=		-g -Wall -O2
+ CPPFLAGS=
+ INCLUDES=	
+ OBJS=		kthread.o bbf.o htab.o bseq.o misc.o sys.o 6gjdn.o \
+-			count.o qv.o triobin.o trioeval.o inspect.o
++			count.o qv.o triobin.o trioeval.o inspect.o chkerr.o sexchr.o
+ PROG=		yak
+ LIBS=		-lm -lz -lpthread
+ 
+@@ -32,6 +32,7 @@ depend:
+ 
+ bbf.o: yak.h
+ bseq.o: bseq.h kseq.h
++chkerr.o: kthread.h ketopt.h bseq.h yak-priv.h yak.h
+ count.o: kthread.h yak-priv.h yak.h kseq.h
+ htab.o: kthread.h yak-priv.h yak.h khashl.h
+ inspect.o: ketopt.h yak-priv.h yak.h
+@@ -39,6 +40,7 @@ kthread.o: kthread.h
+ main.o: ketopt.h yak-priv.h yak.h
+ misc.o: yak-priv.h yak.h
+ qv.o: kthread.h yak-priv.h yak.h bseq.h
++sexchr.o: kthread.h ketopt.h bseq.h yak-priv.h yak.h
+ sys.o: yak-priv.h yak.h
+ triobin.o: kthread.h ketopt.h bseq.h yak-priv.h yak.h
+ trioeval.o: kthread.h ketopt.h bseq.h yak-priv.h yak.h
+diff --git a/README.md b/README.md
+index a467de7..f0c3c99 100644
+--- a/README.md
++++ b/README.md
+@@ -26,8 +26,12 @@ cd yak && make
+ 
+ # print k-mer histogram
+ ./yak inspect sr.yak > sr.hist
+-# print k-mers (warning: large output)
+-./yak inspect -p sr.yak > sr.kmers
++
++# partition chrX/Y in human de novo assembly
++wget -O- 'https://zenodo.org/record/7882299/files/human-chrXY-yak.tar?download=1' | tar tf -
++./yak sexchr -K2g -t16 chrY-no-par.yak chrX-no-par.yak par.yak hap1.fa hap2.fa > cnt.txt
++./groupxy.pl cnt.txt|awk '$4==1'|cut -f2|seqtk subseq -l80 <(cat hap1.fa hap2.fa) - > new-hap1.fa
++./groupxy.pl cnt.txt|awk '$4==2'|cut -f2|seqtk subseq -l80 <(cat hap1.fa hap2.fa) - > new-hap2.fa
+ ```
+ 
+ ## Introduction
+diff --git a/chkerr.c b/chkerr.c
+new file mode 100644
+index 0000000..ed777f0
+--- /dev/null
++++ b/chkerr.c
+@@ -0,0 +1,133 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include "kthread.h"
++#include "ketopt.h"
++#include "bseq.h"
++#include "yak-priv.h"
++
++typedef struct {
++	int k, n_threads, min_cnt, min_streak;
++	int64_t chunk_size;
++	bseq_file_t *fp;
++	const yak_ch_t *ch;
++} ce_shared_t;
++
++typedef struct {
++	int n_seq;
++	ce_shared_t *aux;
++	bseq1_t *seq;
++} ce_step_t;
++
++static void te_worker(void *_data, long k, int tid)
++{
++	ce_step_t *t = (ce_step_t*)_data;
++	ce_shared_t *aux = t->aux;
++	bseq1_t *s = &t->seq[k];
++	uint64_t x[4], mask;
++	int i, l, last, streak, shift;
++	if (aux->ch->k < 32) {
++		mask = (1ULL<<2*aux->ch->k) - 1;
++		shift = 2 * (aux->ch->k - 1);
++	} else {
++		mask = (1ULL<<aux->ch->k) - 1;
++		shift = aux->ch->k - 1;
++	}
++	last = -1, streak = 0;
++	for (i = l = 0, x[0] = x[1] = x[2] = x[3] = 0; i < s->l_seq; ++i) {
++		int cnt, c = seq_nt4_table[(uint8_t)s->seq[i]];
++		if (c < 4) {
++			if (aux->ch->k < 32) {
++				x[0] = (x[0] << 2 | c) & mask;
++				x[1] = x[1] >> 2 | (uint64_t)(3 - c) << shift;
++			} else {
++				x[0] = (x[0] << 1 | (c&1))  & mask;
++				x[1] = (x[1] << 1 | (c>>1)) & mask;
++				x[2] = x[2] >> 1 | (uint64_t)(1 - (c&1))  << shift;
++				x[3] = x[3] >> 1 | (uint64_t)(1 - (c>>1)) << shift;
++			}
++			if (++l >= aux->k) {
++				uint64_t y;
++				if (aux->ch->k < 32)
++					y = yak_hash64(x[0] < x[1]? x[0] : x[1], mask);
++				else
++					y = yak_hash_long(x);
++				cnt = yak_ch_get(aux->ch, y);
++				if (cnt < aux->min_cnt) {
++					if (i != last + 1) {
++						if (streak > aux->min_streak)
++							printf("%s\t%d\t%d\t%d\n", s->name, last + 1 - aux->k - (streak - 1), last + 1, streak);
++						streak = 1;
++					} else ++streak;
++					last = i;
++				}
++			}
++		} else l = 0, x[0] = x[1] = x[2] = x[3] = 0;
++	}
++	if (streak > aux->min_streak)
++		printf("%s\t%d\t%d\t%d\n", s->name, last + 1 - aux->k - (streak - 1), last + 1, streak);
++}
++
++static void *ce_pipeline(void *shared, int step, void *_data)
++{
++	ce_shared_t *aux = (ce_shared_t*)shared;
++	if (step == 0) {
++		ce_step_t *s;
++		s = (ce_step_t*)calloc(1, sizeof(ce_step_t));
++		s->seq = bseq_read(aux->fp, aux->chunk_size, 0, &s->n_seq);
++		s->aux = aux;
++		if (s->n_seq) {
++			fprintf(stderr, "[M::%s] read %d sequences\n", __func__, s->n_seq);
++			return s;
++		} else free(s);
++	} else if (step == 1) {
++		int i;
++		ce_step_t *s = (ce_step_t*)_data;
++		kt_for(aux->n_threads, te_worker, s, s->n_seq);
++		for (i = 0; i < s->n_seq; ++i) {
++			free(s->seq[i].name); free(s->seq[i].seq); free(s->seq[i].qual);
++			free(s->seq[i].comment);
++		}
++		free(s->seq); free(s);
++	}
++	return 0;
++}
++
++int main_chkerr(int argc, char *argv[])
++{
++	ketopt_t o = KETOPT_INIT;
++	int c;
++	yak_ch_t *ch;
++	ce_shared_t aux;
++
++	memset(&aux, 0, sizeof(ce_shared_t));
++	aux.chunk_size = 1000000000;
++	aux.n_threads = 8, aux.min_cnt = 3, aux.min_streak = 5;
++	while ((c = ketopt(&o, argc, argv, 1, "t:c:s:", 0)) >= 0) {
++		if (c == 't') aux.n_threads = atoi(o.arg);
++		else if (c == 'c') aux.min_cnt = atoi(o.arg);
++		else if (c == 's') aux.min_streak = atoi(o.arg);
++	}
++	if (argc - o.ind < 2) {
++		fprintf(stderr, "Usage: yak chkerr [options] <count.yak> <seq.fa>\n");
++		fprintf(stderr, "Options:\n");
++		fprintf(stderr, "  -t INT    number of threads [%d]\n", aux.n_threads);
++		fprintf(stderr, "  -c INT    min k-mer count [%d]\n", aux.min_cnt);
++		fprintf(stderr, "  -s INT    min k-mer streak [%d]\n", aux.min_streak);
++		return 1;
++	}
++
++	ch = yak_ch_restore(argv[o.ind]);
++
++	aux.k = ch->k;
++	aux.fp = bseq_open(argv[o.ind+1]);
++	if (aux.fp == 0) {
++		fprintf(stderr, "ERROR: fail to open file '%s'\n", argv[o.ind+1]);
++		exit(1);
++	}
++	aux.ch = ch;
++	kt_pipeline(2, ce_pipeline, &aux, 2);
++	bseq_close(aux.fp);
++	yak_ch_destroy(ch);
++	return 0;
++}
+diff --git a/groupxy.pl b/groupxy.pl
+new file mode 100755
+index 0000000..55a41f9
+--- /dev/null
++++ b/groupxy.pl
+@@ -0,0 +1,48 @@
++#!/usr/bin/perl
++
++use strict;
++use warnings;
++use Getopt::Std;
++
++my %opts = (s=>.7, c=>.3, r=>.9);
++getopts('s:c:r:', \%opts);
++die("Usage: sexchr.pl [-s $opts{s}] [-c $opts{c}] [-r $opts{r}] in.sexchr\n") if @ARGV == 0;
++
++# read data
++my @a = ();
++while (<>) {
++	chomp;
++	my @t = split("\t");
++	next if $t[0] ne 'S';
++	push(@a, \@t);
++}
++
++# assign sex chromosome for individual contigs
++my @c = (0, 0, 0, 0);
++for (@a) {
++	next if $_->[5] < $_->[4] * $opts{s};
++	next if $_->[6] + $_->[7] < $_->[5] * $opts{c};
++	$_->[3] = $_->[6] > ($_->[6] + $_->[7]) * $opts{r}? 3 : $_->[7] > ($_->[6] + $_->[7]) * $opts{r}? 4 : 0;
++	next if $_->[3] == 0;
++	my $hap = $_->[2] - 1;
++	$c[$hap<<1|0] += $_->[6];
++	$c[$hap<<1|1] += $_->[7];
++}
++
++# determine which partition correspond to sexchr1 or sexchr2
++my $max_chr = $c[0] + $c[2] > $c[1] + $c[3]? 0 : 1;
++my $type = ($c[0<<1|$max_chr] > $c[1<<1|$max_chr]? 0 : 1) ^ $max_chr;
++
++# update partition
++for (@a) {
++	if ($_->[3] >= 3) {
++		$_->[3] -= 2;
++	} else {
++		$_->[3] = $type == 0? $_->[2] : 3 - $_->[2];
++	}
++}
++
++# print out
++for (@a) {
++	print join("\t", @$_), "\n";
++}
+diff --git a/htab.c b/htab.c
+index 5075e54..1112816 100644
+--- a/htab.c
++++ b/htab.c
+@@ -228,6 +228,10 @@ yak_ch_t *yak_ch_restore_core(yak_ch_t *ch0, const char *fn, int mode, ...)
+ 		mid_cnt = va_arg(ap, int);
+ 		if (ch0 == 0 && mode == YAK_LOAD_TRIOBIN2)
+ 			mode_err = 1;
++	} else if (mode == YAK_LOAD_SEXCHR1 || mode == YAK_LOAD_SEXCHR2 || mode == YAK_LOAD_SEXCHR3) {
++		assert(YAK_COUNTER_BITS >= 3);
++		if (ch0 == 0 && (mode == YAK_LOAD_SEXCHR2 || mode == YAK_LOAD_SEXCHR3))
++			mode_err = 1;
+ 	} else mode_err = 1;
+ 	va_end(ap);
+ 	if (mode_err) return 0;
+@@ -251,7 +255,7 @@ yak_ch_t *yak_ch_restore_core(yak_ch_t *ch0, const char *fn, int mode, ...)
+ 	for (i = 0; i < 1<<ch->pre; ++i) {
+ 		yak_ht_t *h = ch->h[i].h;
+ 		fread(t, 4, 2, fp);
+-		if (ch0 == 0) yak_ht_resize(h, t[0]);
++		yak_ht_resize(h, t[0]);
+ 		for (j = 0; j < t[1]; ++j) {
+ 			uint64_t key;
+ 			fread(&key, 8, 1, fp);
+@@ -272,6 +276,14 @@ yak_ch_t *yak_ch_restore_core(yak_ch_t *ch0, const char *fn, int mode, ...)
+ 					if (absent) ++n_new;
+ 					else kh_key(h, k) = kh_key(h, k) | x;
+ 				}
++			} else if (mode == YAK_LOAD_SEXCHR1 || mode == YAK_LOAD_SEXCHR2 || mode == YAK_LOAD_SEXCHR3) {
++				int shift = mode == YAK_LOAD_SEXCHR1? 0 : mode == YAK_LOAD_SEXCHR2? 1 : 2, x = 1<<shift;
++				khint_t k;
++				key = (key & ~mask) | x;
++				++n_ins;
++				k = yak_ht_put(h, key, &absent);
++				if (absent) ++n_new;
++				else kh_key(h, k) = kh_key(h, k) | x;
+ 			}
+ 		}
+ 	}
+diff --git a/main.c b/main.c
+index 170a100..a674c29 100644
+--- a/main.c
++++ b/main.c
+@@ -10,17 +10,6 @@
+ #include "ketopt.h"
+ #include "yak-priv.h"
+ 
+-static inline int64_t mm_parse_num(const char *str)
+-{
+-	double x;
+-	char *p;
+-	x = strtod(str, &p);
+-	if (*p == 'G' || *p == 'g') x *= 1e9;
+-	else if (*p == 'M' || *p == 'm') x *= 1e6;
+-	else if (*p == 'K' || *p == 'k') x *= 1e3;
+-	return (int64_t)(x + .499);
+-}
+-
+ int main_count(int argc, char *argv[])
+ {
+ 	yak_ch_t *h;
+@@ -32,7 +21,7 @@ int main_count(int argc, char *argv[])
+ 	while ((c = ketopt(&o, argc, argv, 1, "k:p:K:t:b:H:o:", 0)) >= 0) {
+ 		if (c == 'k') opt.k = atoi(o.arg);
+ 		else if (c == 'p') opt.pre = atoi(o.arg);
+-		else if (c == 'K') opt.chunk_size = atoi(o.arg);
++		else if (c == 'K') opt.chunk_size = mm_parse_num(o.arg);
+ 		else if (c == 't') opt.n_thread = atoi(o.arg);
+ 		else if (c == 'b') opt.bf_shift = atoi(o.arg);
+ 		else if (c == 'H') opt.bf_n_hash = mm_parse_num(o.arg);
+@@ -84,12 +73,13 @@ int main_qv(int argc, char *argv[])
+ 	yak_qstat_t qs;
+ 
+ 	yak_qopt_init(&opt);
+-	while ((c = ketopt(&o, argc, argv, 1, "K:t:l:f:pe:", 0)) >= 0) {
++	while ((c = ketopt(&o, argc, argv, 1, "K:t:l:f:pe:E", 0)) >= 0) {
+ 		if (c == 'K') opt.chunk_size = mm_parse_num(o.arg);
+ 		else if (c == 'l') opt.min_len = mm_parse_num(o.arg);
+ 		else if (c == 'f') opt.min_frac = atof(o.arg);
+ 		else if (c == 't') opt.n_threads = atoi(o.arg);
+ 		else if (c == 'p') opt.print_each = 1;
++		else if (c == 'E') opt.print_err_kmer = 1;
+ 		else if (c == 'e') opt.fpr = atof(o.arg);
+ 	}
+ 	if (argc - o.ind < 2) {
+@@ -99,6 +89,7 @@ int main_qv(int argc, char *argv[])
+ 		fprintf(stderr, "  -f FLOAT    min k-mer fraction [%g]\n", opt.min_frac);
+ 		fprintf(stderr, "  -e FLOAT    false positive rate [%g]\n", opt.fpr);
+ 		fprintf(stderr, "  -p          print QV for each sequence\n");
++		fprintf(stderr, "  -E          print the positions of wrong k-mers\n");
+ 		fprintf(stderr, "  -t INT      number of threads [%d]\n", opt.n_threads);
+ 		fprintf(stderr, "  -K NUM      batch size [1g]\n");
+ 		return 1;
+@@ -131,6 +122,8 @@ int main(int argc, char *argv[])
+ 	extern int main_triobin(int argc, char *argv[]);
+ 	extern int main_trioeval(int argc, char *argv[]);
+ 	extern int main_inspect(int argc, char *argv[]);
++	extern int main_chkerr(int argc, char *argv[]);
++	extern int main_sexchr(int argc, char *argv[]);
+ 	int ret = 0, i;
+ 	yak_reset_realtime();
+ 	if (argc == 1) {
+@@ -141,6 +134,8 @@ int main(int argc, char *argv[])
+ 		fprintf(stderr, "  triobin   trio binning\n");
+ 		fprintf(stderr, "  trioeval  evaluate phasing accuracy with trio\n");
+ 		fprintf(stderr, "  inspect   k-mer hash tables\n");
++		fprintf(stderr, "  chkerr    check errors\n");
++		fprintf(stderr, "  sexchr    count sex-chromosome-specific k-mers\n");
+ 		fprintf(stderr, "  version   print version number\n");
+ 		return 1;
+ 	}
+@@ -149,6 +144,8 @@ int main(int argc, char *argv[])
+ 	else if (strcmp(argv[1], "triobin") == 0) ret = main_triobin(argc-1, argv+1);
+ 	else if (strcmp(argv[1], "trioeval") == 0) ret = main_trioeval(argc-1, argv+1);
+ 	else if (strcmp(argv[1], "inspect") == 0) ret = main_inspect(argc-1, argv+1);
++	else if (strcmp(argv[1], "chkerr") == 0) ret = main_chkerr(argc-1, argv+1);
++	else if (strcmp(argv[1], "sexchr") == 0) ret = main_sexchr(argc-1, argv+1);
+ 	else if (strcmp(argv[1], "version") == 0) {
+ 		puts(YAKS_VERSION);
+ 		return 0;
+diff --git a/qv.c b/qv.c
+index 6fdf73b..12e25a0 100644
+--- a/qv.c
++++ b/qv.c
+@@ -59,6 +59,9 @@ static void worker_qv(void *_data, long k, int tid)
+ 				t = yak_ch_get(qs->ch, y);
+ 				if (t < 0) t = 0;
+ 				if (t > 0) ++non0;
++				else if (qs->opt->print_err_kmer) {
++					printf("EK\t%s\t%d\n", s->name, i + 1 - qs->k);
++				}
+ 				b->s[tot++] = (uint64_t)i<<32 | t;
+ 			}
+ 		} else l = 0, x[0] = x[1] = 0;
+@@ -229,8 +232,13 @@ int yak_qv_solve(const int64_t *hist, const int64_t *cnt, int kmer, double fpr,
+ 	// compute adjusted qv
+ 	for (c = 0, adj_sum = 0.0; c < n_cnt; ++c)
+ 		adj_sum += qs->adj_cnt[c];
+-	assert(adj_sum <= (double)qs->tot);
+-	qs->err = qs->tot - adj_sum;
+-	qs->qv = -4.3429448190325175 * log(log(qs->tot / adj_sum) / kmer);
++	if (adj_sum <= (double)qs->tot) {
++		qs->err = qs->tot - adj_sum;
++		qs->qv = -4.3429448190325175 * log(log(qs->tot / adj_sum) / kmer);
++	} else {
++		fprintf(stderr, "WARNING: failed to estimate the calibrated QV\n");
++		qs->err = 0;
++		qs->qv = qs->qv_raw;
++	}
+ 	return 0;
+ }
+diff --git a/sexchr.c b/sexchr.c
+new file mode 100644
+index 0000000..acf80e9
+--- /dev/null
++++ b/sexchr.c
+@@ -0,0 +1,140 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include "kthread.h"
++#include "ketopt.h"
++#include "bseq.h"
++#include "yak-priv.h"
++
++#ifndef kroundup32
++#define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
++#endif
++
++static long sc_chunk_size = 1000000000L;
++
++typedef struct {
++	int k, n_threads, hap;
++	bseq_file_t *fp;
++	const yak_ch_t *ch;
++	uint32_t m_info, n_info;
++} sc_shared_t;
++
++typedef struct {
++	int n_seq;
++	sc_shared_t *aux;
++	bseq1_t *seq;
++} sc_step_t;
++
++static void sc_worker(void *_data, long k, int tid)
++{
++	sc_step_t *t = (sc_step_t*)_data;
++	sc_shared_t *aux = t->aux;
++	bseq1_t *s = &t->seq[k];
++	uint64_t x[4], mask;
++	long n_k = 0, n_sexchr = 0, n_sex1 = 0, n_sex2 = 0;
++	int i, l, shift;
++	if (aux->ch->k < 32) {
++		mask = (1ULL<<2*aux->ch->k) - 1;
++		shift = 2 * (aux->ch->k - 1);
++	} else {
++		mask = (1ULL<<aux->ch->k) - 1;
++		shift = aux->ch->k - 1;
++	}
++	for (i = l = 0, x[0] = x[1] = x[2] = x[3] = 0; i < s->l_seq; ++i) {
++		int flag, c = seq_nt4_table[(uint8_t)s->seq[i]];
++		if (c < 4) {
++			if (aux->ch->k < 32) {
++				x[0] = (x[0] << 2 | c) & mask;
++				x[1] = x[1] >> 2 | (uint64_t)(3 - c) << shift;
++			} else {
++				x[0] = (x[0] << 1 | (c&1))  & mask;
++				x[1] = (x[1] << 1 | (c>>1)) & mask;
++				x[2] = x[2] >> 1 | (uint64_t)(1 - (c&1))  << shift;
++				x[3] = x[3] >> 1 | (uint64_t)(1 - (c>>1)) << shift;
++			}
++			if (++l >= aux->k) {
++				uint64_t y;
++				if (aux->ch->k < 32)
++					y = yak_hash64(x[0] < x[1]? x[0] : x[1], mask);
++				else
++					y = yak_hash_long(x);
++				++n_k;
++				flag = yak_ch_get(aux->ch, y);
++				if (flag > 0) {
++					++n_sexchr;
++					if (flag == 1) ++n_sex1;
++					if (flag == 2) ++n_sex2;
++				}
++			}
++		} else l = 0, x[0] = x[1] = x[2] = x[3] = 0;
++	}
++	printf("S\t%s\t%d\t0\t%ld\t%ld\t%ld\t%ld\n", s->name, aux->hap, n_k, n_sexchr, n_sex1, n_sex2);
++}
++
++static void *sc_pipeline(void *shared, int step, void *_data)
++{
++	sc_shared_t *aux = (sc_shared_t*)shared;
++	if (step == 0) {
++		sc_step_t *s;
++		s = (sc_step_t*)calloc(1, sizeof(sc_step_t));
++		s->seq = bseq_read(aux->fp, sc_chunk_size, 0, &s->n_seq);
++		s->aux = aux;
++		if (s->n_seq) {
++			fprintf(stderr, "[M::%s] read %d sequences\n", __func__, s->n_seq);
++			return s;
++		} else free(s);
++	} else if (step == 1) {
++		int i;
++		sc_step_t *s = (sc_step_t*)_data;
++		kt_for(aux->n_threads, sc_worker, s, s->n_seq);
++		for (i = 0; i < s->n_seq; ++i) {
++			free(s->seq[i].name); free(s->seq[i].seq); free(s->seq[i].qual); free(s->seq[i].comment);
++		}
++		free(s->seq); free(s);
++	}
++	return 0;
++}
++
++int main_sexchr(int argc, char *argv[])
++{
++	ketopt_t o = KETOPT_INIT;
++	int i, c;
++	yak_ch_t *ch;
++	sc_shared_t aux;
++
++	memset(&aux, 0, sizeof(sc_shared_t));
++	aux.n_threads = 8;
++	while ((c = ketopt(&o, argc, argv, 1, "t:K:", 0)) >= 0) {
++		if (c == 't') aux.n_threads = atoi(o.arg);
++		else if (c == 'K') sc_chunk_size = mm_parse_num(o.arg);
++	}
++	if (argc - o.ind < 5) {
++		fprintf(stderr, "Usage: yak sexchr [options] <chrY.yak> <chrX.yak> <PAR.yak> <hap1.fa> <hap2.fa>\n");
++		fprintf(stderr, "Options:\n");
++		fprintf(stderr, "  -t INT     number of threads [%d]\n", aux.n_threads);
++		fprintf(stderr, "  -K NUM     chunk size [1g]\n");
++		return 1;
++	}
++
++	ch = yak_ch_restore_core(0,  argv[o.ind],     YAK_LOAD_SEXCHR1);
++	ch = yak_ch_restore_core(ch, argv[o.ind + 1], YAK_LOAD_SEXCHR2);
++	ch = yak_ch_restore_core(ch, argv[o.ind + 2], YAK_LOAD_SEXCHR3);
++
++	printf("C\tS  seqName  originalHap  0  #k-mer  #sexchr  #sex1-specifc  #sex2-specific\n");
++	printf("C\n");
++
++	aux.k = ch->k;
++	aux.ch = ch;
++	for (i = 1; i <= 2; ++i) {
++		aux.hap = i;
++		aux.fp = bseq_open(argv[o.ind+i+2]);
++		if (aux.fp == 0) {
++			fprintf(stderr, "ERROR: fail to open file '%s'\n", argv[o.ind+i+2]);
++			exit(1);
++		}
++		kt_pipeline(2, sc_pipeline, &aux, 2);
++		bseq_close(aux.fp);
++	}
++	yak_ch_destroy(ch);
++	return 0;
++}
+diff --git a/trioeval.c b/trioeval.c
+index 02c6622..dbdde34 100644
+--- a/trioeval.c
++++ b/trioeval.c
+@@ -10,7 +10,7 @@
+ #define kroundup32(x) (--(x), (x)|=(x)>>1, (x)|=(x)>>2, (x)|=(x)>>4, (x)|=(x)>>8, (x)|=(x)>>16, ++(x))
+ #endif
+ 
+-#define CHUNK_SIZE 200000000
++#define CHUNK_SIZE 1000000000
+ 
+ typedef struct {
+ 	int nk, c[4], d[2];
+@@ -22,11 +22,12 @@ typedef struct {
+ } te_buf_t;
+ 
+ typedef struct {
+-	int k, n_threads, min_n;
++	int k, n_threads, min_n, print_err, print_frag;
+ 	bseq_file_t *fp;
+ 	const yak_ch_t *ch;
+ 	te_buf_t *buf;
+ 	int64_t n_pair, n_site, n_switch, n_err;
++	int64_t n_par[2];
+ } te_shared_t;
+ 
+ typedef struct {
+@@ -44,6 +45,7 @@ static void te_worker(void *_data, long k, int tid)
+ 	te_buf_t *b = &aux->buf[tid];
+ 	uint64_t x[4], mask;
+ 	int i, l, shift, last;
++	int f_st, f_en, f_type, f_cnt;
+ 	if (aux->ch->k < 32) {
+ 		mask = (1ULL<<2*aux->ch->k) - 1;
+ 		shift = 2 * (aux->ch->k - 1);
+@@ -86,20 +88,32 @@ static void te_worker(void *_data, long k, int tid)
+ 			}
+ 		} else l = 0, x[0] = x[1] = x[2] = x[3] = 0;
+ 	}
++	f_type = f_st = f_en = f_cnt = 0;
+ 	for (l = 0, i = 1, last = 0; i <= s->l_seq; ++i) {
+-		if (i == s->l_seq || b->s[i] != b->s[l]) {
++		if (i == s->l_seq || b->s[i] != b->s[l]) { // found a streak
+ 			if (b->s[l] > 0 && i - l >= aux->min_n) { // skip singletons
+ 				int n = (i - l + aux->k - 1) / aux->k;
+ 				int c = b->s[l] - 1;
+ 				t->cnt[k].c[c << 1 | c] += n - 1;
+ 				t->cnt[k].d[c] += n;
+-				if (last > 0)
++				if (last > 0) {
+ 					++t->cnt[k].c[(last - 1) << 1 | c];
++					if (aux->print_err && last - 1 != c)
++						printf("E\t%s\t%d\t%d\t%d\n", s->name, i, last, c+1);
++				}
++				if (f_type != b->s[l]) {
++					if (f_type > 0 && aux->print_frag)
++						printf("F\t%s\t%d\t%d\t%d\t%d\n", s->name, f_type, f_st, f_en, f_cnt);
++					f_type = b->s[l], f_st = l + 1 - aux->ch->k, f_cnt = 0;
++				}
++				++f_cnt, f_en = i + 1;
+ 				last = b->s[l];
+ 			}
+ 			l = i;
+ 		}
+ 	}
++	if (f_type > 0 && aux->print_frag)
++		printf("F\t%s\t%d\t%d\t%d\t%d\n", s->name, f_type, f_st, f_en, f_cnt);
+ }
+ 
+ static void *te_pipeline(void *shared, int step, void *_data)
+@@ -121,13 +135,15 @@ static void *te_pipeline(void *shared, int step, void *_data)
+ 		kt_for(aux->n_threads, te_worker, s, s->n_seq);
+ 		for (i = 0; i < s->n_seq; ++i) {
+ 			int *c = s->cnt[i].c, *d = s->cnt[i].d;
++			aux->n_par[0] += d[0];
++			aux->n_par[1] += d[1];
+ 			if (d[0] + d[1] >= 2) {
+ 				aux->n_pair += c[0] + c[1] + c[2] + c[3];
+ 				aux->n_switch += c[1] + c[2];
+ 				aux->n_site += d[0] + d[1];
+ 				aux->n_err += d[0] < d[1]? d[0] : d[1];
+ 			}
+-			printf("S\t%s\t%d\t%d\t%d\t%d\t%d\t%d\n", s->seq[i].name, d[0], d[1], c[0], c[1], c[2], c[3]);
++			printf("S\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", s->seq[i].name, d[0], d[1], c[0], c[1], c[2], c[3], s->seq[i].l_seq);
+ 			free(s->seq[i].name); free(s->seq[i].seq); free(s->seq[i].qual); free(s->seq[i].comment);
+ 		}
+ 		free(s->seq); free(s->cnt); free(s);
+@@ -144,12 +160,14 @@ int main_trioeval(int argc, char *argv[])
+ 	te_shared_t aux;
+ 
+ 	memset(&aux, 0, sizeof(te_shared_t));
+-	aux.n_threads = 8, aux.min_n = 2;
+-	while ((c = ketopt(&o, argc, argv, 1, "c:d:t:n:", 0)) >= 0) {
++	aux.n_threads = 8, aux.min_n = 2, aux.print_frag = 1;
++	while ((c = ketopt(&o, argc, argv, 1, "c:d:t:n:eF", 0)) >= 0) {
+ 		if (c == 'c') min_cnt = atoi(o.arg);
+ 		else if (c == 'd') mid_cnt = atoi(o.arg);
+ 		else if (c == 't') aux.n_threads = atoi(o.arg);
+ 		else if (c == 'n') aux.min_n = atoi(o.arg);
++		else if (c == 'e') aux.print_err = 1;
++		else if (c == 'F') aux.print_frag = 0;
+ 	}
+ 	if (argc - o.ind < 2) {
+ 		fprintf(stderr, "Usage: yak trioeval [options] <pat.yak> <mat.yak> <seq.fa>\n");
+@@ -158,6 +176,7 @@ int main_trioeval(int argc, char *argv[])
+ 		fprintf(stderr, "  -d INT     mid occurrence [%d]\n", mid_cnt);
+ 		fprintf(stderr, "  -n INT     min streak [%d]\n", aux.min_n);
+ 		fprintf(stderr, "  -t INT     number of threads [%d]\n", aux.n_threads);
++		fprintf(stderr, "  -e         print error positions (out of order)\n");
+ 		return 1;
+ 	}
+ 
+@@ -173,6 +192,12 @@ int main_trioeval(int argc, char *argv[])
+ 		fprintf(stderr, "ERROR: fail to open file '%s'\n", argv[o.ind+2]);
+ 		exit(1);
+ 	}
++	printf("C\tS  seqName     #patKmer  #matKmer  #pat-pat  #pat-mat  #mat-pat  #mat-mat  seqLen\n");
++	printf("C\tF  seqName     type      startPos  endPos    count\n");
++	printf("C\tW  #switchErr  denominator  switchErrRate\n");
++	printf("C\tH  #hammingErr denominator  hammingErrRate\n");
++	printf("C\tN  #totPatKmer #totMatKmer  errRate\n");
++	printf("C\n");
+ 	aux.ch = ch;
+ 	aux.buf = (te_buf_t*)calloc(aux.n_threads, sizeof(te_buf_t));
+ 	kt_pipeline(2, te_pipeline, &aux, 2);
+@@ -181,6 +206,7 @@ int main_trioeval(int argc, char *argv[])
+ 	for (i = 0; i < aux.n_threads; ++i) free(aux.buf[i].s);
+ 	printf("W\t%ld\t%ld\t%.6f\n", (long)aux.n_switch, (long)aux.n_pair, (double)aux.n_switch/aux.n_pair);
+ 	printf("H\t%ld\t%ld\t%.6f\n", (long)aux.n_err, (long)aux.n_site, (double)aux.n_err/aux.n_site);
++	printf("N\t%ld\t%ld\t%.6f\n", (long)aux.n_par[0], (long)aux.n_par[1], (double)(aux.n_par[0] < aux.n_par[1]? aux.n_par[0] : aux.n_par[1]) / (aux.n_par[0] + aux.n_par[1]));
+ 	free(aux.buf);
+ 	return 0;
+ }
+diff --git a/yak-priv.h b/yak-priv.h
+index f6a3af7..ee7569b 100644
+--- a/yak-priv.h
++++ b/yak-priv.h
+@@ -1,6 +1,7 @@
+ #ifndef YAK_PRIV_H
+ #define YAK_PRIV_H
+ 
++#include <stdlib.h>
+ #include "yak.h"
+ 
+ #define CALLOC(ptr, len) ((ptr) = (__typeof__(ptr))calloc((len), sizeof(*(ptr))))
+@@ -42,4 +43,15 @@ void yak_reset_realtime(void);
+ double yak_realtime(void);
+ long yak_peakrss(void);
+ 
++static inline int64_t mm_parse_num(const char *str)
++{
++	double x;
++	char *p;
++	x = strtod(str, &p);
++	if (*p == 'G' || *p == 'g') x *= 1e9;
++	else if (*p == 'M' || *p == 'm') x *= 1e6;
++	else if (*p == 'K' || *p == 'k') x *= 1e3;
++	return (int64_t)(x + .499);
++}
++
+ #endif
+diff --git a/yak.h b/yak.h
+index e71dacc..ab3d8ed 100644
+--- a/yak.h
++++ b/yak.h
+@@ -1,7 +1,7 @@
+ #ifndef YAK_H
+ #define YAK_H
+ 
+-#define YAKS_VERSION "0.1-r56"
++#define YAKS_VERSION "0.1-r69-dirty"
+ 
+ #include <stdint.h>
+ 
+@@ -16,6 +16,9 @@
+ #define YAK_LOAD_ALL       1
+ #define YAK_LOAD_TRIOBIN1  2
+ #define YAK_LOAD_TRIOBIN2  3
++#define YAK_LOAD_SEXCHR1   4
++#define YAK_LOAD_SEXCHR2   5
++#define YAK_LOAD_SEXCHR3   6
+ 
+ #define YAK_MAGIC "YAK\2"
+ 
+@@ -28,7 +31,7 @@ typedef struct {
+ } yak_copt_t;
+ 
+ typedef struct {
+-	int32_t print_each;
++	int32_t print_each, print_err_kmer;
+ 	int32_t min_len;
+ 	int32_t n_threads;
+ 	double min_frac;

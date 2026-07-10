@@ -1,0 +1,53 @@
+{% set name = "derip2" %}
+{% set version = "0.4.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/derip2-{{ version }}.tar.gz
+  sha256: 3ad2c5d0502761d4c9ee7518df45200b2b8c51c794f3479328a6cc1d00595f4e
+
+build:
+  run_exports:
+    - {{ pin_subpackage('derip2', max_pin="x.x") }}
+  entry_points:
+    - derip2 = derip2.app:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python >=3.9
+    - biopython >1.80
+    - click
+    - matplotlib-base
+    - numpy
+    - pandas
+    - tqdm
+
+test:
+  imports:
+    - derip2
+  commands:
+    - pip check
+    - derip2 --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Adamtaranto/deRIP2
+  summary: Predict ancestral sequence of fungal repeat elements by correcting for RIP-like mutations in multi-sequence DNA alignments.
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Adamtaranto

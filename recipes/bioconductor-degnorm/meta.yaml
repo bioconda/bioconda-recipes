@@ -1,74 +1,86 @@
-{% set version = "1.12.0" %}
+{% set version = "1.20.0" %}
 {% set name = "DegNorm" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 45dbc8183e1e18f3027b7880d3b5ef5a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 46d3007d3d32800d95d3ea78c52d8209
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-degnorm", max_pin="x.x") }}'
+
 # Suggests: knitr,rmarkdown,formatR
 requirements:
-  host:
-    - 'bioconductor-genomicalignments >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicfeatures >=1.54.0,<1.55.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - r-base
-    - r-data.table
-    - r-doparallel
-    - r-foreach
-    - r-ggplot2
-    - r-heatmaply
-    - r-plotly
-    - r-plyr
-    - 'r-rcpp >=1.0.2'
-    - r-rcpparmadillo
-    - r-viridis
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-genomicalignments >=1.38.0,<1.39.0'
-    - 'bioconductor-genomicfeatures >=1.54.0,<1.55.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - r-base
-    - r-data.table
-    - r-doparallel
-    - r-foreach
-    - r-ggplot2
-    - r-heatmaply
-    - r-plotly
-    - r-plyr
-    - 'r-rcpp >=1.0.2'
-    - r-rcpparmadillo
-    - r-viridis
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-txdbmaker >=1.6.0,<1.7.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-ggplot2
+    - r-heatmaply
+    - r-plotly
+    - r-plyr
+    - r-rcpp >=1.0.2
+    - r-rcpparmadillo
+    - r-viridis
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-txdbmaker >=1.6.0,<1.7.0
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-foreach
+    - r-ggplot2
+    - r-heatmaply
+    - r-plotly
+    - r-plyr
+    - r-rcpp >=1.0.2
+    - r-rcpparmadillo
+    - r-viridis
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 3)'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 3)
   summary: 'DegNorm: degradation normalization for RNA-seq data'
-  description: 'This package performs degradation normalization in bulk RNA-seq data to improve differential expression analysis accuracy.'
+  description: This package performs degradation normalization in bulk RNA-seq data to improve differential expression analysis accuracy. It provides estimates for each gene within each sample.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 

@@ -1,0 +1,57 @@
+{% set name = "squigualiser" %}
+{% set version = "0.7.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/squigualiser-{{ version }}.tar.gz
+  sha256: cf896b42ae5e12d39a8fa1ad436be874a3e7a70f63c4d9218ea2864bac899735
+
+build:
+  entry_points:
+    - squigualiser=src.__init__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('squigualiser', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - numpy
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - bokeh ==3.1.1
+    - numpy
+    - pyslow5
+    - pyfaidx
+    - pyfastx
+    - pysam
+    - matplotlib-base ==3.7
+    - seaborn
+    - selenium
+    - pandas <2.3
+
+test:
+  imports:
+    - src
+  commands:
+    - pip check
+    - squigualiser --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/hiruna72/squigualiser
+  summary: Visualise ONT raw signals
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hiruna72

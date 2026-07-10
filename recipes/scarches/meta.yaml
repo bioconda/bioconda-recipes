@@ -1,0 +1,60 @@
+{% set name = "scarches" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scArches-{{ version }}.tar.gz
+  sha256: 187463c25781d5c5586c129ad137d96327a9f8604d530a696d5f568a9225d77c
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('scarches', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - scanpy >=1.6.0
+    - anndata >=0.7.4
+    - schpl >=1.0.0
+    - h5py >=2.10.0
+    - pytorch >=1.8.0
+    - numpy >=1.19.2
+    - scipy >=1.5.2
+    - scikit-learn >=0.23.2
+    - matplotlib-base >=3.3.1
+    - pandas >=1.1.2
+    - scvi-tools >=0.12.1
+    - tqdm >=4.56.0
+    - requests
+    - gdown
+    - leidenalg
+    - muon
+
+test:
+  imports:
+    - scarches
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/theislab/scarches
+  summary: Transfer learning with Architecture Surgery on Single-cell data
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-021-01001-7
+  recipe-maintainers:
+    - jdblischak

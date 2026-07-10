@@ -1,17 +1,18 @@
-{% set version = "0.15.0" %}
+{% set name = "locityper" %}
+{% set version = "1.6.1" %}
 
 package:
-  name: locityper
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/tprodanov/locityper/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1fd68c839b227708f67db1f0ee980ef5ddcd5334884dcaffe13ad2aa496b23bb
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("locityper", max_pin="x.x") }}
-
-source:
-  url: https://github.com/tprodanov/locityper/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 23e6505c4e31ad3f27ba9ac86128d3e554012601ea84ebd06d6b2f3b1f067020
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -19,23 +20,42 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-    - clangdev
-    - llvm-openmp
+    - pkg-config
+    - clang =21 # [linux]
+    - clangxx =21 # [linux]
+  host:
+    - clangdev =21 # [linux]
+    - clangdev # [osx]
+    - pkg-config
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    # - htslib >=1.19
   run:
-    - samtools >=1.18
-    - jellyfish >=1.0
-    - minimap2 >=2.25
-    - strobealign >=0.12
     - python
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - samtools >=1.19
+    - kmer-jellyfish >=1.0
+    - minimap2 >=2.26
+    - strobealign >=0.17
     - pysam
 
 test:
-    commands:
-        - locityper version
+  commands:
+    - locityper version
 
 about:
-    summary: Targeted genotyper for complex polymorphic loci from short and long read WGS.
-    home: https://github.com/tprodanov/locityper
-    license: MIT
-    license_file: LICENSE
-          
+  summary: "Targeted genotyper for complex polymorphic loci from short and long read WGS."
+  home: "https://github.com/tprodanov/locityper"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/tprodanov/locityper"
+  doc_url: "https://locityper.vercel.app"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

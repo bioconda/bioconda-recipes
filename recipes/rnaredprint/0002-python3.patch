@@ -1,0 +1,83 @@
+diff --git a/scripts/design-energyshift.py b/scripts/design-energyshift.py
+index 058232f..e9efa62 100755
+--- a/scripts/design-energyshift.py
++++ b/scripts/design-energyshift.py
+@@ -1,5 +1,5 @@
+-#!/usr/bin/env python3
+-from __future__ import print_function
++#!/usr/bin/env python
++
+ 
+ import argparse
+ import sys
+@@ -34,19 +34,19 @@ def read_input(content):
+     lines = content.split("\n")
+     for line in lines:
+         # if line begins with a semicolon ; stop parsing
+-        if re.match(re.compile("^\;"), line, flags=0):
++        if re.match(re.compile("^\\;"), line, flags=0):
+             break
+         # strip additional information after the structure/sequence string
+-        m = re.match(re.compile("^([^\s\;\,\:]+)[\s\;\,\:]*(.*)$"), line, flags=0)
++        m = re.match(re.compile(r'^([^\s\;\,\:]+)[\s\;\,\:]*(.*)$'), line, flags=0)
+         if m:
+             line, addition = m.groups()
+-        if re.match(re.compile("^[\(\)\.\{\}\[\]\<\>\+\&]+$"), line, flags=0):
++        if re.match(re.compile(r'^[\(\)\.\{\}\[\]\<\>\+\&]+$'), line, flags=0):
+             structures.append(line.rstrip('\n'))
+             additions.append(addition.rstrip('\n'))
+-        elif re.match(re.compile("^[\ ACGTUWSMKRYBDHVN\&\+]+$", re.IGNORECASE), line, flags=0):
++        elif re.match(re.compile(r'^[\ ACGTUWSMKRYBDHVN\&\+]+$', re.IGNORECASE), line, flags=0):
+             line = line.replace(" ", "N")
+             line = line.upper();
+-            if re.match(re.compile("^[ACGTU\&\+]+$", re.IGNORECASE), line, flags=0) and sequence == '':
++            if re.match(re.compile(r'^[ACGTU\&\+]+$', re.IGNORECASE), line, flags=0) and sequence == '':
+                 sequence = line.rstrip('\n')
+             elif constraint == '':
+                 constraint = line.rstrip('\n')
+@@ -234,7 +234,7 @@ def plotRegression(simple, turner, slope, intercept, r_value):
+     fig.legend().set_visible(False)
+     color_i = 0.0
+ 
+-    for t in slope.keys():
++    for t in list(slope.keys()):
+         plt.plot(simple[:,t], turner[:,t], '.', color=cm.viridis(color_i), label=str(t), alpha=0.5)
+         plt.plot(simple[:,t], slope[t] * simple[:,t]+ intercept[t], '-', color=cm.viridis(color_i))
+         fig.text(0.16, 0.81-color_i/7, "$R^{2}$ = "+"{0:.3f}".format(r_value[t]), color=cm.viridis(color_i))
+diff --git a/scripts/design-multistate.py b/scripts/design-multistate.py
+index f6a15e6..3e2365c 100755
+--- a/scripts/design-multistate.py
++++ b/scripts/design-multistate.py
+@@ -1,5 +1,5 @@
+-#!/usr/bin/env python3
+-from __future__ import print_function
++#!/usr/bin/env python
++
+ 
+ import argparse
+ import sys
+@@ -41,19 +41,19 @@ def read_input(content):
+     lines = content.split("\n")
+     for line in lines:
+         # if line begins with a semicolon ; stop parsing
+-        if re.match(re.compile("^\;"), line, flags=0):
++        if re.match(re.compile("^\\;"), line, flags=0):
+             break
+         # strip additional information after the structure/sequence string
+-        m = re.match(re.compile("^([^\s\;\,\:]+)[\s\;\,\:]*(.*)$"), line, flags=0)
++        m = re.match(re.compile(r'^([^\s\;\,\:]+)[\s\;\,\:]*(.*)$'), line, flags=0)
+         if m:
+             line, addition = m.groups()
+-        if re.match(re.compile("^[\(\)\.\{\}\[\]\<\>\+\&]+$"), line, flags=0):
++        if re.match(re.compile(r'^[\(\)\.\{\}\[\]\<\>\+\&]+$'), line, flags=0):
+             structures.append(line.rstrip('\n'))
+             additions.append(addition.rstrip('\n'))
+-        elif re.match(re.compile("^[\ ACGTUWSMKRYBDHVN\&\+]+$", re.IGNORECASE), line, flags=0):
++        elif re.match(re.compile(r'^[\ ACGTUWSMKRYBDHVN\&\+]+$', re.IGNORECASE), line, flags=0):
+             line = line.replace(" ", "N")
+             line = line.upper();
+-            if re.match(re.compile("^[ACGTU\&\+]+$", re.IGNORECASE), line, flags=0) and sequence == '':
++            if re.match(re.compile(r'^[ACGTU\&\+]+$', re.IGNORECASE), line, flags=0) and sequence == '':
+                 sequence = line.rstrip('\n')
+             elif constraint == '':
+                 constraint = line.rstrip('\n')

@@ -1,0 +1,50 @@
+{% set name = "rnavirhost" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 09b903653fd85eba8479be866d4f4c3b29e37b6920c2581864a278acc35fb2e6
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - rnavirhost = rnavirhost.rnavirhost:main
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('rnavirhost', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - biopython >=1.83
+    - numpy >=1.23.5
+    - pandas >=2.0.3
+    - python
+    - scikit-learn >=1.1.3
+    - xgboost >=1.7.4
+    - prodigal >=2.6.3
+    - blast >=2.12.0
+
+test:
+  imports:
+    - rnavirhost
+    - rnavirhost.modules
+  commands:
+    - rnavirhost --help
+
+about:
+  home: "https://github.com/GreyGuoweiChen/VirHost.git"
+  license: MIT
+  license_family: MIT
+  summary: "RNAVirHost: a machine learning-based method for predicting hosts of RNA viruses through viral genomes"
+
+extra:
+  recipe-maintainers:
+    - GreyGuoweiChen

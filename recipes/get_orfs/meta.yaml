@@ -1,0 +1,44 @@
+{% set name = "get_orfs" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/linsalrob/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 6a9df2e0949b2e75b2ebb5bbeafa97d4fdf1f0691258ffda70797129811cf4d1
+
+build:
+  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('get_orfs', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - zlib
+    - pthread-stubs
+  run:
+    - zlib
+    - pthread-stubs
+
+test:
+  commands:
+    - get_orfs --help 2>&1 | grep translation
+
+about:
+  home: https://github.com/linsalrob/get_orfs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Fast extraction of ORFs in all possible translation tables"
+  dev_url: https://github.com/linsalrob/get_orfs
+
+extra:
+  recipe-maintainers:
+    - linsalrob

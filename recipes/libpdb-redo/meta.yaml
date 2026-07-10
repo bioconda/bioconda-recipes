@@ -1,0 +1,51 @@
+{% set name = "libpdb-redo" %}
+{% set version = "3.5.0" %}
+{% set sha256 = "535db09d6661f915d96d10637b641c3042916d5eae5f6995b6bf7c0cddd60fe9" %}
+{% set build_number = 0 %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PDB-REDO/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix-std-numbers.patch  # [osx]
+
+build:
+  number: {{ build_number }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - clipper
+    - eigen
+    - gsl
+    - libcifpp >=10.0.0,<11.0.0a0
+    - zlib
+
+about:
+  home: "https://pdb-redo.eu"
+  dev_url: "https://github.com/PDB-REDO/libpdb-redo"
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Library containing shared code for various PDB-REDO programs."
+  description: |
+    This library contains code shared by the various tools we develop at the NKI for the [PDB-REDO](https://pdb-redo.eu/) project.
+
+extra:
+  identifiers:
+    - doi:10.1107/S0907444911054515
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

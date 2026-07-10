@@ -1,12 +1,43 @@
 #!/bin/bash
+set -xe
 
-if [ "$(uname)" = 'Darwin' ] ; then
-    export MACOSX_DEPLOYMENT_TARGET=10.13 
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+case $(uname -m) in
+    aarch64)
+    export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+    ;;
+    arm64)
+    export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+    ;;
+    x86_64)
+    export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+    ;;
+    *)
+    ;;
+esac
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    export CONFIG_ARGS=(
+        -DCMAKE_FIND_FRAMEWORK=NEVER
+        -DCMAKE_FIND_APPBUNDLE=NEVER
+    )
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+else
+    export CONFIG_ARGS=()
 fi
 
-mkdir -p $PREFIX/bin
-mkdir -p build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make razers3
-cp bin/razers3 $PREFIX/bin
+cmake -S . \
+      -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CXX_COMPILER="${CXX}" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+      -DSEQAN_BUILD_SYSTEM=APP:razers3 \
+      "${CONFIG_ARGS[@]}"
+
+ninja -C build -j "${CPU_COUNT}"
+ninja -C build install

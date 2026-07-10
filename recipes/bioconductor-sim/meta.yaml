@@ -1,49 +1,57 @@
-{% set version = "1.72.0" %}
+{% set version = "1.80.0" %}
 {% set name = "SIM" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 72c2ca38244f4d53842bece2abdfadee
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ce518fb3260b74abae74be697121a380
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-sim", max_pin="x.x") }}'
+
 # Suggests: biomaRt, RColorBrewer
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-globaltest >=5.56.0,<5.57.0'
-    - 'bioconductor-quantsmooth >=1.68.0,<1.69.0'
+    - bioconductor-globaltest >=5.64.0,<5.65.0
+    - bioconductor-quantsmooth >=1.76.0,<1.77.0
     - r-base
     - r-quantreg
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-globaltest >=5.56.0,<5.57.0'
-    - 'bioconductor-quantsmooth >=1.68.0,<1.69.0'
+    - bioconductor-globaltest >=5.64.0,<5.65.0
+    - bioconductor-quantsmooth >=1.76.0,<1.77.0
     - r-base
     - r-quantreg
-  build:
-    - {{ compiler('c') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Integrated Analysis on two human genomic datasets'
-  description: 'Finds associations between two human genomic datasets.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Integrated Analysis on two human genomic datasets
+  description: Finds associations between two human genomic datasets.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:sim

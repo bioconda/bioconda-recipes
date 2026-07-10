@@ -1,30 +1,36 @@
-{% set version = "1.48.0" %}
+{% set version = "1.56.0" %}
 {% set name = "CellNOptR" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 22ea1e446726e7b83f26f1f5f614d74f
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ed79c2b94bcc10f7efeeb291cbc92644
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-cellnoptr", max_pin="x.x") }}'
+
 # Suggests: data.table, dplyr, tidyr, readr, knitr, RUnit, BiocGenerics,
 # SystemRequirements: Graphviz version >= 2.2
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-rbgl >=1.78.0,<1.79.0'
-    - 'bioconductor-rgraphviz >=2.46.0,<2.47.0'
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -35,11 +41,13 @@ requirements:
     - r-xml
     - libblas
     - liblapack
-    - 'graphviz >=2.2'
+    - zlib
+    - liblzma-devel
+    - graphviz >=2.2
   run:
-    - 'bioconductor-graph >=1.80.0,<1.81.0'
-    - 'bioconductor-rbgl >=1.78.0,<1.79.0'
-    - 'bioconductor-rgraphviz >=2.46.0,<2.47.0'
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - r-ggplot2
     - r-igraph
@@ -48,20 +56,22 @@ requirements:
     - r-stringi
     - r-stringr
     - r-xml
-    - 'graphviz >=2.2'
-  build:
-    - {{ compiler('c') }}
-    - make
+    - graphviz >=2.2
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Training of boolean logic models of signalling networks using prior knowledge networks and perturbation data'
-  description: 'This package does optimisation of boolean logic networks of signalling pathways based on a previous knowledge network and a set of data upon perturbation of the nodes in the network.'
+  summary: Training of boolean logic models of signalling networks using prior knowledge networks and perturbation data
+  description: This package does optimisation of boolean logic networks of signalling pathways based on a previous knowledge network and a set of data upon perturbation of the nodes in the network.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:cellnoptr
     - doi:10.1186/1752-0509-6-133

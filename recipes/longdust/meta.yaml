@@ -1,0 +1,37 @@
+{% set name = "longdust" %}
+{% set version = "1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/longdust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 24d949e46ad5db1f259759ea8b692845803bf23674c79d951db0c66b8d4c27fb
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - longdust 2>&1 | grep "^Usage:"
+
+about:
+  home: "https://github.com/lh3/longdust"
+  license: Unknown
+  summary: "Longdust identifies long highly repetitive STRs, VNTRs, satellite DNA and other low-complexity regions (LCRs) in a genome."
+  dev_url: "https://github.com/lh3/longdust"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

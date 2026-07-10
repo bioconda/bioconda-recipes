@@ -1,16 +1,23 @@
+{% set name = "bayestyper" %}
 {% set version = "1.5" %}
 
 package:
-  name: bayestyper
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 1
-  skip: True # [osx]
 
 source:
   url: https://github.com/bioinformatics-centre/BayesTyper/archive/v{{ version }}.tar.gz
   sha256: 917cd1b1ca7b5cfb6b8327138515ca1ad70878f0c4e8df393fddcbe42f281e14
+  patches:
+    - 0001-CMakeLists.patch
+    - bayestyper.patch
+    - kmer_defs.patch  # [osx]
+    - stdafx.patch  # [osx]
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('bayestyper', max_pin="x") }}
 
 requirements:
   build:
@@ -21,15 +28,25 @@ requirements:
     - zlib
     - boost-cpp
   run:
-    - zlib
     - boost-cpp
 
 about:
-  home: https://github.com/bioinformatics-centre/BayesTyper
+  home: "https://github.com/bioinformatics-centre/BayesTyper"
   license: MIT
-  summary: A method for variant graph genotyping based on exact alignment of k-mers
+  license_family: MIT
+  summary: "A method for variant graph genotyping based on exact alignment of k-mers."
+  dev_url: "https://github.com/bioinformatics-centre/BayesTyper"
+  doc_url: "https://github.com/bioinformatics-centre/BayesTyper/blob/v{{ version }}/README.md"
 
 test:
   commands:
-    - bayesTyper | grep BayesTyper
-    - bayesTyperTools | grep BayesTyperTools
+    - bayesTyper | grep "BayesTyper"
+    - bayesTyperTools | grep "BayesTyperTools"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bayestyper
+    - doi:10.1038/s41588-018-0145-5

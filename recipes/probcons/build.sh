@@ -10,8 +10,8 @@
 
 set -eu -o pipefail
 
-make
 
+make -j ${CPU_COUNT} CC="$CC" CFLAGS="$CFLAGS" CXX="$CXX" CXXFLAGS="$CXXFLAGS -DNumInsertStates=2 -DVERSION=\"1.12\" -O3 -W -Wall -pedantic -DNDEBUG -funroll-loops"
 
 # install probcons in the target bin directory 
 mkdir -p $PREFIX/bin
