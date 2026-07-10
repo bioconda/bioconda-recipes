@@ -1,0 +1,75 @@
+{% set name = "unum-bio" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Upstream repo and the installed binary are both named `unum`; the conda
+  # package is `unum-bio` because `unum` is already taken on conda-forge.
+  url: https://github.com/fg-labs/unum/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f926a183987307195801fb26ca2b0bf3db2e9916b8df8156181ee82b53374471
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib("c") }}
+    # Bundles the verbatim license text of the Rust crate closure into
+    # THIRDPARTY.yml (see build.sh and the license_file entry below).
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    # libz-ng-sys (flate2's zlib-ng backend) builds via cmake.
+    - cmake
+    # libclang for the bindgen step in hts-sys (rust-htslib). Pinned <22
+    # because hts-sys's bundled bindgen (0.69) does not support clang 22 yet.
+    - clangdev <22
+  host:
+    # hts-sys builds a bundled htslib from source, which links these.
+    - zlib
+    - bzip2
+    - xz
+    - openssl
+    - libcurl
+  run:
+    - openssl
+
+test:
+  commands:
+    - unum --version | grep {{ version }}
+    - unum --help
+
+about:
+  home: "https://github.com/fg-labs/unum"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    # Verbatim license text of the Rust crate closure, generated at build time
+    # by cargo-bundle-licenses (see build.sh).
+    - THIRDPARTY.yml
+  summary: "e pluribus unum: a pure-Rust HLA/KIR genotyper (a port of T1K)."
+  description: |
+    unum is a pure-Rust HLA/KIR genotyper — a port of T1K that rebuilds its
+    k-mer-based genotyping pipeline (k-mer filtering, banded alignment, and EM
+    genotyping) in Rust with no C++ dependency. It provides subcommands to build
+    reference FASTAs from an IPD-IMGT/HLA or IPD-KIR database, extract candidate
+    reads from FASTQ or BAM/CRAM input, and call genotypes. Installs as the
+    `unum` command (the conda package is named `unum-bio` to avoid a name
+    collision with the unrelated `unum` package on conda-forge).
+  dev_url: "https://github.com/fg-labs/unum"
+  doc_url: "https://github.com/fg-labs/unum/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - nh13
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
