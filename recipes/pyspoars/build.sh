@@ -2,6 +2,23 @@
 
 set -euxo pipefail
 
+# conda-build post-processes the maturin-built Rust extension by calling
+# `otool -l` on it to rewrite rpaths; conda-forge's cctools/llvm otool crashes
+# (SIGABRT) parsing the Mach-O headers of Rust .so files. Swap in the system
+# Xcode otool/install_name_tool, which parse them correctly. macOS only.
+# See https://github.com/conda/conda-build/issues/4392#issuecomment-1370281802
+if [[ "${target_platform:-}" == osx-* ]]; then
+  for toolname in otool install_name_tool; do
+    sys_tool="$(xcrun --find "${toolname}" 2>/dev/null || echo "/Library/Developer/CommandLineTools/usr/bin/${toolname}")"
+    for tool in "${BUILD_PREFIX}/bin/"*apple*-"${toolname}" "${BUILD_PREFIX}/bin/llvm-${toolname}"; do
+      if [[ -f "${tool}" && ! -e "${tool}.bak" ]]; then
+        mv "${tool}" "${tool}.bak"
+        ln -sf "${sys_tool}" "${tool}"
+      fi
+    done
+  done
+fi
+
 # spoars-py is the pyo3/maturin package. It is a member of the spoars workspace
 # and depends on the parent `spoars` crate by path, so build from within its
 # subdirectory of the source tree.
