@@ -1,0 +1,54 @@
+{% set name = "unmux" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/clintval/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: d911892e9f2adacb4b562c4a54cf0678ca5fe6b1f457e9931266abb72aba336b
+
+build:
+  number: 0
+  # On x86_64 the shipped binary is a cargo-multivers launcher: a single statically-linked
+  # binary that embeds zstd-compressed per-CPU-tier payloads (x86-64-v3 + v4) and picks one via
+  # CPUID at startup. conda-build's macOS rpath post-processing runs `llvm-otool -l` on every
+  # binary and intermittently SIGABRTs on that launcher. There is nothing to relocate here
+  # (everything is statically linked; no $PREFIX/lib rpaths), so skip the pass on all platforms.
+  binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+
+test:
+  commands:
+    - {{ name }} --help
+
+about:
+  home: "https://github.com/clintval/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Flexible read parsing and demultiplexing to FASTX/SAM/BAM/CRAM, splitcode-style."
+  dev_url: "https://github.com/clintval/{{ name }}"
+  doc_url: "https://github.com/clintval/{{ name }}/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - clintval
