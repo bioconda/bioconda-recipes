@@ -14,6 +14,5 @@ cmake .. \
 
 make -j"${CPU_COUNT}"
 
-# Install binary
-install -d "${PREFIX}/bin"
-install -m 755 bin/basevar "${PREFIX}/bin/"
+# Install binary using CMake install target
+cmake --install . --prefix "${PREFIX}"
