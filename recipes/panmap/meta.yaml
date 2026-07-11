@@ -1,5 +1,5 @@
 {% set name = "panmap" %}
-{% set version = "0.1.2" %}
+{% set version = "0.1.3" %}
 {% set panman_version = "0.1.4" %}
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   - url: https://github.com/amkram/panmap/archive/v{{ version }}.tar.gz
-    sha256: 6375f20ca5d3a96bf436fbea12913c1b38c0ebf3fbe951c562c3955f823ef206
+    sha256: 3b442af67ccd7749183657bb94dacb2ae47418b2279176cfa203c5ec73249871
     folder: panmap
   - url: https://github.com/TurakhiaLab/panman/archive/refs/tags/v{{ panman_version }}.tar.gz
     sha256: 6e987799cd4f713f88b6e3ddafa9b59798a210c8ff1d8b59381bbc5fd2661c72
@@ -16,11 +16,6 @@ source:
 
 build:
   number: 0
-  # Fixed build string: avoids hash mismatch between bioconda-utils fast-resolve
-  # (bypass_env_check) and conda-build full solver, caused by run_exports from
-  # spdlog/fmt/libabseil not being discovered in the fast-resolve path.
-  # Safe because panmap is an end-user tool, not a library.
-  string: "0"
   skip: True  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -32,9 +27,14 @@ requirements:
     - {{ stdlib('c') }}
     - cmake
     - make
+    # NB: capnp/protoc code generators are taken from the HOST prefix at build
+    # time (see build.sh). Do NOT add capnproto/libprotobuf here — a build-side
+    # libprotobuf drags in a newer abseil that then gets used for headers,
+    # mismatching the host abseil panmap links against.
   host:
     - zlib
     - htslib
+    - libdeflate
     - libboost-devel
     - libprotobuf
     - tbb-devel
@@ -45,10 +45,8 @@ requirements:
     - libabseil
     - zstd
     - eigen
-  run:
-    - spdlog >=1.16,<1.17
-    - fmt >=12.0,<13
-    - libabseil >=20250512
+  # runtime library pins come from host run_exports; panmap bundles panmanUtils
+  # (the bioconda `panman` package pins an incompatible older capnproto)
 
 test:
   commands:
@@ -57,9 +55,16 @@ test:
 
 about:
   home: "https://github.com/amkram/{{ name }}"
-  license: "MIT"
-  license_family: MIT
-  license_file: "panmap/LICENSE"
+  # effective license: panmap statically links BWA (GPL-3.0-only)
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file:
+    - panmap/LICENSE
+    - panman/LICENSE
+    - panmap/3rdparty-licenses/bwa-COPYING
+    - panmap/3rdparty-licenses/bwa-bwt_gen-NOTICE
+    - panmap/3rdparty-licenses/minimap2-LICENSE
+    - panmap/3rdparty-licenses/bcftools-LICENSE
   summary: "Pangenome-based sequence placement, alignment, and genotyping"
   dev_url: "https://github.com/amkram/{{ name }}"
 

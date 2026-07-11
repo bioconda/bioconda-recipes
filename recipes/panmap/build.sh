@@ -1,67 +1,56 @@
 #!/usr/bin/env bash
 set -eux
 
-# Copy the recipe's CMakeLists.txt over the upstream one
-cp -f "${RECIPE_DIR}/CMakeLists.txt" "${SRC_DIR}/panmap/CMakeLists.txt"
-
-# Copy panman source into expected location
-mkdir -p "${SRC_DIR}/panmap/external/panman"
-cp -rf "${SRC_DIR}/panman/"* "${SRC_DIR}/panmap/external/panman/"
-
-# Apply TBB compat patches to panman (oneTBB 2021+ removes task_scheduler_init)
-sh "${SRC_DIR}/panmap/cmake/patch_panman.sh" "${SRC_DIR}/panmap/external/panman" true
-
-# Generate version.hpp for panman
-cat > "${SRC_DIR}/panmap/external/panman/src/version.hpp" <<'VEOF'
-#ifndef VERSION_HPP
-#define VERSION_HPP
-#define PROJECT_VERSION "1.0.0"
-#define PMAT_VERSION "1.0.0"
-#endif
-VEOF
-
-# Revert bcftools include paths from vendored htslib to system htslib
-# (upstream bcftools uses <htslib/...>, panmap's fork rewrote them to relative paths)
-find "${SRC_DIR}/panmap/src/3rdparty/bcftools" \( -name "*.c" -o -name "*.h" \) \
-    -exec sed -i.bak 's|"../samtools/htslib-1.20/htslib/\([^"]*\)"|<htslib/\1>|g' {} +
-find "${SRC_DIR}/panmap/src/3rdparty/bcftools" -name "*.bak" -delete
+# license texts for statically-linked 3rd-party components (for license_file)
+mkdir -p "${SRC_DIR}/panmap/3rdparty-licenses"
+cp -f "${RECIPE_DIR}/licenses/"* "${SRC_DIR}/panmap/3rdparty-licenses/"
 
 cd "${SRC_DIR}/panmap"
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+# minimap2 builds via its own Makefile and does not inherit CMake's include/lib
+# dirs; upstream keys that fallback on CONDA_PREFIX, which conda-build does not
+# set (it uses PREFIX). Expose the conda prefix to every sub-compiler here.
+export CPATH="${PREFIX}/include${CPATH:+:${CPATH}}"
+export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
 
-# Prevent Homebrew (or any other system packages) from leaking into the build.
-# CMAKE_FIND_ROOT_PATH restricts all find_* commands to search only within
-# the conda prefix and the SDK sysroot. This is critical on macOS where
-# /opt/homebrew headers can cause version mismatches.
+# Restrict find_package/find_library/find_path to the host prefix so panmap links
+# the HOST libraries (which match their run_exports), not BUILD_PREFIX copies pulled
+# in by build-time tools — e.g. protobuf drags a newer abseil into BUILD_PREFIX, and
+# an unrestricted find_package(absl) would link that, leaving the runtime looking for
+# an absl .so the run env doesn't have. find_program stays unrestricted, so the
+# capnp/protoc generators still come from BUILD_PREFIX.
+CONFIG_ARGS="-DCMAKE_FIND_ROOT_PATH=${PREFIX}"
+CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY"
+CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY"
+CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY"
 if [[ $(uname -s) == "Darwin" ]]; then
-    CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+    # Also keep Homebrew/system frameworks out and add the SDK sysroot.
     SYSROOT="${CONDA_BUILD_SYSROOT:-$(xcrun --show-sdk-path)}"
+    CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
     CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH=${PREFIX};${SYSROOT}"
-    CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY"
-    CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY"
-    CONFIG_ARGS="${CONFIG_ARGS} -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY"
-else
-    CONFIG_ARGS=""
 fi
 
+# Drive panmap's own CMakeLists (USE_SYSTEM_LIBS builds against the conda libs;
+# PANMAN_SOURCE_DIR supplies the panman source from the 2nd tarball, no network).
+# Code generators come from the HOST prefix (native arch on bioconda's per-platform
+# builders), so no build-side libprotobuf/capnproto — which would pull a second abseil.
 cmake -S . -B build \
-    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCMAKE_PREFIX_PATH="${PREFIX}" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCMAKE_C_COMPILER="${CC}" \
-    -DPANMAN_SOURCE_DIR="${SRC_DIR}/panmap/external/panman" \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DUSE_SYSTEM_LIBS=ON \
+    -DPANMAN_SOURCE_DIR="${SRC_DIR}/panman" \
     -DCAPNP_EXECUTABLE="${PREFIX}/bin/capnp" \
     -DCAPNPC_CXX_EXECUTABLE="${PREFIX}/bin/capnpc-c++" \
-    -DPROTOBUF_PROTOC_EXECUTABLE="${PREFIX}/bin/protoc" \
-    -Wno-dev -Wno-deprecated --no-warn-unused-cli \
+    -DProtobuf_PROTOC_EXECUTABLE="${PREFIX}/bin/protoc" \
+    -DOPTION_BUILD_TESTS=OFF \
+    -DOPTION_BUILD_SIMULATE=OFF \
+    -Wno-dev --no-warn-unused-cli \
     ${CONFIG_ARGS}
 
 cmake --build build -j "${CPU_COUNT}"
 
 install -d "${PREFIX}/bin"
 install -v -m 0755 build/bin/panmap "${PREFIX}/bin/"
+# Ship panmanUtils built against the same capnproto as panmap. The bioconda
+# `panman` package pins an older capnproto and cannot be a run dep / coexist.
 install -v -m 0755 build/panman-build/panmanUtils "${PREFIX}/bin/"
