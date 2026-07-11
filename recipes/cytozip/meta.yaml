@@ -11,7 +11,12 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<38 or win]
+  # Linux-only: cytozip depends on htslib + libdeflate + OpenMP-enabled
+  # gcc for the Cython extensions. Building for macOS additionally
+  # requires ``llvm-openmp`` + Apple-clang-specific ``-Xpreprocessor
+  # -fopenmp -lomp`` flag handling, which is not currently wired into
+  # ``setup.py``. Skip osx (both x86_64 and arm64) and Windows here.
+  skip: true  # [py<38 or win or osx]
   script: |
     # htslib is guaranteed present in ``host:`` requirements below, so
     # force setup.py to build the ``cytozip._bam_pileup`` extension even
