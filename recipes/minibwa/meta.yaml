@@ -1,28 +1,42 @@
 {% set name = "minibwa" %}
 {% set version = "0.3" %}
+{% set zlibng_version = "2.3.3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/lh3/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 85040b1b25caeee6304616c2bc081c313e0ff1a29006bb0295098b8ae51973de
-  patches:
-    - override-makefile.patch
+  - url: https://github.com/lh3/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: 85040b1b25caeee6304616c2bc081c313e0ff1a29006bb0295098b8ae51973de
+    patches:
+      - override-makefile.patch
+  # zlib-ng built in ZLIB_COMPAT mode is a drop-in libz with a much faster
+  # inflate. minibwa's gzip read path (kseq gzread) is single-threaded, so at
+  # high thread counts one inflate stream bottlenecks the mappers; statically
+  # linking zlib-ng lifts that ceiling (~7% faster at 96 threads on Graviton4).
+  # Vendored + static because the conda-forge `zlib-ng-compat` track_features
+  # anchor is not on the main channel; cf. the salmon recipe, which does the
+  # same. Declared as a second source so the build stays hermetic (no network).
+  - url: https://github.com/zlib-ng/zlib-ng/archive/refs/tags/{{ zlibng_version }}.tar.gz
+    sha256: f9c65aa9c852eb8255b636fd9f07ce1c406f061ec19a2e7d508b318ca0c907d1
+    folder: _zlib_ng
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
+    - cmake
+    - ninja
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
   host:
-    - zlib
+    # zlib-ng is vendored and statically linked in build.sh (see source above),
+    # so no `zlib` here.
     - llvm-openmp  # [osx]
   run:
     - llvm-openmp  # [osx]
