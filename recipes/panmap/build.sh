@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -eux
 
-# license texts for statically-linked 3rd-party components (for license_file)
-mkdir -p "${SRC_DIR}/panmap/3rdparty-licenses"
-cp -f "${RECIPE_DIR}/licenses/"* "${SRC_DIR}/panmap/3rdparty-licenses/"
-
 cd "${SRC_DIR}/panmap"
 
 # minimap2 builds via its own Makefile and does not inherit CMake's include/lib
@@ -48,6 +44,9 @@ cmake -S . -B build \
     ${CONFIG_ARGS}
 
 cmake --build build -j "${CPU_COUNT}"
+# panmanUtils is EXCLUDE_FROM_ALL upstream (panmap links libpanman.a directly, and
+# the CLI recompiles the heavy protobuf/capnp TUs), so build it on demand.
+cmake --build build --target panmanUtils -j "${CPU_COUNT}"
 
 install -d "${PREFIX}/bin"
 install -v -m 0755 build/bin/panmap "${PREFIX}/bin/"
