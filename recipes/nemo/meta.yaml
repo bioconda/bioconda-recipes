@@ -1,33 +1,66 @@
-{% set version = "2.3.51" %}
+{% set version = "2.4.0" %}
+{% set commit = "e9e3a9ee947ca3140343c594a3e776783d292020" %}
 
 package:
   name: nemo
   version: {{ version }}
 
 source:
-  url: https://sourceforge.net/projects/nemo2/files/Nemo/{{ version }}/Nemo-{{ version }}-src.tgz
-  sha256: 62b321033869d4d53db83da90847a43f5512dc51bc66d7cdd121cc6345cdf79d
+  # Immutable, commit-pinned tarball from the public release repository.
+  # (Replaces the SourceForge tarball, whose contents were not stable.)
+  url: https://bitbucket.org/ecoevo/nemo-release/get/{{ commit }}.tar.gz
+  sha256: ea4b9361925bd06a89fe6c9c48d4c0ad8d0da3884f1e70f741d6cdd8c9310a54
 
 build:
-  number: 3
+  number: 1
+  # osx x86_64 fails to link:
+  #   Undefined symbols for architecture x86_64: "vtable for
+  #   TTQuanti_diallelic_bitstring_no_pleio", referenced from
+  #   TProtoQuanti::hatch() in ttquanti.o
+  # A missing vtable usually means the first non-inline virtual member function
+  # has no definition. Untested in new build #1
+  skip: true  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage('nemo', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mpich-mpicxx
+    - sed
     - gsl
     - openblas
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mpich-mpicxx
     - gsl
     - openblas
 
 test:
   commands:
-    - nemo | grep "{{ version }}" 
+    - nemo{{ version }} | grep "{{ version }}"
 
 about:
-  home: http://nemo2.sourceforge.net
-  summary: Individual-based forward-time genetics simulation software
-  license: GPLv2
+  home: "https://bitbucket.org/ecoevo/nemo-release"
+  summary: "Individual-based forward-time genetics simulation software."
+  license: "GPL-2.0-or-later"
+  license_family: GPL
   license_file: COPYING
+  doc_url: "https://nemo2.sourceforge.io"
+  dev_url: "https://bitbucket.org/ecoevo/nemo-release"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btl415
+  recipe-maintainers:
+    - fredgui
+    - mencian

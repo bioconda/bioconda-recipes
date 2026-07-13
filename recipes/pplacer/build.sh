@@ -4,7 +4,9 @@ mkdir -p $PREFIX/bin
 if [ "$(uname)" = "Darwin" ] ; then
     for i in guppy pplacer rppr ; do
              chmod +x $i
-             install_name_tool -change /opt/homebrew/opt/gsl/lib/libgsl.28.dylib "${PREFIX}/lib/libgsl.28.dylib" "${i}"
+             install_name_tool -change /opt/homebrew/opt/gsl/lib/libgsl.28.dylib "@rpath/../lib/libgsl.28.dylib" "${i}"
+             install_name_tool -change /opt/homebrew/opt/zlib/lib/libz.1.dylib "@rpath/../lib/libz.1.dylib" "${i}"
+             install_name_tool -change /opt/homebrew/opt/sqlite/lib/libsqlite3.dylib "@rpath/../lib/libsqlite3.dylib" "${i}"
              cp $i ${PREFIX}/bin
     done
              

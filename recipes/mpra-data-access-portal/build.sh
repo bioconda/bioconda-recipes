@@ -9,7 +9,7 @@ mkdir -p $BINARY_HOME
 mkdir -p $PACKAGE_HOME
 
 # Copy file into $PACKAGE_HOME
-cp -r data mrkdown packrat tests www LICENSE README.md app.R plots.R run_tests.R $PACKAGE_HOME
+cp -r data mrkdown tests www LICENSE README.md app.R plots.R run_tests.R $PACKAGE_HOME
 
 # Create wrapper
 SOURCE_FILE=$RECIPE_DIR/wrapper.sh

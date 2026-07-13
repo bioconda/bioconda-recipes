@@ -1,5 +1,6 @@
 {% set name = "IQTREE" %}
-{% set version = "3.0.1" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "df85370a2ac74289787226501401ac7db7f085f51c2110d4b829b3f210822160" %}
 
 package:
   name: {{ name|lower }}
@@ -8,15 +9,15 @@ package:
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('iqtree', max_pin="x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 source:
 - url: https://github.com/iqtree/iqtree3/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 2daff8eaa24faaeac3dee9ac63af9fd7b79cc94cf7031671f0068b051b12c55f
-- url: https://github.com/iqtree/cmaple/archive/46f86a9d9e3ece6e4f1a54dc72325e8afeb88738.zip
-  sha256: 9a220795463da8b857105275571ae71ae043617e58f9a6118b8eafc93df567ab
+  sha256: {{ sha256 }}
+- url: https://github.com/iqtree/cmaple/archive/v2.0.0.tar.gz
+  sha256: 01f503af2cb1bc570c5a412981dd2e79ab54cf3e4c7c45a23ec28f24551505ff
   folder: cmaple
-- url: https://github.com/tothuhien/lsd2/archive/c61110f3a4fa05325b45c97b2134792ff9d55d4c.zip 
+- url: https://github.com/tothuhien/lsd2/archive/c61110f3a4fa05325b45c97b2134792ff9d55d4c.zip
   sha256: a1f0cf7dab48d975713d70457f6b79403a74e3e7a27270bd14d5c92cba1fcf63
   folder: lsd2
 
@@ -24,8 +25,10 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
     - cmake
     - ninja
+    - pkg-config
   host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]

@@ -1,64 +1,45 @@
 {% set name = "salmon" %}
-{% set version = "1.10.3" %}
-{% set sha256 = "a053fba63598efc4ade3684aa2c8e8e2294186927d4fcdf1041c36edc2aa0871" %}
+{% set version = "2.3.3" %}
+{% set sha256 = "56137a15c1666ab18e488f0eda55e4a00f1f2eb7d0216bda8cfb74061c6f3a15" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - 0001-CMakeLists.patch
+  - url: https://github.com/COMBINE-lab/salmon/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
 
 build:
-  number: 5
+  number: 0
+  # The 2.0 binary is the Rust build; it does NOT read C++ (pufferfish) indices.
   run_exports:
     - {{ pin_subpackage("salmon", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - autoconf
-    - automake
-    - libtool
-    - cmake
-    - make
-    - pkg-config
-    - gnuconfig
-  host:
-    - boost-cpp
-    - jemalloc >=5.1.0
-    - tbb-devel >=2021.4.0
-    - staden_io_lib >=1.15.0
-    - libgff
-    - cereal
-    - libcurl
-    - libiconv
-    - libdeflate
-    - xz
-    - zlib
-    - zstd
-    - bzip2
-    - unzip
-  run:
-    - boost-cpp
-    - icu
-    - staden_io_lib >=1.15.0
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}        # mimalloc vendors a small C allocator
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  host: []
+  run: []
 
 test:
-  source_files:
-    - sample_data.tgz
   commands:
+    - salmon --version
     - salmon --help
+    - salmon index --help
+    - salmon quant --help
 
 about:
   home: "https://github.com/COMBINE-lab/salmon"
-  license: "GPL-3.0-or-later"
-  license_family: GPL3
-  license_file: LICENSE
-  summary: "Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using selective alignment."
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads (salmon 2.0, Rust)."
   dev_url: "https://github.com/COMBINE-lab/salmon"
   doc_url: "https://combine-lab.github.io/salmon"
 
@@ -74,5 +55,11 @@ extra:
     - biotools:salmon
     - usegalaxy-eu:salmon
     - usegalaxy-eu:salmonquantmerge
-    - usegalaxy-eu:alevin
     - doi:10.1038/nmeth.4197
+  notes: |
+    salmon 2.0 is a from-scratch Rust rewrite of the C++ tool. It uses a new
+    index format and CANNOT read C++ (pufferfish) indices — rebuild indices with
+    2.0. quant.sf and the inferential-replicate outputs remain compatible with
+    tximport/fishpond/swish. The final C++ release (1.12.0) is packaged
+    separately as `salmon-cpp` for reproducibility. Single-cell quantification
+    moved to the alevin-fry ecosystem.

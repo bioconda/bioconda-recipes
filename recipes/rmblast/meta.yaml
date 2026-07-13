@@ -1,6 +1,6 @@
 {% set name = "RMBlast" %}
-{% set version = "2.14.1" %}
-{% set sha256 = "712c2dbdf0fb13cc1c2d4f4ef5dd1ce4b06c3b57e96dfea8f23e6e99f5b1650e" %}
+{% set version = "2.17.0" %}
+{% set sha256 = "502057a88e9990e34e62758be21ea474cc0ad68d6a63a2e37b2372af1e5ea147" %}
 
 package:
   name: {{ name|lower }}
@@ -10,18 +10,16 @@ source:
   url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
   sha256: {{ sha256 }}
   patches:
-    #- isb-{{ version }}+-{{ name }}.patch # Needs the -p1 option, applied in build.sh
-    # patch taken from http://www.repeatmasker.org/rmblast/isb-2.14.1+-rmblast.patch.gz
-    - isb-2.14.1+-rmblast.patch
+    #- version 2.17.1 patch taken from https://www.repeatmasker.org/rmblast/isb-2.17.1+-rmblast.patch.gz
+    - isb-2.17.1+-rmblast.patch
     - configurellvm.patch
     - get_species_taxids.patch
     - phonehome.patch
     - update_configsub.patch
     - project_tree_builder.patch
-    - vdb.patch
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('rmblast', max_pin="x") }}
 
@@ -29,6 +27,7 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
   host:
     - zlib
     - bzip2
@@ -86,6 +85,7 @@ extra:
     - biotools:rmblast
   recipe-maintainers:
     - mencian
+    - TobyBaril
   additional-platforms:
     - linux-aarch64
     - osx-arm64
