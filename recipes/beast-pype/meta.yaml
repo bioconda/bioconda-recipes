@@ -1,5 +1,5 @@
 {% set name = "beast-pype" %}
-{% set version = "0.7.2" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/beast_pype-{{ version }}.tar.gz
-  sha256: d91845ca1d36fa04350adafb5107c8e892702a602675bd58ba3bc3b4bb41edd5
+  sha256: 4b8654e92ca911d5ee020608a51010ba319a68a7cc011af7d02306b7643b2ef0
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
@@ -16,7 +16,7 @@ build:
   noarch: python
   number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage('beast-pype', max_pin="x") }}
 
 requirements:
   host:
@@ -25,13 +25,11 @@ requirements:
     - unidep >=2.0.0
     - pip >=25.3
   run:
-    # For unit testing
-    - pytest >=9.0.2
-    - pytest-xdist >=3.8.0
-    - psutil >=7.2.2
     # BEAST itself
-    - beast2 >=2.6.3
+    - beast2 >=2.7.7
     # Python
+    # beast2-xml has had the occaisonal issue with installation python 3.12
+    # on some OSs. beast2-xml works on suggest python 3.10 sticking to python 3.10.
     - python >=3.10
     # Bioinformatics
     - biopython >=1.86
@@ -51,7 +49,7 @@ requirements:
     - seaborn >=0.13.2
     - matplotlib-base >=3.10.8
     # MCMC diagnostics_of_selection
-    - arviz ==0.23.4
+    - arviz >=1.2.0
     - xarray >=2025.12.0
     # Utils
     - click >=8.3.1
@@ -81,6 +79,10 @@ requirements:
 test:
   imports:
     - beast_pype
+  requires:
+    - pytest >=9.0.2
+    - pytest-xdist >=3.8.0
+    - psutil >=7.2.2
 
 about:
   summary: A package of BEAST 2 pipelines for phylodynamics.
