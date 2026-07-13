@@ -1,0 +1,61 @@
+{% set name = "coltron" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "c8e5d805e3ba66e0fa8840d422ff6f2a3c8a0887eb79eecaa35d81e1544d0fe6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/1a/df/2239781f084a6de2bacf201bb1b0f34fdeefa50fba2ef537b69c6e94df57/coltron-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - modernize-python3-and-genomes.patch
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - coltron = coltron.crc:main
+    - coltron-get-data = coltron.crc:downloadDataFiles
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - numpy
+    - networkx >=2
+    - meme
+    - samtools
+
+test:
+  imports:
+    - coltron
+    - coltron.crc
+    - coltron.utils
+  commands:
+    - coltron --help
+
+about:
+  home: https://github.com/BradnerLab/pipeline
+  doc_url: https://pypi.org/project/coltron/
+  license: MIT
+  license_family: MIT
+  summary: Transcriptional regulatory network analysis from ROSE enhancer tables
+  description: |
+    Coltron builds transcriptional regulatory networks from ROSE enhancer
+    tables, BAM signal and motif scans. The upstream 1.0.2 release was written
+    for Python 2 and hard-coded legacy genome paths. This recipe applies a
+    Python 3 compatibility patch and adds command-line options for custom
+    annotation, TF-list and genome FASTA directories, enabling custom genomes
+    such as hg38/GRCh38 when appropriate reference files are supplied.
+
+extra:
+  recipe-maintainers:
+    - PFRoux
