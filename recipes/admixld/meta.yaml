@@ -1,0 +1,42 @@
+{% set version = "0.10.0" %}
+
+package:
+  name: admixld
+  version: {{ version }}
+
+source:
+  url: https://github.com/yzfranci/AdmixLD/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b8a6a0eeec30fdeef76d804ff18f26060091f798a503fa343405f150f7ecb45a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('admixld', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.16
+    - make
+    - pkg-config
+  host:
+    - htslib
+    - eigen
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - htslib
+
+test:
+  commands:
+    - admixld --help
+
+about:
+  home: https://github.com/yzfranci/AdmixLD
+  license: MIT
+  license_file: LICENSE
+  summary: Fast genome-scale inference of ancestry disequilibrium in hybrid zones.
+
+extra:
+  recipe-maintainers:
+    - yzfranci
