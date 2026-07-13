@@ -1,84 +1,94 @@
 {% set name = "dipper" %}
-{% set version = "0.1.5" %}
+{% set version = "0.1.3" %}
 
 package:
-  name: {{ name }}-base
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7e60648d372677a5107d112f7316808d3a14c56521a7d5748bd873d81e034c62
+  sha256: fc423ab3e34a88cc81d7e3e560d85c1020048427c70d0c61dd7d51b4047d975f
 
 build:
-  number: 1
-  skip: True  # [win]
+  number: 0
   run_exports:
-    - {{ pin_subpackage('dipper', max_pin="x.x") }}
+    - {{ pin_subpackage("dipper", max_pin="x.x") }}
+    - {{ pin_subpackage("dipper-cpu", max_pin="x.x") }}
 
 outputs:
-  - name: dipper                       # CPU-only
+  - name: dipper-cpu
+    script: build.sh
     build:
-      script: bash ${RECIPE_DIR}/build_dipper.sh
-      run_exports:
-        - {{ pin_subpackage('dipper', max_pin="x.x") }}
+      number: 0
+      skip: True # [win]
+    run_exports:
+      - {{ pin_subpackage("dipper-cpu", max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        - {{ stdlib('c') }}
         - cmake
         - make
         - pkg-config
       host:
         - zlib
-        - libboost-devel
+        - boost-cpp
+        - tbb
         - tbb-devel
       run:
+        - boost-cpp
         - tbb
+        - zlib
     test:
       commands:
         - dipper_cpu --help
 
-  - name: dipper-cuda                  # NVIDIA GPU build
+  - name: dipper
+    script: build.sh
     build:
-      skip: True  # [not linux]
-      script: bash ${RECIPE_DIR}/build_dipper.sh
-      run_exports:
-        - {{ pin_subpackage('dipper-cuda', max_pin="x.x") }}
+      number: 0
+      skip: True # [not linux]
+    run_exports:
+      - {{ pin_subpackage("dipper", max_pin="x.x") }}
     requirements:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        - {{ stdlib('c') }}
         - cmake
         - make
         - pkg-config
-        - cuda-nvcc
-        - cuda-version >=12.0,<13
+        - cuda-nvcc  # [linux]
+        - cuda-cudart-dev  # [linux]
+        - cuda-version >=12.0,<13  # [linux]
       host:
-        - cuda-cudart-dev
-        - cuda-version >=12.0,<13
         - zlib
-        - libboost-devel
+        - boost-cpp
+        - tbb
         - tbb-devel
       run:
+        - boost-cpp
         - tbb
-        - {{ pin_subpackage('dipper', exact=True) }}   # gives users dipper_cpu too, no file overlap
+        - zlib
     test:
       commands:
-        - test -x "${PREFIX}/bin/dipper"   # can't run it: no GPU on the builder
+        - dipper --help
+
+test:
+  commands:
+    - dipper_cpu --help
 
 about:
   home: "https://github.com/TurakhiaLab/DIPPER"
   license: MIT
   license_family: MIT
   license_file: LICENSE
+  summary: "DIPPER: An ultrafast tool for phylogenetic tree reconstruction."
+  dev_url: "https://github.com/TurakhiaLab/DIPPER"
+  doc_url: "https://turakhia.ucsd.edu/DIPPER"
   description: "DIPPER (DIstance-based Phylogenetic PlacER) is a tool designed for ultrafast and ultralarge phylogenetic tree reconstruction on GPUs. It is capable of reconstructing a phylogenetic tree with 10 million taxa, with a minimal memory footprint."
-  summary: "CUDA and CPU-only package for DIPPER"
 
 extra:
   additional-platforms:
     - linux-aarch64
-    - osx-arm64          
   recipe-maintainers:
     - sumit-walia
