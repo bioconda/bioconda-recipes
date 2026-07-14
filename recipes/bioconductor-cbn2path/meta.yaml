@@ -1,0 +1,74 @@
+{% set version = "1.0.0" %}
+{% set name = "CBN2Path" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 566818c69b92e3a857f749f3fb2f1f58
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cbn2path", max_pin="x.x") }}'
+
+# Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown
+# SystemRequirements: GNU Scientific Library (GSL)
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-tcgabiolinks >=2.38.0,<2.39.0
+    - r-base
+    - r-coda
+    - r-cowplot
+    - r-ggplot2
+    - r-ggraph
+    - r-igraph
+    - r-magrittr
+    - r-patchwork
+    - r-r6
+    - r-rlang
+    - r-tidygraph
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-tcgabiolinks >=2.38.0,<2.39.0
+    - r-base
+    - r-coda
+    - r-cowplot
+    - r-ggplot2
+    - r-ggraph
+    - r-igraph
+    - r-magrittr
+    - r-patchwork
+    - r-r6
+    - r-rlang
+    - r-tidygraph
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: '"CBN2Path: an R/Bioconductor package for the analysis of cancer progression pathways using Conjunctive Bayesian Networks'
+  description: CBN2Path package provides a unifying interface to facilitate CBN-based quantification, analysis and visualization of cancer progression pathways.
+  license_file: LICENSE
+
