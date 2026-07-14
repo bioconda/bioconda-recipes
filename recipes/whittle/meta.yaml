@@ -1,0 +1,51 @@
+{% set name = "whittle" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://static.crates.io/crates/{{ name }}/{{ name }}-{{ version }}.crate
+  sha256: dcb66d7994972bc7d16de9f9622e8e81bff065cd1723f3678226c47219391957
+
+build:
+  number: 0
+  # The crate ships a .cargo/config.toml that sets target-cpu=x86-64-v3, so
+  # `cargo install` from the source root produces an AVX2 build automatically
+  # (required by the sassy SIMD dependency). aarch64 uses NEON by default.
+  script: 'cargo install --no-track --locked --root "${PREFIX}" --path .'
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - cmake
+    - make
+
+test:
+  commands:
+    - whittle --version
+    - whittle --help
+
+about:
+  home: https://github.com/erdikilic/whittle
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Fast, tag-aware long-read (ONT/PacBio) trimmer for FASTQ and unaligned BAM
+  description: |
+    whittle trims Oxford Nanopore and PacBio long reads in FASTQ, gzipped
+    FASTQ, and unaligned BAM. It keeps position-indexed tags (MM/ML/MN base
+    modifications, per-base kinetics, and ONT signal) in register through
+    every trim and split, so downstream modified-base and signal analyses
+    stay correct after trimming.
+  dev_url: https://github.com/erdikilic/whittle
+  doc_url: https://docs.rs/whittle
+
+extra:
+  recipe-maintainers:
+    - erdikilic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
