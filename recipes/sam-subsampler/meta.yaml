@@ -1,0 +1,69 @@
+{% set name = "sam-subsampler" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiangyun-fun/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0a8b89136f9e6121785defc06dafe7717c10d84af25dbf6dc6c3ea12ed97546c
+  # LICENSE ships in the v0.1.0 archive (no second source needed).
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  # The binary statically links zlib/bzip2/lzma/libdeflate (hts-sys pulls the
+  # -sys crates, which build them from vendored source). Confirmed via `ldd`:
+  # only libc/libm/libgcc_s/librt/libpthread appear. Suppress the bogus run deps
+  # auto-derived from the host libs. conda-build types this as a plain list and
+  # filters by spec prefix (the exported dep name) — it MUST live under `build:`,
+  # not `requirements:`.
+  ignore_run_exports:
+    - bzip2
+    - libdeflate
+    - liblzma
+    - libzlib
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - clangdev
+    - cmake
+    - make
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - libdeflate
+
+test:
+  commands:
+    - sam-subsampler --help
+    - sam-subsampler --version
+
+about:
+  home: https://github.com/jiangyun-fun/sam-subsampler
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Two-pass BAM/CRAM subsampler that tags a randomly chosen subset of reads in place."
+  description: |
+    sam-subsampler subsamples reads from a BAM/CRAM/SAM file by per-reference
+    count and tags the selected reads in place (it does not filter). Unlike
+    samtools view -s, it samples unique qnames per reference and tags every
+    record of a selected read (mate, supplementary) with a custom BAM aux tag.
+  dev_url: https://github.com/jiangyun-fun/sam-subsampler
+
+extra:
+  recipe-maintainers:
+    - jiangyun-fun
+  skip-lints:
+    - compiler_needs_stdlib_c
