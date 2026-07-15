@@ -14,6 +14,7 @@ mkdir -p "${PREFIX}/share/licenses/${PKG_NAME}"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 else
   export CONFIG_ARGS=""
 fi
