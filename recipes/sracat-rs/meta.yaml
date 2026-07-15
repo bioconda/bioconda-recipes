@@ -1,0 +1,44 @@
+{% set version = "0.0.3" %}
+{% set name = "sracat-rs" %}
+{% set sha256 = "65dd84a3f6bfc28da9696c511341b6f795799353de62e8a5459f905f5d6e64cb" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    # 3.x only, 4.x not yet released at time of writing
+    - ncbi-vdb >=3.0.0,<4.0.0
+  host:
+    - ncbi-vdb >=3.0.0,<4.0.0
+
+test:
+  commands:
+    - sracat-rs -h
+
+about:
+  home: "https://github.com/wwood/sracat-rs"
+  license: "MIT"
+  license_family: MIT
+  license_file:
+    - LICENSE.txt
+    - THIRDPARTY.yml
+  summary: "Flexible streaming extraction of reads from NCBI .SRA files."
+  dev_url: "https://github.com/wwood/sracat-rs"
+
