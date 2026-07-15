@@ -13,16 +13,20 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('whittle', max_pin="x.x") }}
-  # The crate ships a .cargo/config.toml that sets target-cpu=x86-64-v3, so
-  # `cargo install` from the source root produces an AVX2 build automatically
-  # (required by the sassy SIMD dependency). aarch64 uses NEON by default.
-  script: 'cargo install --no-track --locked --root "${PREFIX}" --path .'
+  # cargo-bundle-licenses collects the licenses of all vendored crates into
+  # THIRDPARTY.yml (bioconda Rust guideline; see about/license_file). The crate's
+  # bundled .cargo/config.toml sets target-cpu=x86-64-v3, so `cargo install`
+  # produces the AVX2 build sassy needs (aarch64 uses NEON by default).
+  script:
+    - 'cargo-bundle-licenses --format yaml --output THIRDPARTY.yml'
+    - 'cargo install --no-track --locked --root "${PREFIX}" --path .'
 
 requirements:
   build:
     - {{ compiler('rust') }}
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
+    - cargo-bundle-licenses
     - cmake
     - make
 
@@ -35,7 +39,9 @@ about:
   home: https://github.com/erdikilic/whittle
   license: Apache-2.0
   license_family: APACHE
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   summary: Fast, tag-aware long-read (ONT/PacBio) trimmer for FASTQ and unaligned BAM
   description: |
     whittle trims Oxford Nanopore and PacBio long reads in FASTQ, gzipped
