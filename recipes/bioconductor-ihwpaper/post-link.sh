@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ihwpaper-1.34.0"
+installBiocDataPackage.sh "ihwpaper-1.38.0"

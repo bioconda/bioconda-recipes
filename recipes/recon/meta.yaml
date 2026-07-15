@@ -1,16 +1,16 @@
 {% set name = "recon" %}
-{% set version = "1.08" %}
+{% set version = "1.10" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://www.repeatmasker.org/RECON-{{ version }}.tar.gz
-  sha256: 699765fa49d18dbfac9f7a82ecd054464b468cb7521abe9c2bd8caccf08ee7d8
+  url: https://github.com/Dfam-consortium/RECON/archive/refs/tags/{{ version }}.tar.gz
+  sha256: d40bcbe2b842b3bde31e6f460176ea8d1facece89920568f12a1f7abe6a9c42c
 
 build:
-  number: 9
+  number: 0
   run_exports:
     - {{ pin_subpackage('recon', max_pin="x") }}
 
@@ -18,10 +18,12 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
 
 test:
   commands:
-    - imagespread 2>&1 | grep 'usage'
+    - run_recon.sh 2>&1 | grep 'usage'
+    - eledef 2>&1 | grep 'usage'
 
 about:
   home: "http://eddylab.org/software/recon"
