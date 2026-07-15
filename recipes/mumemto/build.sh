@@ -15,6 +15,14 @@ mkdir -p "${PREFIX}/share/licenses/${PKG_NAME}"
 if [[ "$(uname -s)" == "Darwin" ]]; then
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
   export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+  export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"
+  # Use cctools ar/ranlib; llvm-ranlib-19 fails to load libLLVM on osx-64 CI.
+  if [[ -n "${AR:-}" ]]; then
+    export CMAKE_AR="${AR}"
+  fi
+  if [[ -n "${RANLIB:-}" ]]; then
+    export CMAKE_RANLIB="${RANLIB}"
+  fi
 else
   export CONFIG_ARGS=""
 fi
@@ -29,6 +37,8 @@ cmake -S "${SRC_DIR}" -B "${SRC_DIR}/build" \
   -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE \
   -Wno-dev -Wno-deprecated --no-warn-unused-cli \
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  ${CMAKE_AR:+-DCMAKE_AR="${CMAKE_AR}"} \
+  ${CMAKE_RANLIB:+-DCMAKE_RANLIB="${CMAKE_RANLIB}"} \
   ${CONFIG_ARGS}
 
 cmake --build "${SRC_DIR}/build" --clean-first -j "${CPU_COUNT:-4}"
