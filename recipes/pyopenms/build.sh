@@ -17,10 +17,6 @@ fi
 mkdir build
 cd build
 
-# QT_HOST_PATH(_CMAKE_DIR) only needed when you actually need use the Qt MOC executable on source files with signals and slots
-#  i.e. when OpenMS is built with GUI (which it is not). Note: You will need to move qt6-main from "host"
-#  to "build" in your dependencies of the meta.yml recipe.
-#  See also: https://stackoverflow.com/questions/39075040/cmake-cmake-automoc-in-cross-compilation
 # Set INSTALL_RPATH to PREFIX such that there are no warnings during linkage fixing of conda-build
 #  and make sure nothing is added by the compiler with CMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH.
 # We set the BUILD_RPATH to the BUILD_PREFIX just to make CMake aware that the stupid compiler will add
@@ -33,7 +29,6 @@ cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
-	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
     -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=16 \
     -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \

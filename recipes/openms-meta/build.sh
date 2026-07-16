@@ -17,10 +17,6 @@ fi
 mkdir build
 cd build
 
-# QT_HOST_PATH(_CMAKE_DIR) only needed when you actually need use the Qt MOC executable on source files with signals and slots
-#  i.e. when OpenMS is built with GUI (which it is not). Note: You will need to move qt6-main from "host"
-#  to "build" in your dependencies of the meta.yml recipe.
-#  See also: https://stackoverflow.com/questions/39075040/cmake-cmake-automoc-in-cross-compilation
 # Set INSTALL_RPATH to PREFIX such that there are no warnings during linkage fixing of conda-build
 #  and make sure nothing is added by the compiler with CMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH.
 # We set the BUILD_RPATH to the BUILD_PREFIX just to make CMake aware that the stupid compiler will add
@@ -34,7 +30,6 @@ cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
 	-DWITH_THERMO_RAW=OFF \
 	-DWITH_PARQUET=ON -DARROW_USE_STATIC=OFF \
 	-DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" \
- 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
  	${PLATFORM_CMAKE_EXTRAS}
 
