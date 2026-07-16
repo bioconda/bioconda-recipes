@@ -10,7 +10,7 @@ source:
   sha256: 5e8bf61d13976a24508201374694f07efec789b6f3154ba8945ec8258bff07b1
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('bwa-mem3', max_pin="x") }}
 
@@ -23,14 +23,16 @@ requirements:
     - {{ stdlib('c') }}
   host:
     - zlib
-    - mimalloc >=3.3,<4
+    # Linux statically links the bundled mimalloc (see build.sh); only macOS
+    # links the conda-forge mimalloc, whose dylib interposes malloc via dyld.
+    - mimalloc >=3.3,<4  # [osx]
     - htslib >=1.21,<2
     - libsais >=2.10.4,<3
     - sse2neon ==1.9.1  # [aarch64 or arm64]
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
   run:
-    - mimalloc >=3.3,<4
+    - mimalloc >=3.3,<4  # [osx]
     - htslib >=1.21,<2
     - libsais >=2.10.4,<3
     - llvm-openmp  # [osx]
@@ -39,14 +41,25 @@ requirements:
 test:
   commands:
     - bwa-mem3 version
+    # Guard the Linux mimalloc regression: the bundled allocator is statically
+    # whole-archived, so the binary must NOT dynamically link libmimalloc. A
+    # dynamic libmimalloc.so link (conda-forge's) loads but does not override
+    # malloc, silently falling back to glibc. Fail the build if it reappears.
+    - 'if ldd "${PREFIX}/bin/bwa-mem3" | grep -q libmimalloc; then echo "FAIL - bwa-mem3 dynamically links libmimalloc (malloc override inert)"; exit 1; fi'  # [linux]
 
 about:
   home: "https://github.com/fg-labs/bwa-mem3"
-  license: "MIT AND Apache-2.0"
+  license: "MIT AND Apache-2.0 AND Zlib"
   license_family: MIT
   license_file:
     - LICENSE
     - ext/sse2neon/LICENSE
+    # mimalloc (MIT) is statically linked into the Linux binary (see build.sh);
+    # bundle its license. Harmless on macOS where it is dynamically linked.
+    - ext/mimalloc/LICENSE
+    # zlib-ng (Zlib) is statically linked on all platforms (vendored fast gzip
+    # reader); bundle its license and reflect Zlib in the SPDX expression above.
+    - ext/zlib-ng/LICENSE.md
   summary: "Short-read aligner derived from bwa-mem2 with correctness fixes, performance improvements, and methylation alignment."
   dev_url: "https://github.com/fg-labs/bwa-mem3"
   doc_url: "https://bwa-mem3.readthedocs.io"
