@@ -1,0 +1,57 @@
+{% set name = "inquistr" %}
+{% set version = "0.27.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Use the static release asset: GitHub's on-the-fly archive endpoint
+  # (archive/refs/tags) reliably times out (504) for this repository.
+  url: https://github.com/wdecoster/inquiSTR/releases/download/v{{ version }}/inquiSTR-{{ version }}.tar.gz
+  sha256: 411cd33c60939e5c267468bfd787f65dbab5398d4f66bf3e1651844f895590c6
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('inquistr', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - clangdev <22
+    - make
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    # hts-sys vendors and compiles its own htslib; these are the system
+    # libraries the openssl-sys/curl-sys/libz-sys crates link against.
+    - zlib
+    - libcurl
+    - openssl
+
+test:
+  commands:
+    - inquiSTR --help
+
+about:
+  home: "https://github.com/wdecoster/inquiSTR"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Tandem repeat toolkit for long reads."
+  dev_url: "https://github.com/wdecoster/inquiSTR"
+  doc_url: "https://github.com/wdecoster/inquiSTR/blob/main/README.md"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  identifiers:
+    - doi:10.1101/gr.279265.124 # to be updated
