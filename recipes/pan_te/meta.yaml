@@ -1,0 +1,83 @@
+{% set name = "pan_te" %}
+{% set version = "1.0.1" %}
+
+# Pan_TE receives executables and Look4LTRs' library-builder helper through runtime
+# dependencies. Non-redistributable data (Dfam libraries, ClassifyTE models) are NOT
+# shipped here; users run `pan_te-setup-data` after install.
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/unavailable-2374/Pan_TE/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 4098139bd7aeab1b2afa13ed570e55b4609eb792ff293657152b908fefecde13
+    folder: pan_te
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  run:
+    # --- interpreters / python libs ---
+    - python >=3.10
+    - perl
+    - biopython
+    - numpy
+    - scipy
+    - psutil
+    - gdown                       # pan_te-setup-data (ClassifyTE model fetch)
+    # --- custom Pan_TE tracks (the other recipes in this directory) ---
+    - look4ltrs
+    - mdl-repeat
+    - te-looker
+    - fastga
+    # --- sequence handling / MSA / consensus ---
+    - samtools
+    - bedtools
+    - cd-hit
+    - mafft
+    - abpoa
+    - spoa
+    # --- BLAST stack ---
+    - blast
+    - rmblast
+    # --- repeat masking / classification ---
+    - repeatmasker
+    - repeatmodeler
+    - trf
+    # --- profile HMM / k-mer / phylo / structural ---
+    - hmmer
+    - sourmash
+    - iqtree
+    - barrnap
+    - tesorter
+    # --- Perl modules (build_mdl) ---
+    - perl-parallel-forkmanager
+    - perl-log-log4perl
+
+test:
+  commands:
+    - Pan_TE --help 2>&1 | head -1
+    - pan_te-setup-data --help 2>&1 | head -1
+    - command -v dtr
+    - command -v look4ltrs
+    - command -v mdl-repeat
+
+about:
+  home: https://github.com/unavailable-2374/Pan_TE
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: pan_te/LICENSE
+  summary: "Pan-genome transposable-element annotation pipeline (LTR + mdl-repeat + TE-looker)."
+  description: |
+    Pan_TE combines three de novo TE-detection tracks (Look4LTRs for LTR retrotransposons,
+    mdl-repeat for broad-spectrum MDL repeat discovery, and TE-looker/dtr for divergent
+    'twilight-zone' TEs), deduplicates, and classifies via RepeatClassifier + ClassifyTE.
+    After install, run `pan_te-setup-data` to fetch the Dfam libraries and ClassifyTE models
+    (not redistributable via conda).
+
+extra:
+  recipe-maintainers:
+    - unavailable-2374
