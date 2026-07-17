@@ -1,6 +1,6 @@
 {% set name = "dotmatch" %}
-{% set version = "0.1.9" %}
-{% set sha256 = "35bda517040de7d1c83482ee4d3f1ef9fa3540dc4165cbf0afb2dd46784bee06" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "1460571fa3e1fbbca1a6f35a0abeab75aa88d358dd00f4c4b7a69f4d25bde468" %}
 
 package:
   name: {{ name|lower }}
@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage("dotmatch", max_pin="x.x") }}
   skip: true  # [win or py<39]
@@ -22,19 +22,21 @@ requirements:
     - {{ stdlib('c') }}
     - make
   host:
-    - python
+    - python >=3.9
     - pip
     - setuptools >=77
     - wheel
     - zlib
   run:
-    - python
+    - python >=3.9
     - tomli  # [py<311]
 
 test:
   commands:
-    - python -c "import dotmatch; assert dotmatch.distance('ACGT', 'AGGT') == 1"
+    - python -c "import assaycode, dotmatch; assert assaycode.engine is dotmatch; assert dotmatch.distance('ACGT', 'AGGT') == 1"
     - python -c "from dotmatch.native import find_native_cli; p=find_native_cli(); assert p.name == 'dotmatch-native' and p.exists()"
+    - assaycode --version | grep '^assaycode {{ version }} (DotMatch engine {{ version }})$'
+    - assaycode --help | grep 'additive assay-level identity'
     - dotmatch --version | grep '^dotmatch {{ version }}$'
     - dotmatch dist ACGT AGGT | grep '^1$'
     - dotmatch leq 1 ACGT AGGT | grep '^true$'
@@ -85,7 +87,8 @@ about:
   license_file: LICENSE
   summary: Deterministic short-DNA known-target assignment
   description: |
-    DotMatch is a deterministic known-target short-DNA assignment engine for
+    The distribution installs AssayCode, the assay-level platform identity, and
+    DotMatch, its deterministic known-target short-DNA assignment engine for
     CRISPR guides, barcodes, primers, panels, and whitelist-style target sets.
     It is not a genome aligner and does not emit SAM/BAM or CIGAR output.
   dev_url: https://github.com/dnncha/dotmatch
