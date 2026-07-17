@@ -1,0 +1,54 @@
+{% set name = "amulet" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/UcarLab/AMULET/releases/download/v{{ version }}/AMULET-v{{ version }}.zip
+  sha256: 56bfc175f603054d1046b21fb714e951bfbbe8b5fdb779e4cade224b03a426b8
+  patches:
+    - numpy-1.24-compat.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3
+    - numpy
+    - pandas
+    - scipy
+    - statsmodels
+    - openjdk >=8
+
+test:
+  commands:
+    - amulet 2>&1 | grep -q "Usage: amulet"
+    - amulet-fragment-overlap-counter --help
+    - amulet-multiplet-detection --help
+    - test -s "${PREFIX}/share/amulet/snATACOverlapCounter.jar"
+    - test -s "${PREFIX}/share/amulet/human_autosomes.txt"
+    - jar tf "${PREFIX}/share/amulet/snATACOverlapCounter.jar" | grep -q "org/jax/snatacoverlapcounter/OverlapCounter.class"
+
+about:
+  home: https://github.com/UcarLab/AMULET
+  dev_url: https://github.com/UcarLab/AMULET
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Detect multiplets in single-nucleus ATAC-seq data
+  description: |
+    AMULET (ATAC-seq MULtiplet Estimation Tool) is a count-based method for
+    detecting multiplets from single-nucleus ATAC-seq data. It supports
+    fragment-file input through Python and BAM input through the bundled Java
+    overlap counter.
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-021-02469-x
+  recipe-maintainers:
+    - qchiujunhao
