@@ -1,0 +1,57 @@
+{% set name = "fastCDS" %}
+{% set version = "2.3.0" %}
+
+# DRAFT bioconda recipe. bioconda pulls the sdist from PyPI, so this can only be
+# submitted AFTER fastCDS 2.3.0 is live on PyPI. Fill `sha256` from the published
+# sdist (`grayskull pypi fastCDS` fetches it automatically), then test locally
+# with `conda build .` before opening the PR to bioconda-recipes.
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0]|lower }}/{{ name|lower }}/fastcds-{{ version }}.tar.gz
+  sha256: cee176dd7b45e5749c955e1cc44bee6d7eb5778b905eed98248c672e51fda3e0
+
+build:
+  number: 0
+  # The sdist compiles the C++ binary via scikit-build-core + CMake at install.
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - fastCDS = fastCDS._cli:main
+    - fastCDS-plot = fastCDS.plot:main
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.15
+    - make
+  host:
+    - python >=3.9
+    - pip
+    - scikit-build-core >=0.8
+  run:
+    - python >=3.9
+    - pandas >=1.4
+    - matplotlib-base >=3.5
+    - plotly >=5.0
+
+test:
+  imports:
+    - fastCDS
+  commands:
+    - fastCDS --help
+    - fastCDS-plot --help
+
+about:
+  home: https://github.com/SotoLF/fastCDS
+  license: MIT
+  license_file: LICENSE
+  summary: Map protein-domain coordinates to genomic CDS/UTR/intron structure at proteome scale.
+  dev_url: https://github.com/SotoLF/fastCDS
+
+extra:
+  recipe-maintainers:
+    - SotoLF
+    - george123ya
