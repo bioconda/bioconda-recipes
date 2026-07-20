@@ -1,0 +1,93 @@
+{% set posix = "m2-" if win else "" %}
+{% set native = "m2w64-" if win else "" %}
+{% set name = "r-bioregion" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: r-bioregion
+  version: '{{ version }}'
+
+source:
+  url: https://cran.r-project.org/src/contrib/bioregion_{{ version }}.tar.gz
+  sha256: 5bb485f919906296d644949fcfdd4b124a43d4ca0ef37b4f69f1023ec0f2ce1a
+
+build:
+  number: 0
+  # merge_build_host: true
+  script: 
+    - {{ R }} -e "install.packages('fastkmedoids', repos='https://cloud.r-project.org')"
+    - R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - cross-r-base {{ r_base }}  # [build_platform != target_platform]
+    - autoconf  # [unix]
+    - "{{ compiler('c') }}"  # [unix]
+    - "{{ compiler('m2w64_c') }}"  # [win]
+    - "{{ compiler('cxx') }}"  # [unix]
+    - "{{ compiler('m2w64_cxx') }}"  # [win]
+    - posix  # [win]
+  host:
+    - r-Matrix
+    - r-Rdpack
+    - r-apcluster
+    - r-ape
+    - r-base >=4.2
+    - r-bipartite
+    - r-cluster
+    - r-data.table
+    - r-dbscan
+    - r-dynamicTreeCut
+    - r-fastcluster
+    # - r-fastkmedoids
+    - r-ggplot2
+    - r-httr
+    - r-igraph
+    - r-mathjaxr
+    - r-phangorn
+    - r-rcartocolor
+    - r-rlang
+    - r-rmarkdown
+    - r-segmented
+    - r-sf
+    - r-tidyr
+  run:
+    - r-Matrix
+    - r-Rdpack
+    - r-apcluster
+    - r-ape
+    - r-base >=4.2
+    - r-bipartite
+    - r-cluster
+    - r-data.table
+    - r-dbscan
+    - r-dynamicTreeCut
+    - r-fastcluster
+    # - r-fastkmedoids
+    - r-ggplot2
+    - r-httr
+    - r-igraph
+    - r-mathjaxr
+    - r-phangorn
+    - r-rcartocolor
+    - r-rlang
+    - r-rmarkdown
+    - r-segmented
+    - r-sf
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('bioregion')"  # [not win]
+    - "\"%R%\" -e \"library('bioregion')\""  # [win]
+
+about:
+  home: https://github.com/bioRgeo/bioregion, https://bioRgeo.github.io/bioregion/
+  summary: The main purpose of this package is to propose a transparent methodological framework to compare bioregionalization methods based on hierarchical and non-hierarchical clustering algorithms (Kreft & Jetz (2010) <doi:10.1111/j.1365-2699.2010.02375.x>) and network algorithms (Lenormand et al. (2019) <doi:10.1002/ece3.4718> and Leroy et al. (2019) <doi:10.1111/jbi.13674>).
+  license: GPL-3.0-or-later
+  # license_file: LICENSE
+  maintainer: Maxime Lenormand # Optional
+
