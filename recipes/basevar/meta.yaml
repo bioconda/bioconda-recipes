@@ -1,0 +1,71 @@
+{% set version = "2.6.7" %}
+{% set sha256 = "2b60612ac419b75318cbfcbe4f72bf74adc4abe831a1f7c754402583dc3ac599" %}
+
+package:
+  name: basevar
+  version: {{ version }}
+
+source:
+  url: https://github.com/ShujiaHuang/BaseVar2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [osx and x86_64]  # std::filesystem requires macOS 10.15+
+  run_exports:
+    - {{ pin_subpackage('basevar', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.12
+    - make
+    - autoconf
+    - automake
+    - pkg-config
+  host:
+    - htslib >=1.18
+    - zlib
+    - bzip2
+    - xz
+    - openssl
+    - libcurl
+  run:
+    - htslib >=1.18
+
+test:
+  commands:
+    - basevar --help
+
+about:
+  home: https://github.com/ShujiaHuang/BaseVar2
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  summary: High-performance variant caller for ultra-low-depth WGS and NIPT data
+  description: |
+    BaseVar is a fast, memory-efficient C++17 variant caller for ultra-low-depth (<1x)
+    sequencing data, designed for non-invasive prenatal testing (NIPT) and
+    population-scale genomics. It simultaneously identifies genomic variants and
+    estimates allele frequencies in cohorts of tens to hundreds of thousands of samples.
+
+    Key features:
+    - Designed for ultra-low-depth (<1x) WGS data
+    - Supports NIPT (non-invasive prenatal testing) mixed genome scenarios
+    - Simultaneous variant calling and allele frequency estimation
+    - Handles cohorts of tens to hundreds of thousands of samples
+    - Over 100x faster than the original Python implementation
+    - 5-10x faster than BaseVar v1
+    - Typically requires only 3-4 GB RAM with -B 200
+
+    Originally introduced in a Cell paper (2018), with a completely redesigned
+    C++17 implementation described and benchmarked in Cell Genomics (2024).
+  dev_url: https://github.com/ShujiaHuang/BaseVar2
+  doc_url: https://github.com/ShujiaHuang/BaseVar2#readme
+
+extra:
+  recipe-maintainers:
+    - ShujiaHuang
+  identifiers:
+    - doi:10.1016/j.xgen.2024.100669
