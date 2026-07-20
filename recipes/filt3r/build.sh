@@ -2,9 +2,15 @@
 set -euo pipefail
 
 # FiLT3r builds a single C++ binary via a plain Makefile. The Makefile derives
-# CXX/CC from the environment (conda's compilers), so no toolchain patching is
-# needed. It hardcodes -O3 in CXXFLAGS/LDFLAGS and links zlib (-lz).
-#
+# CXX/CC from the environment (conda's compilers) but hardcodes its own
+# CXXFLAGS/CFLAGS/LDFLAGS, so conda's CPPFLAGS/LDFLAGS (which carry
+# -I$PREFIX/include / -L$PREFIX/lib) are ignored by its explicit compile rules.
+# Point the compiler and linker at the conda prefix via the search-path
+# environment variables, which gcc honours regardless of the Makefile flags, so
+# that <zlib.h> and libz are found at build and link time.
+export CPATH="${PREFIX}/include${CPATH:+:${CPATH}}"
+export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
+
 # The Makefile stamps a version string into the JSON output via GIT_SHA1, which
 # it computes from `git log`. The source tarball has no .git directory, so we
 # inject the packaged version explicitly to keep the reported version meaningful.
