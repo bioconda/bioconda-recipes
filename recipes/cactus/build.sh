@@ -36,7 +36,7 @@ sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 rm -rf *.bak
 ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 
-make
+make CC="${CC}"  CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib"
 mv bin/* ${PREFIX}/bin
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
