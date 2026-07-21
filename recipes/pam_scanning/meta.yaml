@@ -1,0 +1,57 @@
+{% set name = "pam_scanning" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dangerisom/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d413775fccab8a830fbb10dcf335033c0b84080917cd0e007abc6ddaf92fe1e3
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - pam-scan = pam_scanning.cli:main
+    - pam-scan-gui = pam_scanning.gui:main
+    - pam-scan-fetch-cds = pam_scanning.fetch_cds:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.8
+    - openpyxl
+    - matplotlib-base
+    - blast
+
+test:
+  imports:
+    - pam_scanning
+  commands:
+    - pam-scan --help
+    - pam-scan-fetch-cds --help
+
+about:
+  home: https://github.com/dangerisom/pam_scanning
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Design CRISPR guides and primers for ORF-wide chimera (PAM) scanning.
+  description: |
+    pam_scanning designs CRISPR guides and cloning primers for ORF-wide chimera
+    (PAM) scanning. Given an open reading frame and its flanking sequence, it
+    locates PAM sites, silences them where required, evaluates guide specificity
+    by BLAST against a reference genome, selects optimal guides per insertion
+    site, and emits primer orders, plate layouts, and QC reports. A graphical
+    interface and a UniProt-to-CDS fetcher are included.
+  dev_url: https://github.com/dangerisom/pam_scanning
+  doc_url: https://github.com/dangerisom/pam_scanning/blob/master/docs/pipeline.md
+
+extra:
+  recipe-maintainers:
+    - dangerisom
