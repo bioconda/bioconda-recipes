@@ -1,5 +1,5 @@
 {% set name = "vcfclick" %}
-{% set version = "0.3.1" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/v/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a2707612651b62c58452dfcbb3db6d3d78d90d9affa3852ca985e32981f1648f
+  sha256: 18ae95bcb80671acf636aa65e143c415423e0c36025b3931b0640fd0df877c37
 
 build:
   noarch: python
@@ -30,6 +30,8 @@ requirements:
     - pyarrow >=15
     - mcp >=1.0
     - click >=8.1
+    - pyfaidx >=0.8
+    - numpy >=1.24
 
 test:
   imports:
@@ -37,9 +39,11 @@ test:
     - ingest
     - cli
     - vcfclick_mcp
+    - benchmark
   commands:
     - vcfclick --version
     - vcfclick db --help
+    - vcfclick benchmark --help
     - VCFCLICK_BACKEND=duckdb vcfclick db create smoke
     - VCFCLICK_BACKEND=duckdb vcfclick db rm --yes smoke
 
@@ -62,8 +66,10 @@ about:
     are available as a public interchange format via `db dump` and
     `db ingest-parquet`.
 
-    New versions will add VCF merging like GATK3 and variant detection on
-    trios using different genotype models.
+    It also reimplements GATK3-style CombineVariants (`combine`), trio
+    analysis across Mendelian inheritance models (`db trio`), and a native
+    truth-vs-query concordance benchmark (`benchmark`) with normalized and
+    local-haplotype engines and GA4GH-shaped reports.
   doc_url: https://github.com/nuin/vcfclick/blob/main/docs/SCHEMA.md
   dev_url: https://github.com/nuin/vcfclick
 
