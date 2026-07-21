@@ -1,5 +1,5 @@
 {% set name = "rolypoly-tk" %}
-{% set version = "0.7.16" %}
+{% set version = "0.7.17" %}
 
 package:
   name: {{ name|lower }}
@@ -7,108 +7,93 @@ package:
 
 source:
   url: https://github.com/UriNeri/rolypoly/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 04d28ced616e261bb36613657a85eceec67325b66758d8787d849a9cb96f5731
+  sha256: 2d5dc1a627a4203aa8c949c87c41a6366b06af56804d639982511ea761a928c7
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
   entry_points:
     - rolypoly = rolypoly.rolypoly:rolypoly
 
 requirements:
   host:
-    - python >=3.10,<3.14
+    - python >=3.10
     - pip
     - hatchling
   run:
-    - python >=3.10,<3.14
-    # Python dependencies (from pyproject.toml [project.dependencies])
-    - mappy >=2.30,<3
-    - needletail >=0.7.0,<0.8
-    - psutil >=7.0.0,<8
-    - pyfastx >=2.2.0,<3
-    - pyhmmer >=0.11.1,<0.12.1
-    - requests >=2.32.4,<3
-    - rich-click >=1.8.9,<2
-    - rich >=14.0.0,<15
-    - intervaltree >=3.1.0,<4
-    - polars >=1.29.0,<2
-    - numpy >=2.2.6,<3
+    - python >=3.10
+
+    # Core Python deps (pyproject [project.dependencies])
+    - mappy >=2.31,<3
+    - needletail >=0.7.3,<0.8
+    - psutil >=7.2.2,<8
+    - pyfastx >=2.3.1,<3
+    - pyhmmer >=0.12.1,<0.13
+    - requests >=2.34.2,<3
+    - rich-click >=1.9.8,<2
+    - rich >=15.0.0,<16
+    - intervaltree >=3.2.1,<4
+    - polars >=1.43.0,<2
+    - numpy >=2.3.0,<3
     - bbmapy >=0.0.57,<0.0.59
-    - python-xxhash >=3.6.0,<4
+    - python-xxhash >=3.8.1,<4
     - pyrodigal-rv >=0.1.0,<0.2
     - parasail-python >=1.3.4,<2
     - pyopal >=0.7.3,<0.8
-    - pytantan >=0.1.3,<0.2
-    - pyarrow >=23.0.1,<24
-    # Extend (rolypoly extend)
-    - pydustmasker >=3.0.0,<4
-    # Reads (pixi feature: reads)
-    - seqkit >=2.10.0,<3
-    - bwa-mem2 >=2.2.1,<3
-    - falco >=1.2.5,<2
+    - pydustmasker >=3.2.0,<4
+    - pyarrow >=25.0.0,<26
+    - linearfold >=1.1,<2
+    - viennarna >=2.7.2,<3
+
+    # Reads
+    - seqkit >=2.13.0,<3
+    - bwa-mem2 >=2.3,<3
+    - falco >=1.3.1,<2
     - pigz >=2.8,<3
-    # Assembly (pixi feature: assembly)
-    - spades >=4.2.0,<5
+
+    # Assembly / annotation / identify
+    - mmseqs2 >=18.8cc5c,<19
+    - spades >=4.3.0,<5
     - megahit >=1.2.9,<2
     - plass >=5.cf8933,<6
-    # Annotation RNA (pixi feature: annotation-rna)
     - infernal >=1.1.5,<2
-    - linearfold >=1.0.1.dev20220829,<2
     - aragorn >=1.2.41,<2
-    - trnascan-se >=2.0.12,<3
-    # Annotation prot + identify (pixi features: annotation-prot, identify)
-    - mmseqs2 >=18.8cc5c,<19
-    - diamond >=2.1.12,<3
-    # Cluster (pixi feature: cluster)
+    - trnascan-se >=2.0.13,<3
+    - diamond >=2.2.4,<3
+
+    # Cluster
     - blast >=2.17.0,<3
     - python-igraph >=1.0.0,<2
-    - leidenalg >=0.11.0,<0.12
+    - leidenalg >=0.12.0,<0.13
     - pyskani >=0.2.0,<0.3
     - pyfastani >=0.6.1,<0.7
-    # Misc (pixi feature: misc)
+
+    # Misc
     - aria2 >=1.37.0,<2
 
 test:
   imports:
     - rolypoly
   commands:
-    # Top-level CLI
     - rolypoly --help
-    - rolypoly version
-
-    # Setup and Data (pixi: default)
+    - rolypoly --version
     - rolypoly get-data --help
-
-    # Raw Reads Processing (pixi: reads)
     - rolypoly filter-reads --help
     - rolypoly shrink-reads --help
     - rolypoly mask-dna --help
-
-    # Meta/Genome Assembly (pixi: assembly)
     - rolypoly assemble --help
     - rolypoly filter-contigs --help
     - rolypoly extend --help
-
-    # Genome Annotation (pixi: annotation-rna, annotation-prot)
     - rolypoly annotate --help
     - rolypoly annotate-rna --help
     - rolypoly annotate-prot --help
-
-    # RNA Virus Identification (pixi: identify)
     - rolypoly marker-search --help
     - rolypoly virus-mapping --help
     - rolypoly rdrp-motif-search --help
-
-    # Binning / clustering (pixi: cluster)
     - rolypoly termini --help
     - rolypoly correlate --help
     - rolypoly cluster --help
-        
-    # Miscellaneous (pixi: misc)
     - rolypoly roll --help
     - rolypoly fetch-sra --help
     - rolypoly fastx-stats --help
@@ -122,7 +107,7 @@ about:
   summary: RNA virus analysis toolkit
   description: |
     RolyPoly is an RNA virus analysis toolkit. This package installs the
-    Python library and all 3rd party dependencies/command-line tools for 
+    Python library and all third-party dependencies/command-line tools for
     the complete rolypoly suite (all commands), including read processing,
     assembly, RNA/protein annotation, virus identification, and contig
     clustering.
