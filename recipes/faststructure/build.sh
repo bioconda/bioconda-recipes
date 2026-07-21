@@ -4,11 +4,6 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-# Build vars
-cd vars
-${PYTHON} setup.py build_ext --inplace
-cd ..
-
 # Build main
 ${PYTHON} setup.py build_ext --inplace
 cp -f vars/*.so ./

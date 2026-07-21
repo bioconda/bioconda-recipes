@@ -1,8 +1,14 @@
-#! /bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p ${PREFIX}/bin
+export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib:${DYLD_FALLBACK_LIBRARY_PATH:-}"
 
-make HTSSRC="${PREFIX}" CC="$CC" CXX="$CXX" FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+make clean
+make -j"${CPU_COUNT:-1}" \
+  CC="${CC}" \
+  CXX="${CXX}" \
+  HTSSRC=systemwide \
+  PACKAGE_VERSION="${PKG_VERSION}"
 
-chmod +x ngsRelate
-cp ngsRelate ${PREFIX}/bin/
+install -d "${PREFIX}/bin"
+install -m 755 ngsRelate "${PREFIX}/bin/ngsRelate"

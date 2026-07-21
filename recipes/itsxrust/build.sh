@@ -11,12 +11,12 @@ if [[ -n "${CARGO_BUILD_TARGET:-}" ]]; then
   binpath="target/${CARGO_BUILD_TARGET}/release/itsxrust"
 fi
 
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-
 cargo build --release --locked -j "${CARGO_BUILD_JOBS}" "${target_args[@]}"
 
 # Debug (optional but helpful)
+ls -lah "$(dirname "${binpath}")"
 
 install -d "${PREFIX}/bin"
 install -m 0755 "${binpath}" "${PREFIX}/bin/itsxrust"
-
+install -d "${PREFIX}/share/itsxrust/hmm"
+install -m 0644 "${SRC_DIR}/data/hmm/F.hmm" "${PREFIX}/share/itsxrust/hmm/F.hmm"

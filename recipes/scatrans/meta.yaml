@@ -1,0 +1,65 @@
+{% set name = "scatrans" %}
+{% set version = "0.10.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/d0/0c/7b68ae0d30dd7886cb1a9110efb8f39167d371517fa687d29f729601018e/scatrans-0.10.5.tar.gz
+  sha256: 62b282a28cb04b15f083bc2b002b4919d742591df240efda5c59b16cfdeed93c
+
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - generate-gene-features = scatrans.generate_gene_features:main
+  run_exports:
+    - {{ pin_subpackage('scatrans', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+    - setuptools-scm >=6.2
+  run:
+    - python >=3.9
+    - scanpy >=1.9
+    - anndata >=0.8
+    - numpy >=1.21
+    - pandas >=1.3
+    - pyarrow >=10.0
+    - scipy >=1.7
+    - scikit-learn >=1.0
+    - joblib >=1.2
+    - statsmodels >=0.13
+    - matplotlib-base >=3.5
+    - seaborn >=0.12
+    - adjusttext >=0.7
+
+test:
+  imports:
+    - scatrans
+  commands:
+    - generate-gene-features --help
+
+about:
+  home: https://github.com/leelieber2025/scATrans
+  dev_url: https://github.com/leelieber2025/scATrans
+  doc_url: https://scatrans.readthedocs.io
+  summary: Single-cell active transcription analysis with spliced/unspliced RNA layers
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - leelieber2025
+  notes: |
+    Optional backends (scvelo, pydeseq2, gseapy, memento-de, gtfparse) are not
+    bundled. Install via pip extras or separate conda packages as documented at
+    https://scatrans.readthedocs.io/en/latest/installation.html
