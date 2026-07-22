@@ -8,6 +8,13 @@ export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS:-} -O3 -Wno-deprecated-declarations"
 # hts-sys uses bindgen to wrap htslib; make sure it sees the same include/lib flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+# bindgen links against libclang. Point clang-sys at the conda libclang, and on macOS let dyld fall
+# back to the build prefix's lib dir, where libclang-cpp.dylib lives off the default @rpath (Linux
+# resolves it fine; macOS does not).
+export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+if [[ -n "${OSX_ARCH:-}" ]]; then
+  export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"
+fi
 
 # Override the repo's .cargo/config.toml `-C target-cpu=native`, which would bake in the build
 # host's CPU and SIGILL on older ones. The SIMD kernels are chosen at runtime, so nothing is lost.
