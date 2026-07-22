@@ -1,0 +1,57 @@
+{% set name = "unimeth" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sekeyWang/Unimeth/archive/refs/tags/{{ version }}.tar.gz
+  sha256: be266c0254d0919933175d4bdf159bff13315f8aea648a75080faf5516c78746
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - hatchling
+  run:
+    - python >=3.12
+    - pytorch >=2.3
+    - numpy >=2.0
+    - transformers >=4.40
+    - tqdm >=4.66
+    - accelerate >=1.0
+    - pysam >=0.22
+    - pod5 >=0.3
+    - scikit-learn >=1.5
+    - scipy >=1.13
+
+test:
+  imports:
+    - unimeth
+    - unimeth.config
+  commands:
+    - unimeth --version
+    - unimeth --help
+    - unimeth infer --help
+    - unimeth-infer --help
+    - python -c "from unimeth.config.model_config import ModelConfig; assert ModelConfig.from_name('default').d_model == 384"
+
+about:
+  home: https://github.com/sekeyWang/Unimeth
+  dev_url: https://github.com/sekeyWang/Unimeth
+  license: BSD-3-Clause-Clear
+  license_file: LICENSE
+  summary: A unified DNA methylation detection framework for nanopore reads
+
+extra:
+  recipe-maintainers:
+    - sekeyWang
+    - PengNi

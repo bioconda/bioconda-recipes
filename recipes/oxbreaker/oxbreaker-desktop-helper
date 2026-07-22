@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+# Verify the user is running on a GUI-capable environment
+if [ -z "$XDG_DATA_HOME" ]; then
+    LOCAL_APPS_DIR="$HOME/.local/share/applications"
+else
+    LOCAL_APPS_DIR="$XDG_DATA_HOME/applications"
+fi
+
+mkdir -p "$LOCAL_APPS_DIR"
+TARGET_FILE="$LOCAL_APPS_DIR/oxbreaker.desktop"
+
+# Copy and rewrite the template based on their active environment
+cp "$CONDA_PREFIX/share/oxbreaker/oxbreaker.desktop" "$TARGET_FILE"
+sed -i "s|__PREFIX__|$CONDA_PREFIX|g" "$TARGET_FILE"
+chmod +x "$TARGET_FILE"
+
+echo "Success! Shortcut created at: $TARGET_FILE"
+

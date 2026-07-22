@@ -7,7 +7,9 @@ mkdir -p $PREFIX/bin
 
 VDIR=`ls -d $SRC_DIR/Canvas-*_x64`
 cp $RECIPE_DIR/Canvas.sh $VDIR/Canvas
-chmod +x $VDIR/Canvas
+# Canvas ships multiple copies of tabix and bedGraphToBigWig, which all need to be executable
+# and in the right places (we can't just make the one in PATH executable, canvas will not find it)
+chmod +x $VDIR/Canvas $VDIR/**/tabix $VDIR/**/bedGraphToBigWig
 cp $RECIPE_DIR/EvaluateCNV.sh $VDIR/Tools/EvaluateCNV/EvaluateCNV
 chmod +x $VDIR/Tools/EvaluateCNV/EvaluateCNV
 

@@ -1,6 +1,6 @@
 {% set name = "get_mnv" %}
-{% set version = "1.1.2" %}
-{% set sha256 = "dd64b4c54434e3ed17f220c95e0e16014a92d2868ffbb38a6152264a9b9283a0" %}
+{% set version = "1.1.4" %}
+{% set sha256 = "482f3d0c4cb41134c37559c0b7cf9b9a6076a8075930804a13a64752c19ff0ec" %}
 
 package:
   name: "{{ name|lower }}"
@@ -17,6 +17,7 @@ build:
     export LANG=C.UTF-8
     export LC_ALL=C.UTF-8
     export RUST_BACKTRACE=1
+    cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     cargo install --no-track --locked --verbose --root "${PREFIX}" --path . --bin get_mnv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -25,6 +26,8 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
     - pkg-config
 
 test:
@@ -36,7 +39,9 @@ about:
   home: "https://github.com/PathoGenOmics-Lab/get_mnv"
   license: "AGPL-3.0-or-later"
   license_family: AGPL
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   summary: "Tool to identify Multi-Nucleotide Variants (MNVs) in genomic sequences."
   description: |
     get_MNV is a tool designed to identify Multi-Nucleotide Variants (MNVs) within the same codon in genomic sequences, providing more accurate annotation for genomic data. Pure Rust implementation with no C dependencies.
@@ -50,8 +55,6 @@ extra:
   recipe-maintainers:
     - paururo
     - PathoGenOmics-Lab
-  skip-lints:
-    - compiler_needs_stdlib_c
   categories:
     - Genomics
     - Variant Analysis

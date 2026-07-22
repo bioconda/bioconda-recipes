@@ -1,0 +1,28 @@
+pdfkit is only needed to render the optional `--output-pdf-report` output, and
+it drives the external wkhtmltopdf binary, which is not packaged for osx. A
+module-level import therefore makes vaxrank uninstallable on platforms where
+PDF output could never have worked anyway. Import it lazily instead, mirroring
+how the neighbouring xvfbwrapper import is already handled.
+
+--- a/vaxrank/report.py
++++ b/vaxrank/report.py
+@@ -24,7 +24,6 @@
+ from astropy.io import ascii as asc
+ import jinja2
+ import pandas as pd
+-import pdfkit
+ import requests
+ import roman
+ from varcode import load_vcf_fast
+@@ -397,6 +396,11 @@
+ def make_pdf_report(
+         template_data,
+         pdf_report_path):
++    # Imported lazily: pdfkit drives the wkhtmltopdf binary, which is not
++    # available on every platform. PDF output is one of several optional
++    # report formats, so importing vaxrank must not require it.
++    import pdfkit
++
+     with tempfile.NamedTemporaryFile(mode='w', suffix='.html') as f:
+         _make_report(template_data, f, 'templates/template.html')
+         f.flush()
