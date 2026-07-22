@@ -1,0 +1,55 @@
+{% set version = "4.0.0" %}
+
+package:
+  name: bwa-mem4
+  version: {{ version }}
+
+source:
+  url: https://github.com/IPNP-BIPN/bwa-mem4/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4d9d2529cf3d7ac47faf42c8558378b51cee5af3013b4397dbc92a3f43a39328
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage('bwa-mem4', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+    - cmake
+    - pkg-config
+    - clangdev
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - libdeflate
+
+test:
+  commands:
+    - bwa-mem4 version
+
+about:
+  home: https://github.com/IPNP-BIPN/bwa-mem4
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Byte-identical Rust reimplementation of bwa-mem2 2.3, with lower resident memory"
+  description: |
+    bwa-mem4 aligns short reads to a reference and produces SAM/BAM/CRAM that is byte-identical to
+    bwa-mem2 2.3, verified on a real 32.9x human WGS. It reads the same index format, takes the same
+    `mem` command line, and peaks at ~11 GB of RAM on hg38 versus bwa-mem2's ~17 GB. SIMD kernels
+    (NEON on arm64, AVX2 on x86_64) are chosen at runtime.
+  dev_url: https://github.com/IPNP-BIPN/bwa-mem4
+
+extra:
+  recipe-maintainers:
+    - BenjaminDEMAILLE
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
