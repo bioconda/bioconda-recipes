@@ -1,0 +1,117 @@
+{% set name = "adtoolbox" %}
+{% set version = "1.1.15" %}
+
+# Bioconda recipe for ADToolbox. Copy to bioconda-recipes/recipes/adtoolbox/.
+#
+# 1.1.15 is published on PyPI and its sdist imports cleanly on Python >=3.12
+# (uses `from warnings import warn`, no distutils). sha256 below is verified
+# against that published sdist. To refresh for a future version:
+#   curl -s https://pypi.org/pypi/adtoolbox/json \
+#     | python -c "import json,sys; d=json.load(sys.stdin); v=d['info']['version']; \
+#         print(v, [f['digests']['sha256'] for f in d['releases'][v] if f['packagetype']=='sdist'][0])"
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 620b636eb94a061960edcc8e45cb84d06e0c40ffaf7047f8d0973528cd2331d4
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - adtoolbox = adtoolbox.__main__:main
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - poetry-core >=1.0.0
+  run:
+    - python >=3.11
+    # Core runtime. Floors only: ADToolbox is verified against current
+    # conda-forge builds (numpy 2.x, polars 1.x, rich 14.x). Do not copy the
+    # upper caps from pyproject.toml -- see the note at the bottom of this file.
+    - numpy >=1.22.4
+    - scipy >=1.8.1
+    - polars >=0.20.27
+    - plotly >=5.8.0
+    - nbformat >=4.2.0
+    - requests >=2.27.1
+    - rich >=12.4.4
+    - click >=8.1.7
+    # External tools the metagenomics pipeline invokes as subprocesses.
+    # Drop these if you prefer a lighter, modelling-only package.
+    - fastp
+    - cutadapt
+    - bioconductor-dada2
+    - vsearch
+    - mmseqs2
+    - sra-tools
+    - ncbi-datasets-cli
+
+test:
+  imports:
+    - adtoolbox
+    - adtoolbox.core
+    - adtoolbox.adm
+    - adtoolbox.configs
+    - adtoolbox.optimize
+  commands:
+    - adtoolbox --help
+    - adtoolbox --version
+    - adtoolbox metagenomics process --help
+    - adtoolbox adm e-adm --help
+    # external tools must be callable from the environment
+    - fastp --version
+    - cutadapt --version
+    - vsearch --version
+    - mmseqs version
+
+about:
+  home: https://github.com/chan-csu/ADToolbox
+  dev_url: https://github.com/chan-csu/ADToolbox
+  doc_url: https://chan-csu.github.io/ADToolbox/
+  summary: Modeling and optimization of anaerobic digestion, from sequencing reads to ADM1/e-ADM simulation
+  description: |
+    ADToolbox turns metagenomics evidence into model-ready anaerobic digestion
+    simulations. It maps 16S amplicon data through GTDB and a curated
+    enzyme-to-reaction database, or profiles shotgun reads directly, to produce
+    the microbial COD allocation an extended ADM (e-ADM) model needs -- then
+    simulates, visualizes, and calibrates the model against experimental data.
+  license: MIT
+  license_family: MIT
+  # The published 1.1.15 sdist predates the LICENSE file, so it is not in the
+  # source tarball. conda-build resolves license_file relative to the source OR
+  # the recipe directory, so a copy lives next to this meta.yaml. Once a release
+  # that ships LICENSE in its sdist is out, you can drop conda-recipe/LICENSE.
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ParsaGhadermazi
+
+# ---------------------------------------------------------------------------
+# Dependency notes
+#
+# Not available on conda (install with pip if needed):
+#   openbox      -> adtoolbox[blackbox]   BlackBoxOptimizer
+#   dash-escher  -> adtoolbox[dashboard]  Escher maps
+#
+# Available on conda-forge, omitted here to keep the package light:
+#   dash, dash-bootstrap-components, pygad, pytorch
+#
+# Channel placement (verified against the Anaconda API):
+#   conda-forge : numpy scipy polars plotly nbformat requests rich click
+#                 ncbi-datasets-cli dash dash-bootstrap-components pygad pytorch
+#   bioconda    : fastp cutadapt vsearch mmseqs2 sra-tools bioconductor-dada2
+#
+# pyproject.toml currently caps numpy <2.0, polars <0.21 and rich <13.0. Those
+# caps are stale -- the test suite passes on numpy 2.3.x, polars 1.41.x and
+# rich 14.2.x. They are deliberately NOT reproduced above, because doing so
+# would force conda to solve for years-old builds. Align pyproject.toml with
+# these floors so pip and conda metadata agree.
+# ---------------------------------------------------------------------------
