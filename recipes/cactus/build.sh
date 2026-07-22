@@ -35,6 +35,9 @@ cd ../../../../../
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 rm -rf *.bak
 ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+# the presence of lib/python*/site-packages/sonlib-*.dist-info/RECORD results in a false positive report of pypi
+# as the source of cactus. Remove it, though if they just used versions we wouldn't have to vendor it!
+rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
 make
 mv bin/* ${PREFIX}/bin
