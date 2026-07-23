@@ -1,0 +1,78 @@
+{% set name = "vcfclick" %}
+{% set version = "0.8.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/v/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6ab28ac8dd09a8456457526d51fd2c79c55049acd938bb5d828707509f183842
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - vcfclick = cli.main:cli
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - duckdb >=1.0
+    - cyvcf2 >=0.31
+    - pyarrow >=15
+    - mcp >=1.0
+    - click >=8.1
+    - pyfaidx >=0.8
+    - numpy >=1.24
+
+test:
+  imports:
+    - storage
+    - ingest
+    - cli
+    - vcfclick_mcp
+    - benchmark
+  commands:
+    - vcfclick --version
+    - vcfclick db --help
+    - vcfclick benchmark --help
+    - VCFCLICK_BACKEND=duckdb vcfclick db create smoke
+    - VCFCLICK_BACKEND=duckdb vcfclick db rm --yes smoke
+
+about:
+  home: https://github.com/nuin/vcfclick
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: Embedded VCF databases with auditable natural-language queries
+  description: |
+    vcfclick is an embedded analytical store for cohort Variant Call Format
+    (VCF) data. The cohort is stored in its own directory, and queries run
+    without a daemon, fully serverless. For Bioconda, DuckDB is used for
+    storage of all variants, genotypes, and annotations if needed. chDB can
+    be used after being installed by pip. DuckDB also stores annotations as
+    one extra file per cohort, added with a separate command.
+
+    MCP is bundled in the package, exposing the underlying query system so
+    an LLM can query the databases across different cohorts. Arrow/Parquet
+    are available as a public interchange format via `db dump` and
+    `db ingest-parquet`.
+
+    It also reimplements GATK3-style CombineVariants (`combine`), trio
+    analysis across Mendelian inheritance models (`db trio`), and a native
+    truth-vs-query concordance benchmark (`benchmark`) with normalized and
+    local-haplotype engines and GA4GH-shaped reports.
+  doc_url: https://github.com/nuin/vcfclick/blob/main/docs/SCHEMA.md
+  dev_url: https://github.com/nuin/vcfclick
+
+extra:
+  recipe-maintainers:
+    - nuin
