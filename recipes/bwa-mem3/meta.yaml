@@ -10,7 +10,7 @@ source:
   sha256: e6c2e479037e4ab5ede1835d3914ffc9347f6bb729e87fc5e4260f0dcb09bffe
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('bwa-mem3', max_pin="x") }}
 
@@ -18,8 +18,13 @@ requirements:
   build:
     - make
     - cmake
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    # Build with clang (not the default gcc): bwa-mem3 is ~16% faster on x86
+    # and ~6% on ARM when compiled with clang than with g++ (see the upstream
+    # docs/src/best-practices/build.md). clang uses the LLVM OpenMP runtime
+    # (llvm-openmp), so the OpenMP host/run deps below are llvm-openmp on all
+    # platforms rather than libgomp on Linux.
+    - {{ compiler('clang') }}
+    - {{ compiler('clangxx') }}
     - {{ stdlib('c') }}
   host:
     - zlib
@@ -29,14 +34,12 @@ requirements:
     - htslib >=1.21,<2
     - libsais >=2.10.4,<3
     - sse2neon ==1.9.1  # [aarch64 or arm64]
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - llvm-openmp
   run:
     - mimalloc >=3.3,<4  # [osx]
     - htslib >=1.21,<2
     - libsais >=2.10.4,<3
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
+    - llvm-openmp
 
 test:
   commands:

@@ -1,0 +1,108 @@
+{% set name = "pvactools" %}
+{% set version = "7.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/griffithlab/pVACtools/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 23e84a47fb6143330b6783f41320eea7985e32e279f987b6d33b5a04b8ecd5a6
+  patches:
+    # biopython 1.77 has no build for python >=3.9 and `imblearn` is only a
+    # deprecated shim around `imbalanced-learn`, which is what conda packages.
+    - relax-unavailable-pins.patch
+
+build:
+  number: 0
+  noarch: python
+  script:
+    # setup.py calls find_namespace_packages() from the repository root, which
+    # would otherwise install these top-level directories into site-packages.
+    - rm -rf tests docs api_status_tests predictor_tests
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    # upstream setup.py aborts on any python outside 3.9-3.11
+    - python >=3.9,<3.12
+    - pip
+    - setuptools
+  run:
+    - python >=3.9,<3.12
+    - vcfpy ==0.13.8
+    - requests
+    - pyyaml >=5.1
+    - biopython >=1.77
+    - networkx
+    - simanneal
+    - numpy ==1.26.4
+    - pandas <2.1.0
+    - python-wget
+    - pysam
+    - pillow
+    - pymp-pypi
+    - mock
+    - vaxrank >=1.1.0
+    - varcode >=1.1.0
+    - mhcnuggets ==2.4.1
+    - mhcflurry ==2.0.6
+    - testfixtures
+    - gtfparse ==2.0.1
+    - pyfaidx >=0.7.1
+    - fsspec <=2025.3.0
+    - packaging
+    - pyarrow
+    - polars ==0.16.18
+    - xlsxwriter
+    - openpyxl
+    - deepdiff
+    - scikit-learn >=1.6.0,<1.8.0
+    - imbalanced-learn
+    # pvactools.lib.vector_visualization imports turtle -> tkinter, and
+    # libtk links libX11.so.6. conda-forge's tk does not declare that
+    # dependency, so without this even `pvactools --version` fails in a
+    # minimal container. Upstream: conda-forge/tk-feedstock#79
+    - xorg-libx11
+  run_constrained:
+    # the legacy pvacseq package (pVAC-Seq, superseded by pVACtools) also
+    # installs bin/pvacseq, so the two cannot share a prefix
+    - pvacseq <0a0
+
+test:
+  imports:
+    - pvactools
+    - pvactools.lib
+    - pvactools.tools
+  commands:
+    - pvactools --version
+    - pvacseq --help
+    - pvacbind --help
+    - pvacfuse --help
+    - pvacvector --help
+    - pvacsplice --help
+    - pvacview --help
+
+about:
+  home: https://github.com/griffithlab/pVACtools
+  summary: A cancer immunotherapy tools suite
+  description: |
+    pVACtools is a cancer immunotherapy suite consisting of tools that identify
+    and prioritize neoantigens from a variety of input sources: pVACseq (somatic
+    variants), pVACbind (peptide FASTAs), pVACfuse (gene fusions), pVACsplice
+    (splice site variants), pVACvector (DNA vector design) and pVACview
+    (interactive review of results).
+  license: BSD-3-Clause-Clear
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: https://github.com/griffithlab/pVACtools
+  doc_url: https://pvactools.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - jonasscheid
+  identifiers:
+    - doi:10.1158/2326-6066.CIR-19-0401
+    - biotools:pvactools
