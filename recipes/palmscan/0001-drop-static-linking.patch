@@ -1,0 +1,22 @@
+From: Shoichi Sakaguchi <peace.apple@gmail.com>
+Date: 2026-05-17
+Subject: Drop -static link flag on Linux
+
+Bioconda disallows fully-static binaries; conda's libgomp/libstdc++ must
+be linked dynamically so version pinning via run_exports remains effective.
+This patch removes the `LDFLAGS += -static` branch from the Linux build.
+The resulting binary depends on libgomp.so.1 / libstdc++.so.6, both of
+which conda-forge ships.
+
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -9,9 +9,6 @@ CXXFLAGS := $(CXXFLAGS) -O3 -fopenmp -ffast-math -msse -mfpmath=sse
+
+ UNAME_S := $(shell uname -s)
+ LDFLAGS := $(LDFLAGS) -O3 -fopenmp -pthread -lpthread
+-ifeq ($(UNAME_S),Linux)
+-    LDFLAGS += -static
+-endif
+
+ HDRS = \
+   abcxyz.h \

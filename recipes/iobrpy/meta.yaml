@@ -1,5 +1,5 @@
 {% set name = "iobrpy" %}
-{% set version = "0.1.8" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,12 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 60046891042a276d7bc6426c608920db44be9e1dc1df8f5fd4f3f28faca51104
+  sha256: 23547ed6ce4171b4cb358b5c8e42a249e9ce338398b848a15fae8ecc4549a0d5
 
 build:
   number: 0
+  # Not noarch: the PyPI source distribution vendors Linux-specific
+  # executables/shared libraries under src/iobrpy/SpecHLA/bin/.
   skip: true  # [not linux64 or py<311 or py>=314]
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
@@ -48,10 +50,11 @@ requirements:
     - salmon
     - gzip
     - trust4
+    - samtools ==1.21
 
 test:
   commands:
-    - python -c "import iobrpy.main"
+    - python -c "import iobrpy, iobrpy.main, iobrpy_cli, iobrpy_result"
     - iobrpy --help
     - iobrpy-cli --help
 
