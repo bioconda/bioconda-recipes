@@ -12,6 +12,9 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('bronko', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 test:
   commands:
@@ -21,7 +24,8 @@ test:
 requirements:
   build: 
     - {{ compiler("rust") }}
-    - make
+    - cargo-bundle-licenses
+    - {{ stdlib("c") }}
   run:
     - kmc >=3.2
 
