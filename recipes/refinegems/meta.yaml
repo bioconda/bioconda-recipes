@@ -1,0 +1,85 @@
+{% set name = "refinegems" %}
+{% set version = "2.0.0b2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/draeger-lab/refinegems/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - refinegems = refinegems.cmd_access:cli
+
+requirements:
+  host:
+    - python >=3.10,<3.12
+    - pip
+    - setuptools
+  run:
+    # Keep the Conda Python constraint local to the recipe because the
+    # Bioconda memote package currently supports Python <=3.11.
+    - python >=3.10,<3.12
+    - biopython >=1.79
+    - bioregistry >=0.12.0,<0.12.19
+    - bioservices >=1.11.2
+    - click >=8.1.3
+    - cloup >=3.0.5
+    - cobra >=0.28.0
+    - depinfo >=1.7.0
+    - gffutils >=0.10.1
+    - ipywidgets
+    - markupsafe >=2.0.1
+    - matplotlib-base >=3.8.2
+    - memote >=0.17.0
+    - multiprocess >=0.70.16
+    - numpy >=2.0.0
+    - pandas >=2.2.2
+    - pyyaml >=6.0.1
+    - ratelimit >=2.2.1
+    - requests >=2.32.4
+    - seaborn >=0.12.2
+    - sortedcontainers >=2.4.0
+    - sqlalchemy >=2.0.0
+    - tqdm >=4.66.1
+    - upsetplot >=0.9.0
+    - venn >=0.1.3
+    - z3-solver >=4.13.0.0
+
+test:
+  imports:
+    - refinegems
+    - refinegems.analysis
+    - refinegems.classes
+    - refinegems.curation
+    - refinegems.utility
+  commands:
+    - refinegems --help
+    - python -m pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/draeger-lab/refinegems
+  summary: "Python package for curation of genome-scale metabolic models"
+  description: |
+    refineGEMs helps with curation, analysis, and refinement of genome-scale
+    metabolic models, including model statistics, gap-filling workflows,
+    media handling, SBO annotations, and related systems biology utilities.
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_LICENSES.md
+  doc_url: https://refinegems.readthedocs.io/en/latest/
+  dev_url: https://github.com/draeger-lab/refinegems
+
+extra:
+  identifiers:
+    - doi:10.3389/fbinf.2023.1214074
+  recipe-maintainers:
+    - cb-Hades
