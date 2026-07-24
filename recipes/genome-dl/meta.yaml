@@ -1,0 +1,45 @@
+{% set name = "genome-dl" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/g/genome_dl/genome_dl-{{ version }}.tar.gz
+  sha256: 053b6b03ddf4bebdba836f16233fd04b1f830c74ebd4a647f18d2dfe0112cbe0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - genome-dl = genome_dl.cli.download:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.14
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11,<3.14
+    - requests >=2.31.0
+    - rich-click >=1.6.1
+    - rich >=13.3.1
+
+test:
+  commands:
+    - genome-dl --version
+    - genome-dl --help
+
+about:
+  home: https://github.com/rpetit3/genome-dl
+  license: MIT
+  license_file: LICENSE
+  summary: Download genomes from NCBI Datasets.
+
+extra:
+  recipe-maintainers:
+    - rpetit3
