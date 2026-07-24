@@ -1,0 +1,49 @@
+{% set name = "svtyper-python3" %}
+{% set version = "0.7.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Using the official upstream release
+  url: https://github.com/hall-lab/svtyper/archive/v{{ version }}.tar.gz
+  sha256: 0abf90172eecad49511a14c9c383314e973cac7a7cc086ed88b7757f00cce0b4
+  # Applying a patch for Python 3 compatibility from brentp's PR
+  # https://github.com/hall-lab/svtyper/pull/110
+  patches:
+    - python3-compatibility.patch
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('svtyper-python3', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - pysam >=0.15.0
+    - numpy
+    - cytoolz
+
+test:
+  imports:
+    - svtyper
+  commands:
+    - svtyper --help
+
+about:
+  home: https://github.com/hall-lab/svtyper
+  summary: 'Bayesian genotyper for structural variants'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - drosofff

@@ -1,7 +1,9 @@
 #!/bin/bash
 
+export CCACHE_DISABLE=1
 export CONAN_NON_INTERACTIVE=1
 export CMAKE_BUILD_PARALLEL_LEVEL="${CPU_COUNT}"
+export CMAKE_C_STANDARD=23
 export CMAKE_CXX_STANDARD=23
 export CTEST_PARALLEL_LEVEL="${CPU_COUNT}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
@@ -59,37 +61,59 @@ conan install conanfile.py \
 # Add bioconda suffix to hictk version
 sed -i.bak 's/set(HICTK_PROJECT_VERSION_SUFFIX "")/set(HICTK_PROJECT_VERSION_SUFFIX "bioconda")/' CMakeLists.txt
 
+# Replace deprecated link flags for stripping (as stripping is done by cmake --install)
+mv src/hictk/CMakeLists.txt CMakeLists.txt.bak
+awk '/if\(CMAKE_CXX_COMPILER_ID STREQUAL "Clang"/{in_block=1; next} /endif()/{in_block=0; next} !in_block {print}' \
+    CMakeLists.txt.bak > src/hictk/CMakeLists.txt
+rm CMakeLists.txt.bak
+
 CMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${PWD}/cmake-prefix"
 
+# help cmake find the tools required to enable LTO
+AR="$(which llvm-ar)"
+RANLIB="$(which llvm-ranlib)"
+
 # https://docs.conda.io/projects/conda-build/en/stable/user-guide/environment-variables.html#environment-variables-set-during-the-build-process
-cmake -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
+cmake -DBUILD_SHARED_LIBS=ON                       \
+      -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"     \
+      -DCMAKE_CXX_COMPILER="${CXX}"                \
+      -DCMAKE_CXX_COMPILER_AR="${AR}"              \
+      -DCMAKE_CXX_COMPILER_RANLIB="${RANLIB}"      \
+      -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
+      -DCMAKE_C_COMPILER="${CC}"                   \
+      -DCMAKE_C_COMPILER_AR="${AR}"                \
+      -DCMAKE_C_COMPILER_RANLIB="${RANLIB}"        \
+      -DCMAKE_C_STANDARD="${CMAKE_C_STANDARD}"     \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
+      -DCMAKE_LINKER_TYPE=LLD                      \
       -DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}"   \
       -DCMAKE_SYSTEM_PROCESSOR="$(uname -m)"       \
-      -DBUILD_SHARED_LIBS=ON                       \
       -DENABLE_DEVELOPER_MODE=OFF                  \
-      -DHICTK_ENABLE_TESTING=ON                    \
-      -DHICTK_ENABLE_FUZZY_TESTING=OFF             \
-      -DHICTK_BUILD_EXAMPLES=OFF                   \
       -DHICTK_BUILD_BENCHMARKS=OFF                 \
+      -DHICTK_BUILD_EXAMPLES=OFF                   \
+      -DHICTK_BUILD_TOOLS=ON                       \
+      -DHICTK_DOWNLOAD_TEST_DATASET=OFF            \
+      -DHICTK_ENABLE_FUZZY_TESTING=OFF             \
+      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF      \
+      -DHICTK_ENABLE_TESTING=ON                    \
       -DHICTK_WITH_ARROW=OFF                       \
       -DHICTK_WITH_EIGEN=OFF                       \
-      -DHICTK_BUILD_TOOLS=ON                       \
-      -DHICTK_ENABLE_GIT_VERSION_TRACKING=OFF      \
-      -DCMAKE_INSTALL_PREFIX="${PREFIX}"           \
-      -DCMAKE_C_COMPILER="${CC}"                   \
-      -DCMAKE_CXX_COMPILER="${CXX}"                \
-      -DCMAKE_CXX_STANDARD="${CMAKE_CXX_STANDARD}" \
       "${CMAKE_PLATFORM_FLAGS[@]}"                 \
       -B build/                                    \
       -S .
 
 cmake --build build/
 
+"${RECIPE_DIR}/download_test_dataset.sh"
+
 ctest --test-dir build/   \
       --output-on-failure \
       --no-tests=error    \
       --timeout 240
 
-cmake --install build/ --component Runtime
+cmake \
+  --install build/ \
+  --component Runtime \
+  --strip
 
-"${PREFIX}/bin/hictk" --version
+"${PREFIX}/bin/hictk" --version | grep 'bioconda$'

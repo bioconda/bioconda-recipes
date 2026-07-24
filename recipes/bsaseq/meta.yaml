@@ -1,0 +1,53 @@
+{% set name = "bsaseq" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bsaseq-{{ version }}.tar.gz
+  sha256: 25ff5d4a4d2985bc2873c333807b8b71551a1c797ddc71f81239987d7b32f33e
+
+build:
+  entry_points:
+    - bsaseq = bsaseq.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bsaseq', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.14
+    - hatchling
+    - pip
+  run:
+    - python >=3.9,<3.14
+    - cyvcf2 >=0.30.0
+    - numpy >=1.21.0
+    - pandas >=1.4.0
+    - scipy >=1.7.0
+    - matplotlib-base >=3.5.0
+    - click >=8.0.0
+    - rich >=12.0.0
+
+test:
+  imports:
+    - bsaseq
+  commands:
+    - pip check
+    - bsaseq --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rcac-bioinformatics/bsaseq
+  summary: Bulk Segregant Analysis for QTL mapping from pooled whole-genome sequencing
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - aseetharam

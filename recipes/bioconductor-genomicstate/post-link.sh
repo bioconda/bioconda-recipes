@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "genomicstate-0.99.15"
+installBiocDataPackage.sh "genomicstate-0.99.17"

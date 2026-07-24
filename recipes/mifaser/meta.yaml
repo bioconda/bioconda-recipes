@@ -1,0 +1,47 @@
+{% set name = "mifaser" %}
+{% set version = "1.64" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: e1ca00734e53c16497c5d879eee90412055f98ea89eeacf29de69e034a0df304
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("mifaser", max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools
+  run:
+    - python >=3.6
+    - diamond
+    - sra-tools
+
+test:
+  imports:
+    - mifaser
+    - mifaser.alignment
+    - mifaser.annotation
+    - mifaser.translate
+  commands:
+    - mifaser --help
+
+about:
+  home: "https://bitbucket.org/bromberglab/mifaser"
+  license: NPOSL-3.0
+  license_family: OTHER
+  license_file: LICENSE.md
+  summary: "a python package for super-fast and accurate annotation of molecular functionality using read data without prior assembly or gene finding"
+  doc_url: https://bitbucket.org/bromberglab/mifaser/wiki/docs
+  dev_url: https://bitbucket.org/bromberglab/mifaser
+extra:
+  recipe-maintainers:
+    - nickp60

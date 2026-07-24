@@ -1,0 +1,59 @@
+{% set name = "vgp-processcuration" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vgl-hub/vgl-curation/archive/refs/tags/postcuration_{{ version }}.tar.gz
+  sha256: aa728f4dedc5bc9ba989d2e3ddd8fbc53a2b8e0efdcdb324f633b02642d5fbbe
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - split_agp = split_agp:main
+    - chromosome_assignment = chromosome_assignment:main
+    - sak_generation = sak_generation:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - biopython >=1.85
+    - pandas >=2.3
+    - natsort >=8.4.0
+
+
+test:
+  commands:
+    - split_agp --help
+    - chromosome_assignment --help
+    - sak_generation --help
+
+about:
+  home: https://github.com/vgl-hub/vgl-curation
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: ProcessCurated - Toolkit for processing manually curated genome assemblies
+  description: |
+    ProcessCurated is a toolkit for processing manually curated genome assemblies.
+    It reconciles AGP files manually curated in PretextView to rename, reorient,
+    and sort assemblies in preparation for submission. The tool performs three main
+    operations: correcting and splitting AGP files while assigning unlocalized sequences,
+    assigning chromosome names to scaffolds, and reorienting and renaming sequences
+    based on MashMap alignment data.
+  dev_url: https://github.com/vgl-hub/vgl-curation
+  doc_url: https://github.com/vgl-hub/vgl-curation/blob/postcuration_1.0/README.md
+
+extra:
+  recipe-maintainers:
+    - Delphine-L
