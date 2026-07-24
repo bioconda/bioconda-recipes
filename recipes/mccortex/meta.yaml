@@ -5,12 +5,17 @@ package:
   name: mccortex
   version: {{ version }}
 
-build:
-  number: 6
-
 source:
   url: https://github.com/mcveanlab/mccortex/releases/download/mccortex-{{ version }}/mccortex{{ version_uscore }}.tar.gz
-  sha256: '79a74b5e20646a7d7a4e5c7927bca58beeded97df9889f13fe33c126331cf886'
+  sha256: 79a74b5e20646a7d7a4e5c7927bca58beeded97df9889f13fe33c126331cf886
+  patches:
+    - 0001-Makefile.patch
+    - 0002-sys-types.patch
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('mccortex', max_pin="x") }}
 
 requirements:
   build:
@@ -18,16 +23,27 @@ requirements:
     - {{ compiler('cxx') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
+    - libdeflate
+    - libcurl
+    - bzip2
     - zlib
-  run:
-    - zlib
+    - xz
 
 about:
-  home: https://github.com/mcveanlab/mccortex
+  home: "https://github.com/mcveanlab/mccortex"
   license: MIT
-  summary: 'De novo genome assembly and multisample variant calling '
+  license_family: MIT
+  summary: "De novo genome assembly and multisample variant calling."
+  dev_url: "https://github.com/mcveanlab/mccortex"
+  doc_url: "https://github.com/mcveanlab/mccortex/wiki"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:mccortex

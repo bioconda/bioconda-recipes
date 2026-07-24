@@ -23,7 +23,6 @@ LIBDIR="${PREFIX}/lib"
 export PKG_CONFIG_PATH="${LIBDIR}/pkgconfig:${PKG_CONFIG_PATH}"
 
 cd global-1
-autoreconf -if
 ./configure --prefix="${PREFIX}" --bindir="${BINDIR}" --libdir="${LIBDIR}" \
 	--enable-silent-rules --disable-option-checking --disable-dependency-tracking \
 	CC="${CC}" CXX="${CXX}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \

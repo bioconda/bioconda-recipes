@@ -3,11 +3,7 @@
 
 package:
   name: seqprep
-  version: '{{version}}'
-
-build:
-  number: 9
-  skip: True # [osx]
+  version: '{{ version }}'
 
 source:
   url: https://github.com/jstjohn/SeqPrep/archive/v{{ version }}.tar.gz
@@ -15,27 +11,36 @@ source:
   patches:
     - cflags.patch
 
+build:
+  number: 10
+  run_exports:
+    - {{ pin_subpackage('seqprep', max_pin="x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('c') }}
   host:
     - zlib
-  run:
-    - zlib
 
 test:
   commands:
-    - SeqPrep -h 2>&1 | grep SeqPrep
+    - SeqPrep -h 2>&1 | grep "SeqPrep"
 
 about:
-  home: https://github.com/jstjohn/SeqPrep
-  summary: Tool for stripping adaptors and/or merging paired reads with overlap into
-    single reads.
+  home: "https://github.com/jstjohn/SeqPrep"
+  summary: "Tool for stripping adaptors and/or merging paired reads with overlap into single reads."
   license: MIT
-
   license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/jstjohn/SeqPrep"
+  doc_url: "https://github.com/jstjohn/SeqPrep/blob/v{{ version }}/README.md"
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:seqprep
+    - usegalaxy-eu:seqprep
     - doi:10.1134/S1021443716020175

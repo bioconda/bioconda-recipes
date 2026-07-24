@@ -2,28 +2,46 @@ package:
   name: ra
   version: "0.9"
 
-build:
-  number: 7
-  skip: True # [osx]
-
 source:
   url: https://github.com/mariokostelac/ra/archive/v0.9.tar.gz
-  md5: 387006cf89e9cbf331e2a09b62caa002
+  sha256: 9d4861904fba5bc317ed593f29f23d05f671b9d0fffd0aef29d1cd2f51bd7c6e
+  patches:
+    - 0001-cstdint.patch
+
+build:
+  number: 8
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('ra', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - zoom  #2>&1 | grep usage
+    - zoom
 
 about:
-  home: https://github.com/mariokostelac/ra
-  license: GPL3
+  home: "https://github.com/mariokostelac/ra"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Ra is short for RNA Assembler and it is a C++ implementation of an overlap-layout-consensus transcriptome assembler.
+  summary: "Ra is short for RNA Assembler and it is a C++ implementation of an overlap-layout-consensus transcriptome assembler."
+  dev_url: "https://github.com/mariokostelac/ra"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:ra

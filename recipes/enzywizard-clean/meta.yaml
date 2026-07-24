@@ -1,0 +1,62 @@
+{% set name = "enzywizard-clean" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-clean/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 03fef24920844470b149c851710e913e05eb3166146fd902bb2b380cd082ee4d
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - pdbfixer
+    - openmm
+    - biopython
+    - numpy
+    - scipy
+    - packaging
+
+test:
+  imports:
+    - enzywizard_clean
+    - enzywizard_clean.cli
+    - enzywizard_clean.services.clean_service
+    - enzywizard_clean.algorithms.clean_algorithms
+  commands:
+    - enzywizard-clean --help
+  # Note: Depends on `pdbfixer` (available via pip/PyPI). 
+  # For full functionality, `pdbfixer` should be installed (conda recipe for pdbfixer recommended for production use).
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-clean
+  summary: "Command-line tool to clean protein structures using PDBFixer (remove heterogens, repair atoms, add hydrogens via OpenMM), output cleaned CIF/PDB/FASTA files, and generate a detailed traceable JSON cleaning report."
+  description: |
+    EnzyWizard-Clean processes raw or partially cleaned protein structures (CIF/PDB)
+    using PDBFixer and OpenMM. It removes heterogens/ligands/waters, repairs missing
+    heavy atoms, replaces non-standard residues, optionally adds hydrogens at a
+    specified pH, and standardizes the chain (single chain A with continuous numbering).
+    Outputs cleaned structures in CIF, PDB, and FASTA formats plus a comprehensive
+    JSON report with residue mapping (original → cleaned) and cleaning statistics.
+    Essential preprocessing step for structural bioinformatics pipelines.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14

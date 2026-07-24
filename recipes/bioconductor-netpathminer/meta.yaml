@@ -1,35 +1,25 @@
-{% set version = "1.42.0" %}
+{% set version = "1.46.0" %}
 {% set name = "NetPathMiner" %}
-{% set bioc = "3.20" %}
-
-about:
-  description: NetPathMiner is a general framework for network path mining using genome-scale networks. It constructs networks from KGML, SBML and BioPAX files, providing three network representations, metabolic, reaction and gene representations. NetPathMiner finds active paths and applies machine learning methods to summarize found paths for easy interpretation. It also provides static and interactive visualizations of networks and paths to aid manual investigation.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: NetPathMiner for Biological Network Construction, Path Mining and Visualization
-
-build:
-  number: 1
-  rpaths:
-    - lib/R/lib/
-    - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-netpathminer", max_pin="x.x") }}'
-
-extra:
-  additional-platforms:
-    - linux-aarch64
-
-  identifiers:
-    - biotools:netpathminer
-  parent_recipe:
-    name: bioconductor-netpathminer
-    path: recipes/bioconductor-netpathminer
-    version: 1.16.0
+{% set bioc = "3.22" %}
 
 package:
   name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: df0df8638e4605e757d5143a58b788c3
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-netpathminer", max_pin="x.x") }}'
 
 # Suggests: rBiopaxParser (>= 2.1), RCurl, graph, knitr, rmarkdown, BiocStyle
 # SystemRequirements: libxml2, libSBML (>= 5.5)
@@ -44,23 +34,32 @@ requirements:
     - r-igraph >=1.0
     - libblas
     - liblapack
-    - libxml2
     - zlib
     - liblzma-devel
+    - libxml2
   run:
     - r-base
     - r-igraph >=1.0
     - libxml2
 
-source:
-  md5: 029f09aab87add082c84c57fb292859d
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: NetPathMiner for Biological Network Construction, Path Mining and Visualization
+  description: NetPathMiner is a general framework for network path mining using genome-scale networks. It constructs networks from KGML, SBML and BioPAX files, providing three network representations, metabolic, reaction and gene representations. NetPathMiner finds active paths and applies machine learning methods to summarize found paths for easy interpretation. It also provides static and interactive visualizations of networks and paths to aid manual investigation.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:netpathminer
+  parent_recipe:
+    name: bioconductor-netpathminer
+    path: recipes/bioconductor-netpathminer
+    version: 1.16.0
 

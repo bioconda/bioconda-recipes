@@ -1,0 +1,2224 @@
+--- ncbi-igblast-1.22.0-src/c++/src/build-system/configure
++++ ncbi-igblast-1.22.0-src-patched/c++/src/build-system/configure
+@@ -626,6 +626,7 @@ ac_subst_vars='LTLIBOBJS
+ LIBOBJS
+ NCBI_SC_VERSION
+ NCBI_SUBVERSION_REVISION
++NCBI_GIT_BRANCH
+ NCBI_REVISION
+ NCBI_TEAMCITY_BUILD_ID
+ NCBI_TEAMCITY_BUILDCONF_NAME
+@@ -667,6 +668,7 @@ PERL_INCLUDE
+ UNLESS_PUBSEQOS
+ ncbi_xreader_pubseqos2
+ ncbi_xreader_pubseqos
++OPENTELEMETRY_STATIC_LIBS
+ JAEGER_STATIC_LIBS
+ OPENTRACING_STATIC_LIBS
+ YAML_CPP_STATIC_LIBS
+@@ -689,6 +691,7 @@ H2O_STATIC_LIBS
+ NGHTTP2_STATIC_LIBS
+ CASSANDRA_STATIC_LIBS
+ LIBSSH2_STATIC_LIBS
++LIBSSH_STATIC_LIBS
+ LIBUV_STATIC_LIBS
+ LMDB_STATIC_LIBS
+ LMDB_LIB
+@@ -812,6 +815,7 @@ SYBASE_LCL_PATH
+ SYBASE_PATH
+ CURL_STATIC_LIBS
+ OPENSSL_STATIC_LIBS
++PCRE_LEGACY_LIBS
+ PCRE_LIB
+ PCREPOSIX_LIBS
+ ZSTD_STATIC_LIBS
+@@ -829,6 +833,7 @@ MATH_LIBS
+ RESOLVER_LIBS
+ NETWORK_PURE_LIBS
+ NETWORK_LIBS
++ATOMIC64_LIBS
+ COLOR_DIAGNOSTICS
+ AES_FLAG
+ SSE4_1_FLAG
+@@ -838,6 +843,7 @@ NCBIATOMIC_LIB
+ THREAD_LIBS
+ DBAPI_ODBC
+ DBAPI_MYSQL
++DBAPI_FTDS14
+ DBAPI_FTDS100
+ DBAPI_FTDS
+ DBAPI_CTLIB
+@@ -923,6 +929,8 @@ srcdir
+ top_srcdir
+ build_root
+ signature
++OPENTELEMETRY_LIBS
++OPENTELEMETRY_INCLUDE
+ JAEGER_LIBS
+ JAEGER_INCLUDE
+ OPENTRACING_LIBS
+@@ -961,6 +969,8 @@ CASSANDRA_LIBS
+ CASSANDRA_INCLUDE
+ LIBSSH2_LIBS
+ LIBSSH2_INCLUDE
++LIBSSH_LIBS
++LIBSSH_INCLUDE
+ LIBUV_LIBS
+ LIBUV_INCLUDE
+ LMDB_LIBS
+@@ -1066,6 +1076,12 @@ freetds
+ FTDS_LIB
+ FTDS_LIBS
+ FTDS_INCLUDE
++FTDS14_CTLIB_LIB
++FTDS14_CTLIB_LIBS
++FTDS14_CTLIB_INCLUDE
++FTDS14_LIB
++FTDS14_LIBS
++FTDS14_INCLUDE
+ FTDS100_CTLIB_LIB
+ FTDS100_CTLIB_LIBS
+ FTDS100_CTLIB_INCLUDE
+@@ -1092,6 +1108,8 @@ GMP_LIBS
+ GMP_INCLUDE
+ MBEDTLS_LIBS
+ MBEDTLS_INCLUDE
++PCRE2_LIBS
++PCRE2_INCLUDE
+ PCRE_LIBS
+ PCRE_INCLUDE
+ ZSTD_LIBS
+@@ -1108,6 +1126,7 @@ LIBDW_LIBS
+ LIBDW_INCLUDE
+ LIBUNWIND_LIBS
+ LIBUNWIND_INCLUDE
++ALLOCA
+ CXXCPP
+ AMQ
+ TCHECK_CL
+@@ -1281,6 +1300,7 @@ with_bz2
+ with_lzo
+ with_zstd
+ with_pcre
++with_pcre2
+ with_mbedtls
+ with_gmp
+ with_gcrypt
+@@ -1352,6 +1372,7 @@ with_gmock
+ with_lapack
+ with_lmdb
+ with_libuv
++with_libssh
+ with_libssh2
+ with_cassandra
+ with_nghttp2
+@@ -1373,6 +1394,7 @@ with_nlohmann_json
+ with_yaml_cpp
+ with_opentracing
+ with_jaeger
++with_opentelemetry
+ with_3psw
+ with_app
+ with_ctools
+@@ -1938,7 +1960,7 @@ ncbi-c wxwidgets wxwidgets-ucs fastcgi fastcgipp \
+ sss sssdb sssutils included-sss \
+ geo included-geo vdb downloaded-vdb static-vdb ngs ncbicrypt libunwind libdw \
+ backward-cpp backward-cpp-sig \
+-z bz2 lzo zstd pcre mbedtls \
++z bz2 lzo zstd pcre pcre2 mbedtls \
+ gmp gcrypt nettle gnutls static-gnutls openssl krb5 \
+ sybase sybase-local sybase-new ftds mysql \
+ orbacus freetype ftgl opengl mesa glut glew glew-mx gl2ps \
+@@ -1948,10 +1970,10 @@ oechem sge drmaa2 muparser hdf5 \
+ gif jpeg tiff png xpm \
+ magic curl mimetic gsoap avro cereal sasl2 \
+ mongodb mongodb3 leveldb liburing rocksdb gmock lapack lmdb \
+-libuv libssh2 cassandra nghttp2 h2o influxdb \
++libuv libssh libssh2 cassandra nghttp2 h2o influxdb \
+ libxlsxwriter protobuf grpc msgsl aws-sdk crc32c google-cloud hiredis \
+ apache-arrow librdkafka cppkafka \
+-thrift nlohmann-json yaml-cpp opentracing jaeger \
++thrift nlohmann-json yaml-cpp opentracing jaeger opentelemetry \
+ 3psw local-lbsm ncbi-crypt connext \
+ serial objects dbapi app ctools gui algo internal gbench"
+ 
+@@ -2006,7 +2028,7 @@ for x_arg in "$@" ; do
+       | --with-ncbicrypt=* \
+       | --with-libunwind=* | --with-libdw=* | --with-backward-cpp=* \
+       | --with-z=* | --with-bz2=* | --with-lzo=* | --with-zstd=* \
+-      | --with-pcre=* | --with-mbedtls=* \
++      | --with-pcre=* | --with-pcre2=* | --with-mbedtls=* \
+       | --with-gmp=* | --with-gcrypt=* | --with-nettle=* \
+       | --with-gnutls=* | --with-openssl=* | --with-krb5=* \
+       | --with-sybase-local=* | --with-ftds=*/* | --with-mysql=* \
+@@ -2027,13 +2049,14 @@ for x_arg in "$@" ; do
+       | --with-mongodb=* | --with-mongodb3=* | --with-leveldb=* \
+       | --with-liburing=* | --with-rocksdb=* \
+       | --with-gmock=* | --with-lapack=* | --with-lmdb=* | --with-libuv=* \
+-      | --with-libssh2=* | --with-cassandra=* | --with-nghttp2=* \
++      | --with-libssh=* | --with-libssh2=* \
++      | --with-cassandra=* | --with-nghttp2=* \
+       | --with-h2o=* | --with-influxdb=* | --with-libxlsxwriter=* \
+       | --with-protobuf=* | --with-grpc=* | --with-msgsl=* | --with-aws-sdk=* \
+       | --with-crc32c=* | --with-google-cloud=* \
+       | --with-hiredis=* | --with-librdkafka=* | --with-cppkafka=* \
+       | --with-thrift=* | --with-nlohmann-json=* | --with-yaml-cpp=* \
+-      | --with-opentracing=* | --with-jaeger=* )
++      | --with-opentracing=* | --with-jaeger=* | --with-opentelemetry=* )
+       # Confirm that the specified directory exists and is readable.
+       dir=`echo $x_arg | sed -e 's/^[^=]*=//'`
+       case "$x_arg" in
+@@ -2051,7 +2074,7 @@ for x_arg in "$@" ; do
+       fi
+       ;;
+ 
+-      [A-Z]*=* | -h | --help | --help=* | -V | --version | -q | --quiet \
++      [A-Za-z]*=* | -h | --help | --help=* | -V | --version | -q | --quiet \
+       | --silent | --cache-file=* | -C | --config-cache | -n | --no-create \
+       | --no-recursion | --prefix=* | --exec-prefix=* | --bindir=* \
+       | --libdir=* | --includedir=* | --build=* | --host=* | --target=* \
+@@ -2187,7 +2210,7 @@ Optional Packages:
+  --with-hard-runpath     hard-code runtime path, ignoring LD_LIBRARY_PATH
+  --with-lfs              enable large file support to the extent possible
+  --with-limited-linker   don't attempt to build especially large projects
+- --with-experimental=... enable named experimental feature(s): Int{4,8}GI,StrictGI,PSGLoader,BM64,C++20,C2X
++ --with-experimental=... enable named experimental feature(s): StrictGI,StrictEntrezId,StrictTaxId,BM64,C++20,C2X
+  --with-skew-guard       catch incomplete rebuilds
+  --with-extra-action=    script to call after the configuration is complete
+  --with-autodep          automatic generation of dependencies (GNU make)
+@@ -2247,6 +2270,8 @@ Optional Packages:
+  --without-zstd          do not use Zstandard
+  --with-pcre=DIR         use PCRE installation in DIR
+  --without-pcre          use internal copy of PCRE
++ --with-pcre2=DIR        use PCRE2 installation in DIR
++ --without-pcre2         do not use PCRE2
+  --with-mbedtls(=DIR)    use external mbedTLS installation (in DIR)
+  --with-gmp=DIR          use GMP installation in DIR
+  --without-gmp           do not use GMP
+@@ -2380,6 +2405,8 @@ Optional Packages:
+  --without-lmdb          use internal copy of LMDB
+  --with-libuv=DIR        use libuv installation in DIR
+  --without-libuv         do not use libuv
++ --with-libssh=DIR       use libssh installation in DIR
++ --without-libssh        do not use libssh
+  --with-libssh2=DIR      use libssh2 installation in DIR
+  --without-libssh2       do not use libssh2
+  --with-cassandra=DIR    use Datastax Cassandra driver installation in DIR
+@@ -2422,6 +2449,8 @@ Optional Packages:
+  --without-opentracing   do not use OpenTracing
+  --with-jaeger=DIR       use Jaeger Tracing installation in DIR
+  --without-jaeger        do not use Jaeger tracing
++ --with-opentelemetry=DIR use OpenTelemetry installation in DIR
++ --without-opentelemetry do not use OpenTelemetry
+  --with-3psw=std:netopt  favor standard (system) builds of the above pkgs.
+  --without-3psw          do not use any of the above packages
+  --without-app           do not build standalone applications like ID1_FETCH
+@@ -3718,6 +3747,11 @@ case "$with_3psw" in
+          else
+             with_pcre=no
+          fi
++        if test "${with_pcre2-no}" != "no"; then
++            as_fn_error $? "incompatible options: --with-pcre2 but --without-3psw"
++         else
++            with_pcre2=no
++         fi
+         if test "${with_mbedtls-no}" != "no"; then
+             as_fn_error $? "incompatible options: --with-mbedtls but --without-3psw"
+          else
+@@ -4038,6 +4072,11 @@ case "$with_3psw" in
+          else
+             with_libuv=no
+          fi
++        if test "${with_libssh-no}" != "no"; then
++            as_fn_error $? "incompatible options: --with-libssh but --without-3psw"
++         else
++            with_libssh=no
++         fi
+         if test "${with_libssh2-no}" != "no"; then
+             as_fn_error $? "incompatible options: --with-libssh2 but --without-3psw"
+          else
+@@ -4118,6 +4157,11 @@ case "$with_3psw" in
+          else
+             with_jaeger=no
+          fi
++        if test "${with_opentelemetry-no}" != "no"; then
++            as_fn_error $? "incompatible options: --with-opentelemetry but --without-3psw"
++         else
++            with_opentelemetry=no
++         fi
+ 
+       { NCBI=; unset NCBI;}
+       ;;
+@@ -5005,6 +5049,18 @@ if test "${with_pcre+set}" = set; then :
+ fi
+ 
+ 
++# Check whether --with-pcre2 was given.
++if test "${with_pcre2+set}" = set; then :
++  withval=$with_pcre2;
++fi
++
++
++# Check whether --with-pcre was given.
++if test "${with_pcre+set}" = set; then :
++  withval=$with_pcre;
++fi
++
++
+ # Check whether --with-mbedtls was given.
+ if test "${with_mbedtls+set}" = set; then :
+   withval=$with_mbedtls;
+@@ -5803,6 +5859,18 @@ if test "${with_libuv+set}" = set; then :
+ fi
+ 
+ 
++# Check whether --with-libssh was given.
++if test "${with_libssh+set}" = set; then :
++  withval=$with_libssh;
++fi
++
++
++# Check whether --with-libssh was given.
++if test "${with_libssh+set}" = set; then :
++  withval=$with_libssh;
++fi
++
++
+ # Check whether --with-libssh2 was given.
+ if test "${with_libssh2+set}" = set; then :
+   withval=$with_libssh2;
+@@ -6055,6 +6123,18 @@ if test "${with_jaeger+set}" = set; then :
+ fi
+ 
+ 
++# Check whether --with-opentelemetry was given.
++if test "${with_opentelemetry+set}" = set; then :
++  withval=$with_opentelemetry;
++fi
++
++
++# Check whether --with-opentelemetry was given.
++if test "${with_opentelemetry+set}" = set; then :
++  withval=$with_opentelemetry;
++fi
++
++
+ # Check whether --with-3psw was given.
+ if test "${with_3psw+set}" = set; then :
+   withval=$with_3psw;
+@@ -6217,6 +6297,7 @@ if test "$with_bin_release" = "yes" ; then
+    : ${with_libdw=no}
+    : ${with_ncbicrypt=no}
+    : ${with_pcre=no} # Too much variation across distributions.
++   : ${with_pcre2=no}
+    : ${with_sse42=no}
+ 
+ $as_echo "#define NCBI_BIN_RELEASE 1" >>confdefs.h
+@@ -6405,6 +6486,28 @@ $as_echo "#define NCBI_STRICT_GI 1" >>confdefs.h
+                       WithFeatures="$WithFeatures${WithFeaturesSep}StrictGI"; WithFeaturesSep=" "
+             want_gi64=yes
+             ;;
++         StrictEntrezId )
++            $as_echo "#define NCBI_STRICT_GI 1" >>confdefs.h
++
++
++$as_echo "#define NCBI_TEST_STRICT_ENTREZ_ID 1" >>confdefs.h
++
++                      WithFeatures="$WithFeatures${WithFeaturesSep}Int8GI"; WithFeaturesSep=" "
++                      WithFeatures="$WithFeatures${WithFeaturesSep}StrictGI"; WithFeaturesSep=" "
++                      WithFeatures="$WithFeatures${WithFeaturesSep}StrictEntrezID"; WithFeaturesSep=" "
++            want_gi64=yes
++            ;;
++         StrictTaxId )
++            $as_echo "#define NCBI_STRICT_GI 1" >>confdefs.h
++
++
++$as_echo "#define NCBI_STRICT_TAX_ID 1" >>confdefs.h
++
++                      WithFeatures="$WithFeatures${WithFeaturesSep}Int8GI"; WithFeaturesSep=" "
++                      WithFeatures="$WithFeatures${WithFeaturesSep}StrictGI"; WithFeaturesSep=" "
++                      WithFeatures="$WithFeatures${WithFeaturesSep}StrictTaxID"; WithFeaturesSep=" "
++            want_gi64=yes
++            ;;
+          PSGLoader )
+             # Contingent on third-party library availability
+             ;;
+@@ -6459,8 +6562,9 @@ if test -n "$svnrev"; then
+    NCBI_SUBVERSION_REVISION=$svnrev
+ fi
+ if test -n "$gitrev"; then
+-   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gitrev (Git)" >&5
+-$as_echo "$gitrev (Git)" >&6; }
++   NCBI_GIT_BRANCH=`git -C "$srcdir" branch --show-current`
++   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gitrev (Git: $NCBI_GIT_BRANCH)" >&5
++$as_echo "$gitrev (Git: $NCBI_GIT_BRANCH)" >&6; }
+    NCBI_REVISION=$gitrev
+    : ${NCBI_SUBVERSION_REVISION=0}
+ elif test -n "$svnrev"; then
+@@ -6768,6 +6872,7 @@ case "/$CXX" in
+ 
+       compiler_root=${x_CXX%/bin/*}
+       icc_libdir=$compiler_root/compiler/lib/$intel_cpu_name
++      test -d $icc_libdir  ||  icc_libdir=$compiler_root/lib
+       LDFLAGS="-L$icc_libdir -Wl,-rpath,$icc_libdir -lintlc $LDFLAGS"
+       ;;
+ esac
+@@ -6784,9 +6889,12 @@ case "$host_os:/$CXX" in
+          *version\ ?.* | *version\ 1[0-3].* )
+             gccver=7.3.0
+             ;;
+-         * )
++         Intel*\ 201* | Intel*\ 2020.* | Intel*\ 2021.[0-6]* )
+             gccver=12.2.0
+             ;;
++         * )
++            gccver=13.2.0
++            ;;
+       esac
+       gccdir=/opt/ncbi/gcc/$gccver
+       if test -d $gccdir; then
+@@ -9419,7 +9527,7 @@ if test "$with_mt" != "no" ; then
+         ;;
+      *:GCC | *:ICC | *Clang | linux*:KCC )
+         case "$host_cpu" in
+-           i?86 | powerpc* | ppc* | x86_64 | sparc* | aarch64 | arm* )
++           i?86 | powerpc* | ppc* | x86_64 | sparc* | aarch64 | arm*64* )
+               NCBIATOMIC_LIB=
+               ;;
+            * ) NCBIATOMIC_LIB=xncbi ;;
+@@ -10473,12 +10581,14 @@ if test "x$ac_cv_have_decl__LIBCPP_VERSION" = x""yes; then :
+ fi
+ 
+ 
+-modern_cxx_stds="-std=gnu++17 -std=gnu++1z"
+-modern_c_stds="-std=gnu18 -std=gnu17 -std=gnu11 -std=gnu1x -std=gnu99"
+-modern_c_stds="$modern_c_stds -std=gnu9x"
++modern_cxx_stds="-std=gnu++20 -std=gnu++17 -std=gnu++1z"
++modern_c_stds="-std=gnu18 -std=gnu17 -std=gnu11 -std=gnu1x"
++modern_c_stds="$modern_c_stds -std=gnu99 -std=gnu9x"
+ 
+ if test "$want_cxx20" = yes; then
+    modern_cxx_stds="-std=gnu++20"
++elif test "$ac_cv_have_decl__LIBCPP_VERSION" = no; then
++   modern_cxx_stds="-std=gnu++20 $modern_cxx_stds"
+ fi
+ 
+ if test "$want_c2x" = yes; then
+@@ -10536,6 +10646,36 @@ case "$CXX:::$ac_cv_prog_CXXCPP" in
+    *++17*:::*++14* ) { ac_cv_prog_CXXCPP=; unset ac_cv_prog_CXXCPP;} ;;
+ esac
+ 
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports C++20 <format>" >&5
++$as_echo_n "checking whether $CXX supports C++20 <format>... " >&6; }
++if ${ncbi_cv_lib_cxx20_format+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <format>
++int
++main ()
++{
++auto s = std::format("{}", 123.4);
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  ncbi_cv_lib_cxx20_format=yes
++else
++  ncbi_cv_lib_cxx20_format=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_lib_cxx20_format" >&5
++$as_echo "$ncbi_cv_lib_cxx20_format" >&6; }
++if test "$ncbi_cv_lib_cxx20_format" = yes; then
++             WithFeatures="$WithFeatures${WithFeaturesSep}Cxx2020_format_api"; WithFeaturesSep=" "
++fi
++
+ 
+ ac_ext=c
+ ac_cpp='$CPP $CPPFLAGS'
+@@ -10582,7 +10722,7 @@ if test "$host_cpu" != x86_64; then
+    : ${with_sse42=no}
+ fi
+ 
+-if test "${with_sse42-$with_optimization}" = yes; then
++# if test "${with_sse42-$with_optimization}" = yes; then
+    orig_CC=$CC
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC supports -msse4.2" >&5
+ $as_echo_n "checking whether $CC supports -msse4.2... " >&6; }
+@@ -10620,7 +10760,7 @@ $as_echo "$ncbi_cv_prog_c_sse42" >&6; }
+    else
+       CC=$orig_CC
+    fi
+-fi
++# fi
+ ac_ext=cpp
+ ac_cpp='$CXXCPP $CPPFLAGS'
+ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+@@ -13359,16 +13499,10 @@ if test "$compiler" != "MSVC" ; then
+    NOPT_CFLAGS=`  echo " $CFLAGS "    | sed "s/$optrx/ /g"`
+    NOPT_CXXFLAGS=`echo " $CXXFLAGS "  | sed "s/$optrx/ /g"`
+    NOPT_LDFLAGS=` echo " $LDFLAGS "   | sed "s/$optrx/ /g"`
+-   if test "${with_tcheck-no}" != "no"; then
+-      # Suppress warnings when building with ICC.
+-      NOPT_CFLAGS="$NOPT_CFLAGS -O0"
+-      NOPT_CXXFLAGS="$NOPT_CXXFLAGS -O0"
+-      NOPT_LDFLAGS="$NOPT_LDFLAGS -O0"
+-   fi
+    if test "$with_optimization" = "no" ; then
+-      CFLAGS="$NOPT_CFLAGS"
+-      CXXFLAGS="$NOPT_CXXFLAGS"
+-      LDFLAGS="$NOPT_LDFLAGS"
++      CFLAGS="$NOPT_CFLAGS -O0"
++      CXXFLAGS="$NOPT_CXXFLAGS -O0"
++      LDFLAGS="$NOPT_LDFLAGS -O0"
+       FAST_CFLAGS="$CFLAGS"
+       FAST_CXXFLAGS="$CXXFLAGS"
+       FAST_LDFLAGS="$LDFLAGS"
+@@ -13764,9 +13898,11 @@ _ACEOF
+ 
+ fi
+ 
+-for ac_header in atomic.h cpuid.h dlfcn.h ieeefp.h poll.h sys/epoll.h \
+-                 sys/mount.h sys/sockio.h sys/statvfs.h sys/sysinfo.h \
+-                 sys/sysmacros.h sys/vfs.h x86intrin.h
++for ac_header in atomic.h cpuid.h dlfcn.h ieeefp.h poll.h \
++                 stdio.h string.h strings.h sys/epoll.h \
++                 sys/mount.h sys/sockio.h sys/stat.h \
++                 sys/statvfs.h sys/sysinfo.h \
++                 sys/sysmacros.h sys/types.h sys/vfs.h x86intrin.h
+ do :
+   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ ac_fn_cxx_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+@@ -13794,8 +13930,8 @@ fi
+ done
+  ;;
+ esac
+-# for FreeTDS
+-for ac_header in alloca.h arpa/inet.h dirent.h errno.h fcntl.h getopt.h \
++# for FreeTDS (and in some cases PCRE2)
++for ac_header in arpa/inet.h dirent.h errno.h fcntl.h getopt.h \
+                  langinfo.h libgen.h locale.h malloc.h net/inet/in.h netdb.h \
+                  netinet/in.h netinet/tcp.h paths.h select.h signal.h \
+                  stdbool.h stddef.h sys/eventfd.h sys/file.h sys/ioctl.h \
+@@ -13814,6 +13950,205 @@ fi
+ 
+ done
+ 
++ac_ext=c
++ac_cpp='$CPP $CPPFLAGS'
++ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
++ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
++ac_compiler_gnu=$ac_cv_c_compiler_gnu
++
++# The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
++# for constant arguments.  Useless!
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working alloca.h" >&5
++$as_echo_n "checking for working alloca.h... " >&6; }
++if ${ac_cv_working_alloca_h+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <alloca.h>
++int
++main ()
++{
++char *p = (char *) alloca (2 * sizeof (int));
++			  if (p) return 0;
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  ac_cv_working_alloca_h=yes
++else
++  ac_cv_working_alloca_h=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_working_alloca_h" >&5
++$as_echo "$ac_cv_working_alloca_h" >&6; }
++if test $ac_cv_working_alloca_h = yes; then
++
++$as_echo "#define HAVE_ALLOCA_H 1" >>confdefs.h
++
++fi
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for alloca" >&5
++$as_echo_n "checking for alloca... " >&6; }
++if ${ac_cv_func_alloca_works+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#ifdef __GNUC__
++# define alloca __builtin_alloca
++#else
++# ifdef _MSC_VER
++#  include <malloc.h>
++#  define alloca _alloca
++# else
++#  ifdef HAVE_ALLOCA_H
++#   include <alloca.h>
++#  else
++#   ifdef _AIX
++ #pragma alloca
++#   else
++#    ifndef alloca /* predefined by HP cc +Olibcalls */
++void *alloca (size_t);
++#    endif
++#   endif
++#  endif
++# endif
++#endif
++
++int
++main ()
++{
++char *p = (char *) alloca (1);
++				    if (p) return 0;
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  ac_cv_func_alloca_works=yes
++else
++  ac_cv_func_alloca_works=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_alloca_works" >&5
++$as_echo "$ac_cv_func_alloca_works" >&6; }
++
++if test $ac_cv_func_alloca_works = yes; then
++
++$as_echo "#define HAVE_ALLOCA 1" >>confdefs.h
++
++else
++  # The SVR3 libPW and SVR4 libucb both contain incompatible functions
++# that cause trouble.  Some versions do not even contain alloca or
++# contain a buggy version.  If you still want to use their alloca,
++# use ar to extract alloca.o from them instead of compiling alloca.c.
++
++ALLOCA=\${LIBOBJDIR}alloca.$ac_objext
++
++$as_echo "#define C_ALLOCA 1" >>confdefs.h
++
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether \`alloca.c' needs Cray hooks" >&5
++$as_echo_n "checking whether \`alloca.c' needs Cray hooks... " >&6; }
++if ${ac_cv_os_cray+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#if defined CRAY && ! defined CRAY2
++webecray
++#else
++wenotbecray
++#endif
++
++_ACEOF
++if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
++  $EGREP "webecray" >/dev/null 2>&1; then :
++  ac_cv_os_cray=yes
++else
++  ac_cv_os_cray=no
++fi
++rm -f conftest*
++
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_os_cray" >&5
++$as_echo "$ac_cv_os_cray" >&6; }
++if test $ac_cv_os_cray = yes; then
++  for ac_func in _getb67 GETB67 getb67; do
++    as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
++ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
++eval as_val=\$$as_ac_var
++   if test "x$as_val" = x""yes; then :
++
++cat >>confdefs.h <<_ACEOF
++#define CRAY_STACKSEG_END $ac_func
++_ACEOF
++
++    break
++fi
++
++  done
++fi
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking stack direction for C alloca" >&5
++$as_echo_n "checking stack direction for C alloca... " >&6; }
++if ${ac_cv_c_stack_direction+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  if test "$cross_compiling" = yes; then :
++  ac_cv_c_stack_direction=0
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++$ac_includes_default
++int
++find_stack_direction (int *addr, int depth)
++{
++  int dir, dummy = 0;
++  if (! addr)
++    addr = &dummy;
++  *addr = addr < &dummy ? 1 : addr == &dummy ? 0 : -1;
++  dir = depth ? find_stack_direction (addr, depth - 1) : 0;
++  return dir + dummy;
++}
++
++int
++main (int argc, char **argv)
++{
++  return find_stack_direction (0, argc + !argv + 20) < 0;
++}
++_ACEOF
++if ac_fn_c_try_run "$LINENO"; then :
++  ac_cv_c_stack_direction=1
++else
++  ac_cv_c_stack_direction=-1
++fi
++rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
++  conftest.$ac_objext conftest.beam conftest.$ac_ext
++fi
++
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_stack_direction" >&5
++$as_echo "$ac_cv_c_stack_direction" >&6; }
++cat >>confdefs.h <<_ACEOF
++#define STACK_DIRECTION $ac_cv_c_stack_direction
++_ACEOF
++
++
++fi
++
++ac_ext=cpp
++ac_cpp='$CXXCPP $CPPFLAGS'
++ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
++ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
++ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
++
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
+ $as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
+ if ${ac_cv_header_time+:} false; then :
+@@ -14324,13 +14659,17 @@ fi
+ done
+ 
+ 
+-for ac_func in accept4 alarm asprintf atoll basename dbopen daemon euidaccess \
++for ac_func in accept4 alarm asprintf atoll basename \
++               bcopy __builtin_mul_overflow dbopen daemon euidaccess \
+                eventfd execvpe fseeko fstat getgrouplist \
+                gethrtime getopt getpagesize \
+                getpass getpassphrase getpwuid getrusage gettimeofday getuid \
+-               lchown lutimes malloc_options memrchr nl_langinfo pipe2 poll \
+-               putenv readpassphrase readv select setenv setitimer setrlimit \
+-               snprintf statfs statvfs strcasecmp strdup strlcat strlcpy \
++               lchown lutimes mallinfo mallinfo2 malloc_options memfd_create \
++               memmove memrchr mkostemp nl_langinfo pipe2 poll \
++               putenv readpassphrase readv realpath secure_getenv \
++               select setenv setitimer setrlimit \
++               snprintf statfs statvfs strcasecmp \
++               strdup strerror strlcat strlcpy \
+                strndup strnlen strsep strtok_r sysmp timegm usleep utimes \
+                vasprintf vsnprintf writev
+ do :
+@@ -16213,6 +16552,43 @@ $as_echo "no" >&6; }
+ fi
+ 
+ ### Common-use system and miscellaneous libs
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking library needed for 64-bit std::atomic" >&5
++$as_echo_n "checking library needed for 64-bit std::atomic... " >&6; }
++if ${ncbi_cv_lib_atomic64+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  orig_LIBS=$LIBS
++    for x in '' -latomic; do
++       LIBS="$x $orig_LIBS"
++       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <atomic>
++             struct S { int x, y; };
++             bool f(std::atomic<S> &as, S &s1, S s2) {
++	         bool b = as.compare_exchange_strong(s1, s2);
++		 return b ? as.load().x : as.load().y; }
++int
++main ()
++{
++std::atomic<S> as; S s1, s2; return f(as, s1, s2);
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  ncbi_cv_lib_atomic64=${x:-none required}; break
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++    done
++    LIBS=$orig_LIBS
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_lib_atomic64" >&5
++$as_echo "$ncbi_cv_lib_atomic64" >&6; }
++if test "x$ncbi_cv_lib_atomic64" != "xnone required"; then
++   ATOMIC64_LIBS=$ncbi_cv_lib_atomic64
++fi
++
+ if test -z "${NETWORK_LIBS+set}"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gethostbyname" >&5
+ $as_echo_n "checking for library containing gethostbyname... " >&6; }
+@@ -17467,6 +17843,36 @@ $as_echo "#define HAVE_LIBDW 1" >>confdefs.h
+ LIBS="$LIBDW_LIBS $LIBS"
+ orig_LIBS="$LIBDW_LIBS $orig_LIBS"
+ 
++case "$with_backward_cpp" in
++   yes | '' ) ;;
++   no       ) ncbi_cv_lib_backward_cpp=no ;;
++   *        ) BACKWARD_CPP_PATH=$with_backward_cpp ;;
++esac
++if test -d "$BACKWARD_CPP_PATH"; then
++   BACKWARD_CPP_INCLUDE=-I$BACKWARD_CPP_PATH/include
++   in_path=" in $BACKWARD_CPP_PATH"
++else
++   in_path=
++fi
++CPPFLAGS="$orig_CPPFLAGS $BACKWARD_CPP_INCLUDE"
++for ac_header in backward.hpp
++do :
++  ac_fn_cxx_check_header_mongrel "$LINENO" "backward.hpp" "ac_cv_header_backward_hpp" "$ac_includes_default"
++if test "x$ac_cv_header_backward_hpp" = x""yes; then :
++  cat >>confdefs.h <<_ACEOF
++#define HAVE_BACKWARD_HPP 1
++_ACEOF
++           WithPackages="$WithPackages${WithPackagesSep}BACKWARD_CPP"; WithPackagesSep=" "
++else
++  BACKWARD_CPP_INCLUDE=; if test "${with_backward_cpp:=no}" != no; then
++       as_fn_error $? "--with-backward_cpp explicitly specified, but no usable version found." "$LINENO" 5
++    fi
++fi
++
++done
++
++
++orig_BACKWARD_CPP_INCLUDE=$BACKWARD_CPP_INCLUDE
+ if test "$with_backward_cpp" != "no"; then
+     case "$BACKWARD_CPP_PATH:$with_backward_cpp" in
+        *:yes | *: | $with_backward_cpp* ) ;;
+@@ -17604,6 +18010,7 @@ $as_echo "#define HAVE_LIBBACKWARD_CPP 1" >>confdefs.h
+ 
+ 
+ 
++BACKWARD_CPP_INCLUDE=$orig_BACKWARD_CPP_INCLUDE
+ 
+ 
+ if test "$with_backward_cpp_sig" = yes; then
+@@ -17753,6 +18160,12 @@ $as_echo "$as_me: using local zlib copy in $zlocal" >&6;}
+              WithPackages="$WithPackages${WithPackagesSep}Z"; WithPackagesSep=" "
+              WithPackages="$WithPackages${WithPackagesSep}LocalZ"; WithPackagesSep=" "
+ fi
++# Cloudflare fork, always present in practice
++if test -d "$real_srcdir/include/util/compress/zlib_cloudflare"; then
++
++$as_echo "#define HAVE_LIBZCF 1" >>confdefs.h
++
++fi
+ 
+ if test "$with_bz2" != "no"; then
+     case "$BZ2_PATH:$with_bz2" in
+@@ -18366,7 +18779,143 @@ $as_echo "#define HAVE_LIBPCRE 1" >>confdefs.h
+ 
+ 
+ 
+-if test -z "$PCRE_LIBS"; then
++
++if test "$with_pcre2" != "no"; then
++    case "$PCRE2_PATH:$with_pcre2" in
++       *:yes | *: | $with_pcre2* ) ;;
++       * ) PCRE2_PATH=$with_pcre2 ;;
++    esac
++    if test "$PCRE2_PATH" != /usr -a -d "$PCRE2_PATH"; then
++       in_path=" in $PCRE2_PATH"
++       if test -z "$PCRE2_INCLUDE" -a -d "$PCRE2_PATH/include"; then
++          PCRE2_INCLUDE="-I$PCRE2_PATH/include"
++       fi
++       if test -n "$PCRE2_LIBPATH"; then
++          :
++       elif test -d "$PCRE2_PATH/lib${bit64_sfx}"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $PCRE2_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    PCRE2_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $PCRE2_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    PCRE2_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       elif test -d "$PCRE2_PATH/lib"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $PCRE2_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    PCRE2_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $PCRE2_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    PCRE2_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       fi
++       PCRE2_LIBS="$PCRE2_LIBPATH -lpcre2-8 "
++    else
++       PCRE2_INCLUDE=""
++       PCRE2_LIBS="-lpcre2-8 "
++       in_path=
++    fi
++    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpcre2-8$in_path" >&5
++$as_echo_n "checking for libpcre2-8$in_path... " >&6; }
++if ${ncbi_cv_lib_pcre2+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  CPPFLAGS=" $PCRE2_INCLUDE $orig_CPPFLAGS"
++       LIBS="$PCRE2_LIBS  $orig_LIBS"
++       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#define PCRE2_CODE_UNIT_WIDTH 8
++                   #include <pcre2.h>
++int
++main ()
++{
++pcre2_config(123, NULL);
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  ncbi_cv_lib_pcre2=yes
++else
++  ncbi_cv_lib_pcre2=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_lib_pcre2" >&5
++$as_echo "$ncbi_cv_lib_pcre2" >&6; }
++    if test "$ncbi_cv_lib_pcre2" = "no"; then
++       if test "${with_pcre2:=no}" != no; then
++       as_fn_error $? "--with-pcre2 explicitly specified, but no usable version found." "$LINENO" 5
++    fi
++    fi
++ fi
++ if test "$with_pcre2" = "no"; then
++    PCRE2_PATH="No_PCRE2"
++    PCRE2_INCLUDE=
++    PCRE2_LIBS=
++ else
++              WithPackages="$WithPackages${WithPackagesSep}PCRE2"; WithPackagesSep=" "
++    PCRE2_INCLUDE=" $PCRE2_INCLUDE"
++
++$as_echo "#define HAVE_LIBPCRE2 1" >>confdefs.h
++
++ fi
++
++
++
++PCRE_LEGACY_LIBS=$PCRE_LIBS
++if test "x$with_pcre2" != xno; then
++   PCRE_LIBS=$PCRE2_LIBS
++fi
++
++if test -z "$PCRE_LIBS" -a -z "$PCRE2_LIBS"; then
+    pcrelocal=util/regexp
+    { $as_echo "$as_me:${as_lineno-$LINENO}: using local PCRE copy in $pcrelocal" >&5
+ $as_echo "$as_me: using local PCRE copy in $pcrelocal" >&6;}
+@@ -18378,8 +18927,17 @@ $as_echo "$as_me: using local PCRE copy in $pcrelocal" >&6;}
+ 
+ $as_echo "#define USE_LOCAL_PCRE 1" >>confdefs.h
+ 
+-             WithPackages="$WithPackages${WithPackagesSep}PCRE"; WithPackagesSep=" "
++   if test -f $srcdir/include/$pcrelocal/pcre2.h; then
++
++$as_echo "#define HAVE_LIBPCRE2 1" >>confdefs.h
++
++                WithPackages="$WithPackages${WithPackagesSep}PCRE2"; WithPackagesSep=" "
++   else
++                WithPackages="$WithPackages${WithPackagesSep}PCRE"; WithPackagesSep=" "
++   fi
+              WithPackages="$WithPackages${WithPackagesSep}LocalPCRE"; WithPackagesSep=" "
++elif test -n "$PCRE2_LIBS"; then
++   PCREPOSIX_LIBS=`echo "$PCRE2_LIBS" | sed -e 's/-lpcre2-8/-lpcre2posix &/'`
+ else
+    PCREPOSIX_LIBS=`echo "$PCRE_LIBS" | sed -e 's/-lpcre/-lpcreposix -lpcre/'`
+ fi
+@@ -20277,74 +20835,24 @@ if test "$with_sybase" != "no" ; then
+    resolve_sybase=true
+    default_pointer=default-${NCBI_PLATFORM_BITS}bit
+    : ${with_sybase_new:="no"}
+-   case "$host_os" in
+-      linux* )
+-         : ${with_sybase_local:=yes}
+-         ;;
+-      * )
+-         if test -d "$net_sybase_root" ; then
+-            : ${with_sybase_local:=no}
+-         else
+-            : ${with_sybase_local:=yes}
+-         fi
+-         ;;
+-   esac
+-
+-   if test "$with_sybase_local" != "no" ; then
+-      if test "$with_sybase_local" = "yes" ; then
+-         if test -n "$SYBASE_PATH" ; then
+-            with_sybase_local=$SYBASE_PATH
+-         else
+-            if test "$with_sybase_new" = "yes" ; then
+-               with_sybase_local=$local_sybase_root/new
+-            elif test -f "$local_sybase_root/$default_pointer" ; then
+-               with_sybase_local=`cat $local_sybase_root/$default_pointer`
+-               resolve_sybase=false
+-            else
+-               with_sybase_local=$local_sybase_root/current
+-            fi
+-            if test -d "$with_sybase_local$NCBI_PLATFORM_BITS" ; then
+-               with_sybase_local=$with_sybase_local$NCBI_PLATFORM_BITS
+-            fi
+-         fi # default paths
+-      fi # no command-line path
+-      if test -d "$with_sybase_local" ; then
+-         SYBASE_PATH=$with_sybase_local
+-         SYBASE_LCL_PATH=
+-      else
+-         with_sybase_local=no
+-      fi
+-   fi
+ 
+-   if test "$with_sybase_local" = "no" ; then
++   if test -n "$SYBASE_PATH" ; then
++      with_sybase_local=$SYBASE_PATH
++   else
+       if test "$with_sybase_new" = "yes" ; then
+-         if test -d "$net_sybase_root/new$NCBI_PLATFORM_BITS" ; then
+-            SYBASE_LCL_PATH=$local_sybase_root/new$NCBI_PLATFORM_BITS
+-            SYBASE_PATH=$net_sybase_root/new$NCBI_PLATFORM_BITS
+-         elif test -d "$net_sybase_root/new" ; then
+-            SYBASE_LCL_PATH=$local_sybase_root/new
+-            SYBASE_PATH=$net_sybase_root/new
+-         else
+-            with_sybase_new=no
+-         fi
++         with_sybase_local=$local_sybase_root/new
++      elif test -f "$local_sybase_root/$default_pointer" ; then
++         with_sybase_local=`cat $local_sybase_root/$default_pointer`
++         resolve_sybase=false
++      else
++         with_sybase_local=$local_sybase_root/current
+       fi
+-
+-      if test -z "$SYBASE_PATH" ; then
+-         if test -f "$net_sybase_root/$default_pointer" ; then
+-            SYBASE_LCL_PATH=
+-            SYBASE_PATH=`cat $local_sybase_root/$default_pointer`
+-            resolve_sybase=false
+-         elif test -d "$net_sybase_root/current$NCBI_PLATFORM_BITS" ; then
+-            SYBASE_LCL_PATH=$local_sybase_root/current$NCBI_PLATFORM_BITS
+-            SYBASE_PATH=$net_sybase_root/current$NCBI_PLATFORM_BITS
+-         elif test -d "$net_sybase_root/current" ; then
+-            SYBASE_LCL_PATH=$local_sybase_root/current
+-            SYBASE_PATH=$net_sybase_root/current
+-         else
+-            SYBASE_LCL_PATH=
+-            SYBASE_PATH=$SYBASE
+-         fi
++      if test -d "$with_sybase_local$NCBI_PLATFORM_BITS" ; then
++         with_sybase_local=$with_sybase_local$NCBI_PLATFORM_BITS
+       fi
++   fi # default paths
++   if test -d "$with_sybase_local" ; then
++      SYBASE_PATH=$with_sybase_local
+    fi
+ 
+    # Lock in the version we found, ignoring symlinks further up
+@@ -20370,39 +20878,10 @@ if test "$with_sybase" != "no" ; then
+       esac
+    fi
+ 
+-   if test -d "$SYBASE_LCL_PATH"  &&  $resolve_sybase ; then
+-      # SYBASE_LCL_PATH_=`cd $SYBASE_LCL_PATH && /bin/pwd`
+-      SYBASE_LCL_PATH_=`ls -ld $SYBASE_LCL_PATH | sed -ne 's/.* -> //p'`
+-      case "$SYBASE_LCL_PATH_" in
+-         '' ) ;;
+-         /* )
+-            SYBASE_LCL_VERSION=`basename $SYBASE_LCL_PATH_`
+-            SYBASE_LCL_PATH=`dirname $SYBASE_LCL_PATH`/$SYBASE_LCL_VERSION
+-            test -d "$SYBASE_LCL_PATH"  ||  SYBASE_LCL_PATH=$SYBASE_LCL_PATH_
+-            ;;
+-         * )
+-            orig_parent=`dirname $SYBASE_LCL_PATH`
+-            SYBASE_LCL_VERSION=`basename $SYBASE_LCL_PATH_`
+-            SYBASE_LCL_PATH=$orig_parent/$SYBASE_LCL_VERSION
+-            test -d "$SYBASE_LCL_PATH"  || \
+-               SYBASE_LCL_PATH=$orig_parent/$SYBASE_LCL_PATH_
+-            ;;
+-      esac
+-   elif test -n "$SYBASE_LCL_PATH" ; then
+-      SYBASE_LCL_PATH=`dirname $SYBASE_LCL_PATH`/$SYBASE_VERSION
+-   fi
+-
+-   if test -n "$SYBASE_VERSION" -a -n "$SYBASE_LCL_VERSION" \
+-        -a "$SYBASE_VERSION" != "$SYBASE_LCL_VERSION" ; then
+-      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ignoring inconsistent local Sybase symlink: $SYBASE_LCL_VERSION vs. $SYBASE_VERSION" >&5
+-$as_echo "$as_me: WARNING: ignoring inconsistent local Sybase symlink: $SYBASE_LCL_VERSION vs. $SYBASE_VERSION" >&2;}
+-      SYBASE_LCL_PATH=`dirname $SYBASE_LCL_PATH`/$SYBASE_VERSION
+-   fi
+-
+    if test -n "$SYBASE" ; then
+-      if test -d "$net_sybase_root" -o -d "$local_sybase_root" ; then
++      if test -d "$local_sybase_root" ; then
+          case $SYBASE in
+-            $net_sybase_root/* | $local_sybase_root/* ) ;;
++            $local_sybase_root/* ) ;;
+             * ) { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ignoring non-standard SYBASE setting: $SYBASE" >&5
+ $as_echo "$as_me: WARNING: ignoring non-standard SYBASE setting: $SYBASE" >&2;} ;;
+             # Ignored regardless, but standard values are not so concerning.
+@@ -20475,8 +20954,7 @@ $as_echo "$ncbi_cv_lib_sybase_r" >&6; }
+ 
+    # deduce conf.macro: SYBASE_INCLUDE, SYBASE_LIBS, SYBASE_DLLS, SYBASE_DBLIBS
+    SYBASE_INCLUDE="-I$SYBASE_PATH$ocs/include $SYBASE_INCLUDE"
+-   if test -z "$SYBASE_LCL_PATH" ; then
+-      ncbi_rp_L_flags=
++   ncbi_rp_L_flags=
+  ncbi_rp_L_sep=$CONF_f_libpath
+  if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
+     for x in $SYBASE_LIBPATH; do
+@@ -20506,40 +20984,6 @@ $as_echo "$ncbi_cv_lib_sybase_r" >&6; }
+     done
+     SYBASE_LPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
+  fi
+-   else
+-      SYBASE_LCL_LIBPATH="$SYBASE_LCL_PATH$ocs/${sybase_lib}"
+-      ncbi_rp_L_flags=
+- ncbi_rp_L_sep=$CONF_f_libpath
+- if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
+-    for x in $SYBASE_LCL_LIBPATH $SYBASE_LIBPATH; do
+-       case "$x" in
+-          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
+-             continue
+-             ;;
+-       esac
+-       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
+-       ncbi_rp_L_sep=" $CONF_f_libpath"
+-    done
+-    SYBASE_LPATH="${ncbi_rp_L_flags}"
+- else
+-    ncbi_rp_R_flags=
+-    ncbi_rp_R_sep=" $CONF_f_runpath"
+-    for x in $SYBASE_LCL_LIBPATH $SYBASE_LIBPATH; do
+-       case "$x" in
+-          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
+-             continue
+-             ;;
+-       esac
+-       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
+-       ncbi_rp_L_sep=" $CONF_f_libpath"
+-       x=`echo $x | sed -e "$ncbi_rpath_sed"`
+-       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
+-       ncbi_rp_R_sep=:
+-    done
+-    SYBASE_LPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
+- fi
+-      SYBASE_INCLUDE="-I$SYBASE_LCL_PATH$ocs/include $SYBASE_INCLUDE"
+-   fi
+    SYBASE_LIBS="$SYBASE_LPATH $SYBASE_LIBLIST"
+    SYBASE_DBLIBS="$SYBASE_LPATH $SYBASE_DBLIBS"
+    SYBASE_DLLS="$SYBASE_DLLLIST"
+@@ -20647,7 +21091,6 @@ if test "$with_sybase" = no; then
+ fi
+ 
+ SYBASE_LPATH=
+-SYBASE_LCL_LIBPATH=
+ SYBASE_LIBLIST=
+ SYBASE_DLLLIST=
+ SYBASE_LIBPATH=
+@@ -20656,10 +21099,13 @@ SYBASE_LIBPATH=
+ ## FreeTDS libraries
+ freetds=
+ if test "$with_ftds" != "no" ; then
+-   ftds_ver=100
++   ftds_ver=14
+    try_local=yes
+    case "$with_ftds" in
+-      100 | 1.00 | yes | '' )
++      100 | 1.00 )
++         ftds_ver=100
++         ;;
++      14* | 1.4 | 1.4.* | yes | '' )
+          ;;
+       * )
+          FTDS_PATH=$with_ftds
+@@ -20714,6 +21160,22 @@ if test "$with_ftds" != "no" ; then
+       FTDS100_LIBS='$(FTDS100_CTLIB_LIBS)'
+       FTDS100_INCLUDE='$(FTDS100_CTLIB_INCLUDE)'
+ 
++   d="dbapi/driver/ftds14/freetds"
++      if test $try_local = yes -a -f "${real_srcdir}/src/$d/Makefile.in" ; then
++         test "$ftds_ver" = 14  &&  FTDS_PATH="<$d>"
++         FTDS14_CTLIB_LIB="ct_ftds14${STATIC} tds_ftds14${STATIC}"
++         FTDS14_CTLIB_LIBS='$(ICONV_LIBS) $(KRB5_LIBS) $(NETWORK_LIBS)'
++         FTDS14_CTLIB_INCLUDE="-I\$(includedir)/$d -I\$(includedir0)/$d"
++         freetds=freetds
++      elif test -d "$FTDS_PATH" ; then
++         FTDS14_CTLIB_LIB=
++         FTDS14_CTLIB_LIBS=$FTDS_CTLIBS
++         FTDS14_CTLIB_INCLUDE=$FTDS_INCLUDE
++      fi
++      FTDS14_LIB='$(FTDS14_CTLIB_LIB)'
++      FTDS14_LIBS='$(FTDS14_CTLIB_LIBS)'
++      FTDS14_INCLUDE='$(FTDS14_CTLIB_INCLUDE)'
++
+    if test -n "$freetds" ; then
+       FTDS_LIB="\$(FTDS${ftds_ver}_LIB)"
+       FTDS_LIBS="\$(FTDS${ftds_ver}_LIBS)"
+@@ -20783,6 +21245,12 @@ if test "$with_ftds" = "no" ; then
+    FTDS100_CTLIB_INCLUDE=
+    FTDS100_CTLIB_LIBS=
+    FTDS100_CTLIB_LIB=
++   FTDS14_INCLUDE=
++   FTDS14_LIBS=
++   FTDS14_LIB=
++   FTDS14_CTLIB_INCLUDE=
++   FTDS14_CTLIB_LIBS=
++   FTDS14_CTLIB_LIB=
+    freetds=
+ else
+ 
+@@ -20802,6 +21270,12 @@ fi
+ 
+ 
+ 
++
++
++
++
++
++
+ ## MySQL
+ if test "$with_mysql" != "no" ; then
+    case "$with_mysql" in
+@@ -21424,6 +21898,39 @@ $as_echo "$ncbi_cv_func_sqlcolattribute_sqllen" >&6; }
+ $as_echo "#define NCBI_SQLCOLATTRIBUTE_SQLLEN 1" >>confdefs.h
+ 
+       fi
++
++      { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether SQLParamOptions takes SQLULEN" >&5
++$as_echo_n "checking whether SQLParamOptions takes SQLULEN... " >&6; }
++if ${ncbi_cv_func_sqlparamoptions_sqllen+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <sql.h>
++              SQLRETURN SQL_API SQLParamOptions
++                (SQLHSTMT hstmt, SQLULEN crow, SQLULEN *pirow);
++int
++main ()
++{
++
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_compile "$LINENO"; then :
++  ncbi_cv_func_sqlparamoptions_sqllen=yes
++else
++  ncbi_cv_func_sqlparamoptions_sqllen=no
++fi
++rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_func_sqlparamoptions_sqllen" >&5
++$as_echo "$ncbi_cv_func_sqlparamoptions_sqllen" >&6; }
++      if test $ncbi_cv_func_sqlparamoptions_sqllen = yes; then
++
++$as_echo "#define NCBI_SQLPARAMOPTIONS_SQLLEN 1" >>confdefs.h
++
++      fi
+    fi
+    ;;
+ esac
+@@ -21446,6 +21953,8 @@ case "$ODBC_PATH" in
+ 
+    $as_echo "#define NCBI_SQLCOLATTRIBUTE_SQLLEN 1" >>confdefs.h
+ 
++   $as_echo "#define NCBI_SQLPARAMOPTIONS_SQLLEN 1" >>confdefs.h
++
+       ;;
+  *)
+              WithPackages="$WithPackages${WithPackagesSep}ODBC"; WithPackagesSep=" "
+@@ -22627,6 +23136,8 @@ $as_echo_n "checking for Boost library name tag... " >&6; }
+          test "$with_mt"    = "yes"  &&  BOOST_MT=-mt
+          if test "$with_max_debug" = yes; then
+             BOOST_D="-gd -d"
++            BOOST_INCLUDE="$BOOST_INCLUDE -DBOOST_USE_ASAN"
++            BOOST_INCLUDE="$BOOST_INCLUDE -DBOOST_USE_UCONTEXT"
+          elif test "$with_debug" = no; then
+             BOOST_D=
+          else
+@@ -23074,6 +23585,16 @@ else
+ #ifdef NCBI_BOOST_NOT_INCLUDED
+                 #  include <boost/test/unit_test.hpp>
+                 #else
++                #  if __cplusplus > 201703L
++                #    include <boost/version.hpp>
++                #    if BOOST_VERSION < 107300
++                #     include <ostream>
++                namespace std {
++                    ostream& operator<<(ostream& os, const wchar_t*)
++                        { return os; }
++                }
++                #    endif
++                #  endif
+                 #  include <boost/test/included/unit_test.hpp>
+                 #endif
+                 using boost::unit_test::test_suite;
+@@ -27743,9 +28264,9 @@ $as_echo "$as_me: WARNING: $message" >&2;}  ;;
+          case "$host_os:$host_cpu:$bit64_sfx" in
+             darwin*:*86*:64 ) vdb_libpath=mac/$vdb_mode/x86_64/lib   ;;
+             darwin*:*86*:* )  vdb_libpath=mac/$vdb_mode/fat86/lib    ;;
+-            darwin*:arm*   )  vdb_libpath=mac/$vdb_mode/aarch64/lib  ;;
++            darwin*:a*   )  vdb_libpath=mac/$vdb_mode/arm64/lib    ;;
+             linux*:*86*:64 )  vdb_libpath=linux/$vdb_mode/x86_64/lib ;;
+-            linux*:aarch64* ) vdb_libpath=linux/$vdb_mode/aarch64/lib ;;
++            linux*:aarch64* ) vdb_libpath=linux/$vdb_mode/arm64/lib  ;;
+             * )
+                if test -n "$with_vdb"; then
+                   as_fn_error $? "--with-vdb explicitly specified,
+@@ -27898,6 +28419,7 @@ if test "$with_ngs" != "no" ; then
+    case "$host_cpu:$bit64_sfx" in
+       *86*:64 ) extra_inc="-I$NGS_PATH/include/ngs/unix/x86_64" ;;
+       *86*:*  ) extra_inc="-I$NGS_PATH/include/ngs/unix/fat86"  ;;
++      a*:64   ) extra_inc="-I$NGS_PATH/include/ngs/unix/arm64"  ;;
+       *       ) extra_inc=''                                    ;;
+    esac
+    NGS_INCLUDE="$NGS_INCLUDE $extra_inc"
+@@ -30902,10 +31424,21 @@ else
+         { return NULL; }
+         SOAP_FMAC3 const char** SOAP_FMAC4 soap_faultdetail(struct soap*)
+         { return NULL; }
++        #if GSOAP_VERSION >= 20871
++        SOAP_FMAC3 const char* SOAP_FMAC4 soap_fault_subcode(struct soap*)
++        { return NULL; }
++        SOAP_FMAC3 const char* SOAP_FMAC4 soap_fault_string(struct soap*)
++        { return NULL; }
++        SOAP_FMAC3 const char* SOAP_FMAC4 soap_fault_detail(struct soap*)
++        { return NULL; }
++        #else
+         SOAP_FMAC3 const char* SOAP_FMAC4 soap_check_faultsubcode(struct soap*)
+         { return NULL; }
++        SOAP_FMAC3 const char* SOAP_FMAC4 soap_check_faultstring(struct soap*)
++        { return NULL; }
+         SOAP_FMAC3 const char* SOAP_FMAC4 soap_check_faultdetail(struct soap*)
+         { return NULL; }
++        #endif
+         SOAP_FMAC3 void SOAP_FMAC4 soap_serializeheader(struct soap*) { }
+         SOAP_FMAC3 int SOAP_FMAC4 soap_putheader(struct soap*) { return 0; }
+         SOAP_FMAC3 int SOAP_FMAC4 soap_getheader(struct soap*) { return 0; }
+@@ -33080,6 +33613,216 @@ else
+     LIBUV_STATIC_LIBS=$LIBUV_LIBS
+ fi
+ 
++# libssh
++case "$with_libssh" in
++   yes | no | '' ) ;;
++   *             ) LIBSSH_PATH=$with_libssh ;;
++esac
++if test -d "$LIBSSH_PATH"; then
++   ncbi_fix_dir_tmp=`if cd $LIBSSH_PATH; then { PWD=; unset PWD;}; /bin/pwd; fi`
++ case "$ncbi_fix_dir_tmp" in
++    /.*) ncbi_fix_dir_tmp2=`cd $LIBSSH_PATH && $smart_pwd 2>/dev/null`
++         if test -n "$ncbi_fix_dir_tmp2" -a -d "$ncbi_fix_dir_tmp2"; then
++            LIBSSH_PATH=$ncbi_fix_dir_tmp2
++         else
++            case "$LIBSSH_PATH" in
++               /*) ;;
++               * ) LIBSSH_PATH=$ncbi_fix_dir_tmp ;;
++            esac
++         fi
++         ;;
++    /*) LIBSSH_PATH=$ncbi_fix_dir_tmp ;;
++ esac
++   for d in "$LIBSSH_PATH/$compiler_vpfx$DEBUG_SFX$bit64_sfx/lib" \
++            "$LIBSSH_PATH/$compiler_pfx$DEBUG_SFX$bit64_sfx/lib" \
++            "$LIBSSH_PATH/$compiler_vpfx$DEBUG_SFX/lib" \
++            "$LIBSSH_PATH/$compiler_pfx$DEBUG_SFX/lib" \
++            "$LIBSSH_PATH/lib$bit64_sfx" "$LIBSSH_PATH/lib"; do
++      if test -d "$d"; then
++         LIBSSH_LIBDIR=$d
++         ncbi_fix_dir_tmp=`if cd $LIBSSH_LIBDIR; then { PWD=; unset PWD;}; /bin/pwd; fi`
++ case "$ncbi_fix_dir_tmp" in
++    /.*) ncbi_fix_dir_tmp2=`cd $LIBSSH_LIBDIR && $smart_pwd 2>/dev/null`
++         if test -n "$ncbi_fix_dir_tmp2" -a -d "$ncbi_fix_dir_tmp2"; then
++            LIBSSH_LIBDIR=$ncbi_fix_dir_tmp2
++         else
++            case "$LIBSSH_LIBDIR" in
++               /*) ;;
++               * ) LIBSSH_LIBDIR=$ncbi_fix_dir_tmp ;;
++            esac
++         fi
++         ;;
++    /*) LIBSSH_LIBDIR=$ncbi_fix_dir_tmp ;;
++ esac
++         break
++      fi
++   done
++fi
++ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $LIBSSH_LIBDIR; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $LIBSSH_LIBDIR; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++if test "$with_libssh" != "no"; then
++    case "$LIBSSH_PATH:$with_libssh" in
++       *:yes | *: | $with_libssh* ) ;;
++       * ) LIBSSH_PATH=$with_libssh ;;
++    esac
++    if test "$LIBSSH_PATH" != /usr -a -d "$LIBSSH_PATH"; then
++       in_path=" in $LIBSSH_PATH"
++       if test -z "$LIBSSH_INCLUDE" -a -d "$LIBSSH_PATH/include"; then
++          LIBSSH_INCLUDE="-I$LIBSSH_PATH/include"
++       fi
++       if test -n "$LIBSSH_LIBPATH"; then
++          :
++       elif test -d "$LIBSSH_PATH/lib${bit64_sfx}"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $LIBSSH_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $LIBSSH_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       elif test -d "$LIBSSH_PATH/lib"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $LIBSSH_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $LIBSSH_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    LIBSSH_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       fi
++       LIBSSH_LIBS="$LIBSSH_LIBPATH -lssh $OPENSSL_LIBS"
++    else
++       LIBSSH_INCLUDE=""
++       LIBSSH_LIBS="-lssh $OPENSSL_LIBS"
++       in_path=
++    fi
++    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libssh$in_path" >&5
++$as_echo_n "checking for libssh$in_path... " >&6; }
++if ${ncbi_cv_lib_libssh+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  CPPFLAGS=" $LIBSSH_INCLUDE $orig_CPPFLAGS"
++       LIBS="$LIBSSH_LIBS  $orig_LIBS"
++       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <libssh/libssh.h>
++int
++main ()
++{
++return ssh_init();
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  ncbi_cv_lib_libssh=yes
++else
++  ncbi_cv_lib_libssh=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_lib_libssh" >&5
++$as_echo "$ncbi_cv_lib_libssh" >&6; }
++    if test "$ncbi_cv_lib_libssh" = "no"; then
++       if test "${with_libssh:=no}" != no; then
++       as_fn_error $? "--with-libssh explicitly specified, but no usable version found." "$LINENO" 5
++    fi
++    fi
++ fi
++ if test "$with_libssh" = "no"; then
++    LIBSSH_PATH="No_LIBSSH"
++    LIBSSH_INCLUDE=
++    LIBSSH_LIBS=
++ else
++              WithPackages="$WithPackages${WithPackagesSep}LIBSSH"; WithPackagesSep=" "
++    LIBSSH_INCLUDE=" $LIBSSH_INCLUDE"
++
++$as_echo "#define HAVE_LIBSSH 1" >>confdefs.h
++
++ fi
++
++
++
++if test "$with_libssh" != no -a -f "$LIBSSH_LIBDIR/libssh-static.a"; then
++    LIBSSH_STATIC_LIBS="-L$LIBSSH_LIBDIR -lssh-static $OPENSSL_LIBS"
++else
++    LIBSSH_STATIC_LIBS=$LIBSSH_LIBS
++fi
++
+ # libssh2
+ case "$with_libssh2" in
+    yes | no | '' ) ;;
+@@ -33397,10 +34140,10 @@ if test "$with_cassandra" != "no"; then
+     CASSANDRA_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
+  fi
+        fi
+-       CASSANDRA_LIBS="$CASSANDRA_LIBPATH -lcassandra $LIBSSH2_LIBS $LIBUV_LIBS $KRB5_LIBS"
++       CASSANDRA_LIBS="$CASSANDRA_LIBPATH -lcassandra $LIBUV_LIBS $KRB5_LIBS"
+     else
+        CASSANDRA_INCLUDE=""
+-       CASSANDRA_LIBS="-lcassandra $LIBSSH2_LIBS $LIBUV_LIBS $KRB5_LIBS"
++       CASSANDRA_LIBS="-lcassandra $LIBUV_LIBS $KRB5_LIBS"
+        in_path=
+     fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libcassandra$in_path" >&5
+@@ -33453,7 +34196,7 @@ $as_echo "#define HAVE_LIBCASSANDRA 1" >>confdefs.h
+ 
+ if test "$with_cassandra" != no -a \
+      -f "$CASSANDRA_PATH/lib/libcassandra_static.a"; then
+-    CASSANDRA_STATIC_LIBS="-L$CASSANDRA_PATH/lib -lcassandra_static $LIBSSH2_STATIC_LIBS $LIBUV_STATIC_LIBS $KRB5_LIBS"
++    CASSANDRA_STATIC_LIBS="-L$CASSANDRA_PATH/lib -lcassandra_static $LIBUV_STATIC_LIBS $KRB5_LIBS"
+ else
+     CASSANDRA_STATIC_LIBS=$CASSANDRA_LIBS
+ fi
+@@ -34079,7 +34822,7 @@ if test -n "$D_SFX"; then
+    if ls $PROTOBUF_PATH/lib*/libprotobuf$D_SFX.* >/dev/null 2>&1; then
+       PROTOBUF_SFX=$D_SFX
+    else
+-      for ext in .a .so .dylib; do
++      for ext in a so dylib; do
+          path=`$CXX -B$PROTOBUF_PATH/ -print-file-name=libprotobuf$D_SFX.$ext \
+                2>/dev/null`
+          case "$path" in
+@@ -34088,6 +34831,65 @@ if test -n "$D_SFX"; then
+       done
+    fi
+ fi
++pb_pc=pkg-config
++if test -n "$PROTOBUF_PATH"; then
++   for d in "$PROTOBUF_PATH/lib$bit64_sfx" "$PROTOBUF_PATH/lib"; do
++      if test -d "$d/pkgconfig"; then
++         pb_pc="env PKG_CONFIG_PATH=$d/pkgconfig pkg-config"
++         break
++      fi
++   done
++fi
++xpb_pc=$pb_pc
++if $pb_pc protobuf --modversion 2>/dev/null; then
++   # Avoid a hang observed with pkg-config 0.27.1 (as on CentOS 7)
++   # and post-2022 Abseil versions.
++   case "`$pb_pc --version`:`$pb_pc protobuf --modversion`" in
++      0.2[89]* | 0.[3-9][0-9]* | 0.[1-9][0-9][0-9]* | [1-9]* \
++      | *:20[01]* | *:202[0-2]* )
++         pb_sed="s/\$/ /; s/\(-lprotobuf\) /\1$PROTOBUF_SFX /; s/ \$//"
++         PROTOBUF_CONFIG_LIBS="`$pb_pc protobuf --libs | sed -e \"$pb_sed\"`"
++         ;;
++      * )
++         pb_pc=
++         ;;
++   esac
++else
++   pb_pc=
++fi
++if test -z "$pb_pc"; then
++   PROTOBUF_CONFIG_LIBS=-lprotobuf$PROTOBUF_SFX
++   for l in absl_log_internal_check_op absl_leak_check absl_die_if_null \
++            absl_log_internal_conditions absl_log_internal_message \
++            absl_examine_stack absl_log_internal_format \
++            absl_log_internal_proto absl_log_internal_nullguard \
++            absl_log_internal_log_sink_set absl_log_sink absl_log_entry \
++            absl_flags absl_flags_internal absl_flags_marshalling \
++            absl_flags_reflection absl_flags_private_handle_accessor \
++            absl_flags_commandlineflag absl_flags_commandlineflag_internal \
++            absl_flags_config absl_flags_program_name absl_log_initialize \
++            absl_log_globals absl_log_internal_globals absl_raw_hash_set \
++            absl_hash absl_city absl_low_level_hash absl_hashtablez_sampler \
++            absl_statusor absl_status absl_cord absl_cordz_info \
++            absl_cord_internal absl_cordz_functions absl_exponential_biased \
++            absl_cordz_handle absl_crc_cord_state absl_crc32c \
++            absl_crc_internal absl_crc_cpu_detect absl_bad_optional_access \
++            absl_str_format_internal absl_strerror absl_synchronization \
++            absl_graphcycles_internal absl_kernel_timeout_internal \
++            absl_stacktrace absl_symbolize absl_debugging_internal \
++            absl_demangle_internal absl_malloc_internal absl_time \
++            absl_civil_time absl_time_zone absl_bad_variant_access \
++            utf8_validity utf8_range absl_strings absl_string_view \
++            absl_strings_internal absl_base absl_spinlock_wait absl_int128 \
++            absl_throw_delegate absl_raw_logging_internal absl_log_severity
++   do
++      if test -f $PROTOBUF_PATH/lib${bit64_sfx}/lib$l.a \
++           -o -f $PROTOBUF_PATH/lib/lib$l.a; then
++         PROTOBUF_CONFIG_LIBS="$PROTOBUF_CONFIG_LIBS -l$l"
++      fi
++   done
++fi
++
+ if test "$with_protobuf" != "no"; then
+     case "$PROTOBUF_PATH:$with_protobuf" in
+        *:yes | *: | $with_protobuf* ) ;;
+@@ -34163,10 +34965,10 @@ if test "$with_protobuf" != "no"; then
+     PROTOBUF_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
+  fi
+        fi
+-       PROTOBUF_LIBS="$PROTOBUF_LIBPATH -lprotobuf$PROTOBUF_SFX "
++       PROTOBUF_LIBS="$PROTOBUF_LIBPATH -lprotobuf$PROTOBUF_SFX $PROTOBUF_CONFIG_LIBS"
+     else
+        PROTOBUF_INCLUDE=""
+-       PROTOBUF_LIBS="-lprotobuf$PROTOBUF_SFX "
++       PROTOBUF_LIBS="-lprotobuf$PROTOBUF_SFX $PROTOBUF_CONFIG_LIBS"
+        in_path=
+     fi
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libprotobuf$PROTOBUF_SFX$in_path" >&5
+@@ -34278,26 +35080,57 @@ grpc_pc=pkg-config
+ if test -n "$GRPC_PATH"; then
+    for d in "$GRPC_PATH/lib$bit64_sfx" "$GRPC_PATH/lib"; do
+       if test -d "$d/pkgconfig"; then
+-         grpc_pc="env PKG_CONFIG_PATH=$d/pkgconfig pkg-config"
++         if test -n "$xpb_pc" -a "$GRPC_PATH" != "$PROTOBUF_PATH"; then
++            grpc_pc="`echo $xpb_pc | sed -e \"s,=,=$d/pkgconfig:,\"`"
++         else
++            grpc_pc="env PKG_CONFIG_PATH=$d/pkgconfig pkg-config"
++         fi
+          break
+       fi
+    done
+ fi
+-if $grpc_pc grpc++ --exists 2>/dev/null; then
+-   GRPC_SED=sed
++xgrpc_pc=$grpc_pc
++if test -n "$pb_pc"  &&  $grpc_pc grpc++ --exists 2>/dev/null; then
++   grpc_b_flags=`$grpc_pc grpc++ --libs-only-L | sed -e 's/^/ /; s/ -L/ -B/'`
++   if test \! -f "`$CXX $grpc_b_flags -print-file-name=libgrpc++.so \
++                   2>/dev/null`" \
++      -a \! -f "`$CXX $grpc_b_flags -print-file-name=libgrpc++.dylib \
++                 2>/dev/null`"; then
++      grpc_pc="$grpc_pc --static"
++   fi
++   GRPC_SED="sed -e \"$pb_sed\""
+    if test -f "$GRPC_PATH/lib/libboringssl.a"; then
+-      GRPC_SED="sed -e s/-lssl/-lboringssl/g -e s/-lcrypto/-lboringcrypto/g"
++      GRPC_SED="$GRPC_SED -e s/-lssl/-lboringssl/g"
++      GRPC_SED="$GRPC_SED -e s/-lcrypto/-lboringcrypto/g"
+    fi
+    if test -f /usr/lib/libssl.dylib -a \
+              x"`$grpc_pc grpc++ --variable=prefix`" != x/sw; then
+       GRPC_SED="$GRPC_SED -e s,-L/sw/lib,,"
+    fi
+-   if test "$GRPC_SED" = sed; then
+-      GRPC_SED=cat
+-   fi
+-   GRPC_CONFIG_LIBS="`$grpc_pc grpc++ grpc --libs | $GRPC_SED`"
+-else
+-   GRPC_CONFIG_LIBS=
++   GRPC_CONFIG_LIBS="`$grpc_pc grpc++ grpc protobuf --libs | eval $GRPC_SED`"
++else
++   grpc_pc=
++   GRPC_CONFIG_LIBS="-lgrpc -lgpr"
++   if test "$PROTOBUF_PATH" != "$GRPC_PATH"; then
++      GRPC_CONFIG_LIBS="$GRPC_CONFIG_LIBS $PROTOBUF_LIBPATH"
++   fi
++   for l in address_sorting upb upb_textformat_lib upb_json_lib \
++            upb_collections_lib utf8_range_lib absl_random_distributions \
++            absl_random_seed_sequences absl_random_internal_pool_urbg \
++            absl_random_internal_randen absl_random_internal_randen_hwaes \
++            absl_random_internal_randen_hwaes_impl \
++            absl_random_internal_randen_slow absl_random_internal_platform \
++            absl_random_internal_seed_material absl_random_seed_gen_exception
++   do
++      if test -f $GRPC_PATH/lib${bit64_sfx}/lib$l.a \
++           -o -f $GRPC_PATH/lib/lib$l.a \
++           -o -f $PROTOBUF_PATH/lib${bit64_sfx}/lib$l.a \
++           -o -f $PROTOBUF_PATH/lib/lib$l.a; then
++         GRPC_CONFIG_LIBS="$GRPC_CONFIG_LIBS -l$l"
++      fi
++   done
++   GRPC_CONFIG_LIBS="$GRPC_CONFIG_LIBS $PROTOBUF_CONFIG_LIBS"
++
+    if test -n "$GRPC_PATH"; then
+       in_path=" in $GRPC_PATH"
+       CPPFLAGS="-I$GRPC_PATH/include $orig_CPPFLAGS"
+@@ -34329,6 +35162,37 @@ fi
+ rm -f core conftest.err conftest.$ac_objext \
+     conftest$ac_exeext conftest.$ac_ext
+ 
++   if test -n "$GRPC_PATH"; then
++      LIBS="$PROTOBUF_LIBPATH -L$GRPC_PATH/lib$bit64_sfx -L$GRPC_PATH/lib -lre2"
++      LIBS="$LIBS $orig_LIBS"
++   else
++      LIBS="-lre2 $orig_LIBS"
++   fi
++   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libre2$in_path" >&5
++$as_echo_n "checking for libre2$in_path... " >&6; }
++   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <re2/re2.h>
++int
++main ()
++{
++re2::RE2 rx("foo");
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  RE2_LIBS=-lre2; { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
++$as_echo "yes" >&6; }
++else
++  RE2_LIBS=; { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++$as_echo "no" >&6; }
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++
++   GRPC_CONFIG_LIBS="$GRPC_CONFIG_LIBS $CARES_LIBS $RE2_LIBS"
++
+    if test -f "$GRPC_PATH/lib/libboringssl.a"; then
+       GRPC_LDEP="-lboringssl -lboringcrypto"
+    else
+@@ -34472,62 +35336,27 @@ $as_echo "#define HAVE_LIBGRPC 1" >>confdefs.h
+ 
+ 
+ if test -n "$GRPC_LIBS"; then
+-   if test -n "$GRPC_CONFIG_LIBS"; then
+-      GRPC_LIBS="$GRPC_CONFIG_LIBS $PROTOBUF_LIBS $GRPC_LDEP"
+-      GRPC_UNSECURE_LIBS="`$grpc_pc grpc++_unsecure grpc_unsecure --libs`"
+-      for x in address_sorting upb cares; do
+-         case " $GRPC_LIBS ::: $GRPC_UNSECURE_LIBS " in
+-            *:::*" -l$x "* ) ;;
+-            *" -l$x "* ) GRPC_UNSECURE_LIBS="$GRPC_UNSECURE_LIBS -l$x" ;;
++   if test -n "$grpc_pc"; then
++      GRPC_UNSECURE_LIBS="`$grpc_pc grpc++_unsecure grpc_unsecure protobuf \
++                           --libs`"
++   else
++      GRPC_LIBS="$GRPC_LIBPATH -lgrpc++ $GRPC_CONFIG_LIBS $GRPC_LDEP"
++      GRPC_UNSECURE_LIBS=
++      sep=
++      for x in $GRPC_LIBS; do
++         case "$x" in
++            -lgrpc* )
++                GRPC_UNSECURE_LIBS="$GRPC_UNSECURE_LIBS$sep${x}_unsecure"
++                sep=' '
++                ;;
++            -lboring* | -lssl | -lcrypto )
++                ;;
++             * )
++                GRPC_UNSECURE_LIBS="$GRPC_UNSECURE_LIBS $x"
++                sep=' '
++                ;;
+          esac
+       done
+-      GRPC_UNSECURE_LIBS="$GRPC_UNSECURE_LIBS $PROTOBUF_LIBS $GRPC_LDEP"
+-   else
+-      LDFLAGS="$orig_LDFLAGS $GRPC_LIBPATH"
+-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for address_sorting_rfc_6724_sort in -laddress_sorting" >&5
+-$as_echo_n "checking for address_sorting_rfc_6724_sort in -laddress_sorting... " >&6; }
+-if ${ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort+:} false; then :
+-  $as_echo_n "(cached) " >&6
+-else
+-  ac_check_lib_save_LIBS=$LIBS
+-LIBS="-laddress_sorting  $LIBS"
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-/* Override any GCC internal prototype to avoid an error.
+-   Use char because int might match the return type of a GCC
+-   builtin and then its argument prototype would still apply.  */
+-#ifdef __cplusplus
+-extern "C"
+-#endif
+-char address_sorting_rfc_6724_sort ();
+-int
+-main ()
+-{
+-return address_sorting_rfc_6724_sort ();
+-  ;
+-  return 0;
+-}
+-_ACEOF
+-if ac_fn_cxx_try_link "$LINENO"; then :
+-  ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort=yes
+-else
+-  ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort=no
+-fi
+-rm -f core conftest.err conftest.$ac_objext \
+-    conftest$ac_exeext conftest.$ac_ext
+-LIBS=$ac_check_lib_save_LIBS
+-fi
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort" >&5
+-$as_echo "$ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort" >&6; }
+-if test "x$ac_cv_lib_address_sorting_address_sorting_rfc_6724_sort" = x""yes; then :
+-  GRPC_LIBS="$GRPC_LIBS -laddress_sorting"
+-fi
+-
+-      LDFLAGS=$orig_LDFLAGS
+-      GRPC_UNSECURE_LIBS=`echo $GRPC_LIBS \
+-         | sed -e 's/\(-lgrpc+*\)/\1_unsecure/g'`
+-      GRPC_LIBS="$GRPC_LIBS $GRPC_LDEP"
+    fi
+    GRPC_REFLECTION_LIBS="$WHOLE_ARCHIVE $NO_AS_NEEDED $GRPC_LIBPATH"
+    GRPC_REFLECTION_LIBS="$GRPC_REFLECTION_LIBS -lgrpc++_reflection"
+@@ -34648,10 +35477,18 @@ for d in "$AWS_SDK_PATH/lib$bit64_sfx" "$AWS_SDK_PATH/lib" \
+          /usr/local/lib$bit64_sfx /usr/local/lib; do
+     if test -f "$d/libaws-cpp-sdk-s3.a"; then
+        AWS_SDK_LIBDIR=$d
+-       if test -f "$AWS_SDK_LIBDIR/libaws-c-event-stream.a"; then
+-          AWS_SDK_LDEP="-laws-c-event-stream -laws-checksums -laws-c-common"
+-          AWS_SDK_STATIC_LDEP="-laws-c-event-stream-static -laws-checksums-static -laws-c-common-static"
+-       fi
++       AWS_SDK_LDEP=
++       AWS_SDK_STATIC_LDEP=
++       sep=
++       for x in aws-crt-cpp aws-c-s3 aws-c-mqtt aws-c-event-stream aws-c-auth \
++          aws-checksums aws-c-sdkutils aws-c-http aws-c-compression aws-c-io \
++          aws-c-cal s2n aws-c-common; do
++          if test -f "$AWS_SDK_LIBDIR/lib$x.a"; then
++             AWS_SDK_LDEP="$AWS_SDK_LDEP$sep-l$x"
++             AWS_SDK_STATIC_LDEP="$AWS_SDK_STATIC_LDEP$sep-l$x-static"
++             sep=' '
++          fi
++       done
+        break
+     fi
+ done
+@@ -35966,13 +36803,13 @@ $as_echo "#define HAVE_LIBTHRIFT 1" >>confdefs.h
+ 
+ 
+ 
+-if test "$with_thrift" != no -a \
+-   \( -f "$THRIFT_PATH/lib/libthrift${THRIFT_SFX}_static.a" \
+-   -o -f "$THRIFT_PATH/lib/libthrift_static$THRIFT_SFX.a" \); then
++if test "$with_thrift" != no; then
+    if test -f "$THRIFT_PATH/lib/libthrift${THRIFT_SFX}_static.a"; then
+       THRIFT_STATIC_LIBS="-L$THRIFT_PATH/lib -lthrift${THRIFT_SFX}_static"
+-   else
++   elif test -f "$THRIFT_PATH/lib/libthrift_static$THRIFT_SFX.a"; then
+       THRIFT_STATIC_LIBS="-L$THRIFT_PATH/lib -lthrift_static$THRIFT_SFX"
++   else
++      THRIFT_STATIC_LIBS=$THRIFT_LIBS
+    fi
+ fi
+ 
+@@ -36201,6 +37038,8 @@ $as_echo "#define HAVE_LIBYAML_CPP 1" >>confdefs.h
+ if test "$with_yaml_cpp" != no -a -f "$YAML_CPP_PATH/lib/libyaml-cpp-static.a"
+ then
+    YAML_CPP_STATIC_LIBS="-L$YAML_CPP_PATH/lib -lyaml-cpp-static"
++else
++   YAML_CPP_STATIC_LIBS=$YAML_CPP_LIBS
+ fi
+ 
+ 
+@@ -36367,6 +37206,8 @@ $as_echo "#define HAVE_LIBOPENTRACING 1" >>confdefs.h
+ if test "$with_opentracing" != no \
+    -a -f "$OPENTRACING_PATH/lib/libopentracing-static.a"; then
+    OPENTRACING_STATIC_LIBS="-L$OPENTRACING_PATH/lib -lopentracing-static"
++else
++   OPENTRACING_STATIC_LIBS=$OPENTRACING_LIBS
+ fi
+ 
+ 
+@@ -36544,6 +37385,218 @@ if test "$with_jaeger" != no \
+    JAEGER_STATIC_LIBS="$JAEGER_STATIC_LIBS $OPENTRACING_STATIC_LIBS"
+    JAEGER_STATIC_LIBS="$JAEGER_STATIC_LIBS $YAML_CPP_STATIC_LIBS"
+    JAEGER_STATIC_LIBS="$JAEGER_STATIC_LIBS $THRIFT_STATIC_LIBS"
++else
++   JAEGER_STATIC_LIBS=$JAEGER_LIBS
++fi
++
++
++case "$with_opentelemetry" in
++   yes | no | '' ) ;;
++   *             ) OPENTELEMETRY_PATH=$with_opentelemetry ;;
++esac
++if test -d "$OPENTELEMETRY_PATH"; then
++   OPENTELEMETRY_ARCH_PATH=$OPENTELEMETRY_PATH
++for d in "$OPENTELEMETRY_PATH/$compiler_vpfx$DEBUG_SFX$mt_sfx$bit64_sfx" \
++         "$OPENTELEMETRY_PATH/$compiler_pfx$DEBUG_SFX$mt_sfx$bit64_sfx" \
++         "$OPENTELEMETRY_PATH/$compiler_vpfx$DEBUG_SFX$mt_sfx" \
++         "$OPENTELEMETRY_PATH/$compiler_pfx$DEBUG_SFX$mt_sfx"; do
++   if test -d "$d"; then
++      OPENTELEMETRY_ARCH_PATH=$d
++      break
++   fi
++done
++   OPENTELEMETRY_PATH=$OPENTELEMETRY_ARCH_PATH
++   if test -d "$OPENTELEMETRY_PATH$asan_sfx"; then
++      OPENTELEMETRY_PATH="$OPENTELEMETRY_PATH$asan_sfx"
++   fi
++   ncbi_fix_dir_tmp=`if cd $OPENTELEMETRY_PATH; then { PWD=; unset PWD;}; /bin/pwd; fi`
++ case "$ncbi_fix_dir_tmp" in
++    /.*) ncbi_fix_dir_tmp2=`cd $OPENTELEMETRY_PATH && $smart_pwd 2>/dev/null`
++         if test -n "$ncbi_fix_dir_tmp2" -a -d "$ncbi_fix_dir_tmp2"; then
++            OPENTELEMETRY_PATH=$ncbi_fix_dir_tmp2
++         else
++            case "$OPENTELEMETRY_PATH" in
++               /*) ;;
++               * ) OPENTELEMETRY_PATH=$ncbi_fix_dir_tmp ;;
++            esac
++         fi
++         ;;
++    /*) OPENTELEMETRY_PATH=$ncbi_fix_dir_tmp ;;
++ esac
++fi
++# pkg-config covers only a few of these libraries, but still helps
++# supply proper compilation flags; in particular, the presence or
++# absence of HAVE_ABSEIL needs to agree with how OT was built.
++# However, the tool might have been unusable for gRPC or Protobuf due
++# to a bug that thankfully doesn't come into play here (since OT's API
++# depends on a much smaller subset of Abseil).
++if test -n "$OPENTELEMETRY_PATH"; then
++   for d in "$OPENTELEMETRY_PATH/lib$bit64_sfx" "$OPENTELEMETRY_PATH/lib"; do
++      if test -d "$d/pkgconfig"; then
++         if test -n "$xgrpc_pc" \
++            -a \( "$OPENTELEMETRY_PATH" != "$PROTOBUF_PATH" \
++               -o "$OPENTELEMETRY_PATH" != "$GRPC_PATH" \); then
++            otel_pc="`echo $xgrpc_pc | sed -e \"s,=,=$d/pkgconfig:,\"`"
++         else
++            otel_pc="env PKG_CONFIG_PATH=$d/pkgconfig pkg-config"
++         fi
++         break
++      fi
++   done
++fi
++if test -n "$otel_pc"; then
++   OPENTELEMETRY_CFLAGS=`$otel_pc opentelemetry_api --cflags`
++fi
++if test "$with_opentelemetry" != "no"; then
++    case "$OPENTELEMETRY_PATH:$with_opentelemetry" in
++       *:yes | *: | $with_opentelemetry* ) ;;
++       * ) OPENTELEMETRY_PATH=$with_opentelemetry ;;
++    esac
++    if test "$OPENTELEMETRY_PATH" != /usr -a -d "$OPENTELEMETRY_PATH"; then
++       in_path=" in $OPENTELEMETRY_PATH"
++       if test -z "$OPENTELEMETRY_INCLUDE" -a -d "$OPENTELEMETRY_PATH/include"; then
++          OPENTELEMETRY_INCLUDE="-I$OPENTELEMETRY_PATH/include"
++       fi
++       if test -n "$OPENTELEMETRY_LIBPATH"; then
++          :
++       elif test -d "$OPENTELEMETRY_PATH/lib${bit64_sfx}"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $OPENTELEMETRY_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    OPENTELEMETRY_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $OPENTELEMETRY_PATH/lib${bit64_sfx}; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    OPENTELEMETRY_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       elif test -d "$OPENTELEMETRY_PATH/lib"; then
++          ncbi_rp_L_flags=
++ ncbi_rp_L_sep=$CONF_f_libpath
++ if test "x${CONF_f_runpath}" = "x${CONF_f_libpath}"; then
++    for x in $OPENTELEMETRY_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++    done
++    OPENTELEMETRY_LIBPATH="${ncbi_rp_L_flags}"
++ else
++    ncbi_rp_R_flags=
++    ncbi_rp_R_sep=" $CONF_f_runpath"
++    for x in $OPENTELEMETRY_PATH/lib; do
++       case "$x" in
++          /lib | /usr/lib | /usr/lib32 | /usr/lib64 | /usr/lib/$multiarch )
++             continue
++             ;;
++       esac
++       ncbi_rp_L_flags="${ncbi_rp_L_flags}${ncbi_rp_L_sep}$x"
++       ncbi_rp_L_sep=" $CONF_f_libpath"
++       x=`echo $x | sed -e "$ncbi_rpath_sed"`
++       ncbi_rp_R_flags="${ncbi_rp_R_flags}${ncbi_rp_R_sep}$x"
++       ncbi_rp_R_sep=:
++    done
++    OPENTELEMETRY_LIBPATH="${ncbi_rp_L_flags}${ncbi_rp_R_flags}"
++ fi
++       fi
++       OPENTELEMETRY_LIBS="$OPENTELEMETRY_LIBPATH -lopentelemetry_exporter_otlp_grpc -lopentelemetry_exporter_otlp_grpc_client -lopentelemetry_proto_grpc \
++   -lopentelemetry_exporter_otlp_http \
++   -lopentelemetry_exporter_otlp_http_client -lopentelemetry_otlp_recordable \
++   -lopentelemetry_exporter_ostream_span -lopentelemetry_trace \
++   -lopentelemetry_proto -lopentelemetry_http_client_curl \
++   -lopentelemetry_logs -lopentelemetry_metrics \
++   -lopentelemetry_resources -lopentelemetry_common"
++    else
++       OPENTELEMETRY_INCLUDE=""
++       OPENTELEMETRY_LIBS="-lopentelemetry_exporter_otlp_grpc -lopentelemetry_exporter_otlp_grpc_client -lopentelemetry_proto_grpc \
++   -lopentelemetry_exporter_otlp_http \
++   -lopentelemetry_exporter_otlp_http_client -lopentelemetry_otlp_recordable \
++   -lopentelemetry_exporter_ostream_span -lopentelemetry_trace \
++   -lopentelemetry_proto -lopentelemetry_http_client_curl \
++   -lopentelemetry_logs -lopentelemetry_metrics \
++   -lopentelemetry_resources -lopentelemetry_common"
++       in_path=
++    fi
++    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libopentelemetry_exporter_otlp_grpc$in_path" >&5
++$as_echo_n "checking for libopentelemetry_exporter_otlp_grpc$in_path... " >&6; }
++if ${ncbi_cv_lib_opentelemetry+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  CPPFLAGS="$GRPC_INCLUDE $OPENTELEMETRY_CFLAGS $OPENTELEMETRY_INCLUDE $orig_CPPFLAGS"
++       LIBS="$OPENTELEMETRY_LIBS $GRPC_LIBS $PROTOBUF_LIBS $CURL_LIBS $orig_LIBS"
++       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++#include <opentelemetry/exporters/otlp/otlp_grpc_exporter.h>
++int
++main ()
++{
++opentelemetry::exporter::otlp::OtlpGrpcExporter exporter;
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_cxx_try_link "$LINENO"; then :
++  ncbi_cv_lib_opentelemetry=yes
++else
++  ncbi_cv_lib_opentelemetry=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ncbi_cv_lib_opentelemetry" >&5
++$as_echo "$ncbi_cv_lib_opentelemetry" >&6; }
++    if test "$ncbi_cv_lib_opentelemetry" = "no"; then
++       if test "${with_opentelemetry:=no}" != no; then
++       as_fn_error $? "--with-opentelemetry explicitly specified, but no usable version found." "$LINENO" 5
++    fi
++    fi
++ fi
++ if test "$with_opentelemetry" = "no"; then
++    OPENTELEMETRY_PATH="No_OPENTELEMETRY"
++    OPENTELEMETRY_INCLUDE=
++    OPENTELEMETRY_LIBS=
++ else
++              WithPackages="$WithPackages${WithPackagesSep}OPENTELEMETRY"; WithPackagesSep=" "
++    OPENTELEMETRY_INCLUDE="$GRPC_INCLUDE $OPENTELEMETRY_CFLAGS $OPENTELEMETRY_INCLUDE"
++
++$as_echo "#define HAVE_LIBOPENTELEMETRY 1" >>confdefs.h
++
++ fi
++
++
++
++OPENTELEMETRY_LIBS=`echo "$OPENTELEMETRY_LIBS" | sed -e 's/  */ /g'`
++if test "$with_opentelemetry" != no \
++   -a -f "$OPENTELEMETRY_PATH/lib/libopentelemetry_common-static.a"; then
++   test -f "$OPENTELEMETRY_PATH/lib/libopentelemetry_proto-static.a"  ||  \
++     	ot_extra_sed='; s/\(-lopentelemetry_proto[^ ]*\)-static/\1/g'
++   OPENTELEMETRY_STATIC_LIBS=`echo "$OPENTELEMETRY_LIBS" \
++       | sed -e "s/ -l[^ ]*/&-static/g$ot_extra_sed"`
++else
++   OPENTELEMETRY_STATIC_LIBS=$OPENTELEMETRY_LIBS
+ fi
+ 
+ 
+@@ -36681,6 +37734,7 @@ else
+    DBAPI_DRIVER=dbapi_driver
+    DBAPI_FTDS=ncbi_xdbapi_ftds
+    DBAPI_FTDS100=ncbi_xdbapi_ftds100
++   DBAPI_FTDS14=ncbi_xdbapi_ftds14
+    test -n "$SYBASE_LIBS"    &&  DBAPI_CTLIB=ncbi_xdbapi_ctlib
+    test -n "$MYSQL_LIBS"     &&  DBAPI_MYSQL=ncbi_xdbapi_mysql
+    test -n "$ODBC_LIBS"      &&  DBAPI_ODBC=ncbi_xdbapi_odbc
+@@ -36906,7 +37960,7 @@ FEATURES="$WithFeatures $WithPackages $WithProjects"
+ 
+ ### Compute Without{Features,Packages,Projects}.  Takes quadratic time,
+ ### but that's life.
+-for x in ChaosMonkey Int4GI Int8GI StrictGI BM64 GCC KCC ICC AppleClang LLVMClang Clang VisualAge CompaqCompiler Cray WorkShop MIPSpro MSVC MT LFS DLL DLL_BUILD MaxDebug MSWin unix WinMain AIX BSD Cygwin CygwinMT Darwin XCODE IRIX Linux OSF Solaris MacOS in-house-resources full-test-data full-blastdb JDK Ncbi-JNI PubSeqOS PSGLoader check Valgrind LimitedLinker; do
++for x in ChaosMonkey Int4GI Int8GI StrictGI StrictEntrezID StrictTaxID BM64 GCC KCC ICC AppleClang LLVMClang Clang VisualAge CompaqCompiler Cray WorkShop MIPSpro MSVC MT Cxx2020_format_api LFS DLL DLL_BUILD MaxDebug MSWin unix WinMain AIX BSD Cygwin CygwinMT Darwin XCODE IRIX Linux OSF Solaris MacOS in-house-resources full-test-data full-blastdb JDK Ncbi-JNI PubSeqOS PSGLoader check Valgrind LimitedLinker; do
+       case " $WithFeatures " in
+          *" $x "*) ;;
+          *) WithoutFeatures="$WithoutFeatures$WithoutFeaturesSep$x"
+@@ -36915,7 +37969,7 @@ for x in ChaosMonkey Int4GI Int8GI StrictGI BM64 GCC KCC ICC AppleClang LLVMClan
+           ;;
+       esac
+    done
+-  for x in UUID FUSE Iconv LIBUNWIND LIBDW BACKWARD_CPP Z LocalZ BZ2 LocalBZ2 LZO ZSTD PCRE LocalPCRE MBEDTLS GMP GCRYPT NETTLE GNUTLS OPENSSL KRB5 CURL Sybase DBLib FreeTDS MySQL BerkeleyDB BerkeleyDB++ ODBC PYTHON PYTHON25 PYTHON26 PYTHON27 PYTHON3 PERL Boost.Chrono Boost.Filesystem Boost.Iostreams Boost.Program-Options Boost.Regex Boost.Serialization Boost.Spirit Boost.System Boost.Test Boost.Test.Included Boost.Thread C-Toolkit NCBICRYPT OpenGL MESA GLUT GLEW wxWidgets wx2.8 Fast-CGI FASTCGIPP LocalSSS LocalMSGMAIL2 SSSUTILS LocalNCBILS NCBILS2 SSSDB SP ORBacus ICU EXPAT SABLOT LIBXML LIBXSLT LIBEXSLT Xerces Xalan Zorba SQLITE3 SQLITE3ASYNC VDB NGS OECHEM SGE DRMAA2 MUPARSER HDF5 JPEG PNG TIFF GIF UNGIF XPM GL2PS FreeType FTGL MAGIC MIMETIC GSOAP AVRO Cereal SASL2 MONGODB MONGODB3 LEVELDB LIBURING ROCKSDB GMOCK LAPACK LMDB LocalLMDB LIBUV LIBSSH2 CASSANDRA NGHTTP2 H2O INFLUXDB LIBXLSXWRITER PROTOBUF GRPC MSGSL AWS_SDK CRC32C GOOGLE_CLOUD HIREDIS APACHE_ARROW LIBRDKAFKA CPPKAFKA THRIFT NLohmann_JSON YAML_CPP OPENTRACING JAEGER; do
++  for x in UUID FUSE Iconv LIBUNWIND LIBDW BACKWARD_CPP Z LocalZ BZ2 LocalBZ2 LZO ZSTD PCRE PCRE2 LocalPCRE MBEDTLS GMP GCRYPT NETTLE GNUTLS OPENSSL KRB5 CURL Sybase DBLib FreeTDS MySQL BerkeleyDB BerkeleyDB++ ODBC PYTHON PYTHON25 PYTHON26 PYTHON27 PYTHON3 PERL Boost.Chrono Boost.Filesystem Boost.Iostreams Boost.Program-Options Boost.Regex Boost.Serialization Boost.Spirit Boost.System Boost.Test Boost.Test.Included Boost.Thread C-Toolkit NCBICRYPT OpenGL MESA GLUT GLEW wxWidgets wx2.8 Fast-CGI FASTCGIPP LocalSSS LocalMSGMAIL2 SSSUTILS LocalNCBILS NCBILS2 SSSDB SP ORBacus ICU EXPAT SABLOT LIBXML LIBXSLT LIBEXSLT Xerces Xalan Zorba SQLITE3 SQLITE3ASYNC VDB NGS OECHEM SGE DRMAA2 MUPARSER HDF5 JPEG PNG TIFF GIF UNGIF XPM GL2PS FreeType FTGL MAGIC MIMETIC GSOAP AVRO Cereal SASL2 MONGODB MONGODB3 LEVELDB LIBURING ROCKSDB GMOCK LAPACK LMDB LocalLMDB LIBUV LIBSSH LIBSSH2 CASSANDRA NGHTTP2 H2O INFLUXDB LIBXLSXWRITER PROTOBUF GRPC MSGSL AWS_SDK CRC32C GOOGLE_CLOUD HIREDIS APACHE_ARROW LIBRDKAFKA CPPKAFKA THRIFT NLohmann_JSON YAML_CPP OPENTRACING JAEGER OPENTELEMETRY; do
+       case " $WithPackages " in
+          *" $x "*) ;;
+          *) WithoutPackages="$WithoutPackages$WithoutPackagesSep$x"
+@@ -36953,6 +38007,18 @@ if test "$ICC" = "yes"  -a  -n "$icc_license" ; then
+    CXX="$icc_CXX"
+ fi
+ 
++### Avoid spurious warnings when using Clang (or Clang-based ICC) in
++### conjunction with distcc (and quite possibly also ccache).
++case "$gccdir:$CC_WRAPPER" in
++   /*:*distcc*ccache* )
++      CPPFLAGS="$CPPFLAGS --ccache-skip -frewrite-includes"
++      ;;
++   /*:*distcc* )
++      CPPFLAGS="$CPPFLAGS -frewrite-includes"
++      ;;
++esac
++
++
+ ### Adjust paths to wrapper.*.sh
+ case "$CC"     in compilers/*)     CC="\$(top_srcdir)/$CC"     ;; esac
+ case "$CXX"    in compilers/*)    CXX="\$(top_srcdir)/$CXX"    ;; esac
+@@ -37331,6 +38397,12 @@ c_ncbi_runpath=`echo "$ncbi_runpath" | sed -e 's:\\$\\$:\\$:g'`
+ 
+ 
+ 
++
++
++
++
++
++
+ 
+ 
+ 

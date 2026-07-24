@@ -1,0 +1,43 @@
+{% set name = "pyrodigal-rv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pyrodigal_rv-{{ version }}.tar.gz
+  sha256: 3ccfbdeadda103cd2f17d3d753acb280a2fe35411ac166cd08cdecf317f64d88
+
+build:
+  script: {{ PYTHON }} -m pip install . --ignore-installed  --use-pep517 --no-deps -vvv
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=46.4
+    - wheel >=0.23
+    - packaging >=19.1
+    - pycparser
+    - pip
+  run:
+    - python
+    - pyrodigal >=3.1,<4
+    - importlib-resources # [py<39]
+
+test:
+  imports:
+    - pyrodigal_rv
+  commands:
+    - python -m unittest -vv pyrodigal_rv.tests
+
+about:
+  home: https://github.com/LanderDC/pyrodigal-rv
+  summary: A Pyrodigal extension to predict genes in RNA viruses.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING

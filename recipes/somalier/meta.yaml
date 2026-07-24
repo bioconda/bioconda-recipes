@@ -1,5 +1,5 @@
 {% set name = "somalier" %}
-{% set version = "0.3.0" %}
+{% set version = "0.3.3" %}
 
 package:
   name: {{ name }}
@@ -7,17 +7,17 @@ package:
 
 source:
   url: https://github.com/brentp/somalier/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b159e09ae936ca4122be4132a870b7f6225b515fc1c772a9247f03ef0d4fd16c
+  sha256: bad542343514373f4f3dcf40d814754dba02afda4cbf4bb24a44297c777a2afe
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('somalier', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - nim >=2.0.4
+    - nim >=2.0.4  # [not arm64]
   host:
     - curl
     - openblas
@@ -40,6 +40,11 @@ about:
   summary: "Fast sample-swap and relatedness checks on BAMs/CRAMs/VCFs/GVCFs."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1186/s13073-020-00761-2
     - biotools:somalier
+  skip-lints:
+    - compiler_needs_stdlib_c
