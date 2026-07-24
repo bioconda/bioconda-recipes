@@ -3,6 +3,7 @@
 set -euo pipefail
 
 export JULIA_CPU_TARGET=generic
+export JULIA_CC="${CC}"
 
 julia --project="${SRC_DIR}/build" "${SRC_DIR}/build/build_app.jl"
 
