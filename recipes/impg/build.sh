@@ -6,8 +6,14 @@ set -xe
 export CPATH="${PREFIX}/include${CPATH:+:${CPATH}}"
 export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
 
-# rust-htslib runs bindgen, which needs libclang at build time.
+# rust-htslib and onecode run bindgen, which needs libclang at build time.
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+
+# onecode calls bindgen with no sysroot, so libclang would read its own glibc
+# headers and disagree with the compiler about struct _IO_FILE.
+if [[ $(uname) != "Darwin" ]]; then
+    export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=${BUILD_PREFIX}/${HOST}/sysroot -I${PREFIX}/include"
+fi
 
 if [[ $(uname) == "Darwin" ]]; then
     # Set PLATFORM for ARM64 Macs as AGC expects
