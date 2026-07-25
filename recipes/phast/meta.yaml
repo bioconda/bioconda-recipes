@@ -16,8 +16,15 @@ build:
   script:
     # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
     - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
+    # Force the generic netlib BLAS/LAPACK interface (libblas.so/liblapack.so) rather
+    # than an implementation's libraries. conda-forge may resolve BLAS to MKL or OpenBLAS
+    # depending on the solve; linking the implementation directly (e.g. libmkl_*.so)
+    # overlinks and breaks at runtime when that implementation is not a runtime dep.
+    # The netlib symlinks are provided by libblas/liblapack (whose run_exports add the
+    # matching runtime dependency), so the package works with any BLAS implementation.
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
+      -DBLA_VENDOR=Generic
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
       -DCMAKE_INSTALL_LIBDIR=lib
       -DCMAKE_INSTALL_BINDIR=bin
@@ -34,11 +41,10 @@ requirements:
     - cctools
   host:
     - pcre
-    - blas
-    - lapack
+    - libblas
+    - liblapack
   run:
     - pcre >=8.45,<9.0a0
-    - libopenblas
     
 test:
   commands:
