@@ -1,0 +1,62 @@
+{% set name = "falcoamadeus" %}
+{% set version = "1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/joachimwolff/falcoAmadeus/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 665aac96987c28e14a45c9465dc5723b893af4e5ed9d40b8e38e3edef28f86e1
+
+build:
+  number: 0
+  run_exports:
+    # not intended to be ABI-stable between major versions
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - autoconf
+    - automake
+    - libtool
+    - gnuconfig
+  host:
+    - zlib
+    - htslib
+    - llvm-openmp  # [osx]
+  run:
+    - htslib
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - falcoAmadeus --version
+    - falcoAmadeus --help
+
+about:
+  home: "https://github.com/joachimwolff/falcoAmadeus"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "FalcoAmadeus: a faster, sequencing-aware fork of falco (a C++ FastQC alternative)"
+  description: |
+    FalcoAmadeus is a performance-focused, sequencing-aware fork of falco (a fast
+    C++ reimplementation of FastQC). Default single-end output is byte-identical
+    to falco; opt-in features add correct paired-end analysis (one combined
+    report plus a corrected paired PCR-duplicate rate and R1/R2 pairing counts),
+    assay-aware pass/warn/fail grading, a redesigned interactive HTML report, and
+    multi-threaded gzip parsing. The fastqc_data.txt output is ingestible by
+    MultiQC.
+  dev_url: "https://github.com/joachimwolff/falcoAmadeus"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - joachimwolff
