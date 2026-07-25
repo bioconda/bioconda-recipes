@@ -16,6 +16,7 @@ build:
   script:
     # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
     - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
+    - export LDFLAGS="${LDFLAGS} -lm -L${PREFIX}/lib"
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
@@ -30,6 +31,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
+    - pkg-config
     - cmake
     - make
     - cctools  # [osx]
