@@ -12,34 +12,50 @@ source:
 build:
   skip: True  # [not unix]
   number: 0
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
   script_env:
-    - tiny_count_only=1
+    - tiny = tiny.entry:main
+    - tiny-config = tiny.rna.configuration:Configuration.main
+    - tiny-collapse = tiny.rna.collapser:main
+    - tiny-count = tiny.rna.counter.counter:main
+    - tiny-plot = tiny.rna.plotter:main
+  run_exports:
+    - {{ pin_subpackage('tiny-count', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - python 3.9.*
-    - setuptools 63.1.*
-    - cython 0.29.*
-    - pysam 0.19.*
-    - pip 22.1.*
+    - python
+    - setuptools
+    - cython
+    - pysam
+    - pip
   run:
-    - python 3.9.*
-    - htseq =2.0.2
-    - numpy =1.23.1
-    - pandas =1.4.3
-    - ruamel.yaml =0.17.16
+    - python
+    - htseq
+    - numpy
+    - pandas
+    - ruamel.yaml
 
 test:
   commands:
     - tiny-count -h
 
 about:
-  home: https://github.com/MontgomeryLab/tinyRNA
-  license: GPLv3
+  home: "https://github.com/MontgomeryLab/tinyRNA"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.md"
   summary: \
     A precision counting tool for hierarchical classification 
     and quantification of small RNA-seq reads. tiny-count is
     part of the tinyRNA analysis pipeline.
+  dev_url: "https://github.com/MontgomeryLab/tinyRNA"
+  doc_url: "https://github.com/MontgomeryLab/tinyRNA/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
