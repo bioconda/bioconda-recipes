@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/CshlSiepelLab/vine/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 8eb4e5359ac2afc55894118c6d3399efac225e66fde9eb16b96742c213035414
+  sha256: 874a2a87b4937ee626c5c0381ab71301960d4af051650b46aba156d8b9f7967a
 
 build:
   number: 0
@@ -14,10 +14,14 @@ build:
   run_exports:
     - {{ pin_subpackage('vine-phylo', max_pin='x.x') }}
   script:
-    # On linux, conda-forge's libopenblas may not provide an unversioned libopenblas.so
-    # (only libopenblas.so.0). If CMake/FindBLAS (or a dependency's exported link line)
-    # expects the unversioned name, builds can fail with "No rule to make target ...libopenblas.so".
-    # Prefer passing explicit versioned paths rather than mutating $PREFIX/lib with symlinks.
+    # On linux, conda-forge's libopenblas ships only libopenblas.so.0 (no unversioned
+    # libopenblas.so). PHAST's exported CMake target (phast_linalg) baked the unversioned
+    # path from find_package(BLAS) at phast build time, and vine inherits it transitively
+    # when linking phast::phast -- so the link fails with "No rule to make target
+    # ...libopenblas.so" for every program. Provide the unversioned name for the link step.
+    - test -f ${PREFIX}/lib/libopenblas.so || ln -sf libopenblas.so.0 ${PREFIX}/lib/libopenblas.so  # [linux]
+    # BLAS_LIBRARIES is also passed to vine's own configure: it drives the check_function_exists
+    # probe that enables OpenBLAS thread limiting (openblas_set_num_threads) on this platform.
     - export VINE_BLAS_ARGS=""  # [not linux]
     - export VINE_BLAS_ARGS="-DBLAS_LIBRARIES=${PREFIX}/lib/libopenblas.so.0 -DLAPACK_LIBRARIES=${PREFIX}/lib/libopenblas.so.0"  # [linux]
     - export VINE_CODESIGN=OFF  # [osx]
@@ -28,6 +32,9 @@ build:
       ${VINE_BLAS_ARGS}
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
+    # Remove the link-time helper symlink so it is not packaged into vine-phylo
+    # (that path belongs to libopenblas). It is only needed during linking above.
+    - rm -f ${PREFIX}/lib/libopenblas.so  # [linux]
 
 requirements:
   build:
