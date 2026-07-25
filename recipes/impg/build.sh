@@ -21,6 +21,13 @@ if [[ $(uname) == "Darwin" ]]; then
         export PLATFORM=arm8
     fi
 
+    # FastGA's Makefile hardcodes CC = gcc, which on macOS resolves to a wrapper
+    # that looks for an SDK that is not installed.
+    mkdir -p "$BUILD_PREFIX/bin"
+    ln -sf "$CC" "$BUILD_PREFIX/bin/gcc"
+    ln -sf "$CXX" "$BUILD_PREFIX/bin/g++"
+    export PATH="$BUILD_PREFIX/bin:$PATH"
+
     # Use the conda-provided Clang compilers
     echo "Using CC: $CC"
     echo "Using CXX: $CXX"
