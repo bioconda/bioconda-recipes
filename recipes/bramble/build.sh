@@ -2,8 +2,12 @@
 
 set -xe
 
-# Ensure C compiler / libclang environment variables are active for bindgen
-export LIBCLANG_PATH="${PREFIX}/lib"
+# Point bindgen to Conda's libclang location
+if [ -d "${BUILD_PREFIX}/lib" ]; then
+    export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+else
+    export LIBCLANG_PATH="${PREFIX}/lib"
+fi
 
 # Move into the bramble-cli crate directory where Cargo.toml lives
 cd bramble-cli
