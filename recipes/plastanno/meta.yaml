@@ -1,0 +1,58 @@
+{% set name = "plastanno" %}
+{% set version = "2.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/maidinhvn/plastanno/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cd58bef51373e7cee05cf653d9d44fe7356ed6122bd11c06c87a033c33e4ad30
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("plastanno", max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - biopython
+    - pandas
+    - matplotlib-base
+    - platformdirs
+    - blast
+    - exonerate
+    - hmmer
+    - aragorn
+    - trnascan-se        # only used by the optional --trnascan tRNA source
+
+test:
+  imports:
+    - plastanno
+  commands:
+    - plastanno --help
+  # No real annotation run: that needs the 266 MB database, which bioconda CI does
+  # not download. Users fetch it post-install with `plastanno fetch-db`.
+
+about:
+  home: https://github.com/maidinhvn/plastanno
+  license: MIT
+  license_file: LICENSE
+  summary: "Dual-evidence, confidence-aware plastid genome (plastome) annotation pipeline"
+  description: |
+    Plastanno v2 annotates chloroplast genomes by merging two independent engines
+    (Exonerate protein2genome + profile HMMs) in a confidence-scored reconciliation
+    layer, flagging low-confidence loci for review. The reference database (~266 MB)
+    is downloaded separately via `plastanno fetch-db`.
+  dev_url: https://github.com/maidinhvn/plastanno
+
+extra:
+  recipe-maintainers:
+    - maidinhvn
