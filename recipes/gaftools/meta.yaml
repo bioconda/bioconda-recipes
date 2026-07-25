@@ -1,6 +1,6 @@
 {% set name = "gaftools" %}
-{% set version = "1.3.1" %}
-{% set sha256 = "b672d2b85cac0103828ee5ef64fe534dcfe08a723ac75db1ac27c8128b963d71" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "07a47eb8fa496d5bc73fcfb68c475eff04c1724cef914f179ea6c337eb6758a7" %}
 
 package:
   name: {{ name|lower }}
@@ -13,20 +13,23 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vv
   run_exports:
-    - {{ pin_compatible('gaftools', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.9
     - pip
-    - setuptools
+    - setuptools >=77.0.3
+    - setuptools-scm
   run:
-    - python >=3.6
+    - python >=3.9
     - pysam
     - pywfa ==0.5.1
+    - pyfastx
+    - setuptools  # provides distutils.version at runtime
 
 test:
   commands:

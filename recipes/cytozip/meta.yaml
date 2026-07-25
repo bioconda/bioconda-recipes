@@ -1,0 +1,80 @@
+{% set name = "cytozip" %}
+{% set version = "0.3.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a74497dd5cb3e73d88191e1651a9e4156c7ffcc52808b366091120b4034a2337 # filled in by bioconda autobump on each release
+
+build:
+  number: 0
+  skip: true  # [py<38 or win or osx]
+  script: |
+    # htslib is guaranteed present in ``host:`` requirements below, so
+    # force setup.py to build the ``cytozip._bam_pileup`` extension even
+    # if the auto-detection based on ``$PREFIX`` / ``$CONDA_PREFIX``
+    # misses the header path for any reason. Without this, the ``test:``
+    # phase fails with ``ModuleNotFoundError: cytozip._bam_pileup``.
+    export CYTOZIP_FORCE_HTSLIB=1
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - czip = cytozip:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - python
+    - pip
+    - setuptools >=61
+    - setuptools_scm
+    - cython >=3.0
+    - numpy >=2.0
+    - htslib
+    - libdeflate
+    - zlib
+  run:
+    - python
+    - numpy >=1.19
+    - pandas
+    - loguru
+    - pysam
+    - fsspec
+    - requests
+    - anndata
+    - scipy
+    - htslib
+    - libdeflate
+    - zlib
+
+test:
+  imports:
+    - cytozip
+    - cytozip.cz_accel
+    - cytozip._bam_pileup
+  commands:
+    - czip --help
+
+about:
+  home: https://github.com/DingWB/cytozip
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'cytozip: Chunk-based ZIP for cytosine (methylation) data'
+  description: |
+    A columnar, randomly-accessible compressed format for single-base
+    cytosine methylation data, with a fast in-process htslib pileup
+    backend for BAM → cz conversion.
+  doc_url: https://dingwb.github.io/cytozip
+  dev_url: https://github.com/DingWB/cytozip
+
+extra:
+  recipe-maintainers:
+    - DingWB

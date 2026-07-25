@@ -1,0 +1,46 @@
+{% set name = "seqcal" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/superbio-zhangwei/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 50af3e26710ed4e0da6062c9566f16b8e0235f0e0685e0c32b8d1edfe6336a4f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - seqcal = seqcal.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.8
+    - pandas >=1.5
+    - tqdm >=4.60
+    - seqkit
+
+test:
+  imports:
+    - seqcal
+  commands:
+    - seqcal --help
+
+about:
+  home: https://github.com/superbio-zhangwei/seqcal
+  summary: Primer-guided sequence extraction and copy-number calculation tool
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - superbio-zhangwei

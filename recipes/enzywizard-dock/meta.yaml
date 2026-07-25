@@ -1,0 +1,63 @@
+{% set name = "enzywizard-dock" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-dock/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 09dad09fdf37829916f5208e18af7f0b11b31542b64b068cea518f8f7579e5f1
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - rdkit <=2026.3.1
+    - numpy >=1.23,<2
+    - biopython
+    - vina
+    - meeko
+    - bio-pyvol
+    - msms
+
+test:
+  imports:
+    - enzywizard_dock
+    - enzywizard_dock.cli
+    - enzywizard_dock.services.dock_service
+    - enzywizard_dock.algorithms.dock_algorithms
+  commands:
+    - enzywizard-dock --help
+    - vina --help
+  # Note: Uses AutoDock Vina for docking and PyVOL (bio-pyvol) for pocket detection.
+  # Requires cleaned protein structure + substrate SDF files.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-dock
+  summary: "Command-line tool to perform molecular docking of one or multiple substrates against a cleaned protein structure using AutoDock Vina, with automatic pocket detection via PyVOL, and generate a detailed JSON docking report."
+  description: |
+    EnzyWizard-Dock performs molecular docking of substrates (from SDF files) against
+    a cleaned protein structure using AutoDock Vina. It supports single or multi-substrate
+    docking, automatic pocket detection with PyVOL (or manual box specification), and
+    outputs docked structures (SDF + CIF) plus a comprehensive JSON report with binding
+    affinities and docking parameters.
+    Designed to work with other EnzyWizard tools for complete enzyme-substrate analysis.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14

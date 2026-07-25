@@ -1,0 +1,61 @@
+{% set name = "arcane" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: arcane
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/sc-arcane/sc_arcane-{{ version }}.tar.gz
+  sha256: 187cc3912afc2faf3704210da13961f32b59118ba6b0418da4ae0115ec8f6496
+
+build:
+  entry_points:
+    - arcane = arcane.arcane.arcane_main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+
+requirements:
+  host:
+    - python <3.14
+    - setuptools >=69.0.3
+    - pip
+  run:
+    - python <3.14
+    - numpy
+    - numba
+    - pytest
+    - jsonargparse >=4.29.0
+    - pip
+    - llvmlite
+    - clangdev
+    - xz
+    - tabix
+    - bzip2
+    - matplotlib-base
+    - seaborn
+    - scipy
+
+
+test:
+  commands:
+    - pip check
+    - arcane --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://gitlab.com/rahmannlab/arcane
+  dev_url: https://gitlab.com/rahmannlab/arcane
+  summary: "Arcane: Alignment-free single cell RNA-seq gene expression estimation"
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - JZentgraf
