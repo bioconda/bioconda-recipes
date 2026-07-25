@@ -29,6 +29,8 @@ requirements:
     - cmake
     - cargo-bundle-licenses
     - pkg-config
+    # rust-htslib runs bindgen, which needs libclang
+    - clangdev
   host:
     - zlib
     - zstd
@@ -42,19 +44,19 @@ requirements:
 test:
   commands:
     - impg --help
+    - impg --version
     # The bundled tools live in libexec, not bin, so they do not overwrite the
     # separate wfmash, gfaffix and fastga packages. impg finds them there.
-    - test -x "$PREFIX/libexec/impg/gfaffix"
-    - test -x "$PREFIX/libexec/impg/wfmash"
-    - test -x "$PREFIX/libexec/impg/FastGA"
-    - test -x "$PREFIX/libexec/impg/FAtoGDB"
-    - test -x "$PREFIX/libexec/impg/GIXmake"
-    - test -x "$PREFIX/libexec/impg/GIXrm"
-    - test -x "$PREFIX/libexec/impg/ALNtoPAF"
-    - test -x "$PREFIX/libexec/impg/PAFtoALN"
-    - test -x "$PREFIX/libexec/impg/ONEview"
-    # wfmash links libwfa2, so running it proves the shared libraries resolve.
+    # Run each one: a tool that cannot load its shared libraries fails here.
+    - $PREFIX/libexec/impg/gfaffix --help
     - $PREFIX/libexec/impg/wfmash --version
+    - $PREFIX/libexec/impg/FastGA 2>&1 | grep -qE "Usage.*FastGA"
+    - $PREFIX/libexec/impg/FAtoGDB 2>&1 | grep -qE "Usage.*FAtoGDB"
+    - $PREFIX/libexec/impg/GIXmake 2>&1 | grep -qE "Usage.*GIXmake"
+    - $PREFIX/libexec/impg/GIXrm 2>&1 | grep -qE "Usage.*GIXrm"
+    - $PREFIX/libexec/impg/ALNtoPAF 2>&1 | grep -qE "Usage.*ALNtoPAF"
+    - $PREFIX/libexec/impg/PAFtoALN 2>&1 | grep -qE "Usage.*PAFtoALN"
+    - $PREFIX/libexec/impg/ONEview 2>&1 | grep -q ONEview
 
 about:
   home: "https://github.com/pangenome/{{ name }}"
