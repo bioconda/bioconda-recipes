@@ -5,6 +5,9 @@ set -xe
 # Ensure C compiler / libclang environment variables are active for bindgen
 export LIBCLANG_PATH="${PREFIX}/lib"
 
+# Move into the bramble-cli crate directory where Cargo.toml lives
+cd bramble-cli
+
 # Bundle Rust dependencies licenses (Bioconda compliance check)
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
