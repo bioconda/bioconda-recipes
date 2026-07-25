@@ -1,6 +1,14 @@
 #!/bin/bash -euo
 set -xe
 
+# FastGA's Makefile hardcodes CFLAGS, so conda's -isystem never reaches it.
+# CPATH and LIBRARY_PATH are read by the compiler itself, whatever CFLAGS says.
+export CPATH="${PREFIX}/include${CPATH:+:${CPATH}}"
+export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
+
+# rust-htslib runs bindgen, which needs libclang at build time.
+export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
+
 if [[ $(uname) == "Darwin" ]]; then
     # Set PLATFORM for ARM64 Macs as AGC expects
     if [[ $(uname -m) == "arm64" ]]; then
