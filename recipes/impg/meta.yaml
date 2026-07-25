@@ -6,8 +6,10 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/pangenome/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: cbd4e456a07f69b54569e624ef895c83050261a33e898360334538141d259b39 
+  # The GitHub tag tarball does NOT contain the git submodules (vendor/gfaffix,
+  # vendor/syng), which are required to build. Use the release asset instead.
+  url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  sha256: 4a077177a7f403e61f55891bfd505b85cac186f296b335d04455bc4d307c6a29
 
 build:
   number: 0
@@ -19,6 +21,7 @@ requirements:
   build:
     - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - gfortran_osx-arm64  # [osx and arm64]
     - gfortran_osx-64     # [osx and x86_64]
@@ -26,14 +29,32 @@ requirements:
     - cmake
     - cargo-bundle-licenses
     - pkg-config
-    - libclang
   host:
     - zlib
-    - libclang
+    - zstd
+    - bzip2
+    - xz
+    - libcurl
+    - htslib
+    - gsl
+    - jemalloc
 
 test:
   commands:
     - impg --help
+    # The bundled tools live in libexec, not bin, so they do not overwrite the
+    # separate wfmash, gfaffix and fastga packages. impg finds them there.
+    - test -x "$PREFIX/libexec/impg/gfaffix"
+    - test -x "$PREFIX/libexec/impg/wfmash"
+    - test -x "$PREFIX/libexec/impg/FastGA"
+    - test -x "$PREFIX/libexec/impg/FAtoGDB"
+    - test -x "$PREFIX/libexec/impg/GIXmake"
+    - test -x "$PREFIX/libexec/impg/GIXrm"
+    - test -x "$PREFIX/libexec/impg/ALNtoPAF"
+    - test -x "$PREFIX/libexec/impg/PAFtoALN"
+    - test -x "$PREFIX/libexec/impg/ONEview"
+    # wfmash links libwfa2, so running it proves the shared libraries resolve.
+    - $PREFIX/libexec/impg/wfmash --version
 
 about:
   home: "https://github.com/pangenome/{{ name }}"
