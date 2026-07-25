@@ -1,0 +1,44 @@
+{% set name = "bramble" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zrudnick/bramble/archive/refs/tags/v{{ version }}.tar.gz
+  # Output of `sha256sum v0.1.6.tar.gz`
+  sha256: 159050ec92f606c76d5a934e2bbe2d57d0b292436e17a543dc4d788f5f3ff7c4
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - clang
+  host:
+    - zlib
+    - bzip2
+  run:
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - bramble-rs --help
+
+about:
+  home: https://github.com/zrudnick/bramble
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Project spliced genomic alignments into transcriptomic space."
+
+extra:
+  recipe-maintainers:
+    - zrudnick
