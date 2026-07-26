@@ -9,6 +9,6 @@ export LC_ALL="en_US.UTF-8"
 sed -i.bak -e 's/install -d/mkdir -p/' Makefile
 rm -f *.bak
 
-make
+make -j"${CPU_COUNT}"
 
 make install PREFIX="${PREFIX}"
