@@ -1,48 +1,52 @@
 {% set name = "superfocus" %}
-{% set version = "1.6" %}
-{% set sha256 = "4b3d6c731e58cf0dad1e1bfd5278a320a5e4a7d1d5658c19f36eaccba7329620" %}
+{% set version = "1.8" %}
 
 package:
   name: super-focus
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: '{{ sha256 }}'
+  url: https://github.com/metageni/SUPER-FOCUS/archive/v{{ version }}.tar.gz
+  sha256: c3f614182d16134fa427aefedaacb9d9d13b61a97abb71bc55ffdf71034d14aa
 
 build:
+  number: 0
   noarch: python
-  number: 1
-  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -q
+  run_exports:
+    - {{ pin_subpackage("super-focus", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.8
     - pip
-    - pytest
-    - setuptools
-    - setuptools_scm
+    - setuptools >=68
+    - wheel
   run:
-    - python >=3
+    - python >=3.8
+    - click >=8.0
     - numpy >=1.12.1
-    - scipy
-    - kmer-jellyfish
-    - rapsearch # [not osx]
-    - diamond
-    - mmseqs2
-    - blast
-    - setuptools
-    - setuptools_scm
+    - scipy >=0.19.0
 
 test:
+  imports:
+    - superfocus_app
+    - superfocus_app.cli
+    - superfocus_app.pipeline
+    - superfocus_app.utils
   commands:
     - superfocus --help
-    - superfocus_downloadDB --help
 
 about:
-  home: https://edwards.sdsu.edu/SUPERFOCUS
-  license: GPL-3.0
-  license_family: GPL
+  home: https://github.com/metageni/SUPER-FOCUS
+  license: GPL-3.0-or-later
   license_file: COPYING
-  summary: 'SUPER-FOCUS: A tool for agile functional analysis of shotgun metagenomic data'
-  dev_url: https://github.com/metageni/SUPER-FOCUS
+  summary: SUPER-FOCUS - A tool for agile functional analysis of shotgun metagenomic data
+  description: |
+    SUPER-FOCUS uses fast protein aligners (DIAMOND or MMseqs2)
+    to profile the functional composition of shotgun metagenomic samples against
+    the SEED subsystems database.
+
+extra:
+  recipe-maintainers:
+    - metageni

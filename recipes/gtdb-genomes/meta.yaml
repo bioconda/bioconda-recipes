@@ -1,0 +1,56 @@
+{% set name = "gtdb-genomes" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - gtdb-genomes=gtdb_genomes.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+source:
+  url: https://github.com/asuq/gtdb-genomes/releases/download/v{{ version }}/gtdb_genomes-{{ version }}.tar.gz
+  sha256: c1a0ebf2b7f4a483b1536adc5b83b6ff5283a580c9cb3c4e845f42b3dcf78931
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - hatchling >=1.27.0,<2.0.0
+  run:
+    - python >=3.12
+    - polars >=1.31.0,<2.0.0
+    - tqdm >=4.60.0,<5.0.0
+    - unzip >=6.0,<7.0
+    - ncbi-datasets-cli >=18.4.0,<18.27.0
+
+test:
+  commands:
+    - gtdb-genomes --help
+    - python -c "from gtdb_genomes.release_resolver import resolve_and_validate_release; from gtdb_genomes.taxonomy import load_release_taxonomy; resolution = resolve_and_validate_release('latest'); frame = load_release_taxonomy(resolution); assert resolution.bacterial_taxonomy is not None, resolution; assert frame.height > 0, frame"
+    - python -c "import subprocess, tempfile; outdir = tempfile.mkdtemp(prefix='gtdb_genomes_bioconda_'); result = subprocess.run(['gtdb-genomes', '--gtdb-release', '95', '--gtdb-taxon', 'g__NoSuchTaxon', '--outdir', outdir, '--dry-run'], capture_output=True, text=True, check=False); assert result.returncode == 4, result.stdout + result.stderr"
+  imports:
+    - gtdb_genomes
+
+about:
+  home: https://github.com/asuq/gtdb-genomes
+  summary: CLI to download genomes by GTDB taxon and GTDB release.
+  license: MIT AND CC-BY-SA-4.0
+  license_file:
+    - LICENSE
+    - NOTICE
+    - licenses/CC-BY-SA-4.0.txt
+  dev_url: https://github.com/asuq/gtdb-genomes
+  doc_url: https://github.com/asuq/gtdb-genomes/blob/main/README.md
+
+extra:
+  autobump:
+    enable: false
+  recipe-maintainers:
+    - asuq
