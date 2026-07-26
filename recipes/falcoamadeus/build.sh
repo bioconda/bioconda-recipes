@@ -1,20 +1,15 @@
 #!/bin/bash
 set -xe
 
-export CPLUS_INCLUDE_PATH="${PREFIX}/include:${CPLUS_INCLUDE_PATH:-}"
-export LIBRARY_PATH="${PREFIX}/lib:${LIBRARY_PATH:-}"
+# Append the prefix search paths without introducing an empty (":") element,
+# which would otherwise be interpreted as the current directory.
+export CPLUS_INCLUDE_PATH="${PREFIX}/include${CPLUS_INCLUDE_PATH:+:${CPLUS_INCLUDE_PATH}}"
+export LIBRARY_PATH="${PREFIX}/lib${LIBRARY_PATH:+:${LIBRARY_PATH}}"
 export CPPFLAGS="${CPPFLAGS:-} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
+# Keep -O3; rely on the toolchain's baseline -march/-mtune so the package stays
+# compatible with every CPU on the target conda platform (no -march=x86-64-v3).
 export CXXFLAGS="${CXXFLAGS:-} -O3"
-
-case $(uname -m) in
-  aarch64) export CXXFLAGS="${CXXFLAGS} -march=armv8-a" ;;
-  arm64)   export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a" ;;
-  x86_64)  export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3" ;;
-esac
-if [[ $(uname -s) == "Darwin" ]]; then
-  export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
 
 # The adapter/contaminant/limits lists in Configuration/ are looked up at
 # runtime relative to the compile-time PROGRAM_PATH, which configure.ac hardcodes
@@ -27,11 +22,12 @@ sed -i.bak "s|\[\"\$srcdir\"\]|[\"${DATADIR}\"]|" configure.ac
 cp -f "${BUILD_PREFIX}/share/gnuconfig/config."* . 2>/dev/null || true
 
 autoreconf -if
-./configure --enable-hts --disable-dependency-tracking --enable-silent-rules \
+./configure --prefix="${PREFIX}" --enable-hts \
+  --disable-dependency-tracking --enable-silent-rules \
   CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
 
 make -j"${CPU_COUNT}"
-make install prefix="${PREFIX}"
+make install
 
 mkdir -p "${DATADIR}/Configuration"
 cp Configuration/* "${DATADIR}/Configuration/"
