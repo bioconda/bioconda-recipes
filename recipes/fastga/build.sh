@@ -10,4 +10,5 @@ install -v -m 0755 FastGA \
     FAtoGDB GIXmake ALNtoPAF ALNtoPSL \
     GDBshow GDBstat GIXshow ALNshow ALNplot \
     GDBtoFA GIXrm GIXcp GIXmv ALNchain ALNreset PAFtoALN PAFtoPSL \
-    ONEview $PREFIX/bin
+    ONEview FastKS \
+    ANOtoBED BEDtoANO ANOstat ANOshow $PREFIX/bin
