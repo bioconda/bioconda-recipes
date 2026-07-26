@@ -9,50 +9,61 @@ source:
   sha256: 78b86fc4234444ed15010c33208cfe48313205962f498bcfe91ece0dd1876892
 
 build:
-  number: 0
-  skip: true  # [win]
+  number: 1
+  # phast_prob_vector.c:330:(.text+0x1270): undefined reference to `exp'
+  skip: True  # [win or aarch64]
   run_exports:
-    - {{ pin_subpackage('phast', max_pin='x') }}  
+    - {{ pin_subpackage('phast', max_pin="x") }}
   script:
     # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
     - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
+    - export LDFLAGS="${LDFLAGS} -lm -L${PREFIX}/lib"
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
       -DCMAKE_INSTALL_LIBDIR=lib
       -DCMAKE_INSTALL_BINDIR=bin
       -DCMAKE_INSTALL_INCLUDEDIR=include
+      -DCMAKE_C_COMPILER=${CC}
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - pkg-config
     - cmake
     - make
-    - cctools
+    - cctools  # [osx]
   host:
     - pcre
     - blas
     - lapack
+    - mkl  # [x64]
   run:
-    - pcre >=8.45,<9.0a0
+    - pcre
     - libopenblas
-    
+    - mkl  # [x86_64]
+
 test:
   commands:
     - phastCons --help
     - phyloFit --help
 
 about:
-  home: https://github.com/CshlSiepelLab/phast
-  license: BSD-3-Clause
+  home: "https://github.com/CshlSiepelLab/phast"
+  license: "BSD-3-Clause"
   license_file: LICENSE
-  summary: "PHAST: Phylogenetic Analysis with Space/Time models"
+  summary: "PHAST: Phylogenetic Analysis with Space/Time models."
   description: |
     PHAST is a C-based toolkit for phylogenetic analysis, comparative genomics,
     and evolutionary modeling.
+  dev_url: "https://github.com/CshlSiepelLab/phast"
 
 extra:
   recipe-maintainers:
     - asiepel
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
