@@ -1,0 +1,74 @@
+{% set name = "getitd" %}
+{% set version = "1.5.16" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tjblaette/getitd/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 02b66853d0115ffe21c9db4e47da679055c0112b1a3198c91c93458c7b996819
+  patches:
+    # Guard is_similar_to against empty sequences: with current Biopython,
+    # Bio.pairwise2 globalds(score_only=True) returns [] (not a float) for an
+    # empty input, which crashed adapter-artefact detection on certain reads.
+    - is_similar_to-empty-seq.patch
+
+build:
+  number: 0
+  # getITD is not a pip-installed Python package (no setup.py / entry points);
+  # build.sh just copies scripts + anno/ and writes bash launchers, so this is
+  # an architecture-independent *generic* noarch package, not noarch: python.
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3
+    - pandas
+    - numpy
+    # getITD uses Bio.pairwise2, which is deprecated but still shipped by Biopython.
+    - biopython
+    # Only needed for the optional `-plot_coverage True` coverage plot.
+    - matplotlib-base
+    # NOTE: the optional GUI helper make_getitd_config additionally requires
+    # `easygui`, which is not listed here: its conda-forge builds are capped at
+    # Python 3.9 and would constrain the whole environment. Install it manually
+    # (pip/conda) if you need that GUI; the core getITD pipeline does not use it.
+
+test:
+  # NOTE: test commands run both in the conda test env AND inside the mulled
+  # biocontainer, but `source_files` are only available in the former. So tests
+  # must be self-contained. `getitd --help` already imports the full stack
+  # (Bio.pairwise2, pandas, numpy are top-level imports), and the default
+  # FLT3 anno/ files ship inside the package under share/.
+  commands:
+    - getitd --help
+    # getitd_from_config_wrapper has no CLI parser; it re-runs from a config.txt
+    # in the CWD, so it cannot be smoke-tested with --help. Verify it installed.
+    - test -f "$PREFIX/bin/getitd_from_config_wrapper"
+    - test -f "$PREFIX/bin/make_getitd_config"
+    - test -f "$PREFIX/share/getitd-{{ version }}/anno/amplicon.txt"
+    - test -f "$PREFIX/share/getitd-{{ version }}/anno/amplicon_kayser.tsv"
+
+about:
+  home: https://github.com/tjblaette/getitd
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Detection of FLT3-ITDs (internal tandem duplications) from amplicon NGS data"
+  description: |
+    getITD detects and characterises FLT3 internal tandem duplications (ITDs) from
+    high-throughput amplicon sequencing data, supporting minimal residual disease
+    monitoring in acute myeloid leukemia. It aligns reads to a wild-type amplicon
+    reference, identifies and merges insertions, and reports ITDs with variant allele
+    frequencies and genomic/protein annotation.
+  doc_url: https://github.com/tjblaette/getitd/blob/master/README.md
+  dev_url: https://github.com/tjblaette/getitd
+
+extra:
+  identifiers:
+    - doi:10.1038/s41375-019-0483-z
+  recipe-maintainers:
+    - joachimwolffs
