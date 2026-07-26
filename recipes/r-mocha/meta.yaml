@@ -1,0 +1,115 @@
+{% set version = "1.2.0" %}
+
+# Pinning guidance:
+# - This recipe starts with minimal upper bounds.
+# - If CI shows Bioconductor solver conflicts, constrain r-base to one
+#   Bioconductor release line in BOTH host/run (example: >=4.3,<4.4).
+# - Keep all Bioconductor dependencies from the same channel/release family.
+
+package:
+  name: r-mocha
+  version: {{ version|replace("-", "_") }}
+
+source:
+  # 1.2.0 is not on active CRAN src/contrib yet, so pin to a commit tarball.
+  url: https://github.com/aifimmunology/MOCHA/archive/93d513fdaf4d7c0f056d03ad7dc3f563e03713ef.tar.gz
+  sha256: df3f539f88b86858e8963f1b7a04b2c6960bade26cb16fd5366ce6e5899a1c26
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('r-mocha', max_pin="x") }}
+  script: "{{ R }} CMD INSTALL --build ."
+
+requirements:
+  host:
+    # Mirror any future r-base upper bound in `run`.
+    - r-base >=4.1.0
+    - r-data.table
+    - r-dplyr
+    - r-stringr
+    - r-wcorr
+    - r-magrittr
+    - r-rlang
+    - r-assertthat
+    - r-ggplot2
+    - r-ggrepel
+    - r-matrixstats
+    - r-scales
+    - r-tidyr
+    - r-ggridges
+    - r-pbapply
+    - r-tidyselect
+    - r-lifecycle
+    - bioconductor-plyranges >=1.14.0
+    - bioconductor-genomicranges
+    - bioconductor-raggedexperiment
+    - bioconductor-multiassayexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-ggbio
+    - bioconductor-annotationdbi
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicfeatures
+    - bioconductor-iranges
+    - bioconductor-s4vectors
+    - bioconductor-ensembldb
+    - bioconductor-qvalue
+    - bioconductor-bsgenome
+  run:
+    # Keep this aligned with host pinning.
+    - r-base >=4.1.0
+    - r-data.table
+    - r-dplyr
+    - r-stringr
+    - r-wcorr
+    - r-magrittr
+    - r-rlang
+    - r-assertthat
+    - r-ggplot2
+    - r-ggrepel
+    - r-matrixstats
+    - r-scales
+    - r-tidyr
+    - r-ggridges
+    - r-pbapply
+    - r-tidyselect
+    - r-lifecycle
+    - bioconductor-plyranges >=1.14.0
+    - bioconductor-genomicranges
+    - bioconductor-raggedexperiment
+    - bioconductor-multiassayexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-ggbio
+    - bioconductor-annotationdbi
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicfeatures
+    - bioconductor-iranges
+    - bioconductor-s4vectors
+    - bioconductor-ensembldb
+    - bioconductor-qvalue
+    - bioconductor-bsgenome
+
+test:
+  # Keep feedstock tests lightweight; avoid network-heavy or data-heavy workflows.
+  commands:
+    - $R -e "library('MOCHA')"
+    - $R -e "packageVersion('MOCHA')"
+
+about:
+  home: https://github.com/aifimmunology/MOCHA
+  summary: Modeling for single-cell open chromatin analysis.
+  description: >
+    MOCHA is an R package providing model-based methods for open chromatin
+    analysis in single-cell ATAC-seq data, including tile calling,
+    differential accessibility, and co-accessibility analyses.
+  license: GPL-3.0-or-later
+  license_file: LICENSE.md
+  dev_url: https://github.com/aifimmunology/MOCHA
+  doc_url: https://aifimmunology.github.io/MOCHA/
+
+extra:
+  recipe-maintainers:
+    - MPebworthEpana

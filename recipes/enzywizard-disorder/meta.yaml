@@ -1,0 +1,58 @@
+{% set name = "enzywizard-disorder" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-disorder/archive/refs/tags/{{ version }}.tar.gz
+  sha256: edf58429318c542b856712aeaeb5e7414665c5897e942dbb62a3c8668be98058
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - numpy
+    - packaging
+
+test:
+  imports:
+    - enzywizard_disorder
+    - enzywizard_disorder.cli
+    - enzywizard_disorder.services.disorder_service
+    - enzywizard_disorder.algorithms.disorder_algorithms
+    - enzywizard_disorder.resources.aa_physicochemical_props
+  commands:
+    - enzywizard-disorder --help
+  # Note: Uses a simple FoldIndex-like algorithm with hardcoded physicochemical properties.
+  # No external binaries or large model downloads required.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-disorder
+  summary: "Command-line tool to predict intrinsically disordered regions (IDRs) from a cleaned protein structure using a FoldIndex-like algorithm based on hydrophobicity and net charge."
+  description: |
+    EnzyWizard-Disorder predicts intrinsically disordered regions from cleaned protein
+    structures (CIF/PDB). It extracts the sequence using Biopython and applies a
+    sliding-window FoldIndex-like score based on residue hydrophobicity and net charge.
+    Outputs a structured JSON report with disordered region statistics and residue details.
+    Useful for structural bioinformatics and protein disorder analysis.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14
