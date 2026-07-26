@@ -1,0 +1,53 @@
+{% set name = "phanotate-rs" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Yasas1994/PHANOTATE-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 582e833b345d5482abd10e145ffa206745813cbacb8f14c4e8191afb24176925
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - phanotate-rs --version
+    - phanotate-rs --help
+
+about:
+  home: https://github.com/Yasas1994/PHANOTATE-rs
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Fast Rust implementation of PHANOTATE with automatic genetic-code detection"
+  description: |
+    PHANOTATE-rs is a fast Rust reimplementation of PHANOTATE, a gene caller
+    optimized for bacteriophage genomes. It includes automatic genetic-code
+    detection, multi-threading, and supports six NCBI translation tables
+    relevant to phage biology.
+  doc_url: https://github.com/Yasas1994/PHANOTATE-rs/blob/main/README.md
+  dev_url: https://github.com/Yasas1994/PHANOTATE-rs
+
+extra:
+  recipe-maintainers:
+    - Yasas1994
+  identifiers:
+    - doi:10.1093/bioinformatics/btz265
+  skip-lints:
+    - compiler_needs_stdlib_c
+    - build_number_needs_reset
+
