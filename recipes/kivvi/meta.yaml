@@ -1,0 +1,38 @@
+{% set name = "kivvi" %}
+{% set version = "1.0.0" %}
+{% set kivvi_sha256 = "a4aaecb73241784fba6c4795b339672fc5f01750cc8185941151cd877963e2b0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/kivvi/releases/download/v{{ version }}/kivvi-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz  # [linux64]
+    sha256: {{ kivvi_sha256 }}  # [linux64]
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  noarch: false
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp kivvi ${PREFIX}/bin/
+    - chmod +x ${PREFIX}/bin/kivvi
+  run_exports:
+    - {{ pin_subpackage('kivvi', max_pin="x") }}
+
+test:
+  commands:
+    - kivvi --version
+
+about:
+  home: https://github.com/PacificBiosciences/kivvi
+  summary: HiFi-based genotyper for large-unit VNTRs including KIV2 and D4Z4
+  license: Pacific Biosciences Software License (https://github.com/PacificBiosciences/kivvi/blob/main/LICENSE.md)
+
+extra:
+  recipe-maintainers:
+    - xiao-chen-xc
+  skip-lints:
+    - should_be_noarch_generic
+    - should_use_compilers

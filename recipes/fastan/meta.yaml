@@ -1,13 +1,17 @@
 {% set name = "fastan" %}
-{% set version = "0.5" %}
+{% set version = "0.8" %}
+{% set commit = "78fdc78a519319d70bda0ab6f49e5eb58d2eb7f9" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/thegenemyers/FASTAN/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0dbddc3b57e335574051311e49e45dfab45f38b5ffdf3865ad3a1a4c54df13c6
+  # Upstream README declares "Release v0.8 (2026-04-25)" but has not git-tagged it;
+  # pin the masking-enabled master commit (adds -m / .1ano tandem-mask output that
+  # v0.5 lacks). Please tag a release upstream so this can pin a tag.
+  url: https://github.com/thegenemyers/FASTAN/archive/{{ commit }}.tar.gz
+  sha256: de332704eb65e01dbf007a5d323b73773827247824434451bbcd93abe04dfd0d
   patches:
     - 0001-Makefile.patch
 
@@ -19,6 +23,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - make
   host:
     - zlib
