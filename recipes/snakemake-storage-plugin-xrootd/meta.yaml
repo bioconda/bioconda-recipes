@@ -1,5 +1,5 @@
 {% set name = "snakemake-storage-plugin-xrootd" %}
-{% set version = "0.4.1" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,14 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_xrootd-{{ version }}.tar.gz
-  sha256: ccad9b12ae1ca73d858e0767cfb62c48fa21b6300a89da50337e38b7d632359c
+  sha256: 529007bf1905132229294e699f080ae45e56ea4b9505c3b301016751242d6470
 
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
   number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -24,6 +24,7 @@ requirements:
     - pip
   run:
     - python >=3.11
+    - reretry
     - snakemake-interface-common >=1.15.0,<2
     - snakemake-interface-storage-plugins >=4.1.0,<5
     - xrootd >=5.6,<6
@@ -33,8 +34,6 @@ test:
   # it would create a circular dependency.
   commands:
     - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/snakemake/snakemake-storage-plugin-xrootd

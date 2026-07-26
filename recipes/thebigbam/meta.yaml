@@ -1,0 +1,63 @@
+{% set name = "thebigbam" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/t/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ba960ae1762556bf63b9abe889f6da46453dc7518da8d18985fdbbd81c5c5609
+
+build:
+  number: 0
+  skip: true  # [win or py<310 or py>313]
+  run_exports:
+    - {{ pin_subpackage("thebigbam", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - clangdev >=18,<20
+    - libclang >=18,<20
+    - pkg-config
+    - cmake
+    - make
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - maturin >=1.4,<2.0
+  run:
+    - python >=3.10,<3.14
+    - bokeh >=3.0
+    - panel >=1.4
+    - biopython >=1.79
+    - pysam >=0.20
+    - dna_features_viewer >=1.0
+    - python-duckdb >=1.0
+    - samtools
+    - bwa-mem2
+    - minimap2
+    - blast
+
+test:
+  imports:
+    - thebigbam
+    - thebigbam_rs
+  commands:
+    - thebigbam --help
+
+about:
+  home: https://github.com/bhagavadgitadu22/theBIGbam
+  license: MIT
+  license_file: LICENSE
+  summary: Compression and interactive exploration of large-scale sequencing alignments with circular mapping support
+  dev_url: https://github.com/bhagavadgitadu22/theBIGbam
+
+extra:
+  recipe-maintainers:
+    - bhagavadgitadu22
+

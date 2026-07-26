@@ -1,0 +1,44 @@
+{% set version = "0.2.1" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: snakemake-executor-plugin-htcondor
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/snakemake-executor-plugin-htcondor/snakemake_executor_plugin_htcondor-{{ version }}.tar.gz
+  sha256: 96a5c4662b8cc38ea869de024417200c8c5ec436384b626ddf632bf84ac7a74b
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("snakemake-executor-plugin-htcondor", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - poetry-core
+    - poetry-dynamic-versioning
+    - pip
+  run:
+    - python >={{ python_min }}
+    - snakemake-interface-common >=1.17.1,<2.0.0
+    - snakemake-interface-executor-plugins >=9.0.0,<10.0.0
+    - python-htcondor >=24.5.1,<25.0.0
+
+test:
+  imports:
+    - snakemake_executor_plugin_htcondor
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jannisspeer/snakemake-executor-plugin-htcondor
+  summary: A Snakemake executor plugin for submitting jobs to a HTCondor cluster.
+  license: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/jannisspeer/snakemake-executor-plugin-htcondor

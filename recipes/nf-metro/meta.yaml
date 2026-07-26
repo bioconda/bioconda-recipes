@@ -1,0 +1,47 @@
+{% set name = "nf-metro" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name|replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: c74d5086e6441b911c9f9a6c09a0f336855c30c3ac8576de8ab38a7b22becf81
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("nf-metro", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - click >=8.0
+    - drawsvg >=2.0
+    - lark >=1.1
+    - networkx >=3.0
+    - pillow >=9.0
+    - fonttools >=4.0
+    - jsonschema >=4.0
+
+test:
+  commands:
+    - nf-metro --help
+
+about:
+  home: https://github.com/seqeralabs/nf-metro
+  summary: Metromap-style pipeline workflow components
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - pinin4fjords
+    - matthdsm
