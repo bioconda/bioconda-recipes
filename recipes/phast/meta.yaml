@@ -1,4 +1,4 @@
-{% set version = "1.9.7" %}
+{% set version = "1.9.9" %}
 
 package:
   name: phast
@@ -6,20 +6,27 @@ package:
 
 source:
   url: https://github.com/CshlSiepelLab/phast/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 78b86fc4234444ed15010c33208cfe48313205962f498bcfe91ece0dd1876892
+  sha256: ef9fd7c6e6c02e866162cf41ff372559f105ae3f9c4dc8562103533e41f1b069
 
 build:
-  number: 1
+  number: 0
   # phast_prob_vector.c:330:(.text+0x1270): undefined reference to `exp'
-  skip: True  # [win or aarch64]
+  skip: True  # [win]
   run_exports:
     - {{ pin_subpackage('phast', max_pin="x") }}
   script:
     # --- macOS-only: ensure conda-build uses cctools otool (avoids llvm-otool SIGABRT) ---
     - ln -sf "${BUILD_PREFIX}/bin/${HOST}-otool" "${BUILD_PREFIX}/bin/otool"  # [osx]
+    # Force the generic netlib BLAS/LAPACK interface (libblas.so/liblapack.so) rather
+    # than an implementation's libraries. conda-forge may resolve BLAS to MKL or OpenBLAS
+    # depending on the solve; linking the implementation directly (e.g. libmkl_*.so)
+    # overlinks and breaks at runtime when that implementation is not a runtime dep.
+    # The netlib symlinks are provided by libblas/liblapack (whose run_exports add the
+    # matching runtime dependency), so the package works with any BLAS implementation.
     - export LDFLAGS="${LDFLAGS} -lm -L${PREFIX}/lib"
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
+      -DBLA_VENDOR=Generic
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
       -DCMAKE_INSTALL_LIBDIR=lib
       -DCMAKE_INSTALL_BINDIR=bin
@@ -38,12 +45,11 @@ requirements:
     - cctools  # [osx]
   host:
     - pcre
-    - blas
-    - lapack
+    - libblas
+    - liblapack
     - mkl  # [x64]
   run:
     - pcre
-    - libopenblas
     - mkl  # [x86_64]
 
 test:
