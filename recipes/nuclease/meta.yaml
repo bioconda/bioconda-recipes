@@ -1,0 +1,53 @@
+{% set name = "nuclease" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nrminor/nuclease/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7ec51f05cb1f13327e63eea77cf83d8cfbb474cb71f4bc86aecc971b2a817f15
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nuclease', max_pin="x.x") }}
+  script:
+    - export CARGO_INCREMENTAL=0
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path . --bin nuclease
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
+
+test:
+  commands:
+    - nuclease --version
+    - nuclease --help
+
+about:
+  home: https://github.com/nrminor/nuclease
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Streaming FASTQ preprocessor for trimming, merging, filtering, and more.
+  description: |
+    nuclease is a fast and resource-frugal sequencing read preprocessor. It streams
+    local or ENA FASTQ through a processing plan and emits cleaned FASTQ/FASTA for
+    downstream tools.
+  dev_url: https://github.com/nrminor/nuclease
+  doc_url: https://github.com/nrminor/nuclease/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nrminor
