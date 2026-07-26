@@ -1,0 +1,75 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: mostar
+  version: "1.0.1"
+
+source:
+  url: https://pypi.io/packages/source/m/mostar/mostar-{{ version }}.tar.gz
+  sha256: 4c5d6f1fe51e90aec10b9df7f691246167334aa61455b4925f31a133dcc51380
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage("mostar", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=61
+
+  run:
+    - python >=3.11
+    # Core Assembly & Polishing
+    - flye
+    - medaka
+    - filtlong
+    - polypolish
+
+    # Pre-processing & Alignment
+    - fastp
+    - bwa
+    - samtools
+    - bcftools
+    - minimap2
+    - circlator
+
+    # Annotation & Profiling
+    - bakta
+    - ncbi-amrfinderplus
+    - blast
+    - kraken2
+
+    # ICE & Conjugation Detection
+    - macsyfinder
+
+    # Plasticity & Mobile Elements
+    - genomad
+
+    # Python libraries
+    - matplotlib-base
+    - numpy
+    - pandas
+    - biopython
+    - osfclient
+
+    # Utilities
+    - wget
+    - curl
+
+test:
+  commands:
+    - mostar --help
+
+about:
+  home: https://github.com/nermze/MOSTAR
+  license: MIT
+  license_file: LICENSE
+  summary: "Modular ONT-Short-read Taxonomic Assembly and Resistome-Evolution pipeline"
+
+extra:
+  recipe-maintainers:
+    - nermze
