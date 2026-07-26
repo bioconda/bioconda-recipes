@@ -10,7 +10,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
+  skip: True  # [win]
   run_exports:
     - {{ pin_subpackage('vine-phylo', max_pin='x.x') }}
   script:
@@ -28,7 +28,8 @@ build:
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
-      -DPHAST_ROOT=${PREFIX}      
+      -DPHAST_ROOT=${PREFIX}
+      -DCMAKE_C_COMPILER=${CC}
       ${VINE_BLAS_ARGS}
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
@@ -42,11 +43,12 @@ requirements:
     - {{ stdlib("c") }}
     - cmake
     - make
+    - pkg-config
   host:
     - phast
     - pcre
-    - blas
-    - lapack
+    - libblas
+    - liblapack
   run:
     - phast
     
@@ -56,14 +58,18 @@ test:
     - evalTrees --help
     
 about:
-  home: https://github.com/CshlSiepelLab/vine
-  license: BSD-3-Clause
+  home: "https://github.com/CshlSiepelLab/vine"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: "VINE (phylogenetics): Variational Inference with Node Embeddings"
-  dev_url: https://github.com/CshlSiepelLab/vine
+  summary: "VINE (phylogenetics): Variational Inference with Node Embeddings."
+  dev_url: "https://github.com/CshlSiepelLab/vine"
   description: |
     VINE is a tool for Bayesian variational phylogenetic inference.
 
 extra:
   recipe-maintainers:
     - asiepel
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
