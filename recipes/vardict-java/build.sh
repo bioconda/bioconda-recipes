@@ -17,7 +17,9 @@ jar cfe "$outdir/lib/VarDict-${PKG_VERSION}.jar" com.astrazeneca.vardict.Main -C
 cp deps/*.jar "$outdir/lib/"
 
 # --- helper scripts (from the vdscripts source) + launcher ---
-scriptdir="$(dirname "$(find vdscripts -name teststrandbias.R | head -1)")"
+script="$(find vdscripts -name teststrandbias.R | head -1)"
+[ -n "$script" ] || { echo "ERROR: VarDict helper scripts not found under vdscripts/ (check the pinned source)" >&2; exit 1; }
+scriptdir="$(dirname "$script")"
 cp "$scriptdir/teststrandbias.R" "$scriptdir/testsomatic.R" \
    "$scriptdir/var2vcf_valid.pl" "$scriptdir/var2vcf_paired.pl" "$outdir/bin/"
 cat > "$outdir/bin/vardict-java" <<'LAUNCH'
@@ -31,7 +33,7 @@ while [ -h "$PRG" ]; do
   if expr "$link" : '/.*' > /dev/null; then PRG="$link"; else PRG="$(dirname "$PRG")/$link"; fi
 done
 APP_HOME="$(cd "$(dirname "$PRG")/.." >/dev/null && pwd -P)"
-exec java ${JAVA_OPTS:--Xms768m -Xmx8g -XX:+UseG1GC -XX:+UseStringDeduplication} \
+exec java ${JAVA_OPTS:--Xmx8g -XX:+UseG1GC -XX:+UseStringDeduplication} \
   -classpath "$APP_HOME/lib/*" com.astrazeneca.vardict.Main "$@"
 LAUNCH
 
