@@ -1,5 +1,5 @@
 {% set name = "cytozip" %}
-{% set version = "0.3.5" %}
+{% set version = "0.3.8" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a74497dd5cb3e73d88191e1651a9e4156c7ffcc52808b366091120b4034a2337 # filled in by bioconda autobump on each release
+  sha256: f4d5f0d3c2d786fcb294c09af3f7d6edd493cbcb86fe6152507893a41698a55a # filled in by bioconda autobump on each release
 
 build:
   number: 0
-  skip: true  # [py<38 or win or osx]
+  # Only py>=3.10 is actually installable: bioconda builds the recipe for
+  # 3.10-3.13, and cytozip's deps (numpy/pandas/anndata) no longer ship for
+  # 3.8/3.9. htslib is NOT pinned here on purpose -- htslib's run_exports
+  # already constrains it at build time (e.g. >=1.24,<1.25).
+  skip: true  # [py<310 or win or osx]
   script: |
     # htslib is guaranteed present in ``host:`` requirements below, so
     # force setup.py to build the ``cytozip._bam_pileup`` extension even
@@ -46,10 +50,12 @@ requirements:
     - pandas
     - loguru
     - pysam
+    - samtools
     - fsspec
     - requests
     - anndata
     - scipy
+    - biopython
     - htslib
     - libdeflate
     - zlib
