@@ -2,13 +2,13 @@
 
 export GOPATH=$PWD
 export GOCACHE=$PWD/.cache/
-export CGO_LDFLAGS="-L${GOPATH}/arachne/gobwa/bwa -L${GOPATH}/arachne/jemalloc/lib"
+export CGO_LDFLAGS="-L${GOPATH}/gobwa/bwa -L${GOPATH}/jemalloc/lib"
 
 mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
 # build jemalloc
-cd arachne/jemalloc
+cd jemalloc
 ./autogen.sh && ./configure --disable-shared --enable-static
 cd ..
 make -j 4 -C jemalloc build_lib_static
