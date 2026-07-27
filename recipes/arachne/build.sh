@@ -11,10 +11,10 @@ mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
 # build jemalloc
-cd jemalloc
-./autogen.sh && ./configure --disable-shared --enable-static
-cd ..
-make -j 4 CC="${CC}" -C jemalloc build_lib_static
+#cd jemalloc
+#./autogen.sh && ./configure --disable-shared --enable-static
+#cd ..
+#make -j 4 CC="${CC}" -C jemalloc build_lib_static
 
 
 # build bwa
