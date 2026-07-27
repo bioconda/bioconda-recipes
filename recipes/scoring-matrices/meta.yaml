@@ -3,24 +3,25 @@
 {% set version = "0.3.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ module }}-{{ version }}.tar.gz"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ module }}-{{ version }}.tar.gz
   sha256: b7c97ca2ac8c11143a7d0c278916d9bc78e6ea953fee8f40692aba14253646f4
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py < 37]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - 'cmake >=3.20'
+    - {{ stdlib("c") }}
+    - cmake >=3.20
     - make
   host:
     - python

@@ -1,0 +1,45 @@
+{% set name = "cgmlst-dists-py" %}
+{% set version = "0.1.5" %}
+{% set sha256 = "78c43c53a4572d7a9cbd9ff401ddf8f8833af35cfc0168aeb5ba0b913d44a746" %}
+{% set user = "genpat-it" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  run:
+    - python >=3.9
+    - numpy
+    - pandas
+    - numba
+    - tqdm
+    - psutil
+
+test:
+  commands:
+    - cgmlst-dists.py --version | grep -F '{{ version }}'
+    - cgmlst-dists.py -h
+
+about:
+  home: "https://github.com/{{ user }}/{{ name }}"
+  license: "GPL-3.0-only"
+  license_file: LICENSE
+  summary: "High-performance pairwise Hamming distance calculator for cgMLST data with GPU acceleration."
+  dev_url: "https://github.com/{{ user }}/{{ name }}"
+
+extra:
+  recipe-maintainers:
+    - andreaderuvo
+  skip-lints:
+    - should_be_noarch_python

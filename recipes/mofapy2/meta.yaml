@@ -1,41 +1,45 @@
 {% set name = "mofapy2" %}
-{% set version = "0.7.3" %}
+{% set version = "0.7.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ccf52a7c3813b86a9e744e2bc97cf80d8ef18a7920259d471249aedc7260f202
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3a8801cff9b88b547ca9331d93ceb413822f10fd2f47d8f9a7d877cb7b500aca
+
 build:
-  noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
-    - {{ pin_subpackage('mofapy2', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.8
     - pip
     - poetry-core
   run:
     - h5py
     - numpy
     - pandas
-    - python
+    - python >=3.8
     - scipy
     - scikit-learn
-    - anndata
+  run_constrained:
+    - anndata >0.8
 
 test:
   imports:
     - mofapy2
 
-about:
-  home: https://github.com/bioFAM/mofapy2
-  license: 'LGPL 3.0'
+about: 
+  home: "https://github.com/bioFAM/mofapy2"
+  license: "LGPL-3.0-only"
   license_family: LGPL
   license_file: LICENSE
-  summary: Multi-Omics Factor Analysis
+  summary: "Multi-Omics Factor Analysis."
+  dev_url: "https://github.com/bioFAM/mofapy2"
+  doc_url: "https:/biofam.github.io/MOFA2"

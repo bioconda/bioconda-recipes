@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "clumsiddata-1.22.0"
+installBiocDataPackage.sh "clumsiddata-1.26.0"
