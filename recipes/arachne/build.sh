@@ -22,6 +22,6 @@ make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -
 #make -j 4 CC="${CC}" -C gobwa/bwa libbwa.a bwa
 
 # build arachne
-go build -ldflags "-X arachne/aligner.VERSION=${$PKG_VERSION}" -o $PREFIX/bin/arachne
+go build -ldflags "-X arachne/aligner.VERSION=${PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
 install -v -m 0755 gobwa/bwa/bwa "${PREFIX}/bin"
