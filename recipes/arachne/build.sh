@@ -20,3 +20,4 @@ make -j 4 -C gobwa/bwa libbwa.a bwa
 go build -ldflags "-X arachne/aligner.VERSION=${$PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
 cp gobwa/bwa/bwa $PREFIX/bin/
+
