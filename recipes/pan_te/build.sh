@@ -12,6 +12,11 @@ mkdir -p "$PKG" "$PREFIX/bin"
 # --- 1. install the pipeline tree (scripts + python subpackages) into share/pan_te ---
 cp -r "$SRC/bin/." "$PKG/"
 
+# --- 1b. install the current Chinese workflow/methods documentation ---
+install -d "$PKG/docx"
+install -m 0644 "$SRC/docx/PAN_TE_METHODS_ZH.docx" "$PKG/docx/PAN_TE_METHODS_ZH.docx"
+install -m 0644 "$SRC/docx/PAN_TE_METHODS_ZH.md" "$PKG/docx/PAN_TE_METHODS_ZH.md"
+
 # strip caches / logs / local tooling config / dev-only scaffolding that should never ship
 find "$PKG" -type d \( -name '__pycache__' -o -name '.claude' -o -name 'tests' \) \
     -prune -exec rm -rf {} + 2>/dev/null || true
