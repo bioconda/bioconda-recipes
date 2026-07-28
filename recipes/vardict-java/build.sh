@@ -29,6 +29,11 @@ cat > "$outdir/bin/vardict-java" <<'LAUNCH'
 # Resolve this script through symlinks (portable: Linux + macOS), then run VarDict.
 # JVM defaults keep peak memory bounded (footprint only; override with JAVA_OPTS).
 PRG="$0"
+# If invoked via $PATH, "$0" is usually not a path; resolve it so symlink handling works.
+case "$PRG" in
+  */*) ;;
+  *) PRG="$(command -v "$PRG")" ;;
+esac
 while [ -h "$PRG" ]; do
   ls=$(ls -ld "$PRG")
   link=$(expr "$ls" : '.*-> \(.*\)$')
