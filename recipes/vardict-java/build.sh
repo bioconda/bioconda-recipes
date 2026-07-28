@@ -11,8 +11,10 @@ mkdir -p "$outdir/lib" "$outdir/bin" "$PREFIX/bin"
 # --- compile the VarDict jar (Java 8 bytecode) ---
 if javac --release 8 -version >/dev/null 2>&1; then RELFLAG="--release 8"; else RELFLAG="-source 8 -target 8"; fi
 mkdir -p classes
+vardict_src="VarDictJava-${PKG_VERSION}"
+[ -d "$vardict_src/src/main/java" ] || vardict_src="."
 # shellcheck disable=SC2046
-javac $RELFLAG -encoding UTF-8 -cp "deps/*" -d classes $(find src/main/java -name '*.java')
+javac $RELFLAG -encoding UTF-8 -cp "deps/*" -d classes $(find "$vardict_src/src/main/java" -name '*.java')
 jar cfe "$outdir/lib/VarDict-${PKG_VERSION}.jar" com.astrazeneca.vardict.Main -C classes .
 cp deps/*.jar "$outdir/lib/"
 
