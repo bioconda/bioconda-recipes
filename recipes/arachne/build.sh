@@ -7,6 +7,7 @@ export CGO_LDFLAGS="-L${SRC_DIR}/gobwa/bwa -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -g -Wall -Wno-unused-function -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export MACOSX_DEPLOYMENT_TARGET=11.0
 
 mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
