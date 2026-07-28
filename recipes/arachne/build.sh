@@ -1,8 +1,9 @@
 #! /usr/bin/env bash
 
-export GOPATH=$PWD
-export GOCACHE=$PWD/.cache/
-export CGO_LDFLAGS="-L${GOPATH}/gobwa/bwa -L${GOPATH}/jemalloc/lib"
+export GOCACHE="$PWD/.cache"
+export CGO_ENABLED=1
+export GO111MODULE=on
+export CGO_LDFLAGS="-L${SRC_DIR}/gobwa/bwa"
 export CFLAGS="${CFLAGS} -g -Wall -Wno-unused-function -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -22,6 +23,9 @@ make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -
 #make -j 4 CC="${CC}" -C gobwa/bwa libbwa.a bwa
 
 # build arachne
+echo "GOOS=$(go env GOOS)"
+echo "GOARCH=$(go env GOARCH)"
+echo "CGO_ENABLED=$(go env CGO_ENABLED)"
 go build -ldflags "-X arachne/aligner.VERSION=${PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
 install -v -m 0755 gobwa/bwa/bwa "${PREFIX}/bin"
