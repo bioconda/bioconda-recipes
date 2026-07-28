@@ -1,0 +1,51 @@
+{% set name = "prim" %}
+{% set version = "0.2" %}
+{% set commit = "761af3829343231c978fb37734720889fe2769a6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Building from a commit instead of the v0.2 tag: the tag's tarball has no .go files,
+  # only .org sources that would need notangle (not in conda) to generate them.
+  # Switch to a release tag once upstream publishes one that includes the .go files.
+  url: https://github.com/EvolBioInf/{{ name }}/archive/{{ commit }}.tar.gz
+  sha256: d8b0da34ad1a65fd551cdbfb1da7129258b67028adfa1cfb5f956cd6cd289578
+
+build:
+  number: 0
+  # phylonium, a runtime dependency of cops, is linux-only
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('go-nocgo') }}
+  run:
+    - blast
+    - phylonium
+    - primer3
+
+test:
+  commands:
+    - cops -v
+    - fa2prim -v
+    - prim2tab -v
+    - scop -v
+    - printf '>t\nACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCAACGTTGCA\n' | fa2prim | grep -q PRIMER_TASK=generic
+
+about:
+  home: https://github.com/EvolBioInf/prim
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  summary: Programs for designing and testing diagnostic PCR primers
+  description: |
+    prim consists of four programs for designing and scoring diagnostic PCR primers.
+    fa2prim and prim2tab support primer design with primer3, converting template
+    sequences to primer3 input and primer3 output to a table. scop scores primers by
+    sensitivity and specificity using in silico PCR against a BLAST database and the
+    NCBI taxonomy, and cops corrects the scores computed by scop using evolutionary
+    distances.
+  dev_url: https://github.com/EvolBioInf/prim
