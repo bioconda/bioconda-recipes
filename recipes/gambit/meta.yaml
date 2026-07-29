@@ -1,4 +1,4 @@
-{% set version = "1.1.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: gambit
@@ -6,13 +6,12 @@ package:
 
 source:
   url: https://github.com/jlumpe/gambit/archive/v{{ version }}.tar.gz
-  sha256: 19ec968f75366a5129f4db79024f8a717575fef88b0265c9dd281f767a0d888d
+  sha256: 70b351900760150e947b838dba039eaa7dfef67e4e91bae7a09247ea553200f4
 
 build:
-  number: 3
-  # Biopython not currently available for 3.13
-  skip: True  # [py < 39 or py > 312]
-  script: "{{ PYTHON }} -m pip install --no-deps -vvv ."
+  number: 0
+  skip: True  # [py < 39]
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation -vvv ."
   entry_points:
     - gambit = gambit.cli:cli
   run_exports:
@@ -21,23 +20,26 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
   host:
     - python
     - pip
+    - setuptools >=77
+    - wheel
     - cython >=3
   run:
     - python
-    - numpy >=1.13,<2
+    - numpy >=1.19
     - sqlalchemy >=1.4
-    - biopython >=1.79
-    - attrs >=20
+    - biopython >=1.79,<2
+    - attrs >=23.1
     - cattrs >=23.2
-    - click >=7.0,<8.2.0
-    - h5py >=3.0
-    - scipy >=1.7
-    - typing-extensions >=4
+    - click >=8.0
+    - h5py >=3.1,<4
+    - scipy >=1.7,<2
+    - typing-extensions >=4.1
 
 test:
   requires:
