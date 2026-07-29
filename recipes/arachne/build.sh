@@ -16,8 +16,9 @@ mkdir -p "${PREFIX}/bin"
 make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}" -C gobwa/bwa libbwa.a bwa
 
 # build arachne
-echo "jemalloc files:"
-ls -l ${PREFIX}/lib/*jemalloc*
+go version
+go env
+echo "MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
 
 go build -ldflags "-X arachne/aligner.VERSION=${PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
