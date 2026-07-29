@@ -25,11 +25,24 @@ requirements:
     - numba
     - tqdm
     - psutil
+    # Optional accelerator upstream, but included here: conda is the main install
+    # route for this package, and without pyarrow the loader is 3-4x slower on
+    # large inputs. The tool auto-detects it and falls back to pandas if absent.
+    - pyarrow
 
 test:
+  source_files:
+    - test/boring.tab
+    - validation/boring_c.tab
   commands:
     - cgmlst-dists.py --version | grep -F '{{ version }}'
     - cgmlst-dists.py -h
+    # Compute a real matrix and compare it to the reference produced by the
+    # original C implementation, so the package is verified to work and not
+    # merely to start.
+    - cgmlst-dists.py -i test/boring.tab -c -s > out.tsv
+    - diff out.tsv validation/boring_c.tab
+    - python -c "import pyarrow"
 
 about:
   home: "https://github.com/{{ user }}/{{ name }}"
