@@ -31,17 +31,16 @@ requirements:
     - pyarrow
 
 test:
-  source_files:
-    - test/boring.tab
-    - validation/boring_c.tab
   commands:
     - cgmlst-dists.py --version | grep -F '{{ version }}'
     - cgmlst-dists.py -h
-    # Compute a real matrix and compare it to the reference produced by the
-    # original C implementation, so the package is verified to work and not
-    # merely to start.
-    - cgmlst-dists.py -i test/boring.tab -c -s > out.tsv
-    - diff out.tsv validation/boring_c.tab
+    # Compute a real matrix so the package is verified to work and not merely to
+    # start. The input is generated here rather than taken from the source tree,
+    # because the mulled container test runs without the source files. S1 and S2
+    # differ at one locus out of three, so the distance must be exactly 1.
+    - python -c "open('in.tab','w').write('id\tL1\tL2\tL3\nS1\t1\t2\t3\nS2\t1\t9\t3\n')"
+    - cgmlst-dists.py -i in.tab -c -s > out.tsv
+    - python -c "rows=[l.split() for l in open('out.tsv')]; assert rows[1][1:] == ['0', '1'], rows"
     - python -c "import pyarrow"
 
 about:
