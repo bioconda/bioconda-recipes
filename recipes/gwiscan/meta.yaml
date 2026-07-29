@@ -1,0 +1,85 @@
+{% set name = "gwiscan" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Point at the GitHub release tarball once you tag v{{ version }} and fill in the
+  # sha256 (get it with:  curl -sL <url> | sha256sum ).
+  url: https://github.com/beavenmanjengwa/gwiscan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6fa6365b8e8d6ee8e1f1727ce74c7fdd114bd510f5ebede71f73a1f44e2e42b1
+
+build:
+  number: 0
+  noarch: python                      # pure-Python package -> one build for all platforms
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - gwiscan = gwiscan.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.10
+    # --- Python libraries ---
+    - biopython >=1.80
+    - pandas >=1.5
+    - openpyxl >=3.1
+    - requests >=2.28
+    - pyyaml >=6.0
+    # --- bioinformatics tools (all on bioconda; pulled in automatically) ---
+    - hmmer
+    - diamond
+    - seqkit
+    - mafft
+    - trimal
+    - iqtree
+    - meme
+    - weblogo
+  # NOT declared here (by design):
+  #   * pybiolib (DeepTMHMM runner) — PyPI-only, so it can't be a conda run-dep.
+  #     DeepTMHMM is optional; enable it with `pip install pybiolib` in this env.
+  #   * targetp / deeploc — license-restricted DTU downloads; install manually and
+  #     set TARGETP_BIN / DEEPLOC_BIN (see README).
+
+test:
+  imports:
+    - gwiscan
+  commands:
+    - gwiscan --help
+    - gwiscan --version
+    # confirm the co-installed tools resolve on PATH
+    - hmmscan -h > /dev/null
+    - diamond version > /dev/null
+    - seqkit version > /dev/null
+    - mafft --version
+    - trimal --version | head -n1
+    - iqtree --version | head -n1
+    - weblogo --version
+
+about:
+  home: https://github.com/beavenmanjengwa/gwiscan
+  license: MIT
+  license_file: LICENSE
+  summary: GWIscan (Genome-Wide Identification Scan) identifies and annotates members of one or more gene families and/or superfamilies across the proteomes of one or more species.
+  description: |
+    GWIscan identifies and annotates members of one or more gene families across a
+    proteome: two-round DIAMOND BLASTp + profile-HMM (HMMER) search, InterProScan
+    gating, then physicochemical properties, signal/transit peptides, transmembrane
+    topology, subcellular localization, domain/GO terms, per-family MAFFT alignments,
+    trimAl trimming, WebLogo conservation logos, MEME motifs, and IQ-TREE trees.
+
+    Optional tools not installed by conda:
+      * DeepTMHMM      — `pip install pybiolib` (transmembrane topology)
+      * TargetP 2.0    — manual academic download; set TARGETP_BIN
+      * DeepLoc 2.1    — manual academic download; set DEEPLOC_BIN
+  dev_url: https://github.com/beavenmanjengwa/gwiscan
+
+extra:
+  recipe-maintainers:
+    - beavenmanjengwa
