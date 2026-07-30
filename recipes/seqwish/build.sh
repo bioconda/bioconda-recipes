@@ -7,4 +7,7 @@ set -xe
 # different CPU. Remove it so a portable baseline target is used.
 rm -f .cargo/config.toml .cargo/config
 
+# Bundle third-party crate licenses (bioconda Rust guideline).
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
 cargo install --locked --no-track --root "${PREFIX}" --path .
