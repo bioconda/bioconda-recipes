@@ -1,0 +1,40 @@
+{% set version = "2.3.1" %}
+
+package:
+  name: pyahocorasick
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pyahocorasick/pyahocorasick-{{ version }}.tar.gz
+  sha256: 9d0f6bb522237ed7f111ed59c9e8baea7d1e75813587b6773babd43bda35db9f
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python >=3.10,<3.13
+    - setuptools
+  run:
+    - python >=3.10,<3.13
+
+test:
+  imports:
+    - ahocorasick
+  commands:
+    - python -c "import ahocorasick; a = ahocorasick.Automaton(); a.add_word('peptide', 1); a.make_automaton(); assert list(a.iter('peptide')) == [(6, 1)]"
+
+about:
+  home: https://github.com/WojciechMula/pyahocorasick
+  summary: Fast and memory-efficient exact or approximate multi-pattern string search.
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jonashaag
+    - peterk87
