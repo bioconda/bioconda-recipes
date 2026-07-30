@@ -1,5 +1,5 @@
 {% set name = "pegasusio" %}
-{% set version = "0.10.0" %}
+{% set version = "0.11.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "a0e4151ad6ba14d1c0b9fbf8ed073308cdb541439cd61134afc94760d245a31f"
+  sha256: "3b183ecfe33f524fe6257e573b612d16c8bde0dda34cc3a539879efb176775a3"
 
 build:
   number: 0
@@ -15,7 +15,7 @@ build:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - pegasusio = pegasusio.__main__:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
   run_exports:
     - {{ pin_subpackage('pegasusio', max_pin="x.x") }}
 
@@ -23,13 +23,15 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
+    - python >=3.11,<3.15
     - cython
+    - numpy >=2.0.0
+    - setuptools
     - setuptools_scm
     - pip
   run:
-    - python
-    - numpy
+    - python >=3.11,<3.15
+    - numpy >=2.0.0
     - pandas >=1.2.0
     - anndata >=0.7
     - h5py >=3.0.0
@@ -37,16 +39,12 @@ requirements:
     - docopt
     - natsort
     - scipy
-    - importlib_metadata >=0.7  # [py < 38]
-    - zarr <=2.18.7
+    - zarr >=2.18.7,!=3.0.*,<4
     - pillow
 
 test:
   requires:
-    - anndata
-    - loompy
-    - h5py
-    - zarr
+    - pip
   imports:
     - pegasusio
     - pegasusio.commands
@@ -54,6 +52,7 @@ test:
     - pegasusio.cylib.io
   commands:
     - pegasusio --help
+    - python -m pip check
 
 about:
   home: "https://github.com/lilab-bcb/pegasusio"
