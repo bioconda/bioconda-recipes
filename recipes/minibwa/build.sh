@@ -34,9 +34,6 @@ case "$(uname -m)" in
         ;;
 esac
 
-# CC drives the Makefile's OpenMP auto-detection. The override-makefile.patch
-# lets the Makefile append its OpenMP/GPL/SSE4.2 flags on top of conda's
-# CFLAGS/CPPFLAGS rather than having them clobbered by the command line.
 # CPPFLAGS points at the vendored zlib.h; LIBS replaces the Makefile's `-lz`
 # with the static zlib-ng archive so minibwa embeds the compat build rather
 # than linking the shared system zlib.
