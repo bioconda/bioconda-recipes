@@ -2,7 +2,7 @@
 
 # The bioconda channel
 
-[![Gitter][gitter_badge]][gitter_link]
+[![Matrix][matrix_badge]][matrix_link]
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that supports easy distribution, installation and version management of
@@ -34,8 +34,8 @@ The nightly uploader jobs build any recipes that exist on master but were not su
 [bioconda_logo]: https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
 [no_link]: #
 
-[gitter_badge]: https://badges.gitter.im/bioconda/bioconda-recipes.svg
-[gitter_link]: https://gitter.im/bioconda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
+[matrix_badge]: https://img.shields.io/badge/chat-on_matrix-green?logo=matrix
+[matrix_link]: https://matrix.to/#/#bioconda_Lobby:gitter.im
 
 [nightly_linux-64_badge]: https://dev.azure.com/bioconda/bioconda-recipes/_apis/build/status/Nightly%20uploader?branchName=master&jobName=build_and_push_linux&label=Nightly%20linux-64
 [nightly_linux-64_link]: https://dev.azure.com/bioconda/bioconda-recipes/_build/latest?definitionId=4
