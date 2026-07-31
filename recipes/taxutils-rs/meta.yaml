@@ -1,5 +1,4 @@
 {% set name = "taxutils-rs" %}
-{% set crate = "taxutils" %}
 {% set version = "1.0.4" %}
 
 package:
@@ -7,18 +6,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://static.crates.io/crates/{{ crate }}/{{ crate }}-{{ version }}.crate
-  sha256: 59f2f4efc9d60d8547ed2f63ba2c9b180c51626c16b3cbc7b99b44ec9ad660c1
+  url: https://github.com/SwabSeq/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 37587bee4149ac88f23551adf64f0e7d51a72f40a2b6ff60136b1ed1b42849ec
 
 build:
   number: 0
   script:
-    - tar -xzf "{{ crate }}-{{ version }}.crate"
-    - cd "{{ crate }}-{{ version }}"
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
-    - cargo install --locked --no-track --root "${PREFIX}" --path .
+    - cargo install -v --locked --no-track --root "${PREFIX}" --path .
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,7 +23,6 @@ requirements:
     - {{ compiler("rust") }}
     - {{ stdlib("c") }}
     - cargo-bundle-licenses
-    - tar
 
 test:
   commands:
@@ -38,8 +34,8 @@ about:
   license: MIT
   license_family: MIT
   license_file:
-    - taxutils-{{ version }}/LICENSE
-    - taxutils-{{ version }}/THIRDPARTY.yml
+    - LICENSE
+    - THIRDPARTY.yml
   summary: "Rust utilities for working with NCBI taxonomic data and FASTA files."
   description: |
     taxutils-rs provides the tu command-line program and a Rust library for
@@ -50,6 +46,6 @@ about:
 
 extra:
   recipe-maintainers:
-    - "wgobrien"
+    - wgobrien
   authors:
     - "William O'Brien"
