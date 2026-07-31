@@ -1,0 +1,47 @@
+{% set version = "0.1.4" %}
+
+package:
+  name: bronko
+  version: {{ version }}
+
+source:
+  url: "https://github.com/treangenlab/bronko/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: ce21ff8c475ba57d7e23dc012f1ad82be0e48866ee5b84134c6070aa119bb95d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bronko', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+test:
+  commands:
+    - bronko --help
+
+
+requirements:
+  build: 
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - {{ stdlib("c") }}   
+    - make
+  run:
+    - kmc >=3.2
+
+about:
+  home: "https://github.com/treangenlab/bronko"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "bronko is an ultra-rapid mapping free variant caller for viral amplicon sequencing data" 
+  doc_url: "https://github.com/treangenlab/bronko/blob/main/README.md"
+  dev_url: "https://github.com/treangenlab/bronko"
+
+extra:
+  recipe-maintainers:
+    - rdoughty10
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

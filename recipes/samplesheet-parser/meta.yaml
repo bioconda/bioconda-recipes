@@ -1,0 +1,57 @@
+{% set name = "samplesheet-parser" %}
+{% set name_underscore = "samplesheet_parser" %}
+{% set version = "2.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name_underscore[0] }}/{{ name_underscore }}/{{ name_underscore }}-{{ version }}.tar.gz
+  sha256: d14e3eeafae8b6b01e411e3480c6c471f5ef88aaec279b428d74e3fae4b91097
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - typer >=0.12
+
+test:
+  imports:
+    - {{ name_underscore }}
+  commands:
+    - pip check
+    - python -c "from samplesheet_parser import __version__; print(__version__)"
+    - samplesheet --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/chaitanyakasaraneni/{{ name }}
+  summary: Multi-vendor, format-agnostic parser for sequencing sample sheets — Illumina IEM V1 & BCLConvert V2 plus Element AVITI run manifests, with index validation and color-balance checking
+  description: |
+    A Python library for parsing, validating, converting, and merging
+    sequencing sample sheets behind one interface. Auto-detects Illumina
+    IEM V1 and BCLConvert V2 sheets as well as non-Illumina Element AVITI
+    run manifests, and provides bidirectional V1/V2 conversion, structural
+    and index validation (including Hamming distance and per-cycle
+    color-balance checking against each instrument's optical chemistry),
+    sheet diffing, and cross-project merging with collision detection.
+  license: Apache-2.0
+  license_file: LICENSE
+  doc_url: https://samplesheet-parser.readthedocs.io
+  dev_url: https://github.com/chaitanyakasaraneni/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - chaitanyakasaraneni

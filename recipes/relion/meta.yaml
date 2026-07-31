@@ -1,4 +1,4 @@
-{% set version = "5.0.0" %}
+{% set version = "5.1.0" %}
 
 package:
   name: relion
@@ -6,21 +6,25 @@ package:
 
 source:
   url: https://github.com/3dem/relion/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 5d02d529bfdb396204310b35963f35e5ec40ed9fd10bc88c901119ae7d7739fc
+  sha256: 4767804dd8ba2198efd1e1082b4632bc36aeca0ad09d4d2f7de956f84bbbb429
 
 build:
   number: 0
-  skip: True  # [osx and x86_64]
+  # CMake Error at src/apps/CMakeLists.txt:515 (target_link_libraries):
+  # The keyword signature for target_link_libraries has already been used with
+  # the target "relion_lib".
+  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('relion', max_pin='x') }}
+    - {{ pin_subpackage('relion', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
     - make
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
+    - pkg-config
   host:
     - libtiff
     - fftw

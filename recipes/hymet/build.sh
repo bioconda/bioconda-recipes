@@ -1,60 +1,42 @@
 #!/bin/bash
+set -euo pipefail
 
-# Create destination directories
-mkdir -p $PREFIX/bin/scripts
-mkdir -p $PREFIX/bin/data
-mkdir -p $PREFIX/bin/output
-mkdir -p $PREFIX/bin/taxonomy_files
+HYMET_VERSION="${PKG_VERSION:-unknown}"
+HYMET_ROOT="$PREFIX/share/hymet"
+SRC_DIR="${SRC_DIR:-$PWD}"
 
-# Copy main scripts to bin directory
-cp -rf config.pl $PREFIX/bin/
-cp -rf main.pl $PREFIX/bin/
+rm -rf "${HYMET_ROOT}"
+mkdir -p "${HYMET_ROOT}"
 
-# Copy all scripts from scripts directory
-cp -rf scripts/*.py scripts/*.sh $PREFIX/bin/scripts/
+# Copy the complete HYMET repository so the Python CLI can locate bench/case assets.
+cp -a "${SRC_DIR}/." "${HYMET_ROOT}"
 
-# Make all scripts executable
-chmod +x $PREFIX/bin/config.pl
-chmod +x $PREFIX/bin/main.pl
-chmod +x $PREFIX/bin/scripts/*.sh
-chmod +x $PREFIX/bin/scripts/*.py
+install -d "${PREFIX}/bin"
 
-# Create README with information about database download
-cat > $PREFIX/bin/README.txt << EOF
-HYMET - Hybrid Metagenomic Tool
-
-After installation, you need to download the reference sketched databases from:
-https://drive.google.com/drive/folders/1YC0N77UUGinFHNbLpbsucu1iXoLAM6lm
-
-Download the files:
-- sketch1.msh.gz
-- sketch2.msh.gz
-- sketch3.msh.gz
-
-Place these files in the 'data' directory and unzip them:
-
-gunzip data/sketch1.msh.gz
-gunzip data/sketch2.msh.gz
-gunzip data/sketch3.msh.gz
-
-Then run:
-./config.pl
-./main.pl
-EOF
-
-# Create wrapper scripts that point to the installed location
-cat > $PREFIX/bin/hymet-config << EOF
+cat <<EOF > "${PREFIX}/bin/hymet"
 #!/bin/bash
-cd $PREFIX/bin
-perl config.pl \$@
+set -euo pipefail
+ROOT="\${HYMET_ROOT:-${HYMET_ROOT}}"
+export HYMET_ROOT="\${ROOT}"
+export HYMET_VERSION="\${HYMET_VERSION:-${HYMET_VERSION}}"
+exec python "\${ROOT}/bin/hymet" "\$@"
 EOF
+chmod +x "${PREFIX}/bin/hymet"
 
-cat > $PREFIX/bin/hymet << EOF
+cat <<EOF > "${PREFIX}/bin/hymet-config"
 #!/bin/bash
-cd $PREFIX/bin
-perl main.pl \$@
+set -euo pipefail
+ROOT="\${HYMET_ROOT:-${HYMET_ROOT}}"
+cd "\${ROOT}"
+exec perl config.pl "\$@"
 EOF
+chmod +x "${PREFIX}/bin/hymet-config"
 
-# Make wrapper scripts executable
-chmod +x $PREFIX/bin/hymet-config
-chmod +x $PREFIX/bin/hymet 
+cat <<EOF > "${PREFIX}/bin/hymet-legacy"
+#!/bin/bash
+set -euo pipefail
+ROOT="\${HYMET_ROOT:-${HYMET_ROOT}}"
+cd "\${ROOT}"
+exec perl main.pl "\$@"
+EOF
+chmod +x "${PREFIX}/bin/hymet-legacy"

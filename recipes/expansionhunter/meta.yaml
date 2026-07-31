@@ -5,6 +5,7 @@
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
 source:
   url: https://github.com/Illumina/ExpansionHunter/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
@@ -14,18 +15,21 @@ source:
     - 0003-add-missing-limits-import.patch
     - 0004-add-fmt-formatters-for-classes.patch
     - 0005-apply-bioconda-4.0.2-patches.patch  # [osx]
+
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('expansionhunter', max_pin="x") }}
+
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
     - cmake
+    - pkg-config
   host:
     - abseil-cpp >=20210324.2,<20210324.3
-    - boost >=1.73
+    - boost-cpp >=1.73
     - bzip2
     - fmt
     - gmock
@@ -37,17 +41,22 @@ requirements:
     - xz
     - zlib
   run:
-    - boost
+    - boost-cpp
+
 test:
   commands:
     - test -f ${PREFIX}/bin/ExpansionHunter
     - ExpansionHunter --help
+
 about:
-  home: https://github.com/Illumina/ExpansionHunter
-  license: APACHE
-  license_file: LICENSE.txt
-  summary: "A tool for estimating repeat sizes"
+  home: "https://github.com/Illumina/ExpansionHunter"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "A tool for estimating repeat sizes."
+  dev_url: "https://github.com/Illumina/ExpansionHunter"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

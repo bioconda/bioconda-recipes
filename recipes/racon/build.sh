@@ -9,7 +9,7 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 case $(uname -m) in
     x86_64)
         export SPOA_OPTS="-Dspoa_optimize_for_portability=ON"
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v4"
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
         ;;
     aarch64)
         export SPOA_OPTS="-Dspoa_optimize_for_native=ON -Dspoa_use_simde=ON -Dspoa_use_simde_nonvec=ON -Dspoa_use_simde_openmp=ON -DBUILD_TESTING=OFF"

@@ -1,5 +1,5 @@
 {% set name = "teloclip" %}
-{% set version = "0.1.1" %}
+{% set version = "0.4.0" %}
 
 package:
   name: '{{ name|lower }}'
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4e5fe0d8f4b64381975936daca1838ea7aa262234b53caa83f632a32f87fa69f
+  sha256: a1ca9dee7d8794dca717400d55e7ddab958417ecd727ce4ffb3086ea83075789
 
 build:
   run_exports:
@@ -15,8 +15,7 @@ build:
   noarch: python
   number: 0
   entry_points:
-    - teloclip=teloclip.app:main
-    - teloclip-extract=teloclip.app_extract:main
+    - teloclip=teloclip.cli:main
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
@@ -27,18 +26,26 @@ requirements:
     - hatch-vcs
   run:
     - python >=3.8
+    - biopython
+    - click
+    - pyfaidx
+    - pysam 
+    - rich
 
 test:
   imports:
     - teloclip
   commands:
+    - teloclip --version | grep {{ version }}
     - teloclip --help
-    - teloclip-extract --help
+    - teloclip filter --help
+    - teloclip extract --help
+    - teloclip extend --help
 
 about:
-  home: "https://github.com/Adamtaranto/teloclip"
-  license: MIT
-  license_family: MIT
+  home: "https://adamtaranto.github.io/teloclip"
+  license: GPL-3.0-or-later
+  license_family: GPL
   license_file: 'LICENSE'
   summary: "A tool for the recovery of unassembled telomeres from soft-clipped read alignments."
   doc_url: 'https://github.com/Adamtaranto/teloclip/blob/{{ version }}/README.md'
