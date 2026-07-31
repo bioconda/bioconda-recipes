@@ -1,0 +1,69 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "c953c2d6711a83671afeaf7ed0109603e9b75bdbe8e009a977b535b20f4107ca" %}
+
+package:
+  name: riboseek
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('riboseek', max_pin="x") }}
+
+source:
+  url: https://github.com/steineggerlab/riboseek/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    - cuda-version >=12.6 # [linux]
+    - perl
+  host:
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  source_files:
+    - example/QUERY.fasta
+    - example/DB.fasta
+  commands:
+    - riboseek > /dev/null
+    - riboseek easy-search example/QUERY.fasta example/DB.fasta aln.m8 tmp
+    - test -s aln.m8
+
+about:
+  home: https://github.com/steineggerlab/riboseek
+  summary: "Riboseek: fast and sensitive RNA homology search"
+  license: MIT AND BSD-3-Clause
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - lib/mmseqs/LICENSE.md
+    - lib/tornadofold/LICENSE
+    - lib/infernal/vendor/src/LICENSE
+    - lib/infernal/vendor/hmmer/LICENSE
+    - lib/infernal/vendor/easel/LICENSE
+
+extra:
+  recipe-maintainers:
+    - pskvins
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
