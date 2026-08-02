@@ -1,43 +1,35 @@
 {% set name = "hicberg" %}
-{% set version = "1.0.1" %}
+{% set version = "1.0.2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: e6e22104bc1b1ebf72bd72c7c8cefe64557446b9caee1ccad0078ed15941d94a
+  url: https://github.com/koszullab/hicberg/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0bde749bd9841edd7c4a8984581e9fd78da29a27a014edbdbf098de4e5a97cd3
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
   entry_points:
     - hicberg=hicberg.__main__:cli
-  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   run_exports:
-    - {{ pin_subpackage('hicberg', max_pin="x") }}  # Added missing closing brace
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - bioframe
-    - biopython
-    - click
-    - cooler
-    - funcy
-    - hicstuff
-    - matplotlib-base
-    - numpy
-    - pandas
+    - python >=3.10
     - pip
-    - pysam
-    - python
-    - scikit-learn
-    - scipy
-    - statsmodels
+    - setuptools
+    - wheel
+
   run:
+    - python >=3.10
     - bioframe
     - biopython
+    - bowtie2
     - click
     - cooler
     - funcy
@@ -46,7 +38,7 @@ requirements:
     - numpy
     - pandas
     - pysam
-    - python
+    - samtools
     - scikit-learn
     - scipy
     - statsmodels
@@ -54,19 +46,17 @@ requirements:
 test:
   imports:
     - hicberg
-    - tests
   commands:
     - hicberg --help
 
 about:
-  home: "https://github.com/sebgra/hicberg"
+  home: https://github.com/koszullab/hicberg
   license: MIT
   license_family: MIT
-  license_file:  LICENSE
-  summary: "Statistical profiling based tool for contact data (Hi-C, ChIA-PET, Capture-C, etc.) and genomics data reconstruction"
-  doc_url:   # Empty string is valid YAML
-  dev_url:  "https://github.com/sebgra/hicberg"
+  license_file: LICENSE
+  summary: Statistical profiling based tool for contact data (Hi-C, ChIA-PET, Capture-C, etc.) and genomics data reconstruction
+  dev_url: https://github.com/koszullab/hicberg
 
 extra:
   recipe-maintainers:
-    - sebgra
+    - axelcournac
