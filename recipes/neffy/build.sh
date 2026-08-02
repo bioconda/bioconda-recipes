@@ -3,7 +3,10 @@ set -e
 set -x
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
+
+sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+sed -i.bak 's|-O3|-O3 -D_LIBCPP_DISABLE_AVAILABILITY|' Makefile
+rm -f *.bak
 
 # If you are making a g++ symlink:
 mkdir -p ./mybin
