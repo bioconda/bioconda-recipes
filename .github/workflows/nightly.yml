@@ -48,19 +48,17 @@ jobs:
               --lint --exclude bioconda-repodata-patches
 
   nightly-linux:
-    name: Nightly Linux ${{ matrix.architecture.artifact_arch }} Builds
+    name: Nightly Linux ${{ matrix.architecture }} Builds
     if: github.repository == 'bioconda/bioconda-recipes'
-    runs-on: ${{ matrix.architecture.runner }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        architecture:
-          - runner: ubuntu-22.04
-            platform: linux/amd64
-            artifact_arch: amd64
-          - runner: ubuntu-22.04-arm
-            platform: linux/arm64
-            artifact_arch: arm64
+        include:
+          - architecture: amd64
+            runner: ubuntu-22.04
+          - architecture: arm64
+            runner: ubuntu-22.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -81,7 +79,10 @@ jobs:
         run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
 
       - name: Rebuild and upload bioconda-repodata-patches
-        if: matrix.architecture.artifact_arch == 'amd64'
+        # This is architecture-independent and must run only once. Assign it to
+        # the amd64 matrix entry to reuse that environment instead of adding a
+        # separate setup job or racing two uploads of the same package.
+        if: matrix.architecture == 'amd64'
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
@@ -104,7 +105,7 @@ jobs:
           conda activate bioconda
           bioconda-utils build recipes config.yml \
             --docker --mulled-build-and-test \
-            --platform ${{ matrix.architecture.platform }} \
+            --platform linux/${{ matrix.architecture }} \
             --anaconda-upload --mulled-upload-target biocontainers \
             --mulled-upload-records /tmp/mulled-images \
             --lint --exclude bioconda-repodata-patches
@@ -113,7 +114,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: mulled-images-${{ matrix.architecture.artifact_arch }}-nightly
+          name: mulled-images-${{ matrix.architecture }}-nightly
           path: /tmp/mulled-images
 
   publish-mulled-manifests:
