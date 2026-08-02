@@ -9,9 +9,8 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
-      max-parallel: 13
+    outputs:
+      build_linux_arm64: ${{ steps.select_platforms.outputs.build_linux_arm64 }}
     steps:
       - uses: actions/checkout@v4
 
@@ -70,12 +69,23 @@ jobs:
           bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF"...HEAD
           conda clean -y --all
 
+      - name: Select additional platform builds
+        id: select_platforms
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          recipes=$(bioconda-utils list-recipes recipes config.yml \
+            --git-range origin/"$GITHUB_BASE_REF"...HEAD \
+            --platform linux-aarch64 --format json)
+          if [[ ${recipes} == "[]" ]]; then
+            echo "build_linux_arm64=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_linux_arm64=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build-linux:
     name: Linux Tests
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
-      max-parallel: 13
     needs: lint
     steps:
       - name: Free space
@@ -198,9 +208,6 @@ jobs:
   build-osx-64:
     name: OSX-64 Tests
     runs-on: macos-15-intel
-    strategy:
-      fail-fast: true
-      max-parallel: 4
     # Limited concurrency for osx, so first make sure linux can pass
     needs: build-linux
     steps:
@@ -297,13 +304,9 @@ jobs:
 
   build-linux-arm64:
     name: Linux ARM64 Tests
-    runs-on: ubuntu-24.04-arm
-    # NOTE: uses ubuntu-24.04 (native ARM64) while x86-64 jobs use ubuntu-22.04;
-    # this base-image skew is intentional for now.
-    strategy:
-      fail-fast: true
-      max-parallel: 13
-    needs: build-linux
+    if: needs.lint.outputs.build_linux_arm64 == 'true'
+    runs-on: ubuntu-22.04-arm
+    needs: lint
     steps:
       - uses: actions/checkout@v4
 
@@ -315,27 +318,14 @@ jobs:
           fallback-base-ref: master
           fallback-fetch-all: true
 
-      - name: Check for Additional Platforms
-        id: additional_platforms
-        run: |
-          result=$(./scripts/check-for-additional-platforms.sh \
-            "origin/master...HEAD" "build_and_test" "build_and_test-linux-aarch64")
-          if [[ ${result} != "build" ]]; then
-            echo "No recipes using this platform, skipping rest of job."
-            echo "skip_build=true" >> $GITHUB_OUTPUT
-          fi
-
       - name: set path
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
       - name: Fetch conda install script
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
           wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
       - name: Restore cache
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         id: cache
         uses: actions/cache@v4
         with:
@@ -345,15 +335,13 @@ jobs:
           key: linux-arm64--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
-        if: steps.additional_platforms.outputs.skip_build != 'true' && steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: bash install-and-set-up-conda.sh
 
       - name: Configure conda
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: bash configure-conda.sh
 
       - name: Build and test
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         env:
           OSTYPE: "linux-gnu"
           CI: "true"
@@ -368,15 +356,12 @@ jobs:
 
           eval "$(conda shell.bash hook)"
           conda activate bioconda
-          source common.sh
           bioconda-utils build recipes config.yml \
             --docker --mulled-build-and-test \
-            --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
             --platform linux/arm64 \
             --git-range origin/"$GITHUB_BASE_REF"...HEAD
 
       - name: Prepare artifacts
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         run: |
           (
           rm -rf /tmp/artifacts
@@ -402,90 +387,8 @@ jobs:
           ) || true
 
       - name: Archive packages
-        if: steps.additional_platforms.outputs.skip_build != 'true'
         uses: actions/upload-artifact@v6
         with:
           name: linux-arm64-packages
           path: /tmp/artifacts
           compression-level: 0
-
-  # Disabled due to concurrency limits on GHA for OSX. osx-arm64 builds are on CircleCI.
-  # build_and_test-osx-arm64:
-  #   name: OSX-ARM64 Tests
-  #   runs-on: macOS-14 # M1
-  #   strategy:
-  #     fail-fast: true
-  #     max-parallel: 4
-  #   needs: build-linux
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     # bail if there's no osx-arm64 recipes
-  #     - name: Check for Additional Platforms
-  #       id: additional_platforms
-  #       run: |
-  #         result=$(./scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${GITHUB_JOB}")
-  #         if [[ ${result} != "build" ]]
-  #         then
-  #             echo "No recipes using this platform, skipping rest of job."
-  #             echo "skip_build=true" >> $GITHUB_OUTPUT
-  #         fi
-
-  #     - name: set path
-  #       run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-  #     - name: Fetch conda install script
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: |
-  #         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-  #     - name: Set up bioconda-utils
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash install-and-set-up-conda.sh
-
-  #     - name: Configure conda
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash configure-conda.sh
-
-  #     - name: Build and Test
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       env:
-  #         # Mimic circleci
-  #         OSTYPE: "darwin"
-  #         CI: "true"
-  #       run: |
-  #         set -xe
-  #         eval "$(conda shell.bash hook)"
-  #         conda activate bioconda
-  #         source common.sh
-  #         # Sets up OSX SDK
-  #         run_conda_forge_build_setup
-
-  #         if [ -z "$GITHUB_BASE_REF" ] ; then
-  #             export GITHUB_BASE_REF="master"
-  #         fi
-  #         git fetch origin "$GITHUB_BASE_REF"
-
-  #         bioconda-utils build recipes config.yml \
-  #           --lint --git-range origin/"$GITHUB_BASE_REF"...HEAD
-
-  #     - name: Prepare artifacts
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: |
-  #             (
-  #             rm -rf /tmp/artifacts
-  #             mkdir -p /tmp/artifacts/packages
-  #             cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-  #             find -name .cache | xargs rm -rf || true
-  #             for n in index.html channeldata.json osx-arm64 noarch; do
-  #               cp -rv $n /tmp/artifacts/packages || true
-  #             done
-  #             ) || true
-
-  #     - name: Archive packages
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       uses: actions/upload-artifact@v6
-  #       with:
-  #         name: osx-arm64-packages
-  #         path: |
-  #           /tmp/artifacts
