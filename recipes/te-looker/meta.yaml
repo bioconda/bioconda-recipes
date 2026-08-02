@@ -1,0 +1,52 @@
+{% set name = "te-looker" %}
+{% set version = "0.3.0" %}
+
+# te-looker is PUBLIC at github.com/unavailable-2374/te-looker, GPL-3.0, tagged v0.3.0.
+# Rust crate `te-core` v{{ version }}; binaries: dtr, te-discover, te-refine, te-seed.
+# Ready to submit to bioconda-recipes.
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/unavailable-2374/te-looker/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: edc3717f97280a76e20c825a6d5eb376fd02f454002ecace68f94ed006e330cd
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  run:
+    # Runtime tools the dtr pipeline shells out to (design tracks / consensus).
+    - abpoa
+    - spoa
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/dtr"
+    - test -x "$PREFIX/bin/te-discover"
+    - test -x "$PREFIX/bin/te-refine"
+    - test -x "$PREFIX/bin/te-seed"
+
+about:
+  home: https://github.com/unavailable-2374/te-looker
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: "TE-looker (dtr): de novo discovery of divergent ('twilight-zone') transposable elements (Rust)."
+  description: |
+    TE-looker provides the `dtr` (Dark TE Rebuilder) CLI plus te-discover / te-refine /
+    te-seed helpers. It targets older, divergent TEs (D_cc 45-75%) as the Step-4 track of
+    the Pan_TE pipeline.
+
+extra:
+  recipe-maintainers:
+    - unavailable-2374
