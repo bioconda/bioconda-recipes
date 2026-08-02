@@ -6,7 +6,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-git clone https://github.com/simd-everywhere/simde-no-tests simde
+git clone --recursive https://github.com/simd-everywhere/simde-no-tests simde
 
 case $(uname -m) in
     aarch64)
