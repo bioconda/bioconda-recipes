@@ -10,7 +10,10 @@ mkdir -p ${PREFIX}/share/igphyml
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-autoreconf -if
+aclocal
+autoheader
+autoconf -f
+automake -f --add-missing
 ./configure --prefix="${PREFIX}" --enable-omp \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	CC="${CC}" CFLAGS="${CFLAGS}" \
