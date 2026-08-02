@@ -12,10 +12,11 @@ export LC_ALL="en_US.UTF-8"
 # We build
 #   - phyml (enable-phyml),
 #   - phyml-mpi (enable-phyml-mpi)
-#   - phytime
+#   - phyrex
+#   - rf
 # but not
 #   - phyml-beagle -- doesn't compile in this release
-#   - phyrex -- crashes with segfault
+#   - phytime -- io.c: undefined reference to 'PHYREX_Get_Posterior'
 
 case $(uname -m) in
 	x86_64)
@@ -33,7 +34,8 @@ autoreconf -if
 
 # Adding -v to make breaks compilation on Microsoft Azure CI
 # phyml-mpi error: mpi_boot.c:215:100: error: 'struct __Optimiz' has no member named 'opt_bl'
-for binary in phyrex phyml phyml-mpi phytime rf; do
+# phytime build error: utilities.c: undefinied reference to 'EVOLVE_Seq'
+for binary in phyrex phyml phyml-mpi rf; do
 	echo ${binary}
 	./configure \
 		--disable-dependency-tracking \
