@@ -1,0 +1,63 @@
+name: Publish mulled manifests
+on:
+  workflow_call:
+    inputs:
+      bioconda_common_ref:
+        description: Branch or tag providing the bioconda setup scripts
+        required: true
+        type: string
+    secrets:
+      QUAY_LOGIN:
+        required: true
+      QUAY_OAUTH_TOKEN:
+        required: true
+
+jobs:
+  publish:
+    name: Publish multi-arch manifests
+    runs-on: ubuntu-22.04
+    concurrency:
+      group: biocontainers-manifest-publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download mulled image records
+        uses: actions/download-artifact@v6
+        with:
+          pattern: mulled-images-*
+          path: /tmp/mulled-images
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        env:
+          BIOCONDA_COMMON_REF: ${{ inputs.bioconda_common_ref }}
+        run: |
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/install-and-set-up-conda.sh"
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/configure-conda.sh"
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/common.sh"
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Log in to Quay
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: $oauthtoken
+          password: ${{ secrets.QUAY_OAUTH_TOKEN }}
+
+      - name: Publish and verify manifests
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          bioconda-utils create-mulled-manifests /tmp/mulled-images

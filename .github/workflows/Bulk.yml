@@ -10,18 +10,26 @@ concurrency:
 
 jobs:
   build-linux:
-    name: Bulk Linux Builds (d${{ matrix.subdag_depth }} w${{ matrix.runner }})
+    name: Bulk Linux ${{ matrix.architecture.artifact_arch }} Builds (d${{ matrix.subdag_depth }} w${{ matrix.worker }})
     if: "contains(github.event.head_commit.message, '[ci run]')"
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.architecture.runner }}
     strategy:
       fail-fast: false
-      max-parallel: 10
+      # Keep the existing aggregate Linux allocation (10 amd64 + 6 arm64),
+      # while allowing either architecture to use available capacity.
+      max-parallel: 16
       matrix:
+        architecture:
+          - runner: ubuntu-22.04
+            platform: linux/amd64
+            artifact_arch: amd64
+          - runner: ubuntu-22.04-arm
+            platform: linux/arm64
+            artifact_arch: arm64
         # Build dependency layers needed for the blocked Bioconductor chain.
         # Each depth is split across worker offsets.
         subdag_depth: [0,1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,15]
-        runner: [0, 1, 2]
-        # runner: [0]
+        worker: [0, 1, 2]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,7 +55,7 @@ jobs:
         run: bash configure-conda.sh
 
       - name: Initialize mulled image records
-        run: mkdir -p /tmp/mulled-images
+        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
 
       - name: Build and upload
         env:
@@ -68,9 +76,9 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 5 \
+            --worker-offset ${{ matrix.worker }} --n-workers 3 \
             --docker --mulled-build-and-test --anaconda-upload --mulled-upload-target biocontainers \
-            --platform linux/amd64 \
+            --platform ${{ matrix.architecture.platform }} \
             --mulled-upload-records /tmp/mulled-images \
             --lint --record-build-failures --skiplist-leaves \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
@@ -80,7 +88,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: mulled-images-amd64-d${{ matrix.subdag_depth }}-w${{ matrix.runner }}
+          name: mulled-images-${{ matrix.architecture.artifact_arch }}-d${{ matrix.subdag_depth }}-w${{ matrix.worker }}
           path: /tmp/mulled-images
 
   build-osx:
@@ -206,128 +214,10 @@ jobs:
             --exclude bioconda-repodata-patches
           conda clean -y --all
 
-  build-linux-arm:
-    name: Bulk Linux ARM Builds (d${{ matrix.subdag_depth }} w${{ matrix.runner }})
-    if: "contains(github.event.head_commit.message, '[ci run]')"
-    runs-on: ubuntu-24.04-arm
-    # NOTE: uses ubuntu-24.04 (native ARM64) while x86-64 jobs use ubuntu-22.04;
-    # this base-image skew is intentional for now.
-    strategy:
-      fail-fast: false
-      max-parallel: 6
-      matrix:
-        subdag_depth: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-        runner: [0, 1, 2]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{secrets.BIOCONDA_BOT_REPO_TOKEN}}
-
-      - name: set git user
-        run: |
-          git config user.name BiocondaBot
-          git config user.email BiocondaBot@users.noreply.github.com
-
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
-
-      - name: Initialize mulled image records
-        run: mkdir -p /tmp/mulled-images
-
-      - name: Build and upload
-        env:
-          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-          OSTYPE: "linux-gnu"
-          CI: "true"
-        run: |
-          set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-          source common.sh
-          echo '============'
-          conda info --all
-          conda config --show-sources
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
-          echo '============'
-          bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 5 \
-            --docker --mulled-build-and-test \
-            --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
-            --platform linux/arm64 \
-            --anaconda-upload --mulled-upload-target biocontainers \
-            --mulled-upload-records /tmp/mulled-images \
-            --lint --record-build-failures --skiplist-leaves \
-            --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
-          conda clean -y --all
-
-      - name: Archive mulled image records
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: mulled-images-arm64-d${{ matrix.subdag_depth }}-w${{ matrix.runner }}
-          path: /tmp/mulled-images
-
   publish-mulled-manifests:
-    name: Publish multi-arch manifests
-    if: >-
-      always() &&
-      needs['build-linux'].result == 'success' &&
-      needs['build-linux-arm'].result == 'success'
-    needs:
-      - build-linux
-      - build-linux-arm
-    runs-on: ubuntu-22.04
-    concurrency:
-      group: biocontainers-manifest-publication
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download mulled image records
-        uses: actions/download-artifact@v6
-        with:
-          pattern: mulled-images-*
-          path: /tmp/mulled-images
-
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
-
-      - name: Log in to Quay
-        uses: docker/login-action@v3
-        with:
-          registry: quay.io
-          username: $oauthtoken
-          password: ${{ secrets.QUAY_OAUTH_TOKEN }}
-
-      - name: Publish and verify manifests
-        env:
-          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
-          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
-        run: |
-          set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-          bioconda-utils create-mulled-manifests /tmp/mulled-images
+    if: always() && !cancelled()
+    needs: build-linux
+    uses: ./.github/workflows/publish-mulled-manifests.yml
+    with:
+      bioconda_common_ref: bulk
+    secrets: inherit
