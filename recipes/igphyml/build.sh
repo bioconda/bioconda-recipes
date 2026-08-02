@@ -16,8 +16,8 @@ autoreconf -if
 	CC="${CC}" CFLAGS="${CFLAGS}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}"
 
-make -j"${CPU_COUNT}"
-make install
+#make -j"${CPU_COUNT}"
+#make install
 
 cp -r examples ${PREFIX}/share/igphyml
 pushd src
