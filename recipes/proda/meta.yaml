@@ -1,33 +1,42 @@
+{% set name = "proda" %}
 {% set version = "1.0" %}
 
 package:
-  name: proda
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 6
 
 source:
   url: http://proda.stanford.edu/proda_1_0.tar.gz
   sha256: 439a93bf35e1a29ac1d5dde51e61f2cb174618596afaaaaa27d33a8ea1868a08
   patches:
     - file.patch
-    
+    - 0001-Makefile.patch
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage('proda', max_pin="x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
 
 test:
   commands:
     - proda
 
 about:
-  home: "http://proda.stanford.edu/"
+  home: "http://proda.stanford.edu"
   license: "Public Domain Software"
-  summary: "ProDA - Multiple alignment of protein sequences with repeated and shuffled elements"
+  summary: "ProDA - Multiple alignment of protein sequences with repeated and shuffled elements."
+  doc_url: "http://proda.stanford.edu/manual.htm"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/nar/gkl511

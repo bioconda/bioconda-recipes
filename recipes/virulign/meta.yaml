@@ -11,24 +11,41 @@ source:
     sha256: {{ sha256 }}
 
 build:
-  number: 5
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - ninja
     - {{ compiler('cxx') }}
-    - cmake>=3.12
+    - cmake <4
+    - pkg-config
   host:
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
   run:
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openmpi
 
 test:
   commands:
     - virulign -h 2>&1 | grep "virulign"
 
 about:
-  home: https://github.com/rega-cev/virulign
-  license: GPL-2.0-only
-  license_file: LICENSE.txt
-  summary: {{ name }} is a tool for codon-correct pairwise alignments, with an augmented functionality to annotate the alignment according the positions of the proteins.
+  home: "https://github.com/mirand863/virulign"
+  license: "GPL-2.0-only"
+  license_family: GPL
+  license_file: "LICENSE.txt"
+  summary: "{{ name }} is a tool for codon-correct pairwise alignments, with an augmented functionality to annotate the alignment according the positions of the proteins."
+  dev_url: "https://github.com/mirand863/virulign"
+  doc_url: "https://github.com/mirand863/virulign/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/bty851

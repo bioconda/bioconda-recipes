@@ -1,22 +1,21 @@
+{% set name = "bamm" %}
 {% set version = "1.7.3" %}
 
 package:
-  name: bamm
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/Ecogenomics/BamM/archive/{{ version }}.tar.gz
-  sha256: "1a30a5014aa64aea23f12b82c8e474044af126c9e6ddb575530ab14b6ef765b8"
+  url: https://github.com/Ecogenomics/BamM/archive/9b6766d77c17cf79e2d2f934a8fec0e80feb1017.tar.gz
+  sha256: 83fbeb3dea0febdf969585a0dade2ac79e713a8bb8d8276136ae6c85839f68e8
   patches:
     - bamm-makefile.patch
 
 build:
-  number: 13
-  skip: True [osx or not py2k]
-
-extra:
-  skip-lints:
-  - setup_py_install_args
+  number: 15
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -26,17 +25,17 @@ requirements:
     - autoconf
     - libtool
     - make
+    - pkg-config
+    - gnuconfig
   host:
     - htslib
     - cython
     - python
     - setuptools
     - zlib
-
   run:
     - python
     - htslib
-    - zlib
     - numpy
     - samtools >=1.3.1
     - bwa >=0.7.12
@@ -48,6 +47,17 @@ test:
     - bamm --help
 
 about:
-  home: https://github.com/Ecogenomics/BamM
-  license: LGPL-3.0
-  summary: "Metagenomics-focused BAM file manipulation"
+  home: "https://github.com/Ecogenomics/BamM"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: "LICENSE.txt"
+  summary: "Metagenomics-focused BAM file manipulation."
+  dev_url: "https://github.com/Ecogenomics/BamM"
+  doc_url: "https://ecogenomics.github.io/BamM"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - setup_py_install_args

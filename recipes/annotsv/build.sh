@@ -1,7 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-chmod +x bin/INSTALL_annotations.sh
-mv bin/INSTALL_annotations.sh ${PREFIX}/bin/INSTALL_annotations.sh
-make
-make install
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/etc/AnnotSV"
+mkdir -p "${PREFIX}/share/bash/AnnotSV"
+mkdir -p "${PREFIX}/share/doc/AnnotSV"
+mkdir -p "${PREFIX}/tests/AnnotSV"
+
+make install PREFIX=$PREFIX
+
+install -v -m 0755 bin/INSTALL_annotations.sh "${PREFIX}/bin"
