@@ -1,17 +1,17 @@
 {% set name = "janusx" %}
-{% set version = "1.0.25" %}
+{% set version = "1.0.26" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://files.pythonhosted.org/packages/source/j/janusx/janusx-{{ version }}.tar.gz
-  sha256: 42eeeb86b88479425b00305a6e3497c05e80338c5450b1a4447af996d9fa3d75
+  sha256: beda101f468a18336b50a17f338bae5b20f98cc7ad107f245fd7f179de28b344
 build:
   number: 0
-  skip: true  # [win or py<310]
-  script_env:
-    - CARGO_BUILD_JOBS
+  python_version_independent: true  # [py == 310]
+  skip: true  # [win or py!=310]
   run_exports:
     - {{ pin_subpackage('janusx', max_pin='x.x') }}
 
@@ -23,14 +23,15 @@ requirements:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
-    - python
+    - python 3.10.*
+    - python-abi3  # [py == 310]
     - pip
-    - maturin >=1.7,<2
+    - maturin >=1.9.4,<2
     - numpy >=1.23
     - zlib
     - openblas
   run:
-    - python
+    - python >=3.10
     - {{ pin_compatible('numpy') }}
     - libopenblas
     - scipy
@@ -76,3 +77,6 @@ extra:
     - doi:10.64898/2026.01.20.700366
   recipe-maintainers:
     - FJingxian
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
