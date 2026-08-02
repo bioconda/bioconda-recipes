@@ -6,6 +6,8 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
+git clone https://github.com/simd-everywhere/simde-no-tests simde
+
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
@@ -23,11 +25,9 @@ mkdir -p "${PREFIX}/bin"
 # The patch does not move the VERSION file on OSX. Let's make sure it's moved.
 mv VERSION{,.txt} || true
 
-git clone https://github.com/simd-everywhere/simde-no-tests.git simde
-
-make -j"${CPU_COUNT}" \
-    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+	-j"${CPU_COUNT}"
 
 # copy binaries and python scripts
 for i in \
