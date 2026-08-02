@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
-project(panmap VERSION 0.1.0)
+project(panmap VERSION 0.1.2)
+
+# Generate version.h (defines PANMAP_VERSION, included by src/main.cpp)
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/version.h"
+    @ONLY
+)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -254,7 +261,7 @@ target_compile_options(bcftools PRIVATE -fPIC -w)
 set(PANMAP_SOURCES_MAIN
     src/main.cpp src/conversion.cpp src/panmap_utils.cpp
     src/genotyping.cpp src/index_single_mode.cpp src/placement.cpp
-    src/seeding.cpp src/index_utils.cpp src/mgsr.cpp
+    src/seeding.cpp src/mgsr.cpp
     src/mm_align.c src/pileup.c src/zstd_compression.cpp
 )
 
