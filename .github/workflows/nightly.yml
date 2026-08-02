@@ -73,7 +73,7 @@ jobs:
         run: bash configure-conda.sh
 
       - name: Initialize mulled image records
-        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/images.jsonl
+        run: mkdir -p /tmp/mulled-images
 
       - name: Build and push leftover packages
         env:
@@ -94,15 +94,15 @@ jobs:
             --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
             --platform linux/arm64 \
             --anaconda-upload --mulled-upload-target biocontainers \
-            --mulled-upload-records /tmp/mulled-images/images.jsonl \
-            --prelint --exclude bioconda-repodata-patches
+            --mulled-upload-records /tmp/mulled-images \
+            --lint --exclude bioconda-repodata-patches
 
       - name: Archive mulled image records
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: mulled-images-arm64-nightly
-          path: /tmp/mulled-images/images.jsonl
+          path: /tmp/mulled-images
 
   publish-mulled-manifests:
     name: Publish multi-arch manifests
