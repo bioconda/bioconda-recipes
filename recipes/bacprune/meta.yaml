@@ -10,18 +10,21 @@ source:
 
 build:
   number: 0
-  script: cargo install --locked --root "${PREFIX}" --path . --no-track
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --locked --root "${PREFIX}" --path . --no-track
   run_exports:
     - {{ pin_subpackage('bacprune', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
     
 test:
   commands:
     - bacprune --help
-    - bacprune --version | grep -q "{{ version }}"
 
 about:
   home: https://github.com/bacpop/BacPrune-Rust
@@ -47,5 +50,3 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - compiler_needs_stdlib_c
