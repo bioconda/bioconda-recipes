@@ -5,19 +5,17 @@ on:
       - master
 jobs:
   build-linux:
-    name: Linux ${{ matrix.artifact_arch }} Upload
+    name: Linux ${{ matrix.package_platform }} Upload
     if: github.repository == 'bioconda/bioconda-recipes'
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-22.04
-            package_platform: linux-64
-            artifact_arch: amd64
-          - runner: ubuntu-22.04-arm
-            package_platform: linux-aarch64
-            artifact_arch: arm64
+          - package_platform: linux-64
+            runner: ubuntu-22.04
+          - package_platform: linux-aarch64
+            runner: ubuntu-22.04-arm
     steps:
       # Fetch the last two commits for the --git-range argument to bioconda-utils
       - uses: actions/checkout@v4
@@ -68,7 +66,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: mulled-images-${{ matrix.artifact_arch }}
+          name: mulled-images-${{ matrix.package_platform }}
           path: /tmp/mulled-images
 
   build-osx-64:
