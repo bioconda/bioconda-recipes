@@ -1,5 +1,5 @@
 {% set name = "coot-headless" %}
-{% set version = "Release-1.2" %}
+{% set version = "Release-1.3.1" %}
 
 package:
   name: {{ name }}
@@ -7,20 +7,18 @@ package:
 
 source:
   url: https://github.com/pemsley/coot/archive/refs/tags/{{ version }}.tar.gz
-  sha256: ebf19951382151a53ed9c176aea0cf732994235478c64be611cd3f6fc0bdc9ea
+  sha256: 39069510b2bd499a407d5cc9202d4df591b353c344dd21aaf30e2ceab8260025
 
 build:
-  number: 1
+  number: 0
   run_exports:
     # Minor version changes may be disruptive
     # Refer to https://github.com/pemsley/coot/issues/239#issuecomment-3031606299
     - {{ pin_subpackage(name, max_pin="x.x.x") }}
-  # No builds of acedrg for linux-aarch64 with python 3.10
-  skip: True  # [(linux and aarch64) and py <= 310]
+  skip: True  # [py < 311]
 
 requirements:
   build:
-    - {{ compiler("c") }}
     - {{ compiler("cxx") }}
     - {{ stdlib("c") }}
     - cmake
@@ -41,26 +39,27 @@ requirements:
     - gemmi ==0.7.4  # Due to compatibility with servalcat
     - glm
     - gsl
-    - libboost-devel
+    - libboost-devel 1.88.*  # Align with conda-forge's global pinning
     - libccp4
     - libffi
     - libintl-devel  # [osx]
     - libpng
     - librdkit-dev ==2026.03.1
-    - libxml2 *
+    - libxml2 *  # Remove constraint due to deps cannot be resolved
     - mmdb2
     - nanobind
-    - numpy {{ numpy }}
     - openblas
+    - ospray
     - pixman
     - python {{ python }}
     - sqlite
     - ssm
+    - tbb-devel
     - typing_extensions  # [py < 311]
     - zlib
   run:
     - acedrg
-    - numpy {{ numpy }}
+    - numpy *  # Depends only on RDKit; no version constraints
     - python {{ python }}
     - rdkit ==2026.03.1
     - servalcat >=0.4.128
