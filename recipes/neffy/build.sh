@@ -4,14 +4,17 @@ set -x
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-# If you are making a g++ symlink:
-mkdir -p ./mybin
-ln -s "$(command -v $CXX)" ./mybin/g++
-export PATH="$(pwd)/mybin:$PATH"
-
-sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-sed -i.bak 's|-O3|-O3 -D_LIBCPP_DISABLE_AVAILABILITY|' Makefile
+case $(uname -m) in
+    aarch64)
+    sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile
+    ;;
+    arm64)
+    sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' Makefile
+    ;;
+esac
 rm -f *.bak
 
+make CC="${CXX}" -j"${CPU_COUNT}"
+
 # Now build and install
-$PYTHON -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
