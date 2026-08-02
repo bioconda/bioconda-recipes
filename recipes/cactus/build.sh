@@ -13,8 +13,8 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 cd ../../
 
 cd submodules/FASTGA
-sed -i.bak 's|-lm -lz|-lm -lz -pthread|g' Makefile
-sed -i.bak 's|-lpthread||g' Makefile
+sed -i.bak -e 's|-lm -lz|-lm -lz -pthread|g' Makefile
+sed -i.bak -e 's|-lpthread||g' Makefile
 rm -f *.bak
 make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
@@ -35,7 +35,7 @@ export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
-sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+sed -i.bak -e 's|find_packages|find_namespace_packages|' setup.py
 rm -f *.bak
 ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 # the presence of lib/python*/site-packages/sonlib-*.dist-info/RECORD results in a false positive report of pypi
