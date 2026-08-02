@@ -7,24 +7,27 @@ case $(uname -m) in
 esac
 
 cd submodules/abPOA
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" LDLIBS="-pthread" -j"${CPU_COUNT}"
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o LDLIBS="-pthread" -j"${CPU_COUNT}"
-make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 LDLIBS="-pthread" -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" src/abpoa_align_simd.o -j"${CPU_COUNT}"
+make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTGA
-make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" LDLIBS="-pthread" -j"${CPU_COUNT}"
+sed -i.bak 's|-lm -lz|-lm -lz -pthread|g' Makefile
+sed -i.bak 's|-lpthread||g' Makefile
+rm -f *.bak
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
 sed -i.bak -e 's/-lm -lz/-lm -pthread -lz/g' Makefile
 rm -f *.bak
-make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" LDLIBS="-pthread" -j"${CPU_COUNT}" FasTAN
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
 ln -f FasTAN "${PREFIX}/bin/"
 cd ../../
 
 cd submodules/alntools
-make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" LDLIBS="-pthread" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
@@ -33,13 +36,13 @@ make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-rm -rf *.bak
+rm -f *.bak
 ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
 # the presence of lib/python*/site-packages/sonlib-*.dist-info/RECORD results in a false positive report of pypi
 # as the source of cactus. Remove it, though if they just used versions we wouldn't have to vendor it!
 rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
-make LDLIBS="-pthread"
+make
 mv bin/* ${PREFIX}/bin
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
