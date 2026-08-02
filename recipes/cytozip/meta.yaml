@@ -11,7 +11,11 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<38 or win or osx]
+  # Only py>=3.10 is actually installable: bioconda builds the recipe for
+  # 3.10-3.13, and cytozip's deps (numpy/pandas/anndata) no longer ship for
+  # 3.8/3.9. htslib is NOT pinned here on purpose -- htslib's run_exports
+  # already constrains it at build time (e.g. >=1.24,<1.25).
+  skip: true  # [py<310 or win or osx]
   script: |
     # htslib is guaranteed present in ``host:`` requirements below, so
     # force setup.py to build the ``cytozip._bam_pileup`` extension even
@@ -46,10 +50,12 @@ requirements:
     - pandas
     - loguru
     - pysam
+    - samtools
     - fsspec
     - requests
     - anndata
     - scipy
+    - biopython
     - htslib
     - libdeflate
     - zlib
