@@ -13,7 +13,8 @@ FC=$FC
 CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
-CXX14=$CXX" > ~/.R/Makevars
+CXX14=$CXX
+CXX17=$CXX" > ~/.R/Makevars
 
 if [[ $(uname -s) == "Darwin" ]]; then
 	sed -i.bak 's|-std=c++17|-O3 -std=c++17 -D_LIBCPP_DISABLE_AVAILABILITY|' r/src/Makevars.in
