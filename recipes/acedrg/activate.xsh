@@ -1,4 +1,0 @@
-$LIBMOL_ROOT = $CONDA_PREFIX
-$CCP4 = $CONDA_PREFIX
-$CBIN = $CONDA_PREFIX + "/bin"
-$CLIBD_MON = $CONDA_PREFIX + "/share/acedrg/tables/"

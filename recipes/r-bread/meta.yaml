@@ -1,0 +1,78 @@
+{% set version = '0.4.1' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-bread
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/bread_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/bread/bread_{{ version }}.tar.gz
+  sha256: 19a40d55b8be57be80d1fe4e4cba2a58cb3bf17fe6b777db65d28bf82eae5d6f
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-data.table
+  run:
+    - r-base
+    - r-data.table
+
+test:
+  commands:
+    - $R -e "library('bread')"           # [not win]
+    - "\"%R%\" -e \"library('bread')\""  # [win]
+
+about:
+  home: https://github.com/MagicHead99/bread/
+  license: GPL-3.0-only
+  summary: A simple set of wrapper functions for data.table::fread() that allows subsetting or
+    filtering rows and selecting columns of table-formatted files too large for the
+    available RAM. 'b stands for 'big files'. bread makes heavy use of Unix commands
+    like 'grep', 'sed', 'wc', 'awk' and 'cut'. They are available by default in all
+    Unix environments. For Windows, you need to install those commands externally in
+    order to simulate a Unix environment and make sure that the executables are in the
+    Windows PATH variable. To my knowledge, the simplest ways are to install 'RTools',
+    'Git' or 'Cygwin'. If they have been correctly installed (with the expected registry
+    entries), they should be detected on loading the package and the correct directories
+    will be added automatically to the PATH.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: bread
+# Title: Analyze Big Files Without Loading Them in Memory
+# Version: 0.4.1
+# Authors@R: person("Vincent", "Guegan", , "vincent.guegan@banque-france.fr", role = c("aut", "cre"))
+# Description: A simple set of wrapper functions for data.table::fread() that allows subsetting or filtering rows and selecting columns of table-formatted files too large for the available RAM. 'b stands for 'big files'. bread makes heavy use of Unix commands like 'grep', 'sed', 'wc', 'awk' and 'cut'. They are available by default in all Unix environments. For Windows, you need to install those commands externally in order to simulate a Unix environment and make sure that the executables are in the Windows PATH variable. To my knowledge, the simplest ways are to install 'RTools', 'Git' or 'Cygwin'. If they have been correctly installed (with the expected registry entries), they should be detected on loading the package and the correct directories will be added automatically to the PATH.
+# License: GPL (>= 3)
+# URL: https://github.com/MagicHead99/bread/
+# BugReports: https://github.com/MagicHead99/bread/issues
+# Encoding: UTF-8
+# RoxygenNote: 7.2.1
+# Imports: data.table
+# NeedsCompilation: no
+# Author: Vincent Guegan [aut, cre]
+# Maintainer: Vincent Guegan <vincent.guegan@banque-france.fr>
+# Packaged: 2023-06-26 13:41:28 UTC; Vz
+# Repository: CRAN
+# Date/Publication: 2023-06-26 14:50:02 UTC

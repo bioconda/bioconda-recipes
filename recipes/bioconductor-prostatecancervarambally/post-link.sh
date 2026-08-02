@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "prostatecancervarambally-1.34.0"
+installBiocDataPackage.sh "prostatecancervarambally-1.38.0"
