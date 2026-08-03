@@ -48,16 +48,16 @@ jobs:
               --lint --exclude bioconda-repodata-patches
 
   nightly-linux:
-    name: Nightly Linux ${{ matrix.architecture }} Builds
+    name: Nightly ${{ matrix.package_platform }} Builds
     if: github.repository == 'bioconda/bioconda-recipes'
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - architecture: amd64
+          - package_platform: linux-64
             runner: ubuntu-22.04
-          - architecture: arm64
+          - package_platform: linux-aarch64
             runner: ubuntu-22.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
         # This is architecture-independent and must run only once. Assign it to
         # the amd64 matrix entry to reuse that environment instead of adding a
         # separate setup job or racing two uploads of the same package.
-        if: matrix.architecture == 'amd64'
+        if: matrix.package_platform == 'linux-64'
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
@@ -105,7 +105,7 @@ jobs:
           conda activate bioconda
           bioconda-utils build recipes config.yml \
             --docker --mulled-build-and-test \
-            --platform linux/${{ matrix.architecture }} \
+            --platform ${{ matrix.package_platform }} \
             --anaconda-upload --mulled-upload-target biocontainers \
             --mulled-upload-records /tmp/mulled-images \
             --lint --exclude bioconda-repodata-patches
@@ -114,7 +114,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: mulled-images-${{ matrix.architecture }}-nightly
+          name: mulled-images-${{ matrix.package_platform }}-nightly
           path: /tmp/mulled-images
 
   publish-mulled-manifests:
