@@ -12,8 +12,11 @@ fi
 # Move into the bramble-cli crate directory where Cargo.toml lives
 cd bramble-cli
 
-# Bundle Rust dependencies licenses (Bioconda compliance check)
+# Bundle Rust dependencies licenses
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+# Copy THIRDPARTY.yml to the source root directory for conda license checking
+cp THIRDPARTY.yml ..
 
 # Build and install the Rust binary using cargo
 cargo install --no-track --verbose --root "${PREFIX}" --path .
