@@ -8,4 +8,5 @@ Rscript -e 'IRkernel::installspec(name="beast_pype_R", displayname = "beast_pype
 echo "Adding BDSKY and BEASTLabs to BEAST 2's package manager"
 packagemanager -add BDSKY
 packagemanager -add BEASTLabs
+packagemanager -add CCD
 echo "Post-link script for beast-pype completed successfully"

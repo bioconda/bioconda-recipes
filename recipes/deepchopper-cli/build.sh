@@ -4,10 +4,6 @@
 # -x = print every executed command
 set -ex
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
-
-export PATH="$HOME/.cargo/bin:$PATH"
-
 if [[ "${target_platform}" == osx-* ]]; then
     # Ensure maturin produces wheels tagged for the conda macOS deployment target.
     # Without this, wheels can be tagged as macosx_26_0_* and pip rejects them.
