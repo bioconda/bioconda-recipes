@@ -1,6 +1,6 @@
 {% set name = "cgmlst-dists-py" %}
-{% set version = "0.1.6" %}
-{% set sha256 = "267ac181e30f38ccbf76aa21f55060aa92ba8654eadbda3283bed202a9fe14da" %}
+{% set version = "0.1.7" %}
+{% set sha256 = "5c2ad3e07b9ad8b8eafb5254ec689cb27057991e390a50e9511ee1ae745da720" %}
 {% set user = "genpat-it" %}
 
 package:
@@ -22,13 +22,16 @@ requirements:
     - python >=3.9
     - numpy
     - pandas
-    - numba
     - tqdm
     - psutil
     # Optional accelerator upstream, but included here: conda is the main install
     # route for this package, and without pyarrow the loader is 3-4x slower on
     # large inputs. The tool auto-detects it and falls back to pandas if absent.
     - pyarrow
+    # numba is NOT listed: as of 0.1.7 it is only needed for --gpu, and with
+    # llvmlite it adds ~199 MB. The CPU path computes with numpy and never
+    # imports it; --gpu without numba warns and computes on the CPU with
+    # identical results. GPU users should `conda install numba` as well.
 
 test:
   commands:
@@ -42,6 +45,8 @@ test:
     - cgmlst-dists.py -i in.tab -c -s > out.tsv
     - python -c "rows=[l.split() for l in open('out.tsv')]; assert rows[1][1:] == ['0', '1'], rows"
     - python -c "import pyarrow"
+    # The matrix above is computed in an environment where numba is not installed,
+    # which is the check that matters now that numba is no longer a dependency.
 
 about:
   home: "https://github.com/{{ user }}/{{ name }}"
