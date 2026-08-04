@@ -16,11 +16,22 @@ BIN_DIR="${PREFIX}/bin"
 
 mkdir -p "${SHARE_DIR}" "${BIN_DIR}"
 
+# Resolve payload path for both:
+# - cwd already inside SpaCNA-<version>/ (normal conda-build)
+# - cwd is parent of SpaCNA-<version>/ (some folder:/CI layouts)
+if ! compgen -G "dist/spacna-*.tar.bz2" >/dev/null; then
+  FOUND="$(find . -maxdepth 3 -type f -name 'spacna-*.tar.bz2' | head -n 1 || true)"
+  if [[ -n "${FOUND}" ]]; then
+    cd "$(dirname "${FOUND}")/.."
+  fi
+fi
+
 PKG="$(ls -1 dist/spacna-*.tar.bz2 2>/dev/null | head -n 1 || true)"
 if [[ -z "${PKG}" ]]; then
   echo "ERROR: no dist/spacna-*.tar.bz2 found in source tree" >&2
   echo "cwd=$(pwd)" >&2
   ls -la >&2 || true
+  find . -maxdepth 3 -type f -name 'spacna-*.tar.bz2' >&2 || true
   exit 1
 fi
 
