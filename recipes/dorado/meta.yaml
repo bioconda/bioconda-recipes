@@ -1,0 +1,93 @@
+{% set name = "dorado" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Git source is required for nested submodules.
+  - git_url: https://github.com/nanoporetech/dorado.git
+    git_rev: ba44a0132a6fc54ffa790add140ebf6006a5a994
+    md5: unused
+    patches:
+      - openssl-shared.patch
+      - htslib-conda-flags.patch
+      - no-werror.patch
+
+  # Cache ONT binaries as sources to keep CMake offline.
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi.zip
+    sha256: ed09249f48bc3e20130307e86a729e8bc8a97aed794c149b60efcae172654a9d
+    folder: download/torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi/libtorch
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/libkoi-0.6.8-Linux-x86_64-cuda-12.8.tar.gz
+    sha256: 2b5f81466e6810403144f02e85ff12d1d37399304ef288b5dca5123163cefc27
+    folder: download/libkoi-0.6.8-Linux-x86_64-cuda-12.8/libkoi-0.6.8-Linux-x86_64-cuda-12.8
+  - url: https://github.com/nanoporetech/pod5-file-format/releases/download/0.3.36/lib_pod5-0.3.36-linux-x64.tar.gz
+    sha256: 96fa832bdf93e8e6898aba25deae8a27b6a0aa8403613f205ea3616a47d11bd5
+    folder: download/pod5-0.3.36-Linux
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.25
+    - make
+    - git
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - python
+    - cuda-nvcc
+    - cuda-nvrtc-dev
+    - cuda-cudart-dev
+    - cuda-nvml-dev
+    - libcublas-dev
+    - libcublas-static
+    - libcusolver-dev
+    - libcusparse-dev
+    - cuda-version >=12.8,<13
+  host:
+    - openssl
+    - zlib
+  run:
+    - __glibc >=2.17
+    - cuda-version >=12.8,<13
+    - cuda-cudart
+    - cuda-nvrtc
+    - libcublas
+    - libcufft
+    - libcusolver
+    - libcusparse
+
+test:
+  commands:
+    - dorado --version
+    - dorado --help
+
+about:
+  home: https://github.com/nanoporetech/dorado
+  license: Oxford Nanopore Technologies PLC. Public License Version 1.0
+  license_family: PROPRIETARY
+  license_file: LICENCE.txt
+  summary: High-performance basecaller for Oxford Nanopore reads
+  description: |
+    Dorado is a high-performance, easy-to-use analysis engine for Oxford
+    Nanopore reads. It supports simplex and duplex basecalling, modified-base
+    calling, alignment, demultiplexing, polishing, and read correction.
+  dev_url: https://github.com/nanoporetech/dorado
+  doc_url: https://software-docs.nanoporetech.com/dorado/latest/
+
+extra:
+  skip-lints:
+    # Release archives omit required submodules.
+    - uses_vcs_url
+  recipe-maintainers:
+    - dialvarezs
