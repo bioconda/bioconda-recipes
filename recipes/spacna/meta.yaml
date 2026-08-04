@@ -1,0 +1,95 @@
+{% set name = "spacna" %}
+{% set version = "0.1.0" %}
+{#
+  REQUIRED before opening the bioconda PR:
+  1. Create a GitHub release/tag: v0.1.0 on https://github.com/liuyang-zhao/SpaCNA
+     (repo should contain dist/spacna-0.1.0-0.tar.bz2 + LICENSE)
+  2. Run: bash spacna_conda/scripts/compute_sha256.sh 0.1.0
+  3. Replace sha256 below with the printed value
+#}
+{% set sha256 = "f4a5d860dbc150590aec87d1e2bffa25cd327220fd66f5772cfc469c6e1e2c5d" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # SpaCNA GitHub release: README/LICENSE + dist/spacna-*.tar.bz2
+  # Payload (bin/, scripts/, reference/) lives inside dist/*.tar.bz2 → share/spacna/
+  url: https://github.com/liuyang-zhao/SpaCNA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  # GitHub archive extracts to SpaCNA-{{ version }}/
+  folder: SpaCNA-{{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3.8,<3.13
+    - numpy
+    - pandas
+    - matplotlib-base
+    - pysam
+    - natsort
+    - biopython
+    - pigz
+    - parallel
+    - bowtie2
+    - samtools
+    - bedtools
+    - fastp
+    - seqkit
+    - umi_tools
+    - trim-galore
+    - mosdepth
+    - ucsc-bigwigaverageoverbed
+    - r-base >=4.2
+    - r-data.table
+    - r-matrix
+    - r-ggplot2
+    - r-dplyr
+    - r-tidyr
+    - r-fnn
+    - r-patchwork
+    - r-cluster
+    - r-rtsne
+    - r-viridis
+    - r-fields
+    - r-hexbin
+    - r-ape
+
+test:
+  commands:
+    - spacna help
+    - spacna path
+    - test -d "$(spacna path)/scripts"
+    - test -d "$(spacna path)/reference"
+    - test -x "$(spacna path)/bin/spacna" || test -x "${PREFIX}/bin/spacna"
+    - python -c "import pysam, natsort, pandas, numpy"
+
+about:
+  home: https://github.com/liuyang-zhao/SpaCNA
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: SpaCNA — spatial DNA CNV, SPI lineage, and RNA–DNA multi-omics toolkit
+  description: |
+    SpaCNA (Spatial DNA Copy Number Analysis) is a toolkit for spatial DNA
+    sequencing. It supports spatial and bulk DNA alignment, CNV-based spatial
+    clustering, SPI lineage analysis, RNA–DNA multi-omics helpers, bundled
+    1 Mb genomic references, and the `spacna` command-line entry point.
+  dev_url: https://github.com/liuyang-zhao/SpaCNA
+  doc_url: https://github.com/liuyang-zhao/SpaCNA/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - liuyang-zhao
+  notes: |
+    After install, set genome paths via SPACNA_* environment variables (see
+    README). Sample barcodes are not shipped; download from GitHub.
+    R entry point: source("scripts/R/spacna.R") after `cd $(spacna path)`.
+    Generate non-1Mb references with: spacna gen-reference --species human --bin-size 500kb --mode bins
