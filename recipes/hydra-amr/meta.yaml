@@ -1,0 +1,93 @@
+{% set name = "hydra-amr" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iowa69/hydra/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e8cabef2b62076a4b8ed3356c68cad39eca788b92f95e907e65cc1979fecb6db
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - hydra = hydra_amr.cli:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.9
+    - pandas >=1.3
+    - numpy >=1.20
+    - scipy >=1.7
+    - pysam >=0.19
+    - openpyxl >=3.0
+    - blast >=2.12
+    - minimap2 >=2.24
+    - samtools >=1.15
+    - mash >=2.3
+
+test:
+  imports:
+    - hydra_amr
+    - hydra_amr.engines
+    - hydra_amr.typing
+    - hydra_amr.report
+  commands:
+    - hydra --version
+    - hydra --help
+    - hydra run --help
+    - hydra screen --help
+    - hydra db --help
+    - hydra presets
+    - blastn -version
+    - minimap2 --version
+    - samtools --version
+
+about:
+  home: https://github.com/iowa69/hydra
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Unified AMR, virulence, point-mutation, heteroresistance, MLST and lineage typing
+  description: |
+    Hydra screens bacterial assemblies and raw reads for acquired resistance and
+    virulence genes, organism-specific resistance point mutations, multi-locus
+    sequence types and lineage typing schemes, in one pass over one set of
+    databases, replacing a pipeline of abricate, AMRFinderPlus, mlst and
+    Kleborate.
+
+    It reports heteroresistance directly from reads: allele fractions are
+    measured at every catalogued mutation position, so a resistance mutation
+    carried by only some copies of a multi-copy locus - the usual situation for
+    the 23S rRNA mutations behind linezolid resistance - is detected even though
+    the assembly consensus is wild type. A FASTQ-only sample is also sequence
+    typed, by mapping reads to the scheme's loci and reading the consensus back
+    against every allele, and each resistance gene it carries is compared with
+    the closest reference so its mutations are reported with the fraction of
+    reads supporting them.
+
+    Acquired genes are screened against NCBI, CARD, ResFinder, ARG-ANNOT,
+    MEGARes, VFDB, PlasmidFinder, EcOH and E. coli VF together, with the curated
+    AMRFinderPlus drug-class and gene-family annotation transferred onto every
+    one of them. Results come out as TSV, CSV, JSON, XLSX or a self-contained
+    HTML report with clustered heatmaps, pivoted on samples or genes, showing
+    presence/absence, percent identity, coverage, read depth or allele fraction,
+    plus abricate- and AMRFinderPlus-compatible column layouts.
+
+    Reference databases are not redistributed. After installation, `hydra db
+    import` builds them from abricate, ncbi-amrfinderplus, mlst or kleborate
+    installations already present on the machine, and `hydra db bundle` packs
+    them for machines that have neither those tools nor a network.
+  doc_url: https://github.com/iowa69/hydra#readme
+  dev_url: https://github.com/iowa69/hydra
+
+extra:
+  recipe-maintainers:
+    - iowa69
