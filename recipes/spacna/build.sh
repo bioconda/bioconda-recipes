@@ -7,7 +7,8 @@
 #   bin/spacna
 #   share/spacna/{scripts,reference,bin,config,...}
 #
-# This script unpacks that package into $PREFIX.
+# This script unpacks that package into $PREFIX and installs thin wrappers so
+# `spacna` works even when CONDA_PREFIX is unset during tests.
 set -euo pipefail
 
 SHARE_DIR="${PREFIX}/share/spacna"
@@ -34,7 +35,7 @@ if [[ ! -d "${TMP}/share/spacna" ]]; then
   echo "ERROR: ${PKG} missing share/spacna/" >&2
   exit 1
 fi
-if [[ ! -x "${TMP}/bin/spacna" && ! -f "${TMP}/bin/spacna" ]]; then
+if [[ ! -f "${TMP}/bin/spacna" ]]; then
   echo "ERROR: ${PKG} missing bin/spacna" >&2
   exit 1
 fi
@@ -49,24 +50,41 @@ tar -C "${TMP}/share/spacna" \
     --exclude='*.pyc' \
     -cf - . | tar -C "${SHARE_DIR}" -xf -
 
-install -m 0755 "${TMP}/bin/spacna" "${BIN_DIR}/spacna"
-if [[ -f "${TMP}/bin/axis-dna" ]]; then
-  install -m 0755 "${TMP}/bin/axis-dna" "${BIN_DIR}/axis-dna"
-fi
-
-# Keep a copy under share for `spacna path` users
+# Keep payload CLI under share/spacna/bin (resolves via ../scripts)
 mkdir -p "${SHARE_DIR}/bin"
-cp -f "${BIN_DIR}/spacna" "${SHARE_DIR}/bin/spacna"
+cp -f "${TMP}/bin/spacna" "${SHARE_DIR}/bin/spacna"
 chmod +x "${SHARE_DIR}/bin/spacna"
-if [[ -f "${BIN_DIR}/axis-dna" ]]; then
-  cp -f "${BIN_DIR}/axis-dna" "${SHARE_DIR}/bin/axis-dna"
+if [[ -f "${TMP}/bin/axis-dna" ]]; then
+  cp -f "${TMP}/bin/axis-dna" "${SHARE_DIR}/bin/axis-dna"
   chmod +x "${SHARE_DIR}/bin/axis-dna"
 fi
 
-find "${SHARE_DIR}/scripts" -type f \( -name '*.sh' -o -name '*.py' \) -exec chmod +x {} + 2>/dev/null || true
+# Thin wrappers in $PREFIX/bin: do not rely on CONDA_PREFIX being set
+cat > "${BIN_DIR}/spacna" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "${HERE}/../share/spacna" && pwd)"
+export SPACNA_REPO_ROOT="${ROOT}"
+export AXIS_REPO_ROOT="${ROOT}"
+exec bash "${ROOT}/bin/spacna" "$@"
+EOF
+chmod +x "${BIN_DIR}/spacna"
 
-# Prefer LICENSE from payload if recipe license_file needs it at source root;
-# bioconda copies LICENSE from source before build — SpaCNA repo root already has LICENSE.
+if [[ -f "${SHARE_DIR}/bin/axis-dna" ]]; then
+  cat > "${BIN_DIR}/axis-dna" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "${HERE}/../share/spacna" && pwd)"
+export SPACNA_REPO_ROOT="${ROOT}"
+export AXIS_REPO_ROOT="${ROOT}"
+exec bash "${ROOT}/bin/axis-dna" "$@"
+EOF
+  chmod +x "${BIN_DIR}/axis-dna"
+fi
+
+find "${SHARE_DIR}/scripts" -type f \( -name '*.sh' -o -name '*.py' \) -exec chmod +x {} + 2>/dev/null || true
 
 cat > "${SHARE_DIR}/conda_env_hint.txt" <<EOF
 SpaCNA (bioconda)
