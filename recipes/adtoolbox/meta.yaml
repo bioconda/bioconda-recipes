@@ -1,15 +1,6 @@
 {% set name = "adtoolbox" %}
 {% set version = "1.1.16" %}
 
-# Bioconda recipe for ADToolbox. Copy to bioconda-recipes/recipes/adtoolbox/.
-#
-# 1.1.16 is published on PyPI and its sdist imports cleanly on Python >=3.12
-# (uses `from warnings import warn`, no distutils). sha256 below is verified
-# against that published sdist. To refresh for a future version:
-#   curl -s https://pypi.org/pypi/adtoolbox/json \
-#     | python -c "import json,sys; d=json.load(sys.stdin); v=d['info']['version']; \
-#         print(v, [f['digests']['sha256'] for f in d['releases'][v] if f['packagetype']=='sdist'][0])"
-
 package:
   name: {{ name|lower }}
   version: {{ version }}
@@ -22,10 +13,6 @@ build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  entry_points:
-    - adtoolbox = adtoolbox.__main__:main
-  # Bioconda requires run_exports for downstream pinning, incl. noarch python.
-  # Normal 1.x version, dev strategy unknown -> pin to the next major (<2.0.0).
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -36,9 +23,6 @@ requirements:
     - poetry-core >=1.0.0
   run:
     - python >=3.11
-    # Core runtime. Floors only: ADToolbox is verified against current
-    # conda-forge builds (numpy 2.x, polars 1.x, rich 14.x). Do not copy the
-    # upper caps from pyproject.toml -- see the note at the bottom of this file.
     - numpy >=1.22.4
     - scipy >=1.8.1
     - polars >=0.20.27
@@ -47,8 +31,6 @@ requirements:
     - requests >=2.27.1
     - rich >=12.4.4
     - click >=8.1.7
-    # External tools the metagenomics pipeline invokes as subprocesses.
-    # Drop these if you prefer a lighter, modelling-only package.
     - fastp
     - cutadapt
     - bioconductor-dada2
@@ -69,7 +51,6 @@ test:
     - adtoolbox --version
     - adtoolbox metagenomics process --help
     - adtoolbox adm e-adm --help
-    # external tools must be callable from the environment
     - fastp --version
     - cutadapt --version
     - vsearch --version
@@ -88,33 +69,8 @@ about:
     simulates, visualizes, and calibrates the model against experimental data.
   license: MIT
   license_family: MIT
-  # The 1.1.16 sdist ships LICENSE at its root, so conda-build resolves this
-  # from the source tarball. (A copy also lives next to meta.yaml as a fallback
-  # for conda-build's recipe-directory lookup.)
   license_file: LICENSE
 
 extra:
   recipe-maintainers:
     - ParsaGhadermazi
-
-# ---------------------------------------------------------------------------
-# Dependency notes
-#
-# Not available on conda (install with pip if needed):
-#   openbox      -> adtoolbox[blackbox]   BlackBoxOptimizer
-#   dash-escher  -> adtoolbox[dashboard]  Escher maps
-#
-# Available on conda-forge, omitted here to keep the package light:
-#   dash, dash-bootstrap-components, pygad, pytorch
-#
-# Channel placement (verified against the Anaconda API):
-#   conda-forge : numpy scipy polars plotly nbformat requests rich click
-#                 ncbi-datasets-cli dash dash-bootstrap-components pygad pytorch
-#   bioconda    : fastp cutadapt vsearch mmseqs2 sra-tools bioconductor-dada2
-#
-# pyproject.toml currently caps numpy <2.0, polars <0.21 and rich <13.0. Those
-# caps are stale -- the test suite passes on numpy 2.3.x, polars 1.41.x and
-# rich 14.2.x. They are deliberately NOT reproduced above, because doing so
-# would force conda to solve for years-old builds. Align pyproject.toml with
-# these floors so pip and conda metadata agree.
-# ---------------------------------------------------------------------------
