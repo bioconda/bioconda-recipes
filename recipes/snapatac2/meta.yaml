@@ -1,6 +1,6 @@
 {% set name = "snapatac2" %}
-{% set version = "2.9.0" %}
-{% set sha256 = "c9e94dcb9d22d8595c1ae5d56665e10bb11828f01e01c98463449537ed91b39a" %}
+{% set version = "2.10.0" %}
+{% set sha256 = "e412d93f355c85f3c445d95bfb383a78b4f3be391fb2816ee5ffef03fa270b34" %}
 
 package:
   name: {{ name }}
@@ -13,14 +13,15 @@ source:
     - cargo.toml.patch
 
 build:
-  number: 1
+  number: 0
   # aarch64 build goes over 1 hour time left; do not build python 3.10
-  skip: True  # [py > 314 or (aarch64 and py < 311)]
+  skip: True  # [py > 314 or py < 312]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - {{ compiler('c') }}
     - cargo-bundle-licenses
@@ -78,5 +79,3 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - compiler_needs_stdlib_c
