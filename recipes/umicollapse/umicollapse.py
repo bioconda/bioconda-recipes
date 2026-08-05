@@ -55,7 +55,7 @@ def jvm_opts(argv):
             prop_opts.append(arg)
         elif arg.startswith('-XX'):
             prop_opts.append(arg)
-        elif arg.startswith('-Xm'):
+        elif arg.startswith('-Xm') or args.startswith('-Xs'):
             mem_opts.append(arg)
         elif arg.startswith('--exec_dir='):
             exec_dir = arg.split('=')[1].strip('"').strip("'")
