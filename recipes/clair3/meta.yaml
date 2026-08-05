@@ -1,5 +1,5 @@
 {% set name = "clair3" %}
-{% set version = "2.0.0" %}
+{% set version = "2.0.2" %}
 {% set pypy_version = "3.11-v7.3.20" %}
 
 package:
@@ -8,10 +8,7 @@ package:
 
 source:
   - url: https://github.com/HKU-BAL/Clair3/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 8a2d6bb6ded3163361a1d762168013f599d232a65d9a4a7777dd3e178ae7951b
-    patches:
-      - 0001-Makefile.patch  # [osx]
-      - 0002-build.py-link-libdeflate-on-arm.patch  # [aarch64 or arm64]
+    sha256: 144afb25e96c984c1d2aeb7dcf4f09412e47fc479922023ce20c5f9b0d473c66
 
 {% if linux and x86_64 %}
   - url: https://downloads.python.org/pypy/pypy{{ pypy_version }}-linux64.tar.bz2
@@ -32,7 +29,7 @@ source:
 {% endif %}
 
 build:
-  number: 2
+  number: 0
   skip: True  # [win or (osx and x86_64)]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -57,7 +54,7 @@ requirements:
     - libcurl
     - openssl
     - libdeflate
-    - longphase  # [linux]
+    - longphase
   run:
     - python 3.11.*
     - pytorch-cpu  # [linux]
@@ -73,11 +70,11 @@ requirements:
     - parallel >=20191122
     - openssl
     - cffi <2
-    - longphase  # [linux]
+    - longphase
 
 test:
   commands:
-    - longphase --version  # [linux]
+    - longphase --version
     - which run_clair3.sh
     - run_clair3.sh -v
 

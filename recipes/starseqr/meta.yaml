@@ -1,30 +1,28 @@
+{% set version = "0.6.7" %}
+
 package:
   name: starseqr
-  version: "0.6.7"
+  version: {{ version }}
 
 source:
-  url: https://github.com/ExpressionAnalysis/STAR-SEQR/archive/v0.6.7.tar.gz
+  url: https://github.com/ExpressionAnalysis/STAR-SEQR/archive/v{{ version }}.tar.gz
   sha256: fc82ab8771156cc482480af1b5271bd2a8c74f6daa7c102bdb39a7d0880440d5
 
 build:
+  number: 7
   skip: True  # [py < 37]
-  number: 6
+  run_exports:
+    - {{ pin_subpackage('starseqr', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
   host:
     - python
     - setuptools
     - cython
-    - six
-    - networkx
-    - gffread
-    - numpy
-    - pandas >=0.18.1
-    - pysam >=0.9.1.4
-    - primer3-py
-    - intervaltree_bio
+    - pip
   run:
     - python
     - six
@@ -41,15 +39,17 @@ test:
     - ssw
     - starseqr_utils
     - starseqr_utils.tests
-
-  requires:
-    - nose
-
   commands:
     - starseqr.py -h
 
 about:
-  home: https://github.com/ExpressionAnalysis/STAR-SEQR
-  license: ../../LICENSE
-  summary: RNA Fusion Detection and Quantification
+  home: "https://github.com/ExpressionAnalysis/STAR-SEQR"
+  license: "CDL-1.0"
+  license_file: LICENSE
+  summary: "RNA Fusion Detection and Quantification."
+  dev_url: "https://github.com/ExpressionAnalysis/STAR-SEQR"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
