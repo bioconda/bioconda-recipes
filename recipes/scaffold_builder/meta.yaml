@@ -1,5 +1,5 @@
-{% set version = "2.3" %}
-{% set sha256 = "7e2ffaf5f2842a0df054f1fdd8cbcacd7779703d8d99274a32d75a8ac8a30bb0" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "51c237092169114e813e6ab43393f2fec630ee4289629d24da3878c43b140bd6" %}
 
 package:
   name: scaffold_builder
@@ -8,28 +8,32 @@ package:
 source:
   url: https://github.com/metageni/Scaffold_builder/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
-  patches:
-    - patch
 
 build:
   noarch: python
   number: 0
+  script: {{ PYTHON }} -m pip install --no-deps -vv .
+  run_exports:
+    - {{ pin_subpackage('scaffold_builder', max_pin="x") }}
 
 requirements:
   host:
-    - python <3
+    - python >=3.8
     - pip
+    - setuptools >=61
+    - wheel
   run:
-    - python <3
+    - python >=3.8
+    - click >=8.0
     - mummer
 
 test:
   commands:
-    - scaffold_builder.py
+    - scaffold_builder --help
 
 about:
-  home: http://edwards.sdsu.edu/scaffold_builder
-  license: GPL-3.0
+  home: https://github.com/metageni/Scaffold_builder
+  license: GPL-3.0-only
   license_family: GPL
   license_file: COPYING
   summary: 'Scaffold_builder: Combining de novo and reference-guided assembly with Scaffold_builder.'
