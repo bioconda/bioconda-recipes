@@ -12,15 +12,16 @@ source:
 build:
   number: 0
   noarch: python
-  entry_points:
-    - xpore-dataprep=xpore.scripts.dataprep:main
-    - xpore-diffmod=xpore.scripts.diffmod:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage("xpore", max_pin="x.x") }} # not semver, breaking API change in 2.2
+  
 
 requirements:
   host:
     - pip
     - python
+    - setuptools >=61.0
   run:
     - h5py >=2.10.0
     - numpy >=1.18.0
