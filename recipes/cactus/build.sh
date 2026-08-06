@@ -22,7 +22,7 @@ make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
-sed -i.bak -e 's/-lm -lz/-lm -pthread -lz/g' Makefile
+sed -i.bak -e 's/CFLAGS = -O3/override CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE ${VERSION_FLAGS}/g' Makefile
 rm -f *.bak
 make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}" FasTAN
 ln -f FasTAN "${PREFIX}/bin/"
@@ -33,6 +33,7 @@ make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
+sed -i -e 's/-lm -o/-lm $${LIBS} -o/g' Makefile
 export CFLAGS="${CFLAGS} -I${PREFIX}/include/libxml2"
 make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 cd ../../../../../
