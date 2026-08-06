@@ -3,7 +3,7 @@ set -x
 
 export LDFLAGS="${LDFLAGS} -lopenblas -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/igphyml
