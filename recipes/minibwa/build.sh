@@ -15,3 +15,4 @@ make \
 install -m 0755 minibwa "${PREFIX}/bin"
 install -m 0644 libminibwa.a "${PREFIX}/lib"
 install -m 0644 minibwa.h "${PREFIX}/include"
+install -m 0644 minibwa.1 "${PREFIX}/man/man1"
