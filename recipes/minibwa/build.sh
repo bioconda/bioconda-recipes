@@ -2,7 +2,7 @@
 
 set -xe
 
-mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include"
+mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include" "${PREFIX}/man/man1"
 
 make \
     CC="${CC}" \
