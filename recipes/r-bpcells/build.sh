@@ -7,6 +7,10 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CFLAGS="${CFLAGS} -O3"
 export LC_ALL="en_US.UTF-8"
 
+if [[ `uname -s` == "Darwin" ]]; then
+	export MACOSX_DEPLOYMENT_TARGET=10.15
+fi
+
 mkdir -p ~/.R
 echo -e "CC=$CC
 FC=$FC
