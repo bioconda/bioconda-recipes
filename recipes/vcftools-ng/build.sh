@@ -2,6 +2,7 @@
 set -euo pipefail
 
 cmake -S . -B build \
+    ${CMAKE_ARGS} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_CXX_COMPILER="${CXX}" \
