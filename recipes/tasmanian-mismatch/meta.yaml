@@ -13,45 +13,25 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage('tasmanian-mismatch', max_pin='x') }}
-  script: |
-    set -euxo pipefail
-
-    export CARGO_PROFILE_RELEASE_LTO=false
-
-    # Ensure cargo uses conda toolchain + flags
-    export CC="${CC}"
-    export CXX="${CXX}"
-    export AR="${AR}"
-    export RANLIB="${RANLIB}"
-    export CFLAGS="${CFLAGS}"
-    export CXXFLAGS="${CXXFLAGS}"
-    export LDFLAGS="${LDFLAGS}"
-
-    # Also provide target-qualified vars for Cargo
-    export TARGET="${TARGET:-$(rustc -vV | sed -n 's/^host: //p')}"
-    target_env="${TARGET//-/_}"
-    export "CC_${target_env}=${CC}"
-    export "CXX_${target_env}=${CXX}"
-    export "AR_${target_env}=${AR}"
-    export "RANLIB_${target_env}=${RANLIB}"
-    export "CFLAGS_${target_env}=${CFLAGS}"
-    export "CXXFLAGS_${target_env}=${CXXFLAGS}"
-    export "LDFLAGS_${target_env}=${LDFLAGS}"
-
-    cargo build --release --locked
-
-    install -Dm755 target/release/tasmanian-mismatch        "$PREFIX/bin/tasmanian-mismatch"
-    install -Dm755 target/release/tasmanian-diagnostics     "$PREFIX/bin/tasmanian-diagnostics"
-    install -Dm755 target/release/tasmanian-rescale-quality "$PREFIX/bin/tasmanian-rescale-quality"
 
 requirements:
+  host:
+    - htslib
+    - zlib
+
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
+    - llvmdev
+    - pkg-config
+    - clangdev
     - make
+    - cmake
+    - patchelf  # [linux]
+
   run:
     - python >=3.10
     - bokeh >=3,<4
@@ -68,7 +48,9 @@ about:
   home: "https://github.com/nebiolabs/tasmanian-mismatch"
   license: "LGPL-2.1-or-later"
   license_family: LGPL
-  license_file: LICENSE.txt
+  license_file:
+    - LICENCE.txt
+    - THIRDPARTY.yml
   summary: "Tasmanian tool to analyze mismatches in sequencing data (Rust + Python hybrid)."
   description: |
     Version 2.x is a Rust-based rewrite of tasmanian-mismatch.
