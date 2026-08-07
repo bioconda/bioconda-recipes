@@ -1,0 +1,61 @@
+{% set python_min = "3.9" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: virallc
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/v/virallc/virallc-{{ version }}.tar.gz
+  sha256: be3cc229812396b03071c7fa7bcf1da982f355f70b9fb908699b6a8d6c9c2cd4
+
+build:
+  entry_points:
+    - virallc = virallc.__main__:main
+    - alnPairDist = virallc.scripts.alnPairDist:main
+    - alnSeqCov = virallc.scripts.alnSeqCov:main
+    - virallcClusters = virallc.scripts.virallcClusters:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - setuptools
+    - pip
+  run:
+    - python >={{ python_min }}
+    - setuptools
+    - toml
+    - biopython
+    - networkx
+    - python-build
+    - pandas
+
+test:
+  imports:
+    - dist
+    - example
+    - viraldb
+    - virallc
+  commands:
+    - pip check
+    - virallc --help
+    - alnPairDist --help
+    - alnSeqCov --help
+    - virallcClusters --help
+  requires:
+    - pip
+    - python {{ python_min }}.*
+
+about:
+  home: https://github.com/ChrispinChaguza/virallc/
+  summary: 'ViralLC: A Python package for consistent assignment of viral lineages'
+  doc_url: https://github.com/ChrispinChaguza/virallc/
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chrispinchaguza
