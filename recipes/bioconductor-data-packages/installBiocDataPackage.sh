@@ -55,6 +55,7 @@ done
 if [[ $SUCCESS != 1 ]]; then
   echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:"
   printf '%s\n' "${URLS[@]}"
+  echo "If you are behind a proxy and have a mirror available you can use it by setting one of the environment variables: BIOCONDUCTOR_MIRROR, GALAXY_BIOARCHIVE_MIRROR or GALAXY_DEPOT_MIRROR"
   exit 1
 fi
 
