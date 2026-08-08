@@ -13,19 +13,25 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 cd ../../
 
 cd submodules/FASTGA
+sed -i.bak -e 's/-lm -lz/-lm -lz -pthread/g' Makefile
+sed -i.bak -e 's/-lpthread//g' Makefile
+rm -f *.bak
 make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
 sed -i.bak -e 's/-lm -lz/-lm -pthread -lz/g' Makefile
 rm -f *.bak
-make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}" FasTAN
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
 ln -f FasTAN "${PREFIX}/bin/"
 cd ../../
 
 cd submodules/alntools
-make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
+
+sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/sonLib/externalTools/quicktree_1.1/Makefile
+rm -f submodules/sonLib/externalTools/quicktree_1.1/*.bak
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
 sed -i.bak -e 's/CFLAGS = -O3/override CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE ${VERSION_FLAGS}/g' Makefile
@@ -50,5 +56,4 @@ cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
 make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" -j"${CPU_COUNT}"
-
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
