@@ -1,0 +1,61 @@
+{% set name = "iranges" %}
+{% set version = "0.7.2" %}
+{% set nclist_version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 25c2f6049698fd4aafa8ae31a738f53f3c33b5bd5a1c32e108c1ac6583debbe3
+  - url: https://github.com/LTLA/nclist-cpp/archive/v{{ nclist_version }}.tar.gz
+    sha256: 825b95bcb799a9ff0c8df36dae3a0b8ff3a74bce033ae4e82870bd2c79762219
+    folder: nclist-cpp-src
+
+build:
+  number: 0
+  script: env MORE_CMAKE_OPTIONS="-DFETCHCONTENT_SOURCE_DIR_NCLIST=$SRC_DIR/nclist-cpp-src -DFETCHCONTENT_FULLY_DISCONNECTED=ON" {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - setuptools >=46.1.0
+    - setuptools-scm >=5
+    - pybind11
+    - numpy
+    - pip
+  run:
+    - python
+    - numpy
+    - biocutils >=0.3.3
+    - biocframe >=0.7.2
+    - compressed-lists >=0.4.3
+
+test:
+  imports:
+    - iranges
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biocpy/iranges
+  summary: Python implementation of the IRanges Bioconductor package.
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh
