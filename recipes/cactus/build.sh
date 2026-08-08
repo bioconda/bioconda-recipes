@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ex
 
-export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib"
-
 case $(uname -m) in
 	aarch64|arm64) sed -i.bak 's|-mavx2||' include.mk && sed -i.bak 's|-D__AVX2__||' include.mk && rm -rf *.bak
   ;;
@@ -15,10 +13,7 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 cd ../../
 
 cd submodules/FASTGA
-sed -i.bak -e 's/-lm -lz/-lm -lz -pthread/g' Makefile
-sed -i.bak -e 's/-lpthread//g' Makefile
-rm -f *.bak
-make CFLAGS="${CFLAGS}" CC="${CC}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
@@ -35,7 +30,7 @@ cd ../../
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
 sed -i.bak -e 's/CFLAGS = -O3/override CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE ${VERSION_FLAGS}/g' Makefile
 rm -f *.bak
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
+export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
@@ -46,7 +41,7 @@ ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --
 # as the source of cactus. Remove it, though if they just used versions we wouldn't have to vendor it!
 rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
-make CC="${CC}" CFLAGS="${CFLAGS}"
+make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib"
 install -v -m 0755 bin/* "${PREFIX}/bin"
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
@@ -54,6 +49,6 @@ git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
 cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
-make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" -j"${CPU_COUNT}"
 
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"
