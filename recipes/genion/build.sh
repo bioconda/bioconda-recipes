@@ -1,11 +1,11 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-export CPATH=${PREFIX}/include
+mkdir -p "${PREFIX}/bin"
 
-make
-mkdir -p ${PREFIX}/bin
-cp -f genion ${PREFIX}/bin
-genion --help
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export C_INCLUDE_PATH="${PREFIX}/include"
+export CONDA_PREFIX="${PREFIX}"
 
+make CXX="${CXX}" OPT="-O3 -I${PREFIX}/include" -j"${CPU_COUNT}"
+
+install -v -m 0755 genion "${PREFIX}/bin"
