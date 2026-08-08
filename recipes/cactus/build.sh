@@ -30,10 +30,10 @@ cd submodules/alntools
 make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
-find "$SRC_DIR" -path '*externalTools/quicktree_1.1/Makefile' \
-  -exec perl -pi -e 's/^CFLAGS\s*\+=\s*-c\b/override CFLAGS += -c/' {} \;
-#sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/sonLib/externalTools/quicktree_1.1/Makefile
-#rm -f submodules/sonLib/externalTools/quicktree_1.1/*.bak
+sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/sonLib/externalTools/quicktree_1.1/Makefile
+rm -f submodules/sonLib/externalTools/quicktree_1.1/*.bak
+sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/paffy/submodules/sonLib/externalTools/quicktree_1.1/Makefile
+rm -f submodules/paffy/submodules/sonLib/externalTools/quicktree_1.1/*.bak
 
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
 sed -i.bak -e 's/CFLAGS = -O3/override CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE ${VERSION_FLAGS}/g' Makefile
