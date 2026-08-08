@@ -34,6 +34,11 @@ if [[ -n "${LDFLAGS:-}" ]]; then
   export "LDFLAGS_${target_env}=${LDFLAGS}"
 fi
 
+if [[ "$(uname -m)" == "aarch64" ]]; then
+	sed -i.bak 's/0.44.1/0.45/g' Cargo.toml
+	rm -f *.bak
+fi
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
 #cargo build --release --locked -vv 2>&1 | tee build.log
