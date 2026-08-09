@@ -3,6 +3,8 @@ set -euo pipefail
 
 mkdir -p "${PREFIX}/share/rnaframework/lib"
 mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/etc/conda/activate.d"
+mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 
 export DATAPATH="${PREFIX}/share/rnastructure/data_tables/"
 
@@ -22,5 +24,23 @@ for script in rf-*; do
         echo "WARNING: expected script '${script}' not found in source tree" >&2
     fi
 done
+
+cat > "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_perl5lib.sh" <<'EOF'
+# The `use lib` injected into rf-* scripts only sets @INC for the top-level process.
+# PERL5LIB is needed so child Perl processes (system/backticks) can also find rnaframework modules.
+export PERL5LIB="${CONDA_PREFIX}/share/rnaframework/lib${PERL5LIB:+:${PERL5LIB}}"
+EOF
+
+cat > "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_perl5lib.sh" <<'EOF'
+_rf_lib="${CONDA_PREFIX}/share/rnaframework/lib"
+if [ -n "${PERL5LIB:-}" ]; then
+    PERL5LIB=":${PERL5LIB}:"
+    PERL5LIB="${PERL5LIB//:${_rf_lib}:/:}"
+    PERL5LIB="${PERL5LIB#:}"
+    PERL5LIB="${PERL5LIB%:}"
+    [ -z "${PERL5LIB}" ] && unset PERL5LIB || export PERL5LIB
+fi
+unset _rf_lib
+EOF
 
 echo "RNAFramework ${PKG_VERSION} installed successfully."

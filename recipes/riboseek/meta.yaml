@@ -1,0 +1,60 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "c953c2d6711a83671afeaf7ed0109603e9b75bdbe8e009a977b535b20f4107ca" %}
+
+package:
+  name: riboseek
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('riboseek', max_pin="x.x") }}
+
+source:
+  url: https://github.com/steineggerlab/riboseek/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - cuda-nvcc           # [linux]
+    - cuda-cudart-dev     # [linux]
+    # <13: CUDA 13 ships CCCL 3.x, where thrust/iterator/zip_iterator.h no longer
+    # pulls in thrust/tuple.h, so libmarv's cudasw4.cuh fails on thrust::get
+    - cuda-version >=12.9,<13 # [linux]
+    - perl
+  host:
+    - zlib
+    - bzip2
+  run:
+    - aria2
+    - gawk
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - riboseek > /dev/null
+
+about:
+  home: https://github.com/steineggerlab/riboseek
+  summary: "Riboseek: fast and sensitive RNA homology search"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - pskvins
+    - milot-mirdita
+    - martin-steinegger
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
