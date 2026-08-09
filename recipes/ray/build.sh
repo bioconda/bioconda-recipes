@@ -22,7 +22,7 @@ case $(uname -m) in
 	;;
 esac
 
-make HAVE_LIBZ="y" HAVE_LIBBZ2="y" -j"${CPU_COUNT}"
+make
 
 "${STRIP}" "install-prefix/Ray"
 
