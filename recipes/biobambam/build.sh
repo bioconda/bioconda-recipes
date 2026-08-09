@@ -24,12 +24,14 @@ autoreconf -if;
 ./configure --prefix="${PREFIX}" CXX="${CXX}" CC="${CC}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" \
 	--with-libmaus2="${PREFIX}/include" \
 	--with-xerces-c="${PREFIX}/include" \
 	--with-gmp --enable-fast --enable-install-uncommon \
-	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
-	CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
 make clean
 
 make install -j"${CPU_COUNT}"
+
+"${STRIP}" ${PREFIX}/bin/bio*
