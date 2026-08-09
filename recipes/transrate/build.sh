@@ -1,8 +1,12 @@
 #!/bin/bash
 set -x
-mkdir -p ${PREFIX}/bin
+
+mkdir -p "${PREFIX}/bin"
+
+gem install rake
+
 gem build transrate.gemspec
-gem install -n ${PREFIX}/bin transrate
+gem install -n "${PREFIX}/bin" transrate
 
 # Don't vendor deps like salmon and blast
 #ruby ${PREFIX}/bin/transrate --install-deps all
