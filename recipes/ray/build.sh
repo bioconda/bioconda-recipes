@@ -1,8 +1,6 @@
 #!/bin/bash
 
 mkdir -p "$PREFIX/bin"
-mkdir -p build
-cd build
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -22,7 +20,7 @@ case $(uname -m) in
 	;;
 esac
 
-make
+make HAVE_LIBZ="y" HAVE_LIBBZ2="y" -j"${CPU_COUNT}"
 
 "${STRIP}" "install-prefix/Ray"
 
