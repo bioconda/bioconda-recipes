@@ -3,7 +3,7 @@ set -eu
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable -Wno-unused-but-set-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-unused-variable -Wno-unused-but-set-variable"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-variable -Wno-unused-but-set-variable"
 export CFLAGS="${CFLAGS} -O3"
 
 case $(uname -m) in
@@ -34,4 +34,4 @@ make clean
 
 make install -j"${CPU_COUNT}"
 
-"${STRIP}" ${PREFIX}/bin/bio*
+"${STRIP}" ${PREFIX}/bin/bam*
