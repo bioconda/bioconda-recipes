@@ -25,7 +25,8 @@ autoreconf -if;
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
 	--with-libmaus2="${PREFIX}/include" \
-	--with-xerces-c="${PREFIX}/include" --with-gmp \
+	--with-xerces-c="${PREFIX}/include" \
+	--with-gmp --enable-fast --enable-install-uncommon \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking \
 	CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS} -L${PREFIX}/lib" \
