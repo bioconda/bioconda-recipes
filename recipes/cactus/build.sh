@@ -56,6 +56,7 @@ ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --
 # as the source of cactus. Remove it, though if they just used versions we wouldn't have to vendor it!
 rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
+export LDFLAGS="${LDFLAGS} -fopenmp"
 make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib"
 install -v -m 0755 bin/* "${PREFIX}/bin"
 
