@@ -7,6 +7,7 @@ mkdir -p "${PREFIX}"/src
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CONDA_PREFIX="${PREFIX}"
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 sed -i.bak 's|-std=c++11|-std=c++14|' setup.py
@@ -16,7 +17,8 @@ rm -rf *.bak
 make CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Generate the shared library
-${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
+#${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 # Copy source files to the bin directory
 cp -rf "${SRC_DIR}"/src/*.py "${PREFIX}"/bin
