@@ -22,6 +22,8 @@ esac
 
 make HAVE_LIBZ="y" HAVE_LIBBZ2="y" -j"${CPU_COUNT}"
 
+make install
+
 "${STRIP}" "install-prefix/Ray"
 
 cp -rf install-prefix/* "${share_dir}"
