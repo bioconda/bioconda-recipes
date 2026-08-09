@@ -17,17 +17,17 @@ rm -f *.bak
 #make CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Generate the SWIG files
-swig -c++ -python -outdir "${SRC_DIR}"/lib -I"${SRC_DIR}"/include -I"${PREFIX}"/include -o "${SRC_DIR}"/src/lrst_wrap.cpp "${SRC_DIR}"/src/lrst.i
+swig -c++ -python -outdir "${SRC_DIR}/lib" -I"${SRC_DIR}/include" -I"${PREFIX}/include" -o "${SRC_DIR}/src/lrst_wrap.cpp" "${SRC_DIR}/src/lrst.i"
 
-$PYTHON setup.py build_ext
-$PYTHON setup.py install
+$PYTHON setup.py build_ext --build-lib lib
+$PYTHON setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Generate the shared library
 #${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Copy source files to the bin directory
-cp -rf "${SRC_DIR}"/src/*.py "${PREFIX}"/bin
+install -v -m 0755 "${SRC_DIR}"/src/*.py "${PREFIX}"/bin
 
 # Copy the SWIG generated library to the lib directory
-cp -rf "${SRC_DIR}"/lib/*.py "${PREFIX}"/lib
+install -v -m 0755 "${SRC_DIR}"/lib/*.py "${PREFIX}"/lib
 cp -rf "${SRC_DIR}"/lib/*.so "${PREFIX}"/lib
