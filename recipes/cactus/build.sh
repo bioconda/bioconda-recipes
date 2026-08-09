@@ -12,6 +12,13 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
 cd ../../
 
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+	git clone https://github.com/DLTcollab/sse2neon.git
+	cp -f sse2neon/sse2neon.h submodules/abPOA/include/
+	sed -i.bak 's|#include <immintrin.h>|#include "sse2neon.h"|' submodules/abPOA/include/simd_instruction.h
+	rm -f submodules/abPOA/include/*.bak
+fi
+
 cd submodules/FASTGA
 sed -i.bak 's/-lm -lz/-lm -lz -pthread/g' Makefile
 sed -i.bak 's/-lpthread//g' Makefile
