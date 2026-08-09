@@ -1,0 +1,36 @@
+diff --git a/Makefile b/Makefile
+index 6f3e351..f046b5a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ .PHONY=clean
+ 
+-CXX?=g++
+-CC?=gcc
++CXX?=$(CXX)
++CC?=$(CC)
+ 
+ CACHE_SIZE?=4194304
+ CACHE_SIZE_FLAG:=-DD2_CACHE_SIZE=${CACHE_SIZE}
+@@ -21,8 +21,8 @@ else
+     TARGET_FLAG=-march=native
+ endif
+ 
+-LIB=-lz # -lfmt
+-INC=-IlibBigWig -Ibonsai/include -Ibonsai -Ibonsai/hll -Ibonsai/hll/include -Ibonsai -I. -Isrc -Ifmt/include
++LIB=-L$(PREFIX)/lib -lz # -lfmt
++INC=-IlibBigWig -Ibonsai/include -Ibonsai -Ibonsai/hll -Ibonsai/hll/include -Ibonsai -I. -Isrc -Ifmt/include -I$(PREFIX)/include
+ OPT_LEVEL?= -O3
+ OPT+= $(TARGET_FLAG) \
+     -fopenmp -pipe $(CACHE_SIZE_FLAG)
+@@ -31,8 +31,8 @@ OPT+=$(OPT_LEVEL)
+ OPTMV:=$(OPT)
+ CXXSTD?=-std=c++20
+ OPT+= $(CXXSTD)
+-WARNING+=-Wall -Wextra -Wno-unused-function -Wno-char-subscripts -pedantic -Wno-array-bounds # -Wno-shift-count-overflow
+-EXTRA+=-DNOCURL -DDASHING2_VERSION=\"$(GIT_VERSION)\" -DFMT_HEADER_ONLY
++WARNING+=-Wall -Wextra -Wno-unused-function -Wno-char-subscripts -pedantic -Wno-array-bounds -Wno-c++17-extensions # -Wno-shift-count-overflow
++EXTRA+=-DNOCURL -DDASHING2_VERSION=\"$(GIT_VERSION)\" -DFMT_HEADER_ONLY -D_LIBCPP_DISABLE_AVAILABILITY
+ CXXFLAGS+= $(CXXSTD)
+ CFLAGS+= -std=c11
+ 

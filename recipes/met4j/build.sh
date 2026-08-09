@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# workaround 'should_not_use_fn'
-mv $SRC_DIR/download $SRC_DIR/met4j-toolbox.jar
 chmod 0755 "${SRC_DIR}/met4j-toolbox.jar"
 
 # copy jar file and wrapper script to $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM

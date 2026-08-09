@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "genelendatabase-1.42.0"
+installBiocDataPackage.sh "genelendatabase-1.46.0"

@@ -1,0 +1,54 @@
+{% set name = "longtr" %}
+{% set version = "1.2" %}
+{% set sha256 = "781531168f89ef59dd6124290cfb95e329dd1ddfc107bee918720b96500cf66d" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/gymrek-lab/LongTR/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/google/googletest/archive/release-1.10.0.zip
+    sha256: 94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91
+    folder: extlibs/googletest
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake <4
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - htslib
+    - spoa
+    - zlib
+
+test:
+  commands:
+    - LongTR --help
+
+about:
+  home: "https://github.com/gymrek-lab/LongTR"
+  license: "BSD-2-Clause"
+  license_family: BSD
+  summary: "Tandem repeat genotyping with long reads."
+  dev_url: "https://github.com/gymrek-lab/LongTR"
+  doc_url: "https://github.com/gymrek-lab/LongTR"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:longtr
+  recipe-maintainers:
+    - awgymer

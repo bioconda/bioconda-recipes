@@ -2,25 +2,26 @@
 {% set version = "2.3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   git_url: https://github.com/marbl/canu.git
-  git_commit: 13903848e95311cb437b78423cdee34ad55a8b2e
-  sha256: ignored
+  git_rev: 86d7d3b
+  sha256: unused
   patches:
-    - arm_hwcap.patch  # [linux and aarch64]
+    - arm_hwcap.patch  # [aarch64]
 
 build:
-  number: 1
+  number: 3
   run_exports:
-    - {{ pin_subpackage('canu', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
     - pkg-config
   host:
     - gnuplot >=5.2
@@ -33,7 +34,7 @@ requirements:
   run:
     - perl
     - perl-filesys-df
-    - openjdk >=20
+    - openjdk
     - minimap2
     - boost-cpp
     - libgomp  # [linux]
@@ -58,9 +59,6 @@ about:
   doc_url: "https://canu.readthedocs.org"
 
 extra:
-  container:
-    # libGL needed for gnuplot
-    extended-base: True
   identifiers:
     - usegalaxy-eu:canu
     - biotools:canu
@@ -71,5 +69,8 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  container:
+    # libGL needed for gnuplot
+    extended-base: True
   skip-lints:
     - uses_vcs_url

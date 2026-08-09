@@ -3,20 +3,20 @@
 {% set sha256 = "60ad1f1191b86d9a1423dcb9c934c7577cf1ce083689337646937be2538953a3" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/megalodon-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/megalodon-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  skip: true  # [py2k or py < 36]
+  number: 4
+  skip: True  # [py < 36]
   entry_points:
     - megalodon = megalodon.__main__:_main
     - megalodon_extras = megalodon_extras.__main__:_main
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
-  number: 3
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -25,22 +25,22 @@ requirements:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools >=38.3
-    - cython >=0.25.2,<3
-    - pyscaffold >=3.2a0,<3.3a0
     - pip
-    - numpy >=1.9.0
+    - setuptools
+    - cython <3
+    - numpy >=1.9.0,2
+    - pyscaffold >=3.2a0,<3.3a0
   run:
     - python
     - h5py >=2.2.1
-    - numpy >=1.9.0
+    - numpy >=1.9.0,2
     - scipy >=1.1.0
     - mappy >=2.16
     - pysam >=0.15
     - ont-fast5-api >=3.2
     - tqdm >=2.17
     - scikit-learn
-    - seaborn
+    - seaborn-base
 
 test:
   imports:
@@ -51,17 +51,18 @@ test:
     - megalodon_extras --help
 
 about:
-  home: https://github.com/nanoporetech/megalodon
-  license: Oxford Nanopore Technologies PLC. Public License Version 1.0
+  home: "https://github.com/nanoporetech/megalodon"
+  license: "Oxford Nanopore Technologies PLC. Public License Version 1.0"
   license_family: OTHER
-  license_file: LICENCE.txt
-  summary: Nanopore modified base and sequence variant detection.
-  doc_url: https://nanoporetech.github.io/megalodon/index.html
-  dev_url: https://github.com/nanoporetech/megalodon
+  license_file: "LICENCE.txt"
+  summary: "Nanopore modified base and sequence variant detection."
+  doc_url: "https://nanoporetech.github.io/megalodon/index.html"
+  dev_url: "https://github.com/nanoporetech/megalodon"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - marcus1487
     - npavlovikj

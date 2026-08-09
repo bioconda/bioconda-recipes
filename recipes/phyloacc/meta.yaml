@@ -1,6 +1,6 @@
 {% set name = "PhyloAcc" %}
-{% set version = "2.4.2" %}
-{% set sha256 = "effa443400fa1ebfa43de1daf551c8344f883bcf8d048a11e64fca64243a93fe" %}
+{% set version = "2.5.0" %}
+{% set sha256 = "a791362755dbe8e8678e1ba441225583d3203329850a03145e5f2a90cb5ccee1" %}
 
 package:
   name: {{ name|lower }}
@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   skip: True  # [py < 311]
   run_exports:
     - {{ pin_subpackage('phyloacc', max_pin="x") }}
@@ -19,6 +19,7 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
   host:
     - python
@@ -29,6 +30,7 @@ requirements:
     - armadillo
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
+    - mkl # [target_platform != "linux-aarch64"]
   run:
     - python
     - blis
@@ -39,6 +41,7 @@ requirements:
     - snakemake-executor-plugin-slurm
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
+    - mkl # [target_platform != "linux-aarch64"]
 
 test:
   requires:

@@ -1,8 +1,8 @@
 {% set name = "pmx_biobb" %}
-{% set version = "4.1.3" %}
+{% set version = "5.2.2" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "87da97728646c871031f46ca05395c7b50cbb1f6e5637dc3a39b4cbf72f3cf58" %}
+{% set hash_value = "0f0270a4b721b2d7caccb66d05effdfecc704c7a4e296f8222763c9aedfc8961" %}
 
 package:
   name: '{{ name|lower }}'
@@ -13,18 +13,21 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
+  number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
     - make
+    - python
+    - pip
   host:
-    - python =3.7
+    - python
+    - pip
     - setuptools
     - scipy
     - matplotlib-base
@@ -32,7 +35,7 @@ requirements:
   run:
     - boost-cpp
     - cxx-compiler
-    - python =3.7
+    - python
     - scipy
     - matplotlib-base
     - rdkit
@@ -64,4 +67,5 @@ about:
   dev_url: ''
 
 extra:
-  recipe-maintainers: ''
+  recipe-maintainers:
+    - RubenChM

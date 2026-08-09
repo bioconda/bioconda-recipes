@@ -1,46 +1,53 @@
 {% set name = "perl-sereal-encoder" %}
+{% set version = "5.009" %}
+
 package:
-  name: {{name}}
-  version: "4.025"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Encoder-4.025.tar.gz
-  sha256: 0fd51ba6083026650d08526758261173c18ab8234c5526fac7edb91ad9c6026e
+  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Encoder-{{ version }}.tar.gz
+  sha256: 6c0976f89c7d3b1d27415901b38881009a5db6e60ad976a76dcb47ba32598037
 
 build:
-  number: 2
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin = "x") }}
-
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
   host:
     - perl
     - perl-scalar-list-utils
     - perl-extutils-makemaker
-    - perl-file-path
     - perl-pathtools
     - perl-test-longstring
     - perl-extutils-parsexs
     - perl-test-warn
     - perl-test-simple
-    - perl-sereal-decoder >=4.002
-
+    - perl-sereal-decoder >={{ version }}
+    - perl-devel-checklib >=1.16
+    - zstd
   run:
     - perl
+    - perl-sereal-decoder >={{ version }}
 
 test:
   imports:
-    - Sereal::Encoder
-    - Sereal::Encoder::Constants
+    - Sereal::Encoder  # [osx]
+    - Sereal::Encoder::Constants  # [osx]
+    - Sereal::Performance
 
 about:
-  home: http://metacpan.org/pod/Sereal::Encoder
-  license: perl_5
-  summary: 'Fast, compact, powerful binary serialization'
+  home: "https://metacpan.org/pod/Sereal::Encoder"
+  license: "Perl_5"
+  summary: "Fast, compact, powerful binary serialization."
+  doc_url: "https://metacpan.org/pod/Sereal::Encoder"
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

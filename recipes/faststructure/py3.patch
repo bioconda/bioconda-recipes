@@ -1,0 +1,592 @@
+diff --git a/0001-Adds-shebangs-to-python-scripts.patch b/0001-Adds-shebangs-to-python-scripts.patch
+new file mode 100644
+index 0000000..96c6bf8
+--- /dev/null
++++ b/0001-Adds-shebangs-to-python-scripts.patch
+@@ -0,0 +1,62 @@
++From 4a3c6fc116a7579c74a9f9e6eab82870ceb90f47 Mon Sep 17 00:00:00 2001
++From: Francisco Pina Martins <stunts@pinamartins.com>
++Date: Thu, 26 Jun 2025 16:15:12 +0100
++Subject: [PATCH] Adds shebangs to python scripts
++
++---
++ chooseK.py    | 2 ++
++ distruct.py   | 1 +
++ setup.py      | 1 +
++ structure.py  | 1 +
++ vars/setup.py | 1 +
++ 5 files changed, 6 insertions(+)
++
++diff --git a/chooseK.py b/chooseK.py
++index 98de39a..faf3c72 100644
++--- a/chooseK.py
+++++ b/chooseK.py
++@@ -1,3 +1,5 @@
+++#!/usr/bin/env python3
+++
++ import numpy as np
++ import getopt
++ import vars.utils as utils
++diff --git a/distruct.py b/distruct.py
++index 22ab353..c67a4e4 100644
++--- a/distruct.py
+++++ b/distruct.py
++@@ -1,3 +1,4 @@
+++#!/usr/bin/env python3
++ import numpy as np
++ import matplotlib.pyplot as plot
++ import colorsys
++diff --git a/setup.py b/setup.py
++index 2fc89b2..53bf163 100644
++--- a/setup.py
+++++ b/setup.py
++@@ -1,3 +1,4 @@
+++#!/usr/bin/env python3
++ 
++ from distutils.core import setup
++ from distutils.extension import Extension
++diff --git a/structure.py b/structure.py
++index 2eb5664..59c646a 100644
++--- a/structure.py
+++++ b/structure.py
++@@ -1,3 +1,4 @@
+++#!/usr/bin/env python3
++ 
++ import numpy as np
++ import fastStructure 
++diff --git a/vars/setup.py b/vars/setup.py
++index 24b39ce..1b1b859 100644
++--- a/vars/setup.py
+++++ b/vars/setup.py
++@@ -1,3 +1,4 @@
+++#!/usr/bin/env python3
++ 
++ from distutils.core import setup
++ from Cython.Build import cythonize
++-- 
++2.50.0
++
+diff --git a/chooseK.py b/chooseK.py
+index 07e0a04..faf3c72 100644
+--- a/chooseK.py
++++ b/chooseK.py
+@@ -1,9 +1,15 @@
++#!/usr/bin/env python3
++
+ import numpy as np
+ import getopt
+ import vars.utils as utils
+ import glob
+ import sys
+ import pdb
++try:
++    import itertools.imap as map
++except ImportError:
++    pass
+ 
+ def parse_logs(files):
+ 
+@@ -50,7 +56,7 @@ def parse_varQs(files):
+     bestKs = []
+     for file in files:
+         handle = open(file,'r')
+-        Q = np.array([map(float,line.strip().split()) for line in handle])
++        Q = np.array([list(map(float,line.strip().split())) for line in handle])
+         Q = Q/utils.insum(Q,[1])
+         handle.close()
+ 
+@@ -79,9 +85,9 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t --input=<file>"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t --input=<file>")
+ 
+ if __name__=="__main__":
+ 
+@@ -95,7 +101,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+@@ -108,5 +114,5 @@ if __name__=="__main__":
+     files = glob.glob('%s.*.meanQ'%filetag)
+     bestKs = parse_varQs(files)
+ 
+-    print "Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)]
+-    print "Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs)) 
++    print("Model complexity that maximizes marginal likelihood = %d"%Ks[np.argmax(marginal_likelihoods)])
++    print("Model components used to explain structure in data = %d"%np.argmax(np.bincount(bestKs))) 
+diff --git a/distruct.py b/distruct.py
+index a9e2398..c67a4e4 100644
+--- a/distruct.py
++++ b/distruct.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python3
+ import numpy as np
+ import matplotlib.pyplot as plot
+ import colorsys
+@@ -20,9 +21,9 @@ def plot_admixture(admixture, population_indices, population_labels, title):
+     width = 0.74
+     indiv_width = width/N
+     subplot = figure.add_axes([xmin,ymin,width,height])
+-    [spine.set_linewidth(0.001) for spine in subplot.spines.values()]
++    [spine.set_linewidth(0.001) for spine in list(subplot.spines.values())]
+ 
+-    for k in xrange(K):
++    for k in range(K):
+         if k:
+             bottoms = admixture[:,:k].sum(1)
+         else:
+@@ -64,7 +65,7 @@ def get_admixture_proportions(params):
+     admixture = admixture/admixture.sum(1).reshape(N,1)
+ 
+     # get population labels
+-    if params.has_key('popfile'):
++    if 'popfile' in params:
+         handle = open(params['popfile'],'r')
+         populations = [line.strip() for line in handle]
+         handle.close()
+@@ -83,8 +84,8 @@ def get_admixture_proportions(params):
+ 
+     else:
+ 
+-        print "file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions"
+-        population_labels = ['population %d'%i for i in xrange(1,K+1)]
++        print("file with population labels is not provided or does not exist .... \ncreating population labels based on inferred admixture proportions")
++        population_labels = ['population %d'%i for i in range(1,K+1)]
+         population_indices = np.argmax(admixture,1)
+ 
+         # re-order samples in admixture matrix
+@@ -92,7 +93,7 @@ def get_admixture_proportions(params):
+         population_indices = population_indices[order]
+         admixture = admixture[order,:]
+         order = np.arange(N)
+-        for k in xrange(K):
++        for k in range(K):
+             order[population_indices==k] = order[population_indices==k][np.argsort(admixture[population_indices==k,:][:,k])[::-1]]
+         admixture = admixture[order,:]
+ 
+@@ -131,13 +132,13 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int>  (number of populations)"
+-    print "\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --popfile=<file> (file with known categorical labels; optional)"
+-    print "\t --title=<figure title> (a title for the figure; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int>  (number of populations)")
++    print("\t --input=<file>  (/path/to/input/file; same as output flag passed to structure.py)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --popfile=<file> (file with known categorical labels; optional)")
++    print("\t --title=<figure title> (a title for the figure; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -152,7 +153,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+@@ -160,7 +161,7 @@ if __name__=="__main__":
+     
+     # get the data to be plotted
+     admixture, population_indices, population_labels = get_admixture_proportions(params)
+-    if params.has_key('title'):
++    if 'title' in params:
+         title = params['title']
+     else:
+         title = params['inputfile']
+diff --git a/fastStructure.pyx b/fastStructure.pyx
+index f787f4d..c0eb5df 100644
+--- a/fastStructure.pyx
++++ b/fastStructure.pyx
+@@ -3,11 +3,11 @@ import numpy as np
+ cimport numpy as np
+ from cpython cimport bool
+ import vars.utils as utils
+-cimport vars.allelefreq as af 
+-import vars.allelefreq as af
+-cimport vars.admixprop as ap 
+-import vars.admixprop as ap
+-import vars.marglikehood as mlhood
++from vars cimport allelefreq as af 
++from vars import allelefreq as af
++from vars cimport admixprop as ap 
++from vars import admixprop as ap
++from vars import marglikehood as mlhood
+ import time
+ 
+ def infer_variational_parameters(np.ndarray[np.uint8_t, ndim=2] G, int K, str outfile, double mintol, str prior, int cv):
+@@ -35,14 +35,14 @@ def infer_variational_parameters(np.ndarray[np.uint8_t, ndim=2] G, int K, str ou
+     # First, select initial values for the variational parameters
+     # from 5 random initializations of the algorithm.
+     Estart = -np.inf
+-    for restart in xrange(5):
++    for restart in range(5):
+ 
+         # if dataset is too large, initialize variational parameters 
+         # using a random subset of the data (similar to a warm start).
+         if batch_size<L:
+ 
+             # choose random subset of the SNPs
+-            indices = list(utils.random_combination(xrange(L), batch_size))
++            indices = list(utils.random_combination(range(L), batch_size))
+             g = G[:,indices]
+             g = np.require(g, dtype=np.uint8, requirements='C')
+ 
+@@ -81,7 +81,7 @@ def infer_variational_parameters(np.ndarray[np.uint8_t, ndim=2] G, int K, str ou
+             old = [pi.var_beta.copy(), pi.var_gamma.copy()]
+             #diff = np.inf
+             #while diff>1e-1:
+-            for j in xrange(5):
++            for j in range(5):
+                 # accelerated variational allele frequency update
+                 pi.square_update(G, psi)
+                 #diff = np.mean(np.abs(pi.var_beta-old[0])+np.abs(pi.var_gamma-old[1]))
+@@ -302,7 +302,7 @@ cdef np.ndarray CV(np.ndarray[np.uint8_t, ndim=2] Gtrue, ap.AdmixProp psi, af.Al
+ 
+         if not len(newmasks)>=cv:
+             wellmasked = False
+-            print "Failed"
++            print("Failed")
+ 
+     masks = newmasks[:cv]
+     meandeviance = np.zeros((cv,), dtype=float)
+diff --git a/parse_bed.pyx b/parse_bed.pyx
+index 34d95e5..5994ece 100644
+--- a/parse_bed.pyx
++++ b/parse_bed.pyx
+@@ -11,21 +11,22 @@ cdef dict genomap = dict([('00',0),('01',1),('11',2),('10',3)])
+ def load(file):
+ 
+     cdef int n, l, i, Nindiv, Nsnp, Nbytes
+-    cdef str line, checkA, checkB, checkC, bytestr
++    cdef bytes line
++    cdef str checkA, checkB, checkC, bytestr
+     cdef np.ndarray genotype
+ 
+     # number of individuals
+     handle = open(file+'.fam','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nindiv = i+1
+ 
+     # Number of bytes to read in at a time
+-    Nbytes = Nindiv/4+(Nindiv%4>0)*1
++    Nbytes = Nindiv//4+(Nindiv%4>0)*1
+ 
+     # number of SNPs
+     handle = open(file+'.bim','r')
+-    for i,line in enumerate(handle):
++    for i, li in enumerate(handle):
+         pass
+     Nsnp = i+1
+ 
+@@ -44,7 +45,7 @@ def load(file):
+     checkC = bin(struct.unpack('<B', line)[0])[2:].zfill(8)[::-1]
+ 
+     if checkA!="00110110" or checkB!="11011000":
+-        print "This is not a valid bed file"
++        print("This is not a valid bed file")
+         handle.close()
+         sys.exit(2)
+ 
+diff --git a/setup.py b/setup.py
+index 2fc89b2..ddc0924 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,36 +1,25 @@
++#!/usr/bin/env python3
+ 
+-from distutils.core import setup
+-from distutils.extension import Extension
+-from Cython.Distutils import build_ext
++from setuptools import setup, Extension
++from Cython.Build import cythonize
+ import numpy
+-import sys
+ 
+-# setup bed parser
+-ext_modules = [Extension("parse_bed", ["parse_bed.pyx"])]
++ext_modules = cythonize([
++    # vars/ subpackage extensions — built with full package prefix
++    Extension("vars.utils",        ["vars/utils.pyx"],       include_dirs=[numpy.get_include(), "vars/"]),
++    Extension("vars.admixprop",    ["vars/admixprop.pyx",    "vars/C_admixprop.c"],    include_dirs=[numpy.get_include(), "vars/"]),
++    Extension("vars.marglikehood", ["vars/marglikehood.pyx", "vars/C_marglikehood.c"], include_dirs=[numpy.get_include(), "vars/"]),
++    Extension("vars.allelefreq", ["vars/allelefreq.pyx", "vars/C_allelefreq.c"],
++          include_dirs=[numpy.get_include(), "vars/"],
++          libraries=["gsl", "gslcblas"]),
+ 
+-setup(
+-    name = 'parse_bed',
+-    cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.'],
+-    ext_modules = ext_modules
+-)
+-
+-# setup structure format parser
+-ext_modules = [Extension("parse_str", ["parse_str.pyx"])]
+-
+-setup(
+-    name = 'parse_str',
+-    cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.'],
+-    ext_modules = ext_modules
+-)
+-
+-# setup fastStructure
+-ext_modules = [Extension("fastStructure", ["fastStructure.pyx"])]
++    # top-level extensions
++    Extension("parse_bed",     ["parse_bed.pyx"],     include_dirs=[numpy.get_include(), "."]),
++    Extension("parse_str",     ["parse_str.pyx"],     include_dirs=[numpy.get_include(), "."]),
++    Extension("fastStructure", ["fastStructure.pyx"], include_dirs=[numpy.get_include(), ".", "vars/"]),
++])
+ 
+ setup(
+-    name = 'fastStructure',
+-    cmdclass = {'build_ext': build_ext},
+-    include_dirs=[numpy.get_include(), '.', 'vars/'],
+-    ext_modules = ext_modules
++    name="fastStructure",
++    ext_modules=ext_modules,
+ )
+diff --git a/structure.py b/structure.py
+index 9472251..59c646a 100644
+--- a/structure.py
++++ b/structure.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python3
+ 
+ import numpy as np
+ import fastStructure 
+@@ -41,7 +42,7 @@ def parseopts(opts):
+             params['prior'] = arg
+ 
+             if params['prior'] not in ['simple','logistic']:
+-                print "%s prior is not currently implemented, defaulting to the simple prior"
++                print("%s prior is not currently implemented, defaulting to the simple prior")
+                 params['prior'] = 'simple'
+ 
+         elif opt in ["--format"]:
+@@ -70,31 +71,31 @@ def checkopts(params):
+     """
+ 
+     if params['mintol']<=0:
+-        print "a non-positive value was provided as convergence criterion"
++        print("a non-positive value was provided as convergence criterion")
+         raise ValueError
+     
+     if params['cv']<0:
+-        print "a negative value was provided for the number of cross-validations folds"
++        print("a negative value was provided for the number of cross-validations folds")
+         raise ValueError
+ 
+-    if not params.has_key('K'):
+-        print "a positive integer should be provided for number of populations"
++    if 'K' not in params:
++        print("a positive integer should be provided for number of populations")
+         raise KeyError
+ 
+     if params['format'] not in ['bed','str']:
+-        print "%s data format is not currently implemented"
++        print("%s data format is not currently implemented")
+         raise ValueError
+ 
+     if params['K']<=0:
+-        print "a negative value was provided for the number of populations"
++        print("a negative value was provided for the number of populations")
+         raise ValueError
+     
+-    if not params.has_key('inputfile'):
+-        print "an input file needs to be provided"
++    if 'inputfile' not in params:
++        print("an input file needs to be provided")
+         raise KeyError 
+ 
+-    if not params.has_key('outputfile'):
+-        print "an output file needs to be provided"
++    if 'outputfile' not in params:
++        print("an output file needs to be provided")
+         raise KeyError
+     
+ def write_output(Q, P, other, params):
+@@ -128,17 +129,17 @@ def usage():
+     brief description of various flags and options for this script
+     """
+ 
+-    print "\nHere is how you can use this script\n"
+-    print "Usage: python %s"%sys.argv[0]
+-    print "\t -K <int> (number of populations)"
+-    print "\t --input=<file> (/path/to/input/file)"
+-    print "\t --output=<file> (/path/to/output/file)"
+-    print "\t --tol=<float> (convergence criterion; default: 10e-6)"
+-    print "\t --prior={simple,logistic} (choice of prior; default: simple)"
+-    print "\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)"
+-    print "\t --format={bed,str} (format of input file; default: bed)"
+-    print "\t --full (to output all variational parameters; optional)"
+-    print "\t --seed=<int> (manually specify seed for random number generator; optional)"
++    print("\nHere is how you can use this script\n")
++    print("Usage: python %s"%sys.argv[0])
++    print("\t -K <int> (number of populations)")
++    print("\t --input=<file> (/path/to/input/file)")
++    print("\t --output=<file> (/path/to/output/file)")
++    print("\t --tol=<float> (convergence criterion; default: 10e-6)")
++    print("\t --prior={simple,logistic} (choice of prior; default: simple)")
++    print("\t --cv=<int> (number of test sets for cross-validation, 0 implies no CV step; default: 0)")
++    print("\t --format={bed,str} (format of input file; default: bed)")
++    print("\t --full (to output all variational parameters; optional)")
++    print("\t --seed=<int> (manually specify seed for random number generator; optional)")
+ 
+ 
+ if __name__=="__main__":
+@@ -153,7 +154,7 @@ if __name__=="__main__":
+             usage()
+             sys.exit(2)
+     except getopt.GetoptError:
+-        print "Incorrect options passed"
++        print("Incorrect options passed")
+         usage()
+         sys.exit(2)
+ 
+diff --git a/vars/admixprop.pxd b/vars/admixprop.pxd
+index ca1865a..2d629b6 100644
+--- a/vars/admixprop.pxd
++++ b/vars/admixprop.pxd
+@@ -1,6 +1,6 @@
+ import numpy as np
+ cimport numpy as np
+-cimport allelefreq as af
++from vars cimport allelefreq as af
+ 
+ cdef class AdmixProp:
+ 
+diff --git a/vars/admixprop.pyx b/vars/admixprop.pyx
+index f5db6aa..f994d6b 100644
+--- a/vars/admixprop.pyx
++++ b/vars/admixprop.pyx
+@@ -1,9 +1,9 @@
+ import numpy as np
+ cimport numpy as np
+-cimport allelefreq as af
++from vars cimport allelefreq as af
+ from scipy.special import digamma
+ from cpython cimport bool
+-import utils
++from vars import utils
+ 
+ ctypedef np.uint8_t uint8_t
+ 
+diff --git a/vars/allelefreq.pxd b/vars/allelefreq.pxd
+index f4dce33..a3fe51e 100644
+--- a/vars/allelefreq.pxd
++++ b/vars/allelefreq.pxd
+@@ -1,7 +1,7 @@
+ 
+ import numpy as np
+ cimport numpy as np
+-cimport admixprop as ap
++from vars cimport admixprop as ap
+ from cpython cimport bool
+ 
+ cdef class AlleleFreq:
+diff --git a/vars/allelefreq.pyx b/vars/allelefreq.pyx
+index 961d162..a1eef13 100644
+--- a/vars/allelefreq.pyx
++++ b/vars/allelefreq.pyx
+@@ -1,11 +1,12 @@
+ 
+ import numpy as np
+ cimport numpy as np
+-cimport admixprop as ap
++from vars cimport admixprop as ap
+ from cpython cimport bool
+ from scipy.special import digamma, gammaln, polygamma
+ import scipy.optimize as opt
+-import utils
++from vars import utils
++from functools import reduce
+ 
+ ctypedef np.uint8_t uint8_t
+ 
+diff --git a/vars/marglikehood.pyx b/vars/marglikehood.pyx
+index edf264b..f4ff5a8 100644
+--- a/vars/marglikehood.pyx
++++ b/vars/marglikehood.pyx
+@@ -1,9 +1,9 @@
+ import numpy as np
+ cimport numpy as np
+-cimport allelefreq as af
+-cimport admixprop as ap
++from vars cimport allelefreq as af
++from vars cimport admixprop as ap
+ from scipy.special import digamma, gammaln, polygamma
+-import utils
++from vars import utils
+ 
+ ctypedef np.uint8_t uint8_t
+ 
+diff --git a/vars/setup.py b/vars/setup.py
+index 24b39ce..fc28a74 100644
+--- a/vars/setup.py
++++ b/vars/setup.py
+@@ -1,3 +1,4 @@
++#!/usr/bin/env python3
+ 
+ from distutils.core import setup
+ from Cython.Build import cythonize
+@@ -17,11 +18,11 @@ setup(
+ )
+ 
+ # setup variable updates 
+-ext_modules = [Extension("admixprop", sources=["admixprop.pyx", "C_admixprop.c"]),
+-               Extension("allelefreq", sources=["allelefreq.pyx", "C_allelefreq.c"],
++ext_modules = [Extension("vars.admixprop", sources=["admixprop.pyx", "C_admixprop.c"]),
++               Extension("vars.allelefreq", sources=["allelefreq.pyx", "C_allelefreq.c"],
+                 libraries=["gsl","gslcblas"],
+                 extra_compile_args=["-O3"]),
+-               Extension("marglikehood", sources=["marglikehood.pyx", "C_marglikehood.c"])]
++               Extension("vars.marglikehood", sources=["marglikehood.pyx", "C_marglikehood.c"])]
+ ext_modules = cythonize(ext_modules)
+ 
+ setup(
+diff --git a/vars/utils.pyx b/vars/utils.pyx
+index 998769d..3a71969 100644
+--- a/vars/utils.pyx
++++ b/vars/utils.pyx
+@@ -33,7 +33,7 @@ def random_combination(iterable, r):
+ 
+     pool = tuple(iterable)
+     n = len(pool)
+-    indices = sorted(random.sample(xrange(n), r))
++    indices = sorted(random.sample(range(n), r))
+     return tuple(pool[i] for i in indices)
+ 
+ def random_partition(list shape, list nonlst, int n):
+@@ -46,7 +46,7 @@ def random_partition(list shape, list nonlst, int n):
+     frac = 0.01
+     num = min([1000, int(frac*(shape[0]*shape[1]-len(nonlst)))])
+     indices = [[(np.random.randint(0,shape[0]), np.random.randint(0,shape[1])) \
+-        for d in xrange(2*num)] for j in xrange(n)]
++        for d in range(2*num)] for j in range(n)]
+     validindices = [list(set(index).difference(set(nonlst))) for index in indices]
+     masks = [(np.array([i[0] for i in index[:num]], dtype='int'), \
+         np.array([i[1] for i in index[:num]], dtype='int')) for index in validindices]

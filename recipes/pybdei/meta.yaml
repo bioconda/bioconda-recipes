@@ -2,66 +2,67 @@
 {% set version = "0.13" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/pybdei-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pybdei-{{ version }}.tar.gz
   sha256: 4fcd3950aa60a25538bb8716a88ed5d5b24f63b1deebf1828e2e0ea9ac45441f
 
 build:
+  number: 1
   script_env:
     - CC=$CXX
   entry_points:
     - bdei_infer = pybdei.inference:main
     - bdei_loglikelihood = pybdei.loglikelihood:main
     - bdei_u = pybdei.u_calculator:main
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-binary=pybdei
-  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --no-binary=pybdei -vvv
   run_exports:
     - {{ pin_subpackage('pybdei', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
-    - python >=3.9
+    - python
     - setuptools
     - numpy >=1.24.0
     - pip
     - nlopt
   run:
-    - python >=3.9
+    - python
     - ete3 >=3.1.3
     - scipy >=1.11.1
     - six >=1.16.0
     - treesimulator >=0.1.22
-    - {{ pin_compatible('numpy >=1.24.0') }}
+    - numpy >=1.24.0
 
 test:
   imports:
     - pybdei
   commands:
-    - pip check
     - bdei_infer --help
     - bdei_loglikelihood --help
     - bdei_u --help
-  requires:
-    - pip
 
 about:
   home: "https://github.com/evolbioinfo/bdei"
   summary: "Maximum likelihood estimation of Birth-Death Exposed-Infectious (BDEI) epidemiological model parameters from phylogenetic trees."
   description: |
-    PyBDEI provides tools for fast and accurate maximum likelihood estimation 
-    of Birth-Death Exposed-Infectious (BDEI) epidemiological model parameters 
+    PyBDEI provides tools for fast and accurate maximum likelihood estimation
+    of Birth-Death Exposed-Infectious (BDEI) epidemiological model parameters
     from phylogenetic trees.
-  license: LGPL-2.1
+  license: "LGPL-2.1-or-later"
   license_file: LICENSE
-  license_family: GPL2
-  dev_url: https://github.com/evolbioinfo/bdei
+  license_family: LGPL
+  dev_url: "https://github.com/evolbioinfo/bdei"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - annazhukova
   identifiers:

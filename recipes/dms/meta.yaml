@@ -2,40 +2,47 @@
 {% set version = "1.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/qdu-zyf/dynamic-meta-storms/archive/v{{ version }}.tar.gz
   sha256: c4f90d781465f1fa11d02c33dcd6412a80196889b200aec8493c6cde50e73a4a
 
 build:
-  number: 1
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - openmp
-    - llvm-openmp  # [osx]
+    - pkg-config
   host:
-    - openmp
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
-    - openmp
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
-    - export DynamicMetaStorms=${PREFIX}
-    - MS-comp-taxa-dynamic -h 
+    #- export DynamicMetaStorms=${PREFIX}
+    - test -x ${PREFIX}/bin/MS-comp-taxa-dynamic  # [linux]
+    - MS-comp-taxa-dynamic -h  # [osx]
 
 about:
-  home: https://github.com/qibebt-bioinfo/dynamic-meta-storms
-  license: GPL3
+  home: "https://github.com/qibebt-bioinfo/dynamic-meta-storms"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE  
-  summary: "Comprehensive taxonomic and phylogenetic comparison of shotgun metagenomes at the species level"
+  summary: "Comprehensive taxonomic and phylogenetic comparison of shotgun metagenomes at the species level."
+  dev_url: "https://github.com/qibebt-bioinfo/dynamic-meta-storms"
 
 extra:
   identifiers:
     - doi:10.1093/bioinformatics/btz910
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

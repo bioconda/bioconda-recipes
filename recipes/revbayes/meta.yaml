@@ -1,5 +1,5 @@
 {% set name = "revbayes" %}
-{% set version = "1.2.5" %}
+{% set version = "1.4.1" %}
 
 package:
   name: {{ name }}
@@ -7,17 +7,16 @@ package:
 
 source:
   url: https://github.com/revbayes/revbayes/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 547fc4b9f7d3bd9ebc6ea7dd3e2d7ff824955d49a879b47d0bd6018f6e48b9f7
+  sha256: ddf0c3f3fd1bd88c1c0695f354de6ad6be9e24961c115165d38c0a9a1859f0a1
 
 build:
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage('revbayes', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
-    - {{ compiler('c') }}
+    - ninja
     - {{ compiler('cxx') }}
     - cmake
   host:
@@ -53,7 +52,9 @@ extra:
     - biotools:revbayes
     - doi:10.1093/sysbio/syw021
     - doi:10.1093/sysbio/syu039
-  #additional-platforms:
+  additional-platforms:
+    - osx-arm64
     # Times out
-    #- osx-arm64
     #- linux-aarch64
+  skip-lints:
+    - compiler_needs_stdlib_c

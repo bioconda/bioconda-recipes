@@ -1,23 +1,31 @@
 #!/bin/bash
 
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+mkdir -p "${PREFIX}/bin"
+
 for CHANGE in "activate" "deactivate"
 do
-    mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-    cp "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
+	mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
+	cp -f "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
 done
-if [ `uname -m` != "aarch64" ]; then
-	sed -i.bak1 's/-march=native/-march=x86-64 -mtune=generic/g' makefile
-fi
-if [ "$(uname)" == "Darwin" ];
-then
-    sed -i.bak2 's/g++/${CXX}/g' makefile
-    make mac
-else
-    sed -i.bak2 's/g++/${GXX}/g' makefile
-    make
-fi
 
-[ ! -d $PREFIX/bin ] && mkdir -p $PREFIX/bin
+case $(uname -s) in
+    Darwin)
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names" ;;
+esac
 
-cp bin/* $PREFIX/bin/
-chmod a+x $PREFIX/bin/*
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|g' makefile
+	rm -f *.bak ;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|g' makefile
+	rm -f *.bak ;;
+esac
+
+make -j"${CPU_COUNT}"
+
+install -v -m 0755 bin/* "${PREFIX}/bin"

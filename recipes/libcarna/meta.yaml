@@ -1,0 +1,57 @@
+{% set name = "libcarna" %}
+{% set version = "3.4.0" %}
+{% set repo_url = "https://github.com/kostrykin/LibCarna" %}
+{% set docs_url = "https://kostrykin.github.io/LibCarna/html" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "{{ repo_url }}/archive/refs/tags/{{ version }}.zip"
+  sha256: 0041aa13e822d95332bd3026fa5914c612621111611e5b9b538119bc99b1d46e
+
+build:
+  number: 0
+  skip: true # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ cdt('libx11-devel') }}          # [linux]
+    - {{ cdt('xorg-x11-proto-devel') }}  # [linux]
+    - make
+    - cmake >=2.8, <=3.28.3
+    - eigen >=3.0.5
+    - boost-cpp
+  host:
+    - libgl-devel   # [linux]
+    - libegl-devel  # [linux]
+    - libglu        # [linux]
+  run:
+    - libglu  # [linux]
+    - _openmp_mutex
+
+test:
+  files:
+    - test/CMakeLists.txt
+    - test/test.cpp
+  requires:
+    - {{ compiler('cxx') }}
+    - libglu  # [linux]
+    - make
+    - cmake
+    - eigen >=3.0.5
+
+about:
+  home: "{{ repo_url }}"
+  license: 'MIT'
+  summary: 'Real-time 3D visualization of biomedical data and beyond'
+  dev_url: "{{ repo_url }}"
+  doc_url: "{{ docs_url }}"
+
+extra:
+  recipe-maintainers:
+    - kostrykin

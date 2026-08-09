@@ -1,0 +1,63 @@
+{% set version = '1.1.1' %}
+
+package:
+  name: r-clustermole
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/clustermole_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/clustermole/clustermole_{{ version }}.tar.gz
+  sha256: 096bb92e8eb3b2ad69124a0ea0ba483afa14d2d6833d629aba2de7b246dad6f1
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('r-clustermole', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - bioconductor-gseabase
+    - bioconductor-gsva >=1.50.0
+    - bioconductor-singscore
+    - r-dplyr
+    - r-magrittr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+  run:
+    - r-base
+    - bioconductor-gseabase
+    - bioconductor-gsva >=1.50.0
+    - bioconductor-singscore
+    - r-dplyr
+    - r-magrittr
+    - r-rlang
+    - r-tibble
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('clustermole')"
+
+about:
+  home: https://igordot.github.io/clustermole/
+  license: MIT
+  summary: Unbiased Single-Cell Transcriptomic Data Cell Type Identification.
+  description: |
+    Assignment of cell type labels to single-cell RNA sequencing (scRNA-seq) clusters
+    is often a time-consuming process that involves manual inspection of the cluster
+    marker genes complemented with a detailed literature search. This is especially
+    challenging when unexpected or poorly described populations are present. The clustermole
+    R package provides methods to query thousands of human and mouse cell identity markers
+    sourced from a variety of databases.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+
+extra:
+  recipe-maintainers:
+    - Yuri-Kawahara

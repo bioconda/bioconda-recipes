@@ -1,0 +1,56 @@
+{% set name = "CCP4SRS" %}
+{% set version = "2024.06.14" %}
+{% set sha256 = "9750c76eab2bcf8e9a6ffb36afe095f47b8cb648f77d195e48416b96a94f5fd0" %}
+{% set commit_hash = "935b2d99b73f5f8b2396a5f2b6cdc617610131b5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://ccp4forge.rc-harwell.ac.uk/ccp4/{{ name|lower }}/-/archive/{{ commit_hash }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - libccp4
+    - mmdb2
+    - zlib
+
+test:
+  commands:
+    - srsgen | grep -q "CCP4SRS generator"
+    - srsview | grep -q "CCP4SRS viewer"
+    - pdb2to3 | grep -q "CCP4SRS remediator"
+
+about:
+  home: "https://www.ccp4.ac.uk"
+  dev_url: "https://ccp4forge.rc-harwell.ac.uk/ccp4/ccp4srs"
+  doc_url: "https://ccp4forge.rc-harwell.ac.uk/ccp4/ccp4srs/-/tree/{{ commit_hash }}/doc-html/html"
+  license: "LGPL-3.0"
+  license_family: GPL3
+  license_file: "LICENSE"
+  summary: "CCP4 Storage, Retrieval and Search framework for small-molecule data"
+  description: >
+    CCP4SRS is a vital part of the CCP4 suite designed for handling and generating Crystallographic Information File (CIF) library files.
+
+    It provides a robust framework for storing, retrieving, and searching small-molecule crystallographic data.
+
+extra:
+  identifiers:
+    - doi:10.1107/S0907444994003112
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

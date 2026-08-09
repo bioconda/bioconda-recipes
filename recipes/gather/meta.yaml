@@ -1,0 +1,60 @@
+{% set name = "gather" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Neuroimmunology-UiO/gather/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4d5e2108e9a98d8dfee85357deebc4b55ae5c3dd657203ac015ed7a8251cff32
+
+build:
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9
+    - numpy >=1.19
+    - pandas
+    - networkx
+    - joblib
+    - tqdm
+    - biopython
+    - argcomplete
+    - glob2
+    - rich
+    - matplotlib-base
+    - bcalm >=2.2.3
+
+test:
+  imports:
+    - gather
+  commands:
+    - tenx-asm --help
+    - sc-asm --help
+    - postproc --help
+  requires:
+    - python
+
+about:
+  home: https://github.com/Neuroimmunology-UiO/gather
+  license: MIT
+  license_file: LICENSE
+  summary: Assembly of heavy and light chain BCRs using De Bruijn graphs.
+  description: |
+    Gather is a Python-based toolkit for assembling heavy and light chain BCRs from sequence data using
+    De Bruijn graphs. It includes modules for processing 10X and single-cell data.
+
+extra:
+  recipe-maintainers:
+    - codeseyed
