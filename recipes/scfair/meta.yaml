@@ -6,26 +6,17 @@ package:
   version: {{ version }}
 
 source:
-  # Canonical pypi.io template (301s to pypi.org) instead of the pythonhosted.org
-  # hash-path URL, so a version bump only needs the version + sha256 updated,
-  # not a new hash-path looked up from the PyPI files page. Verified this
-  # resolves to byte-identical content (same sha256) as the pythonhosted URL.
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 85cd6f9d2ae139dc08a5c31be54e2634afc839ea6f813a27080fede9ac2f02e1
 
 build:
   number: 0
   noarch: python
-  script:
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   run_exports:
-    # Pre-1.0 semver (0.x.x): pin to major.minor, not just major — a 0.x
-    # minor bump is allowed to break API under semver, unlike >=1.0.
     - {{ pin_subpackage('scfair', max_pin="x.x") }}
 
-
 requirements:
-  # Version is single-sourced from src/scfair/_version.py (no setuptools-scm).
   host:
     - python >=3.10
     - pip
@@ -35,15 +26,10 @@ requirements:
     - anndata >=0.10
     - numpy >=1.24
     - pandas >=2.0
-    # scanpy>=1.10, not 1.9: intermediate clustering calls sc.tl.leiden(flavor="igraph"),
-    # which does not exist before 1.10. No fallback exists for that call.
     - scanpy >=1.10
     - scipy >=1.10
     - scikit-learn >=1.2
-    # PyPI dist name is "igraph"; the conda-forge/bioconda package providing the
-    # same `import igraph` is "python-igraph".
     - python-igraph >=0.10
-    # Required, not optional: default flavor="seurat_v3" needs skmisc.loess.
     - scikit-misc >=0.3
 
 test:
@@ -57,6 +43,7 @@ about:
   doc_url: https://scfair.readthedocs.io
   summary: Fair highly variable gene selection for single-cell RNA-seq
   license: Apache-2.0
+  license_family: APACHE
   license_file: LICENSE
 
 extra:
