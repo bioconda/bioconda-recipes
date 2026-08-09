@@ -1,9 +1,10 @@
 #!/bin/bash
 set -eu
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable -Wno-unused-but-set-variable"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-variable -Wno-unused-but-set-variable"
+export CFLAGS="${CFLAGS} -O3"
 export LIBS="-lstdc++fs -lcurl -lz -ldeflate"
 
 case $(uname -m) in
@@ -18,10 +19,12 @@ case $(uname -m) in
 	;;
 esac
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
 autoreconf -if
 ./configure --prefix="${PREFIX}" CXX="${CXX}" CC="${CC}" \
-	LDFLAGS="${LDFLAGS}" \
-	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
 	--with-snappy --with-io_lib --with-libdeflate \
 	--with-libsecrecy --with-nettle \
 	--with-lzma --with-gmp \
@@ -30,5 +33,4 @@ autoreconf -if
 make clean
 
 make -j"${CPU_COUNT}"
-
 make install
