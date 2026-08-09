@@ -20,6 +20,12 @@ esac
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
+case $(uname -s) in
+    Darwin)
+        cp -f ${RECIPE_DIR}/UnsignedIntegerIndexIterator.hpp ${PREFIX}/include/libmaus2/util/
+        ;;
+esac
+
 autoreconf -if;
 ./configure --prefix="${PREFIX}" CXX="${CXX}" CC="${CC}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
