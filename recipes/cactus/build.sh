@@ -57,7 +57,7 @@ ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --
 rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
 export LDFLAGS="${LDFLAGS} -fopenmp"
-make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib"
+make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -fopenmp -L${PREFIX}/lib"
 install -v -m 0755 bin/* "${PREFIX}/bin"
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
