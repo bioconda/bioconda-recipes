@@ -26,7 +26,7 @@ autoreconf -if;
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
 	--with-snappy --with-io_lib --with-libdeflate \
-	--with-libsecrecy --with-nettle \
+	--with-libsecrecy --with-nettle --enable-fast \
 	--with-lzma --with-gmp --disable-compile-testprograms --enable-shared-libmaus2 \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
