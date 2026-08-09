@@ -14,16 +14,10 @@ sed -i.bak 's|-std=c++11|-std=c++14|' setup.py
 rm -f *.bak
 
 # Build the C++ library
-#make CXX="${CXX}" -j"${CPU_COUNT}"
-
-# Generate the SWIG files
-swig -c++ -python -outdir "${SRC_DIR}/lib" -I"${SRC_DIR}/include" -I"${PREFIX}/include" -o "${SRC_DIR}/src/lrst_wrap.cpp" "${SRC_DIR}/src/lrst.i"
-
-$PYTHON setup.py build_ext --build-lib lib
-$PYTHON setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
+make CXX="${CXX}" -j"${CPU_COUNT}"
 
 # Generate the shared library
-#${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
+${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
 
 # Copy source files to the bin directory
 install -v -m 0755 "${SRC_DIR}"/src/*.py "${PREFIX}"/bin
