@@ -1,0 +1,66 @@
+{% set name = "r-doubletfinder" %}
+{% set version = "2.0.6" %}
+{% set commit = "1b244d8f0d54b4b1cb4365639931bbb16f01e1cd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Upstream publishes no tags or releases, so pin the commit whose DESCRIPTION
+  # reads 2.0.6.
+  url: https://github.com/chris-mcginnis-ucsf/DoubletFinder/archive/{{ commit }}.tar.gz
+  sha256: 64a46212e8e1b45d754694b0f08ddc2b5ffba623695527da66ab479cd344de82
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - export LC_ALL="en_US.UTF-8"
+    - export DISABLE_AUTOBREW=1
+    - $R CMD INSTALL --build . "${R_ARGS}"
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base >=4.0
+    - r-fields
+    - r-kernsmooth
+    - r-rocr
+    # DESCRIPTION leaves Seurat unpinned, but the code calls SeuratObject::LayerData.
+    - r-seurat >=5.0.0
+    - r-seuratobject >=5.0.0
+  run:
+    - r-base >=4.0
+    - r-fields
+    - r-kernsmooth
+    - r-rocr
+    - r-seurat >=5.0.0
+    - r-seuratobject >=5.0.0
+
+test:
+  commands:
+    - $R -e "library('DoubletFinder')"
+
+about:
+  home: "https://github.com/chris-mcginnis-ucsf/DoubletFinder"
+  dev_url: "https://github.com/chris-mcginnis-ucsf/DoubletFinder"
+  # DESCRIPTION declares CC0; upstream ships no license file to install.
+  license: "CC0-1.0"
+  license_family: "PUBLIC-DOMAIN"
+  summary: "Doublet detection in single-cell RNA sequencing data using artificial nearest neighbors."
+  description: |
+    DoubletFinder identifies doublets by generating artificial doublets from an
+    existing scRNA-seq dataset and finding the real cells that preferentially
+    co-localize with them in gene expression space. The package also provides
+    the pN-pK parameter sweep used to select pK, and a homotypic doublet
+    proportion estimate from cell annotation frequencies.
+  doc_url: "https://github.com/chris-mcginnis-ucsf/DoubletFinder/blob/master/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1016/j.cels.2019.03.003

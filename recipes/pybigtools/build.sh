@@ -25,13 +25,13 @@ RUST_BACKTRACE=1
 
 # Creating the sdist from the monorepo placed pyproject.toml one level above Cargo.toml.
 # The wheels don't seem to install as expected unless pyproject.toml is moved back into the source dir.
-mv pyproject.toml pybigtools/
+#mv pyproject.toml pybigtools/
 
 # Run maturin build to produce *.whl files.
 maturin build -m pybigtools/Cargo.toml -b pyo3 --interpreter "${PYTHON}" --release --strip
 
 # Install *.whl files using pip
-${PYTHON} -m pip install pybigtools/target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install target/wheels/*.whl --no-deps --no-build-isolation --no-cache-dir -vvv
 
 # Move the LICENSE file to the root dir
 mv pybigtools/LICENSE .
