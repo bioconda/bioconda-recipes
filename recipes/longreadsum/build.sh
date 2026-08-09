@@ -19,8 +19,8 @@ rm -f *.bak
 # Generate the SWIG files
 swig -c++ -python -outdir "${SRC_DIR}"/lib -I"${SRC_DIR}"/include -I"${PREFIX}"/include -o "${SRC_DIR}"/src/lrst_wrap.cpp "${SRC_DIR}"/src/lrst.i
 
-python setup.py build_ext --inplace
-python setup.py install
+$PYTHON setup.py build_ext
+$PYTHON setup.py install
 
 # Generate the shared library
 #${PYTHON} setup.py -I"${PREFIX}/include" -L"${PREFIX}/lib" install
