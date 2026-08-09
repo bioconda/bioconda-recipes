@@ -5,7 +5,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-unused-variable -Wno-unuse
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-variable -Wno-unused-but-set-variable"
 export CFLAGS="${CFLAGS} -O3"
-export LIBS="-lstdc++fs -lcurl -lz -ldeflate"
+#export LIBS="-lstdc++fs -lcurl -lz -ldeflate"
 
 case $(uname -m) in
     aarch64)
@@ -21,13 +21,13 @@ esac
 
 cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
 
-autoreconf -if
+autoreconf -if;
 ./configure --prefix="${PREFIX}" CXX="${CXX}" CC="${CC}" \
 	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" \
 	--with-snappy --with-io_lib --with-libdeflate \
 	--with-libsecrecy --with-nettle \
-	--with-lzma --with-gmp \
+	--with-lzma --with-gmp --disable-compile-testprograms --enable-shared-libmaus2 \
 	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
 make clean
