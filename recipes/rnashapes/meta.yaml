@@ -8,13 +8,13 @@ package:
   version: {{ rnashapes_version }}
 
 source:
-  sha256: {{ sha256 }}
   # the repository "fold-grammars" contains sources for several programs, i.e. pKiss, RNAshapes, ...
   # thus, the version number does not correspond to the {{ packagename }} version number
   url: https://github.com/jlab/fold-grammars/archive/{{ fold_grammars_version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('rnashapes', max_pin="x") }}
 
@@ -22,12 +22,11 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-    - libcxx <17 # [osx]
+    - pkg-config
   host:
     - perl
     - bellmans-gapc >=2024.01.12
     - libopenblas
-    - libcxx <17 # [osx]
   run:
     - perl
     - bellmans-gapc >=2024.01.12
@@ -39,8 +38,11 @@ test:
     - RNAshapes CGCAUGCUAGUCGCG
 
 about:
-  home: https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}
-  license: 'GPL-3.0-or-later'
+  home: "https://bibiserv.cebitec.uni-bielefeld.de/{{ packagename }}"
+  dev_url: "https://github.com/jlab/fold-grammars"
+  doc_url: "https://bibiserv.cebitec.uni-bielefeld.de/fold-grammars"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
   summary: "RNAshape abstraction maps structures to a tree-like domain of shapes,
     retaining adjacency and nesting of structural features, but disregarding helix
@@ -52,5 +54,6 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/bioinformatics/btu649

@@ -1,0 +1,65 @@
+{% set name = "stellarscope" %}
+{% set version = "1.5" %}
+{% set sha256 = "cb8f4aceeac0ddbe591846aabc7da17e1086a221c84ec65f601516e75ea34c88" %}
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+source:
+    url: https://github.com/nixonlab/stellarscope/archive/refs/tags/{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+    patches:
+        - 0001_pyproject_toml.patch
+
+build:
+    number: 1
+    script:
+        - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+        - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+    entry_points:
+        - stellarscope = stellarscope.__main__:stellarscope
+    run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+    build:
+        - {{ compiler('c') }}
+    host:
+        - python
+        - pip
+        - setuptools
+        - cython
+        - pysam >=0.19
+        - setuptools_scm
+    run:
+        - python
+        - future >=0.17.1
+        - pyyaml >=5.1
+        - numpy
+        - scipy >=1.2.1
+        - pysam >=0.19
+        - intervaltree >=3.0.2
+        - pandas
+        - packaging
+        - samtools >=1.16
+
+test:
+    commands:
+        - stellarscope --version
+
+about:
+    home: "https://github.com/nixonlab/stellarscope"
+    license: MIT
+    license_family: MIT
+    license_file: LICENSE
+    summary: "Single-cell Transposable Element Locus Level Analysis of scRNA Sequencing."
+    dev_url: "https://github.com/nixonlab/stellarscope"
+    doc_url: "https://github.com/nixonlab/stellarscope/blob/{{ version }}/docs/protocol.md"
+
+extra:
+    identifiers:
+        - doi:10.1016/j.crmeth.2025.101086
+    additional-platforms:
+        - linux-aarch64
+        - osx-arm64

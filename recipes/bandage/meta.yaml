@@ -1,18 +1,19 @@
-{% set name = "Bandage" %}
-{% set version = "0.8.1" %}
-{% set versionx = "0_8_1" %}
+{% set name = "bandage" %}
+{% set version = "0.9.0" %}
+{% set versionx = "0_9_0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: https://github.com/rrwick/Bandage/archive/v{{ version }}.tar.gz
-    sha256: f160b695e03f0b254ffdccfa35b45dc8a733e8161d9928441edb8b63c8e44452
+  url: https://github.com/rrwick/Bandage/archive/v{{ version }}.tar.gz
+  sha256: 04de8152d8bf5e5aa32b41a63cf1c23e1fee7b67ccd9f1407db8dc2824ca4e30
 
 build:
-  number: 3
-  skip: True # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x.x") }}
 
 requirements:
   build:
@@ -24,26 +25,39 @@ requirements:
     - {{ cdt('libxdamage') }}
     - {{ cdt('libxxf86vm') }}
     - {{ cdt('libxfixes') }}
+    - {{ cdt('libxcb') }}
+    - {{ cdt('libXau') }}
+    - {{ cdt('libXext') }}    
     - xorg-libxext
-    - qt >=5.12.5
+    - qt >=5.15.2
   run:
-    - qt >=5.12.5
+    - qt >=5.15.2
     - fonts-conda-ecosystem
     - xorg-libxrender
+
 test:
   commands:
     - which Bandage
 
 about:
-  home: https://github.com/rrwick/Bandage
-  license: GNU General Public License, version 3
+  home: "https://github.com/rrwick/Bandage"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: COPYING
-  summary: Bandage - a Bioinformatics Application for Navigating De novo Assembly Graphs Easily
+  summary: "Bandage - a Bioinformatics Application for Navigating De novo Assembly Graphs Easily."
+  dev_url: "https://github.com/rrwick/Bandage"
+  doc_url: "https://rrwick.github.io/Bandage"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # missing various CDT dependencies
+    #- osx-arm64
   identifiers:
     - doi:10.1093/bioinformatics/btv383
+    - biotools:bandage
+    - usegalaxy-eu:bandage_image
+    - usegalaxy-eu:bandage_info
   container:
     # needed for libGL.so.1
-    extended-base: true
+    extended-base: True

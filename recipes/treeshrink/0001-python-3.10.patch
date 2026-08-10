@@ -1,0 +1,90 @@
+diff --git a/dendropy/utility/container.py b/dendropy/utility/container.py
+index a6d65e0f..c2909d8e 100644
+--- a/dendropy/utility/container.py
++++ b/dendropy/utility/container.py
+@@ -21,6 +21,7 @@ Various data structures.
+ """
+ 
+ import collections
++from collections.abc import MutableMapping
+ import copy
+ import sys
+ import csv
+@@ -353,7 +354,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+-class CaseInsensitiveDict(collections.MutableMapping):
++class CaseInsensitiveDict(collections.abc.MutableMapping):
+     """
+     A case-insensitive ``dict``-like object.
+ 
+diff --git a/treeshrink/alignment.py b/treeshrink/alignment.py
+index d562fd52..8a75d546 100644
+--- a/treeshrink/alignment.py
++++ b/treeshrink/alignment.py
+@@ -54,7 +54,7 @@ def read_fasta(src):
+     file_obj = None
+     if isinstance(src, str):
+         try:
+-            file_obj = open(src, "rU")
++            file_obj = open(src, "r")
+         except IOError:
+             print(("The file `%s` does not exist, exiting gracefully" % src))
+     elif isinstance(src, filetypes):
+@@ -86,7 +86,7 @@ def read_compact(src):
+     file_obj = None
+     if isinstance(src, str):
+         try:
+-            file_obj = open(src, "rU")
++            file_obj = open(src, "r")
+         except IOError:
+             print(("The file `%s` does not exist, exiting gracefully" % src))
+     elif isinstance(src, filetypes):
+@@ -271,7 +271,7 @@ def read_compact3(src):
+     file_obj = None
+     if isinstance(src, str):
+         try:
+-            file_obj = open(src, "rU")
++            file_obj = open(src, "r")
+         except IOError:
+             print(("The file `%s` does not exist, exiting gracefully" % src))
+     elif isinstance(src, filetypes):
+diff --git a/setup.py b/setup.py
+index 3f41992..2a89537 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,17 +1,17 @@
+-from setuptools import setup, find_packages
++from setuptools import setup, find_namespace_packages
+ import treeshrink
+ from os import walk, listdir
+ from os.path import join,normpath,isfile
+
+ def recursive_list_dir(path):
+     listing=[]
+-    for x in walk(path):
+-        if isfile(x[0]):
+-            listing.append(x[0].split(path+'/')[1])
+-        for y in listdir(x[0]):
+-            z = normpath(join(x[0],y))
++    for root, _, _ in walk(path):
++        if isfile(root):
++            listing.append(root.split(join(path, ""))[1])
++        for y in listdir(root):
++            z = normpath(join(root,y))
+             if isfile(z):
+-                listing.append(z.split(path+'/')[1])
++                listing.append(z.split(join(path,""))[1])
+     return listing
+
+ param = {
+@@ -21,7 +21,7 @@ param = {
+     'author': treeshrink.PROGRAM_AUTHOR,
+     'url': treeshrink.PROGRAM_WEBSITE,
+     'license': treeshrink.PROGRAM_LICENSE,
+-    'packages': find_packages()+['Rlib','R_scripts'],
++    'packages': find_namespace_packages(where=".")+['Rlib','R_scripts'],
+     'package_data':{'':recursive_list_dir('Rlib')+recursive_list_dir('R_scripts')},
+     'include_package_data': True,
+     'scripts' : ['run_treeshrink.py','decompose.py','make_gene_folder.py'],

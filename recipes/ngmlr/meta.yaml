@@ -1,29 +1,30 @@
+{% set name = "ngmlr" %}
 {% set version = "0.2.7" %}
 {% set sha256 = "5126a6b3e726cac0da0713883daac688f38587f118428247a9a3ace5a55b29aa" %}
 
 package:
-  name: ngmlr
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: '{{sha256}}'
-  url: "https://github.com/philres/ngmlr/archive/v{{ version }}.tar.gz"
+  url: https://github.com/philres/ngmlr/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
-    - ngmlr-aarch64.patch # [linux and aarch64]
+    - 0001-master.patch
+    - ngmlr-aarch64.patch  # [aarch64 or arm64]
 
 build:
-  number: 8
+  number: 10
   run_exports:
-    - {{ pin_subpackage('ngmlr', max_pin="x") }}
+    - {{ pin_subpackage('ngmlr', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -33,8 +34,16 @@ test:
 about:
   home: "https://github.com/philres/ngmlr"
   license: MIT
-  summary: "ngmlr is a long-read mapper designed to align PacBio or Oxford Nanopore reads to a reference genome and optimized for structural variation detection"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ngmlr is a long-read mapper designed to align PacBio or Oxford Nanopore reads to a reference genome and optimized for structural variation detection."
+  dev_url: "https://github.com/philres/ngmlr"
+  doc_url: "https://github.com/philres/ngmlr/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:ngmlr
+    - doi:10.1038/s41592-018-0001-7

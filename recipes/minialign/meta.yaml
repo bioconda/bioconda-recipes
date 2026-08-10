@@ -1,24 +1,27 @@
 {% set name = "minialign" %}
-{% set version = "0.5.3" %}
+{% set version = "0.6.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 2
-
 source:
-  url: https://github.com/ocxtal/minialign/archive/minialign-0.5.3.tar.gz
-  md5: d6fc134ae301662376da62e01a130729
+  url: https://github.com/ocxtal/minialign/archive/refs/tags/{{ version }}.tar.gz
+  sha256: f83ee382ffc06107c66ac3a0ada88705c303b1413f4171407b46640aadbffade
+  patches:
+    - 0001-master.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('minialign', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-  host:
     - zlib
-  run:
+  host:
     - zlib
 
 test:
@@ -26,12 +29,15 @@ test:
     - minialign -v
 
 about:
-  home: https://github.com/ocxtal/minialign
+  home: "https://github.com/ocxtal/minialign"
   license: MIT
-  license_file: LICENSE.txt
+  license_family: MIT
+  license_file: "LICENSE.txt"
   summary: "Fast and accurate alignment tool for PacBio and Nanopore long reads."
   description: |
     Minialign is a little bit fast and moderately accurate nucleotide sequence
     alignment tool designed for PacBio and Nanopore long reads. It is built on
     three key algorithms, minimizer-based index of the minimap overlapper,
     array-based seed chaining, and SIMD-parallel Smith-Waterman-Gotoh extension.
+  dev_url: "https://github.com/ocxtal/minialign"
+  doc_url: "https://github.com/ocxtal/minialign/blob/{{ version }}/README.md"

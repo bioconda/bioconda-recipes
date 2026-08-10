@@ -6,11 +6,14 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/vibansal/{{ name }}/archive/v{{ version }}.tar.gz
-    sha256: 33d0a047c4d9b7ef4287be979cc580183acbd09a3ab518b9f5ebc5f41c2bf34e
+  url: https://github.com/vibansal/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 33d0a047c4d9b7ef4287be979cc580183acbd09a3ab518b9f5ebc5f41c2bf34e
+  patches:
+    - 0001-master.patch
+    - 0002-Makefile.patch
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('hapcut2', max_pin="x") }}
 
@@ -22,9 +25,9 @@ requirements:
   host:
     - zlib
     - htslib
+    - xz
     - liblzma-devel
   run:
-    - zlib
     - python >=3.5
     - pysam
     - htslib
@@ -37,9 +40,17 @@ test:
     - 'LinkFragments.py 2>&1 | grep "usage: LinkFragments.py"'
 
 about:
-  summary: Tools for haplotype assembly from sequence data
-  home: https://github.com/vibansal/HapCUT2/
-  license: BSD-2-Clause
+  summary: "Tools for haplotype assembly from sequence data."
+  home: "https://github.com/vibansal/HapCUT2"
+  license: "BSD-2-Clause"
   license_family: BSD
   license_file: LICENSE
-  dev_url: https://github.com/vibansal/HapCUT2/
+  dev_url: "https://github.com/vibansal/HapCUT2"
+  doc_url: "https://github.com/vibansal/HapCUT2/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.213462.116

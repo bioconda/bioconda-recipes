@@ -1,15 +1,60 @@
---- setup.py
-+++ setup.py
-@@ -318 +318 @@
--        cqfcmd = ['bash', '-c', 'cd third-party/cqf && make']
-+        cqfcmd = ['bash', '-c', 'cd third-party/cqf && cxx="${CXX} ${CXXFLAGS} ${LDFLAGS} -std=c++11" && make CC="${cxx} -fPIC" CXX="${cxx} -fPIC" LD="${cxx}"']
---- setup.cfg
-+++ setup.cfg
+--- a/setup.cfg
++++ b/setup.cfg
 @@ -6,5 +6,5 @@
  # docker/Dockerfile
 -# libraries = z,bz2
 +libraries = z,bz2
  ## if using system libraries
--include-dirs = include:third-party/zlib:third-party/bzip2:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
-+include-dirs = include:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
- # include-dirs = lib
+-include_dirs = include:third-party/zlib:third-party/bzip2:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
++include_dirs = include:third-party/seqan/core/include:third-party/smhasher:third-party/cqf:third-party/rollinghash
+ # include_dirs = lib
+diff --git a/setup.py b/setup.py
+index 1bbf317..b6bd3cb 100755
+--- a/setup.py
++++ b/setup.py
+@@ -130,10 +130,10 @@ def check_for_openmp():
+ 
+ def distutils_dir_name(dname):
+     """Returns the name of a distutils build directory"""
+-    f = "{dirname}.{platform}-{version[0]}.{version[1]}"
++    f = "{dirname}.{platform}-{cache_tag}"
+     return f.format(dirname=dname,
+                     platform=sysconfig.get_platform(),
+-                    version=sys.version_info)
++                    cache_tag=sys.implementation.cache_tag)
+ 
+ 
+ def build_dir():
+@@ -168,12 +168,12 @@ SOURCES.extend(path_join("third-party", "smhasher", bn + ".cc") for bn in [
+     "MurmurHash3"])
+ 
+ # Don't forget to update lib/Makefile with these flags!
+-EXTRA_COMPILE_ARGS = ['-O3', '-std=c++11']
++EXTRA_COMPILE_ARGS = ['-O3', '-std=c++14', '-Wno-deprecated-declarations', '-Wno-unused-local-typedef', '-Wno-reorder-ctor', '-Wno-unused-but-set-variable', '-Wno-unused', '-Wno-delete-non-abstract-non-virtual-dtor', '-Wno-delete-abstract-non-virtual-dtor', '-Wno-macro-redefined']
+ EXTRA_LINK_ARGS = []
+ 
+ if sys.platform == 'darwin':
+-    EXTRA_COMPILE_ARGS.extend(['-arch', 'x86_64', '-mmacosx-version-min=10.9'])
+-    EXTRA_LINK_ARGS.append('-mmacosx-version-min=10.9')
++    EXTRA_COMPILE_ARGS.extend(['-arch', 'x86_64', '-mmacosx-version-min=10.13'])
++    EXTRA_LINK_ARGS.append('-mmacosx-version-min=10.13')
+ 
+ if check_for_openmp():
+     EXTRA_COMPILE_ARGS.extend(['-fopenmp'])
+@@ -242,6 +242,7 @@ CLASSIFIERS = [
+     "Programming Language :: Python :: 3.8",
+     "Programming Language :: Python :: 3.9",
+     "Programming Language :: Python :: 3.10",
++    "Programming Language :: Python :: 3.11",
+     "Topic :: Scientific/Engineering :: Bio-Informatics",
+ ]
+ if "-rc" in versioneer.get_version():
+@@ -317,7 +318,7 @@ class KhmerBuildExt(_build_ext):  # pylint: disable=R0904
+         if sys.platform == 'darwin' and 'gcov' in self.libraries:
+             self.libraries.remove('gcov')
+ 
+-        cqfcmd = ['bash', '-c', 'cd third-party/cqf && make']
++        cqfcmd = ['bash', '-c', 'cd third-party/cqf && cxx="${CXX} ${CXXFLAGS} ${LDFLAGS} -std=c++14" && make CC="${CC} -fPIC" CXX="${cxx} -fPIC" LD="${cxx}"']
+         spawn(cmd=cqfcmd, dry_run=self.dry_run)
+         for ext in self.extensions:
+             ext.extra_objects.append(path_join("third-party", "cqf", "gqf.o"))

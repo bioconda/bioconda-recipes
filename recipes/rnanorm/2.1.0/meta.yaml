@@ -1,0 +1,52 @@
+{% set name = "rnanorm" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/rnanorm-{{ version }}.tar.gz
+  sha256: 651bce77059548b907a4719615646898b6b51fe6915ba713686d2e6aa42d687f
+
+build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - rnanorm = rnanorm.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8,<3.13
+    - setuptools >=64.0.0
+    - setuptools-scm >=6.4.0
+    - pip
+  run:
+    - python >=3.8,<3.13
+    - click
+    - numpy >=1.0.0
+    - pandas >=1.0.0
+    - scikit-learn >=1.0.0
+    - pandera
+
+test:
+  imports:
+    - rnanorm
+  commands:
+    - pip check
+    - rnanorm --help
+  requires:
+    - pip
+
+about:
+  summary: Common RNA-seq normalization methods
+  license: Apache-2.0
+  license_file: LICENSE
+  home: https://github.com/genialis/RNAnorm
+
+extra:
+  recipe-maintainers:
+    - VinzentRisch

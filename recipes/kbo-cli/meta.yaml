@@ -1,0 +1,49 @@
+{% set name = "kbo-cli" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url:
+    - https://github.com/tmaklin/kbo-cli/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 23a5a71c866f7cf78e4d0a231ff67a1a1f31bfa509366ffa668ec89d87c6b893
+
+build:
+  number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage("kbo-cli", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - kbo --version
+
+about:
+  home: https://docs.rs/kbo
+  license_file:
+    - LICENSE-APACHE
+    - LICENSE-MIT
+    - THIRDPARTY.yml
+  license: 'Dual-licensed under the MIT and Apache 2.0 licenses.'
+  summary: 'Command-line interface for the kbo local aligner'
+  dev_url: https://github.com/tmaklin/kbo-cli
+  doc_url: https://docs.rs/kbo
+  doc_source_url: https://github.com/tmaklin/kbo
+  description: |
+    kbo is an aligner that can do variant calling, reference-based alignment and
+    find sequences of interest in a query, without a separate indexing step or
+    any temporary disk space usage. kbo-cli provides a command-line interface to
+    the call, map, find, and build functions from kbo.
+
+extra:
+  additional-platforms:
+    - linux-aarch64

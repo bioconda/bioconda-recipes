@@ -1,0 +1,45 @@
+{% set name = "yame" %}
+{% set version = "1.37" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhou-lab/YAME/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e1a47395011b699a836d617c977a2da35f030f042ed1e5362b005edce273fffd 
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+    - libcurl
+
+test:
+  commands:
+    - yame fetch -l | grep -q InfiniumAnnotation
+
+about:
+  home: "https://github.com/zhou-lab/YAME"
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "YAME: Yet Another Methylation Extractor."
+  dev_url: "https://github.com/zhou-lab/YAME"
+  doc_url: "https://zhou-lab.github.io/YAME"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Hongxiang2023
+    - zwdzwd

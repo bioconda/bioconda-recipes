@@ -1,30 +1,48 @@
 {% set name = "teloscope" %}
-{% set version = "0.0.6" %}
+{% set version = "0.1.5" %}
+
 package:
   name: {{ name }}
   version: {{ version }}
+
 source:
   url: https://github.com/vgl-hub/teloscope/releases/download/v{{version}}/teloscope.v{{version}}-with_submodules.zip
-  sha256: 1f300bd42c408791bdb7463a37530da2ebe72f64d90e8087cf895a9abc88c8b3
+  sha256: a644271c88a6648d6f27c7db4e92efce6cab97e534de30aef5a4cc21cbf5261c
+
 build:
   number: 1
   run_exports:
-    - {{ pin_subpackage('teloscope', max_pin="x") }}
+    - {{ pin_subpackage('teloscope', max_pin="x.x") }}
+
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
     - openssl
+  run:
+    - python
+    - numpy
+    - pandas
+    - matplotlib-base
+
 test:
   commands:
     - teloscope -h | grep "teloscope"
+    - test -f $PREFIX/bin/scripts/teloscope_report.py
+    - python3 $PREFIX/bin/scripts/teloscope_report.py --help
+
 about:
   home: https://github.com/vgl-hub/teloscope
-  license_familiy: MIT
+  dev_url: https://github.com/vgl-hub/teloscope
+  doc_url: "https://github.com/vgl-hub/teloscope/blob/v{{ version }}/README.md"
+  license_family: MIT
   license: MIT
-  summary: A telomere annotation tools for genome assemblies
+  license_file: LICENSE
+  summary: "A telomere annotation tools for genome assemblies."
+
 extra:
   additional-platforms:
     - linux-aarch64
@@ -32,9 +50,4 @@ extra:
   identifiers:
     - biotools:teloscope
     - usegalaxy-eu:teloscope
-  container:
-    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
-    extended-base: true
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+    - doi:10.1093/bioinformatics/btac460
