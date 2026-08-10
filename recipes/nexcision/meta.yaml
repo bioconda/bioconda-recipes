@@ -1,0 +1,48 @@
+{% set name = "nexcision" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RhysWhite/nexcision/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a03684b573d5450e8753f99d725dc0789f01c3fc4edbebd43bc838c0ac8a7d32
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  run_exports:
+    - {{ pin_subpackage('nexcision', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68,<82
+    - wheel
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - nexcision
+  commands:
+    - nexcise --help
+    - nexcise --version
+
+about:
+  home: https://github.com/RhysWhite/nexcision
+  license: MIT
+  license_file: LICENSE
+  summary: Precise region-based excision of coordinate-labelled rows from NEXUS matrices.
+  description: |
+    NEXCISION is a dependency-free command-line tool for exact and
+    reproducible excision of coordinate-defined genomic regions from
+    transposed NEXUS matrices.
+  dev_url: https://github.com/RhysWhite/nexcision
+
+extra:
+  recipe-maintainers:
+    - RhysWhite
