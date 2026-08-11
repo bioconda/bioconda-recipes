@@ -1,0 +1,44 @@
+{% set name = "local-cd-search" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/local_cd_search-{{ version }}.tar.gz"
+  sha256: aa485c81700b7bd2c187ee0dbaeece87d225780ec62b01cf9927b37ebb02bac9
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - local-cd-search = local_cd_search.main:main
+  run_exports:
+    - {{ pin_subpackage("local-cd-search", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - uv-build >=0.9,<1
+  run:
+    - python >=3.10
+    - click >=8.3
+    - rich >=14.2
+    - rich-click >=1.9
+    - rpsbproc >=0.5,<0.6
+    - blast >=2.16.0,<3
+
+test:
+  commands:
+    - local-cd-search --help
+
+about:
+  home: "https://github.com/apcamargo/local-cd-search"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Protein annotation using local PSSM databases from CDD."
+  dev_url: "https://github.com/apcamargo/local-cd-search"

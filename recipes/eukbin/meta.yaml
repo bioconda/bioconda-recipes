@@ -1,0 +1,77 @@
+{% set name = "eukbin" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/weiwei12456/eukbin/archive/v{{ version }}.tar.gz
+  sha256: 14ac749c36c15116763269632ea2b25afda303a8296f9243e939d03a1e4d0113
+
+build:
+  number: 0
+  noarch: generic
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage('eukbin', max_pin="x.x") }}
+  entry_points:
+    - eukbin = eukbin.__main__:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy >=1.19
+    - pandas >=1.0
+    - scipy >=1.5
+    - scikit-learn >=0.24
+    - biopython >=1.78
+    - pytorch >=1.9
+    - pyyaml
+    - tqdm
+
+test:
+  imports:
+    - eukbin
+    - eukbin.benchmark
+    - eukbin.features
+    - eukbin.model
+    - eukbin.refinement
+    - eukbin.seeds
+  commands:
+    - python -c "import eukbin; print(eukbin.__version__)"
+
+about:
+  home: https://github.com/weiwei12456/eukbin
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: BUSCO-guided binning for eukaryotic metagenomes
+  description: |
+    EukBin is a specialized binning tool for eukaryotic metagenomes that combines
+    repeat-masked tetranucleotide frequency (TNF), multi-sample coverage information,
+    BUSCO marker gene constraints, and deep learning (β-VAE with contrastive loss)
+    with ploidy-aware refinement.
+
+    Key features:
+    - Repeat-masked TNF features to handle repeat-rich eukaryotic genomes
+    - BUSCO-guided constraints for accurate bin estimation
+    - Ploidy-aware refinement (haplotig detection for diploid/polyploid genomes)
+    - Deep learning with β-VAE and contrastive loss
+    - Supports multi-sample binning
+
+    This package includes:
+    - eukbin run: Complete binning pipeline (M1-M6 modules)
+    - eukbin evaluate: Quality assessment for any binning tool
+    - eukbin report: Multi-tool comparison report
+
+  doc_url: https://github.com/weiwei12456/eukbin/blob/main/README.md
+  dev_url: https://github.com/weiwei12456/eukbin
+
+extra:
+  recipe-maintainers:
+    - weiwei12456

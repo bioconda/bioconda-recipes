@@ -1,0 +1,44 @@
+{% set version = "1.2.0" %}
+{% set name = "humanHippocampus2024" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 5cd667093c8b4cbf5b58c74809af3fc4
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-humanhippocampus2024", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: testthat (>= 3.0.0), sessioninfo, rmarkdown, knitr, BiocStyle, ExperimentHubData, AnnotationHubData, RefManageR
+requirements:
+  host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+  run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260207
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Access to SRT and snRNA-seq data from spatial_HPC project
+  description: This is an ExperimentHub Data package that helps to access the spatially-resolved transcriptomics and single-nucleus RNA sequencing data. The datasets are generated from adjacent tissue sections of the anterior human hippocampus across ten adult neurotypical donors. The datasets are based on [spatial_hpc](https://github.com/LieberInstitute/spatial_hpc) project by Lieber Institute for Brain Development (LIBD) researchers and collaborators.
+

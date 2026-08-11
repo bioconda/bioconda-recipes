@@ -1,41 +1,56 @@
 {% set name = "pydmtools" %}
-{% set version = "0.1.1" %}
+{% set version = "0.1.6" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: {{ name }}
   version: {{ version }}
 
-source:
-  url: https://3dgenomics.hzau.edu.cn:10068/tddownload/pydmtools-0.1.1.tar.gz
-  sha256: 5f24ea5d41431509adeed1c834c4efd88c5bb01ec969fb00b30d5f6841de83a9
-
+source: 
+  url: https://pypi.org/packages/source/p/pydmtools/pydmtools-{{ version }}.tar.gz
+  sha256: cd6da42965e6e13a57d681bcddd3b42c94f0bda773b7f4103ecd979c0e83d6ac
+  
 build:
-  number: 2
+  number: 0
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3"
+    - export C_INCLUDE_PATH="$PREFIX/include"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
     - setuptools
+    - numpy
     - curl
     - libcurl
     - zlib
-    - numpy
   run:
     - python
-    - libcurl
-    - zlib
-    - {{ pin_compatible('numpy') }}
+    - numpy
 
 test:
   imports:
     - pydmtools
   commands:
-    - python3 -c "import pydmtools as pydm; assert(pydm.numpy == 1); assert(pydm.remote == 1)"
+    - python -c "import pydmtools as pydm; assert(pydm.numpy == 1); assert(pydm.remote == 1)"
 
 about:
-  home: https://github.com/ZhouQiangwei/pydmtools
+  home: "https://github.com/ZhouQiangwei/pydmtools"
   license: MIT
-  summary: A python extension written in C for quick access to DNA methylation DM files.
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Python extension in C for fast access to DNA methylation DM files."
+  dev_url: "https://github.com/ZhouQiangwei/pydmtools"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
