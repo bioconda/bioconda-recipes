@@ -48,13 +48,14 @@ test:
     - tessera --version
     - tessera --help
     - tessera-model --help
-    # A flag that silently disappears is worse than one that was never there, so the package
-    # test names the ones a pipeline is likely to have been built against.
-    - tessera --help | grep -q -- --organism
-    - tessera --help | grep -q -- --model
-    - tessera --help | grep -q -- --is-panel
-    - tessera --help | grep -q -- --map-polish
-    - tessera-model --help | grep -q -- --marker-density
+    # The flag checks live in run_test.sh, against help text captured to a file.
+    #
+    # They were `tessera --help | grep -q -- --flag` and that is a race: grep -q exits on
+    # the first match and closes the pipe while tessera is still writing, tessera takes
+    # SIGPIPE and exits 141, and under pipefail the pipeline fails. Whether it fails depends
+    # on which flag matches soon enough to kill the writer first, so it passed here and on
+    # ARM and failed on the Linux runner, on --model, with --model plainly present in the
+    # help it had just printed.
   # The functional test lives in run_test.sh, which conda-build picks up automatically from
   # the recipe directory. An assembler that installs but cannot assemble is worth catching
   # here rather than in someone's pipeline.
