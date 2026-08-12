@@ -31,6 +31,4 @@ pipeline <- SingleCellPipeline(
   barcodes_file = bc_allow
 )
 
-pipeline <- run_FLAMES(pipeline)
-
-pipeline
+run_FLAMES(pipeline)
