@@ -6,7 +6,7 @@ MAIN_SRC="${SRC_DIR}/main_src"
 mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 
 # Copy main release contents
-cp -r "$MAIN_SRC"/{*.py,conf,files,validators,pipelines,vrs,csv,phenopackets-to-BFF} \
+cp -r "$MAIN_SRC"/{*.py,conf,files,validators,pipelines,vrs,csv,phenopackets-to-BFF,LICENSE} \
     "$PREFIX/bin/beacon2-ri-tools/"
 
 # Ensure package recognition
