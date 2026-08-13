@@ -1,0 +1,2 @@
+unset RETICULATE_PYTHON_ENV
+echo "RETICULATE_PYTHON_ENV has been unset"
