@@ -1,4 +1,6 @@
 set -e RETICULATE_PYTHON_ENV
 set -e BASILISK_CUSTOM_PYTHON_X_Y_Z
+set -e BASILISK_NO_PYENV
 echo "RETICULATE_PYTHON_ENV has been unset"
 echo "BASILISK_CUSTOM_PYTHON_X_Y_Z has been unset"
+echo "BASILISK_NO_PYENV has been unset"
