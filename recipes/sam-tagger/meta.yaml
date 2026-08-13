@@ -1,0 +1,57 @@
+{% set name = "sam-tagger" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiangyun-fun/{{ name }}/releases/download/v{{ version }}/sam_tagger-{{ version }}.tar.gz
+  sha256: 7ea8bfee83488f40a04caeb9629da985086f120193ae31a779bc5a1f19dacf8e
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - sam-tagger = sam_tagger.__main__:main
+
+requirements:
+  host:
+    - python >=3.13
+    - pip
+    - hatchling
+  run:
+    - python >=3.13
+    - pysam >=0.22
+    - polars >=1.0
+    - cyclopts >=3.0
+    - loguru >=0.7
+    - pydantic >=2.0
+
+test:
+  imports:
+    - sam_tagger
+  commands:
+    - sam-tagger --version
+    - sam-tagger --help
+
+about:
+  home: https://github.com/jiangyun-fun/sam-tagger
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "SAM/BAM tagger and amplicon-sequencing QC statistics generator."
+  description: |
+    sam-tagger adds amplicon-QC tags to SAM/BAM alignments and emits
+    per-reference QC, error-statistics, and pileup Parquet. Four focused
+    subcommands (annotate, error-stats, pileup, qc-summary) with fixed I/O
+    contracts. Reads the minimap2 `cs` tag; per-reference primer/sub-read/NB
+    parameters come from a wide CSV config.
+  dev_url: https://github.com/jiangyun-fun/sam-tagger
+
+extra:
+  recipe-maintainers:
+    - jiangyun-fun
