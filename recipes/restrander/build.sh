@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euxo pipefail
 
+if [[ "${target_platform:-}" == osx-* ]]; then
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 make -j"${CPU_COUNT:-1}" \
     CC="${CXX}" \
     CXX="${CXX}" \
