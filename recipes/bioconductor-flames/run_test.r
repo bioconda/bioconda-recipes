@@ -31,7 +31,10 @@ pipeline <- SingleCellPipeline(
   barcodes_file = bc_allow
 )
 
+# print warnings when they occur
+options(warn=1)
+pipeline <-run_FLAMES(pipeline)
 # try turning all warnings into errors, to get pipeline to properly fail when
 # some steps fail --- otherwise the test will simply always pass
 options(warn=2)
-run_FLAMES(pipeline)
+pipeline
