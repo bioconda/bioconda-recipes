@@ -7,8 +7,10 @@ package:
 
 build:
   number: 0
+  # Cuttlefish's major version tracks the product generation: a
+  # backward-incompatible change bumps the minor version, so pin to x.x.
   run_exports:
-    - {{ pin_subpackage('cuttlefish', max_pin="x") }}
+    - {{ pin_subpackage('cuttlefish', max_pin="x.x") }}
 
 source:
   url: https://github.com/COMBINE-lab/cuttlefish/archive/refs/tags/v{{ version }}.tar.gz
@@ -16,15 +18,10 @@ source:
 
 requirements:
   build:
-    - cmake >=3.14.0
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}  # jemalloc-sys compiles jemalloc from source
+    - {{ stdlib('c') }}
     - make
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
-    - pkg-config
-  host:
-    - jemalloc >=5.1.0
-    - zlib
-    - bzip2
 
 test:
   commands:
@@ -37,17 +34,19 @@ about:
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "Construction of the compacted de Bruijn graph efficiently."
+  summary: "Construction of the (colored) compacted de Bruijn graph efficiently."
   dev_url: "https://github.com/COMBINE-lab/cuttlefish"
-  doc_url: "https://github.com/COMBINE-lab/cuttlefish/blob/v{{ version }}/README.md"
+  doc_url: "https://combine-lab.github.io/cuttlefish/"
 
 extra:
   additional-platforms:
     - osx-arm64
+    - linux-aarch64
   recipe-maintainers:
     - jamshed
     - rob-p
   identifiers:
     - doi:10.1093/bioinformatics/btab309
     - doi:10.1186/s13059-022-02743-6
+    - doi:10.1101/2025.02.02.636161
     - biotools:cuttlefish
