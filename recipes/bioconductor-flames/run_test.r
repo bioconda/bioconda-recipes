@@ -34,7 +34,11 @@ pipeline <- SingleCellPipeline(
 # print warnings when they occur
 options(warn=1)
 pipeline <-run_FLAMES(pipeline)
-# try turning all warnings into errors, to get pipeline to properly fail when
-# some steps fail --- otherwise the test will simply always pass
-options(warn=2)
 pipeline
+# Explicitly throw an error, if any errors were encountered during pipeline
+# execution. During the pipeline, they are caught and turned into warnings,
+# but turning all warnings into errors will also error genuine warnings that
+# occur during the pipeline run. So this seems to be the sanest solution.
+if (length(pipeline@last_error) > 0) {
+    cli::cli_abort("Found errors during run_test.r, please debug before finalizing new package version.")
+}
