@@ -14,10 +14,12 @@ CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 $R CMD INSTALL --build .
 
-# include the activate and deactivate scripts to set the RETICULATE_PYTHON_ENV
+# include the activate and deactivate scripts to set the BASILISK_CUSTOM_PYTHON version
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
-install -m 755 "${RECIPE_DIR}/activate.sh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
-install -m 755 "${RECIPE_DIR}/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
-install -m 755 "${RECIPE_DIR}/activate.fish" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.fish"
-install -m 755 "${RECIPE_DIR}/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.fish"
+install -m 755 "${RECIPE_DIR}/scripts/activate.sh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.sh"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.sh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.sh"
+install -m 755 "${RECIPE_DIR}/scripts/activate.zsh" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.zsh"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.zsh" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.zsh"
+install -m 755 "${RECIPE_DIR}/scripts/activate.fish" "${PREFIX}/etc/conda/activate.d/${PKG_NAME}_activate.fish"
+install -m 755 "${RECIPE_DIR}/scripts/deactivate.fish" "${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}_deactivate.fish"
