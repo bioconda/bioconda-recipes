@@ -18,6 +18,7 @@ pushd MLIPPER
 make clean || true
 make CUDA_HOME="${BUILD_PREFIX}/targets/x86_64-linux" \
      NVCC="${BUILD_PREFIX}/bin/nvcc" \
+     CXX="${CXX}" \
      PLL_INC_DIR="${PREFIX}/include" \
      PLL_LIB_DIR="${PREFIX}/lib" \
      -j"${CPU_COUNT}"
