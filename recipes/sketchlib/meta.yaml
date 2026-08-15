@@ -1,0 +1,36 @@
+{% set name = "sketchlib" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bacpop/sketchlib.rust/archive/v{{ version }}.tar.gz
+  sha256: 7b0052453842c3b193212e3460432835a0b550df2311b3b8028f85abbd562f7e
+
+build:
+  number: 0
+  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage("sketchlib", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - sketchlib -V
+
+about:
+   home: https://github.com/bacpop/sketchlib.rust
+   license: Apache-2.0
+   license_family: APACHE
+   license_file: LICENSE
+   summary:  Fast sequence distance estimates
+
+extra:
+  additional-platforms:
+    - linux-aarch64

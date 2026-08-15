@@ -1,44 +1,40 @@
 {% set name = "pyhmmer" %}
-{% set version = "0.11.1" %}
+{% set version = "0.12.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: f83e9a7d80f31713c52291b5c888dddb98c1e765222e064c40d56e87ad91cc4e
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 86e8d82c065780df78cd6d406f22929d88a6227f59b5226741b107c67a137c3b
 
 build:
   number: 0
-  skip: True  # [py2k or win]
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('pyhmmer', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - cmake >=3.20
     - make
   host:
-    - python {{ python_min }}
+    - python {{ python }}
     - pip
+    - setuptools
     - cython >=3.0
     - scikit-build-core
   run:
-    - python >={{ python_min }}
+    - {{ pin_compatible("python") }}
     - psutil >=6.0,<8.0
 
 test:
-  requires:
-    - python {{ python_min }}
-    - importlib_resources #[py36 or py37 or py38]
-    - pip
   imports:
     - {{ name }}
   commands:
-    - pip check
     - python -m unittest -vv {{ name }}.tests
 
 about:

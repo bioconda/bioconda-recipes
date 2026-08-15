@@ -1,18 +1,22 @@
 {% set name = "pftools" %}
-{% set version = "3.2.12" %}
-{% set sha256 = "1de33d6444015942afa690d54a103ad5a3d68f416fad63f247c12fa3f71a550c" %}
+{% set version = "3.2.13" %}
+{% set sha256 = "8ce94eee80e2801fa783574101efe2da8e094cd2353acb6655de9811237d6b95" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/sib-swiss/pftools3/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 5
+  number: 0
+  # error: unknown type name 'cpu_set_t'
+  # also requires SSE4; so no aarch64/arm64 builds
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -20,6 +24,7 @@ requirements:
     - {{ compiler('fortran') }}
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
   host:
     - r-base
     - perl
@@ -29,7 +34,6 @@ requirements:
   run:
     - r-base
     - perl
-    - zlib
     - pcre2
     - perl-file-slurp
 
@@ -57,13 +61,17 @@ test:
     # compare_2_profiles.pl and split_profile_file.pl cannot be tested
 
 about:
-  home: https://web.expasy.org/pftools/
-  license: GPLv2
+  home: "https://github.com/sib-swiss/pftools3"
+  license: "GPL-2.0-or-later"
   license_family: GPL
   license_file: LICENSE
-  summary: 'A generalized profile syntax for biomolecular sequence motifs and its function in automatic sequence interpretation.'
-  dev_url: https://github.com/sib-swiss/pftools3
+  summary: "A generalized profile syntax for biomolecular sequence motifs and its function in automatic sequence interpretation."
+  dev_url: "https://github.com/sib-swiss/pftools3"
+  doc_url: "https://web.expasy.org/pftools"
 
 extra:
+  #additional-platforms:
+    #- linux-aarch64
+    #- osx-arm64
   container:
     extended-base: True

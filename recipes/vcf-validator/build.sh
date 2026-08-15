@@ -2,8 +2,8 @@
 
 set -x
 
-# Set c++ to version 11
-export CXXFLAGS="-std=c++11 ${CXXFLAGS}"
+# Set c++ to version 14
+export CXXFLAGS="-std=c++14 ${CXXFLAGS}"
 
 case $(uname -m) in 
   aarch64 | arm64)
@@ -15,7 +15,7 @@ esac
 
 mkdir build || { echo "Failed to create build directory" >&2; exit 1; }
 cd build || { echo "Failed to go into build directory" >&2; exit 1; }
-cmake -G "Unix Makefiles" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" ..
+cmake -G "Unix Makefiles" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" -DSTATIC_BUILD=OFF ..
 make -j"${CPU_COUNT}" || { echo "Build failed" >&2; exit 1; }
 cd .. || { echo "Failed to return to parent directory" >&2; exit 1; }
 if ! ./build/bin/test_validation_suite; then

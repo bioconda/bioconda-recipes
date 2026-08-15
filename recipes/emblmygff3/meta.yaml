@@ -1,44 +1,53 @@
 {% set name = "EMBLmyGFF3" %}
-{% set version = "2.3" %}
-{% set sha256 = "bdb7b2e60e388000d881ad839db68e7cf87e17e5f74a6a251f50f4262b929bd8" %}
+{% set version = "2.4" %}
+{% set sha256 = "1a559f5c870959b40d7ee1a9752c7495ef52d4753f42e9a495fb816c734629a9" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/NBISweden/EMBLmyGFF3/archive/V{{ version }}.tar.gz
+  url: https://github.com/NBISweden/EMBLmyGFF3/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
+  number: 1
   noarch: python
   entry_points:
     - EMBLmyGFF3 = EMBLmyGFF3:main
-  script: python -m pip install --no-deps --ignore-installed .
+    - EMBLmyGFF3-augustus-example = examples.augustus_example:main
+    - EMBLmyGFF3-maker-example = examples.maker_example:main
+    - EMBLmyGFF3-prokka-example = examples.prokka_example:main
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage('emblmygff3', max_pin="x") }}
-  number: 0
-
 
 requirements:
   host:
-    - python >=3.9.0
+    - python >=3.9
+    - pip
+    - setuptools
   run:
-    - python >=3.9.0
+    - python >=3.9
     - biopython >=1.78
-    - bcbio-gff >=0.6.4
+    - bcbio-gff >=0.7.0
     - numpy >=1.22
 
 test:
   commands:
-    - "EMBLmyGFF3-augustus-example"
-    - "EMBLmyGFF3-maker-example"
-    - "EMBLmyGFF3-prokka-example"
+    - EMBLmyGFF3-augustus-example
+    - EMBLmyGFF3-maker-example
+    - EMBLmyGFF3-prokka-example
+    - EMBLmyGFF3 --expose_translations
 
 about:
-  home: https://github.com/NBISweden/EMBLmyGFF3
-  license: GPLv3
-  license_family: GPL
+  home: "https://github.com/NBISweden/EMBLmyGFF3"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: An efficient way to convert gff3 annotation files into EMBL format ready to submit.
-  dev_url: https://github.com/NBISweden/EMBLmyGFF3
+  summary: "An efficient way to convert gff3 annotation files into EMBL format ready to submit."
+  dev_url: "https://github.com/NBISweden/EMBLmyGFF3"
+  doc_url: "https://github.com/NBISweden/EMBLmyGFF3/blob/v{{ version }}/README.md"

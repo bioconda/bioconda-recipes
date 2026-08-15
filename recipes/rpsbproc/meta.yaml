@@ -1,31 +1,35 @@
 {% set name = "rpsbproc" %}
-{% set version = "0.5.0" %}
-{% set sha256 = "8b29f7e7d0a0654d10943e362557ed2d8df9a16218a4c8441c4dea4e7dc9154f" %}
+{% set version = "0.5.1" %}
+{% set sha256 = "a20f4088e60113d89377927d3037fad29e1723813f2a58b56d916d182fbf6086" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/RpsbProc-src.tar.gz
+  - url: https://ftp.ncbi.nih.gov/pub/mmdb/cdd/rpsbproc/20250513_112041/RpsbProc-src.tar.gz
     sha256: {{ sha256 }}
     folder: rpsbproc
     patches:
+      - literal_constexpr.patch
+      - no_librt.patch # [osx]
       - normbase.patch
 
     # Get the last supported BLAST version (contains a subset of the NCBI-CXX toolchain),
     # required for building.
-  - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.15.0/ncbi-blast-2.15.0+-src.tar.gz
-    sha256: 6918c370524c8d44e028bf491e8f245a895e07c66c77b261ce3b38d6058216e0
+  - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.17.0/ncbi-blast-2.17.0+-src.tar.gz
+    sha256: 502057a88e9990e34e62758be21ea474cc0ad68d6a63a2e37b2372af1e5ea147
     folder: ncbi_cxx
     patches:
+      - add_rpsbproc.patch
       - configurellvm.patch
       - phonehome.patch
-      - update_configsub.patch
       - project_tree_builder.patch
+      - update_configsub.patch
+      - vdb.patch
 
 build:
-  number: 3
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -85,3 +89,5 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  recipe-maintainers:
+    - ebete

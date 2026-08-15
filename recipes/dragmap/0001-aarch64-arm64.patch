@@ -1,0 +1,943 @@
+diff --git a/config.mk b/config.mk
+index 942f00c..09046b1 100755
+--- a/config.mk
++++ b/config.mk
+@@ -16,6 +16,7 @@ OS?=$(or \
+ ifndef OS
+ $(error Unsupported Operating System: $(UNAME_STRING))
+ endif
++ARCH_STRING:=$(shell uname -p)
+ 
+ ############################################################
+ ##
+@@ -166,6 +167,7 @@ CPPFLAGS += -I $(BOOST_INCLUDEDIR)
+ endif
+ #CPPFLAGS += -I $(BAMTOOLS_INCLUDEDIR)
+ CPPFLAGS += -I $(DRAGEN_THIRDPARTY)
++CPPFLAGS += -I $(DRAGEN_THIRDPARTY)/sswlib/ssw
+ CPPFLAGS += -I $(DRAGEN_OS_SRC_DIR)/include
+ CPPFLAGS += -I $(DRAGEN_SRC_DIR) -I $(DRAGEN_SRC_DIR)/common/public -I $(DRAGEN_SRC_DIR)/host/dragen_api/sampling
+ CPPFLAGS += -I $(DRAGEN_SRC_DIR)/host/infra/public -I $(DRAGEN_SRC_DIR)/host/metrics/public
+@@ -179,7 +181,14 @@ LDFLAGS += -L $(BOOST_LIBRARYDIR)
+ endif
+ LDFLAGS += $(BOOST_LIBRARIES:%=-lboost_%)
+ 
+-CPPFLAGS += -msse4.2 -mavx2 
++ifeq (x86_64,$(ARCH_STRING))
++CPPFLAGS += -D_TARGET_X86_ -msse4.2 -mavx2
++endif
++
++ifeq (aarch64,$(ARCH_STRING))
++CPPFLAGS += -D_TARGET_ARM_ -march=armv8.2-a+simd -DSSE2NEON_SUPPRESS_WARNINGS
++endif
++
+ ifdef DEBUG
+ CPPFLAGS += -O0 -ggdb3 -femit-class-debug-always -fno-omit-frame-pointer
+ ifeq ($(DEBUG),glibc)
+diff --git a/src/include/align/Aligner.hpp b/src/include/align/Aligner.hpp
+index efca0c9..63cf18c 100644
+--- a/src/include/align/Aligner.hpp
++++ b/src/include/align/Aligner.hpp
+@@ -141,8 +141,8 @@ private:
+   const map::Mapper         mapper_;
+   const SimilarityScores    similarity_;
+   const ScoreType           gapInit_;
+-  const ScoreType           gapExtend_;
+-  const ScoreType           unclipScore_;
++  // const ScoreType           gapExtend_;
++  // const ScoreType           unclipScore_;
+   const ScoreType           alnMinScore_;
+   const int                 aln_cfg_mapq_min_len_;
+   const int                 aln_cfg_unpaired_pen_;
+diff --git a/src/include/align/Alignment.hpp b/src/include/align/Alignment.hpp
+index 3c84709..1dee1e8 100644
+--- a/src/include/align/Alignment.hpp
++++ b/src/include/align/Alignment.hpp
+@@ -55,9 +55,9 @@ struct AlignmentHeader {
+   MapqType  mapq_              = -1;
+   FlagType  flags_             = -1;
+   int       position_          = -1;
+-  short     reference_         = -1;
++  int       reference_         = -1;
+   int       nextPosition_      = -1;
+-  short     nextReference_     = -1;
++  int       nextReference_     = -1;
+   int       templateLength_    = -1;
+   int32_t   mateCoordinate_    = -1;
+   bool      smithWatermanDone_ = false;
+@@ -88,12 +88,12 @@ struct AlignmentHeader {
+   bool     isSupplementaryAlignment() const { return flags_ & SUPPLEMENTARY_ALIGNMENT; }
+   int      getPosition() const { return position_; }
+   void     setPosition(const int position) { position_ = position; }
+-  short    getReference() const { return reference_; }
+-  void     setReference(unsigned short reference) { reference_ = reference; }
++  int      getReference() const { return reference_; }
++  void     setReference(unsigned int reference) { reference_ = reference; }
+   int      getNextPosition() const { return nextPosition_; }
+   void     setNextPosition(const int nextPosition) { nextPosition_ = nextPosition; }
+-  short    getNextReference() const { return nextReference_; }
+-  void     setNextReference(unsigned short nextReference) { nextReference_ = nextReference; }
++  int      getNextReference() const { return nextReference_; }
++  void     setNextReference(unsigned int nextReference) { nextReference_ = nextReference; }
+   int      getTemplateLength() const { return templateLength_; }
+   void     setTemplateLength(const int templateLength) { templateLength_ = templateLength; }
+   int32_t  getMateCoordinate() const { return mateCoordinate_; }
+@@ -169,6 +169,19 @@ public:
+     return ret;
+   }
+ 
++  const map::SeedChain& chain() const
++  {
++    assert(chain_);
++    return *chain_;
++  }
++  void setChain(const map::SeedChain& c)
++  {
++    assert(!chain_ || &c == chain_);
++    chain_ = &c;
++  }
++  bool hasOnlyRandomSamples() const { return isUnmapped() || chain().hasOnlyRandomSamples(); }
++  bool isExtra() const { return isUnmapped() || chain().isExtra(); }
++
+   uint32_t setCigarOperations(const std::string& operations, int softClipStart = 0)
+   {
+     auto ret = cigar_.setOperationSequence(operations, softClipStart);
+@@ -246,8 +259,9 @@ public:
+   short getNm() const { return getMismatchCount(); }
+ 
+ private:
+-  Cigar            cigar_;
+-  const Alignment* sa_ = 0;
++  const map::SeedChain* chain_ = 0;
++  Cigar                 cigar_;
++  const Alignment*      sa_ = 0;
+   /// lengths clipped at the beginning and at the end of the sequence
+   //int clip_[2];
+   //std::vector<unsigned char> optional_;
+@@ -300,7 +314,7 @@ private:
+ 
+ struct SerializedSaTag {
+   struct Header {
+-    short    reference_ = 0;
++    int      reference_ = 0;
+     int      position_  = 0;
+     bool     reverse_   = 0;
+     MapqType mapq_      = 0;
+@@ -327,7 +341,7 @@ struct SerializedSaTag {
+ 
+   std::size_t getByteSize() const { return sizeof(*this) + cigar_.getByteSize() - sizeof(cigar_); }
+ 
+-  short                  getReference() const { return header_.reference_; }
++  int                    getReference() const { return header_.reference_; }
+   int                    getPosition() const { return header_.position_; }
+   bool                   reverse() const { return header_.reverse_; }
+   MapqType               getMapq() const { return header_.mapq_; }
+@@ -449,6 +463,15 @@ public:
+     return (nullptr != seedChains_[0]) && (nullptr != seedChains_[1]) && seedChains_[0]->isPerfect() &&
+            seedChains_[1]->isPerfect();
+   }
++  bool hasOnlyRandomSamples() const
++  {
++    return (at(0).isUnmapped() || at(0).hasOnlyRandomSamples()) &&
++           (at(1).isUnmapped() || at(1).hasOnlyRandomSamples());
++  }
++  bool isExtra() const
++  {
++    return (at(0).isUnmapped() || at(0).isExtra()) && (at(1).isUnmapped() || at(1).isExtra());
++  }
+   bool                 isFiltered() const { return at(0).isFiltered() || at(1).isFiltered(); }
+   friend std::ostream& operator<<(std::ostream& os, const AlignmentPair& p)
+   {
+diff --git a/src/include/align/AlignmentRescue.hpp b/src/include/align/AlignmentRescue.hpp
+index e560e38..cf918b0 100644
+--- a/src/include/align/AlignmentRescue.hpp
++++ b/src/include/align/AlignmentRescue.hpp
+@@ -15,7 +15,12 @@
+ #ifndef ALIGN_ALIGNMENT_RESCUE_HPP
+ #define ALIGN_ALIGNMENT_RESCUE_HPP
+ 
++#ifdef __SSE2__
+ #include <emmintrin.h>
++#endif
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#endif
+ #include <array>
+ #include <deque>
+ #include "align/Alignment.hpp"
+diff --git a/src/include/align/PairBuilder.hpp b/src/include/align/PairBuilder.hpp
+index 98c0594..84b3a00 100644
+--- a/src/include/align/PairBuilder.hpp
++++ b/src/include/align/PairBuilder.hpp
+@@ -45,6 +45,7 @@ class PairBuilder {
+   const int               aln_cfg_sec_phred_delta_;
+   const bool              aln_cfg_sec_aligns_hard_;
+   const int               aln_cfg_mapq_min_len_;
++  const int               aln_cfg_sample_mapq0_;
+ 
+   mutable std::vector<int> reported_;
+ 
+@@ -63,7 +64,8 @@ public:
+       const int               aln_cfg_sec_score_delta,
+       const int               aln_cfg_sec_phred_delta,
+       const bool              aln_cfg_sec_aligns_hard,
+-      const int               aln_cfg_mapq_min_len)
++      const int               aln_cfg_mapq_min_len,
++      const int               aln_cfg_sample_mapq0)
+     : similarity_(similarity),
+       alnMinScore_(alnMinScore),
+       aln_cfg_unpaired_pen_(aln_cfg_unpaired_pen),
+@@ -72,7 +74,8 @@ public:
+       aln_cfg_sec_score_delta_(aln_cfg_sec_score_delta),
+       aln_cfg_sec_phred_delta_(aln_cfg_sec_phred_delta),
+       aln_cfg_sec_aligns_hard_(aln_cfg_sec_aligns_hard),
+-      aln_cfg_mapq_min_len_(aln_cfg_mapq_min_len)
++      aln_cfg_mapq_min_len_(aln_cfg_mapq_min_len),
++      aln_cfg_sample_mapq0_(aln_cfg_sample_mapq0)
+   {
+   }
+ 
+diff --git a/src/include/align/SinglePicker.hpp b/src/include/align/SinglePicker.hpp
+index 2dd040c..b403cc1 100644
+--- a/src/include/align/SinglePicker.hpp
++++ b/src/include/align/SinglePicker.hpp
+@@ -42,6 +42,7 @@ class SinglePicker {
+   const int               aln_cfg_sec_phred_delta_;
+   const bool              aln_cfg_sec_aligns_hard_;
+   const int               aln_cfg_mapq_min_len_;
++  const int               aln_cfg_sample_mapq0_;
+ 
+ public:
+   typedef sequences::Read   Read;
+@@ -56,7 +57,8 @@ public:
+       const int               aln_cfg_sec_score_delta,
+       const int               aln_cfg_sec_phred_delta,
+       const bool              aln_cfg_sec_aligns_hard,
+-      const int               aln_cfg_mapq_min_len)
++      const int               aln_cfg_mapq_min_len,
++      const int               aln_cfg_sample_mapq0)
+     : similarity_(similarity),
+       alnMinScore_(alnMinScore),
+       suppMinScoreAdj_(suppMinScoreAdj),
+@@ -64,7 +66,8 @@ public:
+       aln_cfg_sec_score_delta_(aln_cfg_sec_score_delta),
+       aln_cfg_sec_phred_delta_(aln_cfg_sec_phred_delta),
+       aln_cfg_sec_aligns_hard_(aln_cfg_sec_aligns_hard),
+-      aln_cfg_mapq_min_len_(aln_cfg_mapq_min_len)
++      aln_cfg_mapq_min_len_(aln_cfg_mapq_min_len),
++      aln_cfg_sample_mapq0_(aln_cfg_sample_mapq0)
+   {
+   }
+ 
+diff --git a/src/include/bam/Bam.hpp b/src/include/bam/Bam.hpp
+index c5b2f42..74b2255 100644
+--- a/src/include/bam/Bam.hpp
++++ b/src/include/bam/Bam.hpp
+@@ -13,6 +13,7 @@
+  **/
+ #pragma once
+ 
++#include <assert.h>
+ #include <cstdint>
+ 
+ namespace dragenos {
+@@ -92,10 +93,14 @@ public:
+   const std::size_t readLength() const { return h_->l_seq; }
+ 
+   const char* nameBegin() const { return h_->read_name; }
+-  const char* nameEnd() const { return nameBegin() + h_->l_read_name - 1; }
++  const char* nameEnd() const { return nameBegin() + h_->l_read_name; }
+   const Name  getName(const char qnameSuffixDelim) const
+   {
+-    return Name(nameBegin(), std::find(nameBegin(), nameEnd(), qnameSuffixDelim));
++    assert(nameBegin() != nameEnd());  // unexpected empty name
++    const char* end = nameEnd() - 1;
++    assert(!*end);  // name includes 0 terminator according to specs
++    Name ret(nameBegin(), std::find(nameBegin(), end, qnameSuffixDelim));
++    return ret;
+   }
+ 
+   const char* cigarBegin() const { return nameEnd(); }
+diff --git a/src/include/io/Bam2ReadTransformer.hpp b/src/include/io/Bam2ReadTransformer.hpp
+index 46031d4..5297ef3 100644
+--- a/src/include/io/Bam2ReadTransformer.hpp
++++ b/src/include/io/Bam2ReadTransformer.hpp
+@@ -45,7 +45,7 @@ public:
+     const auto name    = bra.getName(qnameSuffixDelim_);
+     const auto bases   = bra.getBases();
+     const auto qscores = bra.getQscores();
+-    tmpName_.assign(name.first, name.second - 1);
++    tmpName_.assign(name.first, name.second);
+     tmpBases_.clear();
+     if (bra.reverse()) {
+       for (auto it = bases.first; bases.second != it; ++it) {
+diff --git a/src/include/map/ChainBuilder.hpp b/src/include/map/ChainBuilder.hpp
+index 722bf21..c1a1326 100644
+--- a/src/include/map/ChainBuilder.hpp
++++ b/src/include/map/ChainBuilder.hpp
+@@ -77,7 +77,7 @@ private:
+   size_t                 seedChainCount_;
+   double                 chainFilterRatio_    = 2.0;
+   double                 chainFilterConstant_ = 0.0;
+-  int                    numRandomSampleHits_ = 0;
++  // int                    numRandomSampleHits_ = 0;
+ };
+ 
+ }  // namespace map
+diff --git a/src/include/map/SeedChain.hpp b/src/include/map/SeedChain.hpp
+index 6e0f361..f1c01fb 100644
+--- a/src/include/map/SeedChain.hpp
++++ b/src/include/map/SeedChain.hpp
+@@ -81,6 +81,7 @@ public:
+   void setReverseComplement(bool reverseComplement) { reverseComplement_ = reverseComplement; }
+   bool isReverseComplement() const { return reverseComplement_; }
+   bool hasOnlyRandomSamples() const { return randomSamplesOnly_; }
++  bool setRandomSamplesOnly(bool randomSamplesOnly) { return randomSamplesOnly_ = randomSamplesOnly; }
+   /**
+    ** \brief check if the chain would accept a seed mapping to the reference with that position and
+    *orientation
+diff --git a/src/include/map/SeedPosition.hpp b/src/include/map/SeedPosition.hpp
+index 30a7d47..c05af16 100644
+--- a/src/include/map/SeedPosition.hpp
++++ b/src/include/map/SeedPosition.hpp
+@@ -16,6 +16,7 @@
+ #define MAP_SEED_POSITION_HPP
+ 
+ #include <ostream>
++#include <cstdint>
+ 
+ #include "sequences/Seed.hpp"
+ 
+diff --git a/src/include/options/DragenOsOptions.hpp b/src/include/options/DragenOsOptions.hpp
+index 6ca832b..60e0e11 100644
+--- a/src/include/options/DragenOsOptions.hpp
++++ b/src/include/options/DragenOsOptions.hpp
+@@ -83,6 +83,7 @@ public:
+   uint32_t alignerMapqMax_     = 60;  // Aligner.mapq-max
+   uint32_t alignerUnpairedPen_ = 80;  // Aligner.unpaired-pen
+   int      alignerXsPairPen_   = 25;  // Aligner.xs-pair-penalty
++  int      alignerSampleMapq0_ = 1;   // Aligner.sample-map0
+ 
+   int  alignerSecAligns_     = 0;      // Aligner.sec-aligns
+   int  alignerSecScoreDelta_ = 0;      // Aligner.sec-score-delta
+diff --git a/src/include/sequences/Read.hpp b/src/include/sequences/Read.hpp
+index 460c1cb..8a7add6 100644
+--- a/src/include/sequences/Read.hpp
++++ b/src/include/sequences/Read.hpp
+@@ -15,6 +15,7 @@
+ #ifndef SEQUENCES_READ_HPP
+ #define SEQUENCES_READ_HPP
+ 
++#include <cstdint>
+ #include <iostream>
+ #include <string>
+ #include <vector>
+diff --git a/src/include/sequences/Seed.hpp b/src/include/sequences/Seed.hpp
+index a242153..dd4d23b 100644
+--- a/src/include/sequences/Seed.hpp
++++ b/src/include/sequences/Seed.hpp
+@@ -16,6 +16,7 @@
+ #define SEQUENCES_SEED_HPP
+ 
+ #include <ostream>
++#include <cstdint>
+ #include <vector>
+ 
+ #include "sequences/Read.hpp"
+diff --git a/src/lib/align/Aligner.cpp b/src/lib/align/Aligner.cpp
+index 6d1b4ca..37185ef 100644
+--- a/src/lib/align/Aligner.cpp
++++ b/src/lib/align/Aligner.cpp
+@@ -56,8 +56,8 @@ Aligner::Aligner(
+     mapper_(&hashtable),
+     similarity_(similarity),
+     gapInit_(gapInit),
+-    gapExtend_(gapExtend),
+-    unclipScore_(unclipScore),
++    // gapExtend_(gapExtend),
++    // unclipScore_(unclipScore),
+     alnMinScore_(alnMinScore),
+     aln_cfg_mapq_min_len_(aln_cfg_mapq_min_len),
+     aln_cfg_unpaired_pen_(aln_cfg_unpaired_pen),
+@@ -144,6 +144,7 @@ void Aligner::updateIneligibility(
+ 
+ void Aligner::generateUngappedAlignment(const Read& read, map::SeedChain& seedChain, Alignment& alignment)
+ {
++  alignment.setChain(seedChain);
+   FlagType flags = !read.getPosition() ? Alignment::FIRST_IN_TEMPLATE : Alignment::LAST_IN_TEMPLATE;
+   flags |= seedChain.isReverseComplement() ? Alignment::REVERSE_COMPLEMENT : Alignment::NONE;
+   flags |= seedChain.isFiltered() ? Alignment::UNMAPPED : Alignment::NONE;
+@@ -287,7 +288,7 @@ int Aligner::initializeUngappedAlignmentScores(
+   int malus = 0;
+ 
+   Database databaseBestLastToSeqLeft;
+-  size_t bestToLastRefStart = referenceOffset + bestLast + 1;
++  size_t   bestToLastRefStart = referenceOffset + bestLast + 1;
+   databaseBestLastToSeqLeft.reserve(seqLeft + 1);
+   refSeq_.getBases(bestToLastRefStart, bestToLastRefStart + seqLeft, databaseBestLastToSeqLeft);
+ 
+@@ -295,7 +296,7 @@ int Aligner::initializeUngappedAlignmentScores(
+   databaseBestLastToSeqLeft.reserve(seqLeft - bestLast + 1);
+   refSeq_.getBases(referenceOffset + bestLast + 1, referenceOffset + bestLast + 1 + seqLeft, databaseBestLastToSeqLeft);
+   */
+-  
++
+   for (int i = bestLast + 1; i < seqLeft; ++i) {
+     const auto          readBase      = readBases[i];
+     const unsigned char referenceBase = databaseBestLastToSeqLeft[i - (bestLast + 1)];
+@@ -492,6 +493,8 @@ bool Aligner::rescuePair(
+             rescued,
+             anchoredIdx)) {
+       chainBuilders_[rescuedIdx].addSeedChain(rescuedSeedChain);
++      rescued.setChain(chainBuilders_[rescuedIdx].back());
++
+       unpairedAlignments_[rescuedIdx].append(rescued);
+       makePair(
+           insertSizeParameters,
+diff --git a/src/lib/align/AlignmentGenerator.cpp b/src/lib/align/AlignmentGenerator.cpp
+index f6d1e9b..3460591 100644
+--- a/src/lib/align/AlignmentGenerator.cpp
++++ b/src/lib/align/AlignmentGenerator.cpp
+@@ -141,7 +141,7 @@ bool AlignmentGenerator::generateAlignment(
+       1,
+       (seedChain.isReverseComplement() ? (read.getLength() - seedChain.lastReadBase() - 1)
+                                        : seedChain.firstReadBase()));  //10;//1;
+-  static constexpr size_t forcedHorizontalMotion = smithWaterman_.width;
++  static const size_t forcedHorizontalMotion = smithWaterman_.width;
+   // initialize the query from the base and the orientation of the seedChain
+   const auto& query = read.getBases();
+   int         move  = 0;
+diff --git a/src/lib/align/AlignmentRescue.cpp b/src/lib/align/AlignmentRescue.cpp
+index 450e710..1ded7b3 100644
+--- a/src/lib/align/AlignmentRescue.cpp
++++ b/src/lib/align/AlignmentRescue.cpp
+@@ -12,7 +12,9 @@
+  **
+  **/
+ 
++#ifdef __SSE2__
+ #include <emmintrin.h>
++#endif
+ #include <boost/assert.hpp>
+ #include <iomanip>
+ 
+@@ -257,6 +259,8 @@ bool AlignmentRescue::scan(
+         rescuedChain.addSeedPosition(map::SeedPosition(seed, referencePosition, 0), false);
+       }
+       rescuedChain.setPerfect(not conflict);
++      rescuedChain.setExtra(anchoredChain.isExtra());
++      rescuedChain.setRandomSamplesOnly(anchoredChain.hasOnlyRandomSamples());
+       //if (log) std::cerr << "scanning... succeeded" << std::endl;
+       DRAGEN_RESCUE_LOG << "RESCUE: "
+                         << "first_seed_pos=" << rescuedChain.firstReadBase()
+diff --git a/src/lib/align/PairBuilder.cpp b/src/lib/align/PairBuilder.cpp
+index 6b60ad9..a2d6522 100644
+--- a/src/lib/align/PairBuilder.cpp
++++ b/src/lib/align/PairBuilder.cpp
+@@ -345,8 +345,12 @@ void PairBuilder::updateEndMapq(
+ 
+     const MapqType mapq_prod_pen = pe_mapq - (sub_mapq_pen_v >> 7);
+ 
+-    const MapqType mapq =
+-        (INVALID_SCORE != xs_score_diff) ? std::min(xs_heur_mapq, mapq_prod_pen) : mapq_prod_pen;
++    const bool mapq0 = (aln_cfg_sample_mapq0_ >= 1 && best->hasOnlyRandomSamples()) ||
++                       (aln_cfg_sample_mapq0_ >= 2 && best->isExtra());
++    const MapqType mapq = mapq0 ? 0
++                                : (INVALID_SCORE != xs_score_diff)
++                                      ? std::min(std::max(0, xs_heur_mapq), mapq_prod_pen)
++                                      : mapq_prod_pen;
+ 
+ #ifdef TRACE_SCORING
+     std::cerr << "[SCORING]\t"
+diff --git a/src/lib/align/SinglePicker.cpp b/src/lib/align/SinglePicker.cpp
+index 81d623c..48576c5 100644
+--- a/src/lib/align/SinglePicker.cpp
++++ b/src/lib/align/SinglePicker.cpp
+@@ -113,7 +113,11 @@ void SinglePicker::updateMapq(const int readLength, Alignments& alignments, Alig
+             << "r" << 0 << " a2m_mapq=" << a2m_mapq << " sub_count=" << sub_count
+             << " sub_count_log2=" << sub_count_log2 << " sub_mapq_pen_v=" << sub_mapq_pen_v << std::endl;
+ #endif  // TRACE_SCORING
+-  best->setMapq(a2m_mapq - (sub_mapq_pen_v >> 7));
++  const bool mapq0 = (aln_cfg_sample_mapq0_ >= 1 && best->hasOnlyRandomSamples()) ||
++                     (aln_cfg_sample_mapq0_ >= 2 && best->isExtra());
++  const MapqType mapq = mapq0 ? 0 : a2m_mapq - (sub_mapq_pen_v >> 7);
++
++  best->setMapq(mapq);
+   const ScoreType xs = secondBestScore >= alnMinScore_ ? secondBestScore : INVALID_SCORE;
+   best->setXs(xs);
+ }
+diff --git a/src/lib/align/SmithWaterman.cpp b/src/lib/align/SmithWaterman.cpp
+index d64bf83..e749c56 100644
+--- a/src/lib/align/SmithWaterman.cpp
++++ b/src/lib/align/SmithWaterman.cpp
+@@ -58,7 +58,7 @@ void SmithWatermanT<C, T, WIDTH, ALIGN, STEERING_DELAY>::buildWavefronts(
+ 
+   // dragen thing...
+   setDatabaseSize(std::min(getDatabaseOffset() + 1 + 2 * width + 1, getDatabaseSize()));
+-  for (unsigned i = 0; (getDatabaseOffset() < getDatabaseSize() - 1); ++i) {
++  while (getDatabaseOffset() < getDatabaseSize() - 1) {
+     moveRight();
+   }
+ 
+diff --git a/src/lib/align/tests/integration/AlignerGtest.cpp b/src/lib/align/tests/integration/AlignerGtest.cpp
+index 24a5f27..a0825ed 100644
+--- a/src/lib/align/tests/integration/AlignerGtest.cpp
++++ b/src/lib/align/tests/integration/AlignerGtest.cpp
+@@ -89,7 +89,7 @@ TEST(Aligner, updateMapqSingleEnded)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::SinglePicker               picker(similarityScores, 19, 8, 0, 0, 0, false, 50);
++  const align::SinglePicker               picker(similarityScores, 19, 8, 0, 0, 0, false, 50, 0);
+ 
+   const unsigned char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTC";
+@@ -137,7 +137,7 @@ TEST(Aligner, updateMapqSingleEnded1XRepeat)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::SinglePicker               picker(similarityScores, 19, 8, 0, 0, 0, false, 50);
++  const align::SinglePicker               picker(similarityScores, 19, 8, 0, 0, 0, false, 50, 0);
+ 
+   const unsigned char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTC";
+diff --git a/src/lib/align/tests/integration/PairBuilderGtest.cpp b/src/lib/align/tests/integration/PairBuilderGtest.cpp
+index ab7557d..0b0c8ee 100644
+--- a/src/lib/align/tests/integration/PairBuilderGtest.cpp
++++ b/src/lib/align/tests/integration/PairBuilderGtest.cpp
+@@ -44,7 +44,7 @@ TEST(PairBuilder, updateMapq)
+   const short                             match    = 1;
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+-  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50);
++  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50, 0);
+ 
+   const unsigned char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
+@@ -135,7 +135,7 @@ TEST(PairBuilder, pickBest1)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50);
++  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50, 0);
+ 
+   char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
+@@ -232,7 +232,7 @@ TEST(PairBuilder, pickBest2)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50);
++  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50, 0);
+ 
+   char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
+@@ -338,7 +338,7 @@ TEST(PairBuilder, pickBest3)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50);
++  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50, 0);
+ 
+   char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
+@@ -444,7 +444,7 @@ TEST(PairBuilder, pickBest4)
+   const short                             mismatch = -1;
+   const dragenos::align::SimilarityScores similarityScores(match, mismatch);
+   const ReferenceDirDummy                 referenceDir;
+-  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50);
++  const align::PairBuilder                pairBuilder(similarityScores, 19, 80, 25, 0, 0, 0, false, 50, 0);
+ 
+   char reference[] =
+       "TCCATCGAGATGGACGCCGTTGGCGCTCTCCGTCTTTCTCCATTGCGTCGTGGCCTTGCTATTGACTCTACTGTAGACATTTTTACTTTTTATGTCCCTCTTATG";
+diff --git a/src/lib/reference/ExtendTableInterval.cpp b/src/lib/reference/ExtendTableInterval.cpp
+index f6bd36c..eb53ed1 100644
+--- a/src/lib/reference/ExtendTableInterval.cpp
++++ b/src/lib/reference/ExtendTableInterval.cpp
+@@ -30,11 +30,11 @@ ExtendTableInterval::ExtendTableInterval(I begin, I end)
+ }
+ 
+ // explicit instantiation for vectors and pointers
+-template ExtendTableInterval::ExtendTableInterval<const HashRecord*>(
++template ExtendTableInterval::ExtendTableInterval(
+     const HashRecord* begin, const HashRecord* end);
+-template ExtendTableInterval::ExtendTableInterval<std::vector<HashRecord>::const_iterator>(
++template ExtendTableInterval::ExtendTableInterval(
+     std::vector<HashRecord>::const_iterator begin, std::vector<HashRecord>::const_iterator end);
+-template ExtendTableInterval::ExtendTableInterval<std::vector<HashRecord>::iterator>(
++template ExtendTableInterval::ExtendTableInterval(
+     std::vector<HashRecord>::iterator begin, std::vector<HashRecord>::iterator end);
+ 
+ template <typename I>
+diff --git a/src/lib/reference/ReferenceDir.cpp b/src/lib/reference/ReferenceDir.cpp
+index 977619c..669c345 100644
+--- a/src/lib/reference/ReferenceDir.cpp
++++ b/src/lib/reference/ReferenceDir.cpp
+@@ -52,7 +52,7 @@ typename ReferenceDir7::UcharPtr ReferenceDir7::ReadFileIntoBuffer(
+   size = file.tellg();
+   file.seekg(0, file.beg);
+ 
+-  UcharPtr bufPtr(new uint8_t[size], [this](uint8_t* p) -> void { delete [](p); });
++  UcharPtr bufPtr(new uint8_t[size], [](uint8_t* p) -> void { delete [](p); });
+   file.read(reinterpret_cast<char*>(bufPtr.get()), size);
+   if (!file) {
+     //    THROW(DragenException, "Could not load reference - could not read ", path);
+@@ -119,9 +119,9 @@ ReferenceDir7::ReferenceDir7(const boost::filesystem::path& path, bool mmap, boo
+     dup2(stdoutori, 1);
+ 
+     hashtableData_ =
+-        Uint64Ptr(reinterpret_cast<uint64_t*>(hashbuf), [this](uint64_t* p) -> void { free(p); });
++        Uint64Ptr(reinterpret_cast<uint64_t*>(hashbuf), [](uint64_t* p) -> void { free(p); });
+     extendTableData_ =
+-        Uint64Ptr(reinterpret_cast<uint64_t*>(extendTableBuf), [this](uint64_t* p) -> void { free(p); });
++        Uint64Ptr(reinterpret_cast<uint64_t*>(extendTableBuf), [](uint64_t* p) -> void { free(p); });
+   }
+ 
+   referenceSequencePtr_ = std::unique_ptr<ReferenceSequence>(new ReferenceSequence(
+@@ -251,7 +251,7 @@ std::unique_ptr<T, std::function<void(T*)>> ReferenceDir7::readData(
+             " error: " + std::strerror(errno)));
+   }
+   return std::unique_ptr<T, std::function<void(T*)>>(
+-      reinterpret_cast<T*>(table), [this](T* p) -> void { free(p); });
++      reinterpret_cast<T*>(table), [](T* p) -> void { free(p); });
+ }
+ 
+ size_t ReferenceDir7::getHashtableConfigSize() const
+diff --git a/src/lib/sequences/Read.cpp b/src/lib/sequences/Read.cpp
+index 97b1aca..fe4b4e4 100644
+--- a/src/lib/sequences/Read.cpp
++++ b/src/lib/sequences/Read.cpp
+@@ -12,7 +12,13 @@
+  **
+  **/
+ 
++#ifdef __SSE2__
+ #include <emmintrin.h>
++#endif
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#endif
++
+ 
+ #include <cassert>
+ #include <sstream>
+diff --git a/src/lib/sequences/tests/unit/CrcHasherMocks.hpp b/src/lib/sequences/tests/unit/CrcHasherMocks.hpp
+index 1866be7..5d9b7d7 100644
+--- a/src/lib/sequences/tests/unit/CrcHasherMocks.hpp
++++ b/src/lib/sequences/tests/unit/CrcHasherMocks.hpp
+@@ -2,6 +2,7 @@
+ 
+ #include <array>
+ #include <cassert>
++#include <cstdint>
+ #include <cstdlib>
+ #include <string>
+ 
+diff --git a/src/lib/workflow/DualFastq2SamWorkflow.cpp b/src/lib/workflow/DualFastq2SamWorkflow.cpp
+index a4be874..e8878f2 100644
+--- a/src/lib/workflow/DualFastq2SamWorkflow.cpp
++++ b/src/lib/workflow/DualFastq2SamWorkflow.cpp
+@@ -218,7 +218,8 @@ void DualFastq2SamWorkflow::alignDualFastqBlock(
+       options_.alignerSecScoreDelta_,
+       options_.alignerSecPhredDelta_,
+       options_.alignerSecAlignsHard_,
+-      options_.alignerMapqMinLen_);
++      options_.alignerMapqMinLen_,
++      options_.alignerSampleMapq0_);
+ 
+   // aligner is not stateless, make sure each thread uses its own.
+   align::Aligner aligner(
+@@ -441,7 +442,8 @@ void DualFastq2SamWorkflow::parseDualFastq(
+       options_.alignerSecScoreDelta_,
+       options_.alignerSecPhredDelta_,
+       options_.alignerSecAlignsHard_,
+-      options_.alignerMapqMinLen_);
++      options_.alignerMapqMinLen_,
++      options_.alignerSampleMapq0_);
+ 
+   fastq::FastqNRecordReader r1Reader(r1Stream);
+   fastq::FastqNRecordReader r2Reader(r2Stream);
+diff --git a/src/lib/workflow/Input2SamWorkflow.cpp b/src/lib/workflow/Input2SamWorkflow.cpp
+index cbc2776..5f5ab9e 100644
+--- a/src/lib/workflow/Input2SamWorkflow.cpp
++++ b/src/lib/workflow/Input2SamWorkflow.cpp
+@@ -224,7 +224,8 @@ void parseSingleInput(
+       options.alignerSecScoreDelta_,
+       options.alignerSecPhredDelta_,
+       options.alignerSecAlignsHard_,
+-      options.alignerMapqMinLen_);
++      options.alignerMapqMinLen_,
++      options.alignerSampleMapq0_);
+ 
+   const sam::SamGenerator sam(htConfig);
+ 
+@@ -257,7 +258,8 @@ void parseSingleInput(
+                 options.alignerSecScoreDelta_,
+                 options.alignerSecPhredDelta_,
+                 options.alignerSecAlignsHard_,
+-                options.alignerMapqMinLen_);
++                options.alignerMapqMinLen_,
++                options.alignerSampleMapq0_);
+ 
+             align::Aligner aligner(
+                 refSeq,
+diff --git a/stubs/bamtools/bamtools-2.4.1/include/api/BamConstants.h b/stubs/bamtools/bamtools-2.4.1/include/api/BamConstants.h
+index baee67c..567b228 100644
+--- a/stubs/bamtools/bamtools-2.4.1/include/api/BamConstants.h
++++ b/stubs/bamtools/bamtools-2.4.1/include/api/BamConstants.h
+@@ -129,15 +129,15 @@ const char BAM_DNA_DEL   = '-';
+ const char BAM_DNA_PAD   = '*';
+ 
+ // zlib & BGZF constants
+-const char GZIP_ID1   = 31;
+-const char GZIP_ID2   = 139;
+-const char CM_DEFLATE = 8;
+-const char FLG_FEXTRA = 4;
+-const char OS_UNKNOWN = 255;
+-const char BGZF_XLEN  = 6;
+-const char BGZF_ID1   = 66;
+-const char BGZF_ID2   = 67;
+-const char BGZF_LEN   = 2;
++const uint8_t GZIP_ID1   = 31;
++const uint8_t GZIP_ID2   = 139;
++const uint8_t CM_DEFLATE = 8;
++const uint8_t FLG_FEXTRA = 4;
++const uint8_t OS_UNKNOWN = 255;
++const uint8_t BGZF_XLEN  = 6;
++const uint8_t BGZF_ID1   = 66;
++const uint8_t BGZF_ID2   = 67;
++const uint8_t BGZF_LEN   = 2;
+ 
+ const int8_t   GZIP_WINDOW_BITS          = -15;
+ //--START EDICO EDITED
+diff --git a/stubs/dragen/src/host/dragen_api/read_group_list.hpp b/stubs/dragen/src/host/dragen_api/read_group_list.hpp
+index eefb9ae..623a77f 100644
+--- a/stubs/dragen/src/host/dragen_api/read_group_list.hpp
++++ b/stubs/dragen/src/host/dragen_api/read_group_list.hpp
+@@ -14,6 +14,7 @@
+ #define __READ_GROUP_LIST_HPP__
+ 
+ #include "dragen_exception.hpp"
++#include <cstdint>
+ class ReadGroupList {
+ public:
+   const std::string &getReadGroupName(const uint16_t idx) const {
+diff --git a/stubs/dragen/src/host/infra/linux/infra_linux_utils.cpp b/stubs/dragen/src/host/infra/linux/infra_linux_utils.cpp
+index cd02cd4..7c2571a 100644
+--- a/stubs/dragen/src/host/infra/linux/infra_linux_utils.cpp
++++ b/stubs/dragen/src/host/infra/linux/infra_linux_utils.cpp
+@@ -39,15 +39,15 @@ namespace infra {
+ static std::string g_kernelVersionStr;
+ static int         g_kernelVersion;
+ 
+-static constexpr int MKVER(const int major, const int minor, const int patch)
+-{
+-  return major * 10000 + minor * 100 + patch;
+-}
+-
+-static constexpr int MKVER(const int major, const int minor)
+-{
+-  return major * 10000 + minor * 100;
+-}
++// static constexpr int MKVER(const int major, const int minor, const int patch)
++// {
++//  return major * 10000 + minor * 100 + patch;
++// }
++//
++// static constexpr int MKVER(const int major, const int minor)
++// {
++//   return major * 10000 + minor * 100;
++// }
+ 
+ //------------------------------------------------------------------------alain
+ int GetDmiValue(const std::string& label, std::string& value)
+diff --git a/stubs/dragen/src/host/infra/public/infra_compiler.h b/stubs/dragen/src/host/infra/public/infra_compiler.h
+index 2b6b081..7c4aa4e 100644
+--- a/stubs/dragen/src/host/infra/public/infra_compiler.h
++++ b/stubs/dragen/src/host/infra/public/infra_compiler.h
+@@ -153,7 +153,7 @@ static inline int atomic16_cmpset(uint16_t volatile *ptr, const uint16_t exp,
+ }
+ static inline uint32_t atomic16_xchg(uint16_t volatile *ptr,
+                                      const uint16_t val) {
+-  return __atomic_exchange_2(ptr, val, __ATOMIC_SEQ_CST);
++  return __atomic_exchange_n(ptr, val, __ATOMIC_SEQ_CST);
+ }
+ static inline int32_t atomic16_read(int16_t volatile *ptr) { return *ptr; }
+ static inline void atomic16_write(int16_t volatile *ptr, const int16_t val) {
+@@ -191,7 +191,7 @@ static inline int atomic32_cmpset(uint32_t volatile *ptr, const uint32_t exp,
+ }
+ static inline uint32_t atomic32_xchg(uint32_t volatile *ptr,
+                                      const uint32_t val) {
+-  return __atomic_exchange_4(ptr, val, __ATOMIC_SEQ_CST);
++  return __atomic_exchange_n(ptr, val, __ATOMIC_SEQ_CST);
+ }
+ static inline int32_t atomic32_read(int32_t volatile *ptr) { return *ptr; }
+ static inline void atomic32_write(int32_t volatile *ptr, const int32_t val) {
+@@ -229,7 +229,7 @@ static inline int atomic64_cmpset(uint64_t volatile *ptr, const uint64_t exp,
+ }
+ static inline uint64_t atomic64_xchg(uint64_t volatile *ptr,
+                                      const uint64_t val) {
+-  return __atomic_exchange_8(ptr, val, __ATOMIC_SEQ_CST);
++  return __atomic_exchange_n(ptr, val, __ATOMIC_SEQ_CST);
+ }
+ static inline int64_t atomic64_read(int64_t volatile *ptr) { return *ptr; }
+ static inline void atomic64_write(int64_t volatile *ptr, const int64_t val) {
+diff --git a/stubs/dragen/src/host/metrics/public/run_stats.hpp b/stubs/dragen/src/host/metrics/public/run_stats.hpp
+index 998fe4e..9561b0b 100644
+--- a/stubs/dragen/src/host/metrics/public/run_stats.hpp
++++ b/stubs/dragen/src/host/metrics/public/run_stats.hpp
+@@ -10,6 +10,7 @@
+ #include <string>
+ #include <vector>
+ #include <memory>
++#include <cstdint>
+ //
+ // RP: HA! HA! HA! That's what you get when you write code logging to cout all
+ // over the place!
+diff --git a/thirdparty/dragen/src/common/hash_generation/gen_hash_table.c b/thirdparty/dragen/src/common/hash_generation/gen_hash_table.c
+index cdca3df..5a55699 100644
+--- a/thirdparty/dragen/src/common/hash_generation/gen_hash_table.c
++++ b/thirdparty/dragen/src/common/hash_generation/gen_hash_table.c
+@@ -249,7 +249,7 @@ void setDefaultHashParams(hashTableConfig_t* defConfig, const char* destDir, Has
+     free(dir);
+   }
+ 
+-  defConfig->hostVersion = (char*)getHostVersion(0);
++  defConfig->hostVersion = (char*)getHostVersion();
+ }
+ 
+ //-------------------------------------------------------------------------------swhitmore
+diff --git a/thirdparty/dragen/src/common/hash_generation/hash_table.c b/thirdparty/dragen/src/common/hash_generation/hash_table.c
+index 40cacd2..e0e69f5 100644
+--- a/thirdparty/dragen/src/common/hash_generation/hash_table.c
++++ b/thirdparty/dragen/src/common/hash_generation/hash_table.c
+@@ -539,7 +539,7 @@ typedef struct {
+   int*               abort;
+ } buildThreadCtx_t;
+ 
+-#if defined(LOCAL_BUILD) && !defined(_TARGET_PPC_)
++#if defined(LOCAL_BUILD) && defined(_TARGET_X86)
+ static inline uint64_t RDTSC()
+ {
+   uint32_t hi, lo;
+diff --git a/thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp b/thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
+index 7a950d1..6f91e58 100644
+--- a/thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
++++ b/thirdparty/dragen/src/host/metrics/public/mapping_stats.hpp
+@@ -6,7 +6,6 @@
+ 
+ #include <string>
+ 
+-#define _TARGET_X86_
+ #if defined(_TARGET_X86_)
+ #include <mmintrin.h>
+ #include <xmmintrin.h>
+@@ -18,7 +17,7 @@
+ #undef bool
+ #undef vector*/
+ #elif defined(_TARGET_ARM_)
+-#include "SSE2NEON.h"
++#include "sse2neon.h"
+ #else
+ #error Target not recognized, porting needed
+ #endif
+diff --git a/thirdparty/sswlib/ssw/ssw.cpp b/thirdparty/sswlib/ssw/ssw.cpp
+index bbe8027..5e62214 100644
+--- a/thirdparty/sswlib/ssw/ssw.cpp
++++ b/thirdparty/sswlib/ssw/ssw.cpp
+@@ -30,7 +30,13 @@
+ 
+ // shared and sse2-specific implementations
+ 
++#ifdef __SSE2__
+ #include <emmintrin.h>
++#endif
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#endif
++
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+diff --git a/thirdparty/sswlib/ssw/ssw.hpp b/thirdparty/sswlib/ssw/ssw.hpp
+index b9b777c..e3e7242 100644
+--- a/thirdparty/sswlib/ssw/ssw.hpp
++++ b/thirdparty/sswlib/ssw/ssw.hpp
+@@ -34,7 +34,9 @@
+ #include <stdio.h>
+ #include <stdint.h>
+ #include <string.h>
++#ifdef __AVX2__
+ #include <immintrin.h>
++#endif
+ 
+ 
+ #define MAPSTR "MIDNSHP=X"
+diff --git a/src/lib/map/Mapper.cpp b/src/lib/map/Mapper.cpp
+index 6eaa2c5..781988c 100644
+--- a/src/lib/map/Mapper.cpp
++++ b/src/lib/map/Mapper.cpp
+@@ -22,6 +22,7 @@
+ //#include "common/Crc32Hw.hpp"
+ #include "common/DragenLogger.hpp"
+ #include "map/Mapper.hpp"
++#include <boost/range/iterator_range.hpp>
+ 
+ namespace dragenos {
+ namespace map {
+diff --git a/thirdparty/sswlib/ssw/ssw_avx2.cpp b/thirdparty/sswlib/ssw/ssw_avx2.cpp
+index 8464392..11e2f02 100644
+--- a/thirdparty/sswlib/ssw/ssw_avx2.cpp
++++ b/thirdparty/sswlib/ssw/ssw_avx2.cpp
+@@ -28,7 +28,9 @@
+  ** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  **/
+ 
++#ifdef __AVX2__
+ #include <immintrin.h>
++#endif
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+@@ -47,7 +49,8 @@ constexpr int AVX2_BYTE_ELEMS = 32;
+ static inline __attribute__((always_inline)) void* memalign_local(const size_t alignment, const size_t size)
+ {
+   void* ptr = NULL;
+-  BOOST_ASSERT(0 == posix_memalign(&ptr, alignment, size));
++  int rv = posix_memalign(&ptr, alignment, size);
++  BOOST_ASSERT(0 == rv);
+   BOOST_ASSERT(ptr != nullptr);
+   return ptr;
+ }
+diff --git a/thirdparty/sswlib/ssw/ssw_internal.hpp b/thirdparty/sswlib/ssw/ssw_internal.hpp
+index 9e5d8b0..a82e3b7 100644
+--- a/thirdparty/sswlib/ssw/ssw_internal.hpp
++++ b/thirdparty/sswlib/ssw/ssw_internal.hpp
+@@ -32,7 +32,12 @@
+ 
+ #pragma once
+ 
++#ifdef __AVX2__
+ #include <immintrin.h>
++#endif
++#ifdef __ARM_NEON
++#include "sse2neon.h"
++#endif
+ 
+ #ifdef __GNUC__
+ #define LIKELY(x) __builtin_expect((x),1)
+@@ -72,6 +77,7 @@ struct _profile_sse2{
+   uint8_t bias;
+ };
+ 
++#ifdef __AVX2__
+ struct _profile_avx2{
+   __m256i* profile_byte;  // 0: none
+   __m256i* profile_word;  // 0: none
+@@ -81,5 +87,6 @@ struct _profile_avx2{
+   int32_t n;
+   uint8_t bias;
+ };
++#endif
+ 
+ 

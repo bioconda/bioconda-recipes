@@ -1,0 +1,61 @@
+{% set name = "prseq" %}
+{% set version = "0.0.33" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/VirologyCharite/prseq/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: de10dc938c046a8a0d01b261b67e016f995584412fed34ec4513abfcf5541bb9
+
+build:
+  number: 0
+  entry_points:
+    - fasta-info = prseq.cli:fasta_info
+    - fasta-stats = prseq.cli:fasta_stats
+    - fasta-filter = prseq.cli:fasta_filter
+    - fastq-info = prseq.cli:fastq_info
+    - fastq-stats = prseq.cli:fastq_stats
+    - fastq-filter = prseq.cli:fastq_filter
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - python
+    - maturin >=1.0,<2.0
+    - pip
+  run:
+    - python
+
+test:
+  imports:
+    - prseq
+  commands:
+    - fasta-info --help
+    - fasta-stats --help
+    - fasta-filter --help
+    - fastq-info --help
+    - fastq-stats --help
+    - fastq-filter --help
+
+about:
+  home: "https://github.com/virologyCharite/prseq"
+  summary: "Python tools (backed by Rust) for sequence analysis."
+  license: MIT
+  license_family: MIT
+  dev_url: "https://github.com/virologyCharite/prseq"
+  doc_url: "https://github.com/VirologyCharite/prseq/blob/v{{ version }}/python/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

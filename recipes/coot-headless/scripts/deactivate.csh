@@ -1,0 +1,5 @@
+unsetenv COOT_PREFIX
+unsetenv COOT_REFMAC_LIB_DIR
+unsetenv CLIBD_MON
+unsetenv COOT_STANDARD_RESIDUES
+unsetenv SYMINFO

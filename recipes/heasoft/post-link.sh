@@ -26,7 +26,7 @@ cat <<EOF >> ${PREFIX}/.messages.txt
        ```
        wget https://heasarc.gsfc.nasa.gov/FTP/software/lheasoft/lheasoft{{ version }}/heasoft-{{ version }}src.tar.gz
        ```
-       Replace `{{ version }}` by the actual the package version (e.g., 6.35.1).
+       Replace `{{ version }}` by the actual the package version (e.g., 6.35.2).
 
     2. Extract the tarball:
        ```
