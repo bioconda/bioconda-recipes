@@ -1,0 +1,63 @@
+{% set name = "gloom" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/omicscodeathon/gloom/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8dd7add30d982a980b891b5e1613d34b4d3ca01bd11ab36c8b0c522809b3c6c8
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.12
+    - click >=8.1.0
+    - pandas >=1.5.0
+    - numpy >=1.23.0
+    - scipy >=1.9.0
+    - statsmodels >=0.14.0
+    - scikit-learn >=1.1.0
+    - joblib >=1.2.0
+    - networkx >=2.8.0
+    - matplotlib-base >=3.6.0
+
+test:
+  imports:
+    - gloom
+    - gloom.cli
+    - gloom.output
+    - gloom.pipeline
+  commands:
+    - python -m gloom.cli --version
+    - python -m gloom.cli --help
+    - python -m gloom.cli info
+    - python -m gloom.cli diseases
+
+about:
+  home: https://github.com/omicscodeathon/gloom
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: GLOOM gene prioritization ML pipeline for lung adenocarcinoma
+  description: |
+    GLOOM (Gene network Learning and Organization through Optimized Machine intelligence)
+    is a modular Python framework for LUAD candidate gene prioritization. It integrates
+    TCGA tumor expression, GTEx normal expression, co-expression network analysis, and
+    positive-unlabeled machine learning to rank novel cancer gene candidates.
+  doc_url: https://github.com/omicscodeathon/gloom#readme
+  dev_url: https://github.com/omicscodeathon/gloom
+
+extra:
+  recipe-maintainers:
+    - rahmayasser
