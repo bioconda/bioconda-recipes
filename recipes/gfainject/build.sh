@@ -9,6 +9,7 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 cargo generate-lockfile
 cargo update --package console --precise "0.15.11"
+cargo update --package rust-htslib --precise "0.47"
 
 # build statically linked binary with Rust
 export RUST_BACKTRACE=1
