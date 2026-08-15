@@ -13,4 +13,4 @@ cargo update --package rust-htslib --precise "0.47.1"
 
 # build statically linked binary with Rust
 export RUST_BACKTRACE=1
-cargo install --root "${PREFIX}" --no-track --locked --verbose --path .
+cargo install --root "${PREFIX}" --no-track --verbose --path .
