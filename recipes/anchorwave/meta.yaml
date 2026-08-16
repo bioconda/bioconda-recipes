@@ -13,36 +13,47 @@ source:
 
 build:
   number: 0
-  skip: True  # [not unix]
-  script_env:
-    - TARGET_PLATFORM=macOS  # [osx]
-    - TARGET_PLATFORM=Linux  # [linux]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib("c") }}
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - cmake >=3
+    - cmake >=3.10
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
   run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - gmap
     - minimap2
 
 test:
   commands:
-    - 'anchorwave | grep "Usage: anchorwave"'
+    - 'anchorwave --version | grep -F "anchorwave v{{ version }}"'
+    - 'anchorwave --help 2>&1 | grep -F "Usage: anchorwave"'
+    - 'anchorwave genoAli -h 2>&1 | grep -F "fa3^2 (default: 50000)"'
+    - 'printf "%s\n" ">reference" "ACGTACGT" > reference.fa'
+    - 'printf "%s\n" ">query" "ACGTTCGT" > query.fa'
+    - 'anchorwave ali -r reference.fa -s query.fa > alignment.fa'
+    - 'test "$(grep -c ''^>'' alignment.fa)" -eq 2'
 
 about:
   home: "https://github.com/baoxingsong/AnchorWave"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation.'
+  summary: "Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation."
   dev_url: "https://github.com/baoxingsong/AnchorWave"
   doc_url: "https://github.com/baoxingsong/AnchorWave/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
