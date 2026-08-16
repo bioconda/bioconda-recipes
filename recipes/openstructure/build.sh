@@ -60,10 +60,9 @@ cmake .. \
     -DENABLE_MM=ON \
     -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM${SHLIB_EXT}" \
     -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
-    -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
+    -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins"
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}"
 
 wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
@@ -71,7 +70,7 @@ stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemli
 
 cmake .. -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib"
 
-make VERBOSE=1 -j"${CPU_COUNT}"
+make -j"${CPU_COUNT}"
 
 # GFX-related tests time out for CI checks on linux-aarch64
 if [[ "${target_platform}" != "linux-aarch64" ]]; then
