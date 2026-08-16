@@ -51,14 +51,14 @@ test:
     - pip check
     # Exercise the compiled extension, not just the import.
     - python -c "import polars_bio as pb; print(pb.__version__)"
-    # Run as a script, not under pytest: these commands are re-run inside the
-    # mulled biocontainer, which only has the run dependencies, so anything
-    # from `requires` below (pytest included) is absent there.
-    - python test_overlap.py
+    # These commands are re-run inside the mulled biocontainer, which contains
+    # only the package and its run dependencies -- neither `requires` below nor
+    # `files` are available there. So the overlap smoke test is inlined rather
+    # than shipped as a script (a script gets "No such file or directory", and
+    # pytest gets "No module named pytest").
+    - python -c "import polars as pl, polars_bio as pb; d1 = pl.DataFrame([pl.Series('chrom', ['chr1','chr1','chr2']), pl.Series('start', [100,500,100]), pl.Series('end', [200,600,200])]); d2 = pl.DataFrame([pl.Series('chrom', ['chr1','chr2']), pl.Series('start', [150,900]), pl.Series('end', [250,1000])]); d1.config_meta.set(coordinate_system_zero_based=False); d2.config_meta.set(coordinate_system_zero_based=False); r = pb.overlap(d1, d2, output_type='polars.DataFrame'); assert r.height == 1, r; row = r.row(0, named=True); assert row['chrom_1'] == 'chr1' and row['start_1'] == 100 and row['start_2'] == 150, row; print('overlap smoke test passed')"
   requires:
     - pip
-  files:
-    - test_overlap.py
 
 about:
   home: https://github.com/biodatageeks/polars-bio
