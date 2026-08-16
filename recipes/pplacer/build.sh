@@ -2,6 +2,7 @@
 set -e -x
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 
 mkdir -p "$PREFIX/bin"
 
