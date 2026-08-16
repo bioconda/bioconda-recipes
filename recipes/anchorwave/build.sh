@@ -11,15 +11,15 @@ else
     export CONFIG_ARGS=""
 fi
 
-sed -i.bak -e 's|VERSION 3.0|VERSION 3.5|' CMakeLists*.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
+#sed -i.bak -e 's|VERSION 3.0|VERSION 3.5|' CMakeLists*.txt
+#sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/CMakeLists.txt
+#sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.txt
+#sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
 
-rm -f *.bak
-rm -f googletest/*.bak
-rm -f googletest/googlemock/*.bak
-rm -f googletest/googletest/*.bak
+#rm -f *.bak
+#rm -f googletest/*.bak
+#rm -f googletest/googlemock/*.bak
+#rm -f googletest/googletest/*.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
