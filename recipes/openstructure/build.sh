@@ -72,10 +72,7 @@ cmake .. -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib"
 
 make -j"${CPU_COUNT}"
 
-# GFX-related tests time out for CI checks on linux-aarch64
-if [[ "${target_platform}" != "linux-aarch64" ]]; then
-    make check
-fi
+make check
 
 make install
 cd "${SRC_DIR}" && rm -rf build
