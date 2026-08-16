@@ -4,6 +4,7 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+export PKG_CONFIG_ALLOW_CROSS=1
 export HTSLIB=system
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
