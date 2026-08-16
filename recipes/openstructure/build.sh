@@ -12,6 +12,10 @@ if [[ "${target_platform}" == "linux-"* ]]; then
     export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined,--export-dynamic"
 elif [[ "${target_platform}" == "osx-"* ]]; then
     export LDFLAGS="${LDFLAGS} -undefined dynamic_lookup -Wl,-export_dynamic -framework OpenGL"
+    # ld64 rpath is @loader_path/../lib; conda symlinks into pkgs/ so dyld
+    # misses libtapi. Fallback finds it in the build env.
+    # https://github.com/conda-forge/cctools-and-ld64-feedstock/issues/106
+    export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:$DYLD_FALLBACK_LIBRARY_PATH}"
 fi
 
 if [[ "${target_platform}" == osx-64 ]]; then
