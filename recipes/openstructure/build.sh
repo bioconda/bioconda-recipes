@@ -19,31 +19,6 @@ if [[ "${target_platform}" == osx-64 ]]; then
   export FCFLAGS="-m64 -fPIC"
 fi
 
-mkdir -p build && cd build
-
-cmake .. \
-    ${CMAKE_ARGS} \
-    -DCMAKE_PREFIX_PATH="${PREFIX}" \
-    -DCMAKE_CXX_COMPILER="${CXX}" \
-    -DCXX_FLAGS="${CXXFLAGS}" \
-    -DCMAKE_CXX_STANDARD=17 \
-    -DBOOST_ROOT="${PREFIX}" \
-    -DBoost_INCLUDE_DIR="${PREFIX}/include/boost" \
-    -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
-    -DPython_ROOT_DIR="${PREFIX}" \
-    -DPython_EXECUTABLE="${PYTHON}" \
-    -DENABLE_GUI=OFF \
-    -DENABLE_GFX=OFF \
-    -DENABLE_INFO=OFF \
-    -DUSE_RPATH=ON \
-    -DCMAKE_VERBOSE_MAKEFILE=ON
-
-make VERBOSE=1 -j"${CPU_COUNT}"
-
-wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
-stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
-stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
-
 # Headless on linux-aarch64 (no Qt/OpenGL) to stay within CircleCI's 1h timeout.
 # ENABLE_INFO must be OFF to drop Qt (Qt5Xml); that also forces GFX/GUI off.
 if [[ "${target_platform}" == "linux-aarch64" ]]; then
@@ -58,6 +33,8 @@ else
   OST_USE_SHADER=ON
 fi
 
+mkdir -p build && cd build
+
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -69,7 +46,6 @@ cmake .. \
     -DBoost_LIBRARY_DIR="${PREFIX}/lib" \
     -DPython_ROOT_DIR="${PREFIX}" \
     -DPython_EXECUTABLE="${PYTHON}" \
-    -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib" \
     -DPARASAIL_INCLUDE_DIR="${PREFIX}/include" \
     -DPARASAIL_LIBRARY="${PREFIX}/lib/libparasail${SHLIB_EXT}" \
     -DUSE_RPATH=ON \
@@ -86,6 +62,14 @@ cmake .. \
     -DOPEN_MM_INCLUDE_DIR="${PREFIX}/include" \
     -DOPEN_MM_PLUGIN_DIR="${PREFIX}/lib/plugins" \
     -DCMAKE_VERBOSE_MAKEFILE=ON
+
+make VERBOSE=1 -j"${CPU_COUNT}"
+
+wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
+stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
+stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
+
+cmake .. -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib"
 
 make VERBOSE=1 -j"${CPU_COUNT}"
 
