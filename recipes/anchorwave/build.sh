@@ -1,12 +1,11 @@
 #!/bin/bash
-
 set -eux
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname -s` == "Darwin" ]]; then
     export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 else
     export CONFIG_ARGS=""
@@ -17,10 +16,10 @@ sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.txt
 sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
 
-rm -rf *.bak
-rm -rf googletest/*.bak
-rm -rf googletest/googlemock/*.bak
-rm -rf googletest/googletest/*.bak
+rm -f *.bak
+rm -f googletest/*.bak
+rm -f googletest/googlemock/*.bak
+rm -f googletest/googletest/*.bak
 
 OS=$(uname -s)
 ARCH=$(uname -m)
