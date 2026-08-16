@@ -1,7 +1,7 @@
 {% set name = "anchorwave" %}
-{% set version = "1.2.6" %}
-{% set tag = "v1.2.6" %}
-{% set sha256 = "568cd3943c464d0294717232a73f7e4fe13f8db34146871e9ca870eb676a30d9" %}
+{% set version = "1.3.0" %}
+{% set tag = "v1.3.0" %}
+{% set sha256 = "158ee8435976e584e556c8085bccea0fd6b3322418cacea463a123788fcb4f87" %}
 
 package:
   name: {{ name }}
@@ -14,25 +14,32 @@ source:
 build:
   number: 0
   skip: True  # [not unix]
-  script_env:
-    - TARGET_PLATFORM=macOS  # [osx]
-    - TARGET_PLATFORM=Linux  # [linux]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - cmake >=3
+    - cmake >=3.10
+    - {{ stdlib("c") }}
+  host:
     - zlib
+    - libgomp  # [linux]
   run:
     - gmap
     - minimap2
 
 test:
   commands:
-    - 'anchorwave | grep "Usage: anchorwave"'
+    - 'anchorwave --version | grep -F "anchorwave v1.3.0"'
+    - 'anchorwave --help 2>&1 | grep -F "Usage: anchorwave"'
+    - 'anchorwave genoAli -h 2>&1 | grep -F "fa3^2 (default: 50000)"'
+    - 'printf "%s\n" ">reference" "ACGTACGT" > reference.fa'
+    - 'printf "%s\n" ">query" "ACGTTCGT" > query.fa'
+    - 'anchorwave ali -r reference.fa -s query.fa > alignment.fa'
+    - 'test "$(grep -c ''^>'' alignment.fa)" -eq 2'
 
 about:
   home: "https://github.com/baoxingsong/AnchorWave"
