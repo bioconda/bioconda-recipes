@@ -24,7 +24,7 @@ else
     export CONFIG_ARGS=""
 fi
 
-sed -i.bak -e 's|VERSION 3.0|VERSION 3.5|' src/version.h
+sed -i.bak -e 's|1.3.0|1.3.1|' src/version.h
 rm -f src/*.bak
 
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
