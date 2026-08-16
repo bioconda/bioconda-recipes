@@ -72,7 +72,10 @@ cmake .. -DCOMPOUND_LIB="${SRC_DIR}/build/compounds.chemlib"
 
 make -j"${CPU_COUNT}"
 
-make check
+# Skip unit tests on linux-aarch64 so a second Python version fits in CircleCI's 1h.
+if [[ "${target_platform}" != "linux-aarch64" ]]; then
+  make check
+fi
 
 make install
 cd "${SRC_DIR}" && rm -rf build
