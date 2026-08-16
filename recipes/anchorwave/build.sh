@@ -1,91 +1,75 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -eux
+set -euo pipefail
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+build_one() {
+    local name="$1"
+    local simd_target="$2"
+    local extra_arch_flags="${3:-}"
+    local build_dir="${SRC_DIR}/build-${name}"
+    local extra_cmake_args=()
 
-if [[ `uname` == "Darwin" ]]; then
-    export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
-    export CONFIG_ARGS=""
+    if [[ -n "${extra_arch_flags}" ]]; then
+        extra_cmake_args+=(
+            "-DCMAKE_C_FLAGS=${CFLAGS:-} ${extra_arch_flags}"
+            "-DCMAKE_CXX_FLAGS=${CXXFLAGS:-} ${extra_arch_flags}"
+        )
+    fi
+
+    cmake ${CMAKE_ARGS:-} \
+        -S "${SRC_DIR}" \
+        -B "${build_dir}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+        -DCMAKE_C_COMPILER="${CC}" \
+        -DCMAKE_CXX_COMPILER="${CXX}" \
+        -DANCHORWAVE_SIMD_TARGET="${simd_target}" \
+        -DANCHORWAVE_ENABLE_WFA_PARALLEL=ON \
+        "${extra_cmake_args[@]}"
+    cmake --build "${build_dir}" --target install -- -j "${CPU_COUNT}"
+}
+
+platform="${target_platform:-}"
+if [[ -z "${platform}" ]]; then
+    case "$(uname -s)-$(uname -m)" in
+        Linux-x86_64) platform="linux-64" ;;
+        Linux-aarch64|Linux-arm64) platform="linux-aarch64" ;;
+        Darwin-x86_64) platform="osx-64" ;;
+        Darwin-arm64) platform="osx-arm64" ;;
+        *) platform="unsupported" ;;
+    esac
 fi
 
-sed -i.bak -e 's|VERSION 3.0|VERSION 3.5|' CMakeLists*.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googlemock/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' googletest/googletest/CMakeLists.txt
-
-rm -rf *.bak
-rm -rf googletest/*.bak
-rm -rf googletest/googlemock/*.bak
-rm -rf googletest/googletest/*.bak
-
-OS=$(uname -s)
-ARCH=$(uname -m)
-
-if [[ "${OS}" == "Linux" && "${ARCH}" == "x86_64" ]]; then
-    mkdir -p build/{sse2,sse4.1,avx2,avx512}
-
-    # SSE2
-    rm CMakeLists.txt
-    ln -sf CMakeLists_sse2.txt CMakeLists.txt
-    cd build/sse2
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+case "${platform}" in
+linux-64)
+    build_one sse2 sse2
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_sse2"
-    cd ../..
 
-    # SSE4.1
-    rm CMakeLists.txt
-    ln -sf CMakeLists_sse4.1.txt CMakeLists.txt
-    cd build/sse4.1
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+    build_one sse4.1 sse4
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_sse4.1"
-    cd ../..
 
-    # AVX2
-    rm CMakeLists.txt
-    ln -sf CMakeLists_avx2.txt CMakeLists.txt
-    cd build/avx2
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+    build_one avx2 avx2
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_avx2"
-    cd ../..
 
-    # AVX512
-    rm CMakeLists.txt
-    ln -sf CMakeLists_avx512.txt CMakeLists.txt
-    cd build/avx512
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
+    # The project exposes explicit portable targets through CMake. AVX-512 is
+    # intentionally delegated to toolchain flags so the same source remains
+    # usable for cross builds.
+    build_one avx512 toolchain -march=skylake-avx512
     mv "${PREFIX}/bin/anchorwave" "${PREFIX}/bin/anchorwave_avx512"
-    cd ../..
 
-    # wrapper script
-    cp -f "${RECIPE_DIR}/anchorwave" "${PREFIX}/bin/anchorwave"
-    chmod +x "${PREFIX}/bin/anchorwave"
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-    mkdir -p build/macOS
+    install -m 0755 "${RECIPE_DIR}/anchorwave" "${PREFIX}/bin/anchorwave"
+    ;;
 
-    # macOS (SSE4.1)
-    rm CMakeLists.txt
-    ln -sf CMakeLists_MACOSX86.txt CMakeLists.txt
-    cd build/macOS
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
-elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
-    mkdir -p build/arm64
+osx-64)
+    build_one sse4.1 sse4
+    ;;
 
-    # arm64
-    rm CMakeLists.txt
-    ln -sf CMakeLists_arm.txt CMakeLists.txt
-    cd build/arm64
-    cmake -S ../.. -B . -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -Wno-dev -Wno-deprecated --no-warn-unused-cli "${CONFIG_ARGS}"
-    cmake --build . --clean-first --target install -j "${CPU_COUNT}"
-else
-    echo "TARGET_PLATFORM must be Linux or macOS" >&2
+linux-aarch64|osx-arm64)
+    build_one arm64 toolchain
+    ;;
+
+*)
+    echo "unsupported target platform: ${platform}" >&2
     exit 1
-fi
+    ;;
+esac
