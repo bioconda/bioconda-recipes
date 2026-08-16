@@ -44,6 +44,20 @@ wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
 stage/bin/chemdict_tool create components.cif.gz compounds.chemlib pdb -i
 stage/bin/chemdict_tool update ../modules/conop/data/charmm.cif compounds.chemlib charmm
 
+# Headless on linux-aarch64 (no Qt/OpenGL) to stay within CircleCI's 1h timeout.
+# ENABLE_INFO must be OFF to drop Qt (Qt5Xml); that also forces GFX/GUI off.
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
+  OST_ENABLE_GUI=OFF
+  OST_ENABLE_GFX=OFF
+  OST_ENABLE_INFO=OFF
+  OST_USE_SHADER=OFF
+else
+  OST_ENABLE_GUI=ON
+  OST_ENABLE_GFX=ON
+  OST_ENABLE_INFO=ON
+  OST_USE_SHADER=ON
+fi
+
 cmake .. \
     ${CMAKE_ARGS} \
     -DCMAKE_PREFIX_PATH="${PREFIX}" \
@@ -62,10 +76,10 @@ cmake .. \
     -DOPTIMIZE=ON \
     -DENABLE_PARASAIL=ON \
     -DCOMPILE_TMTOOLS=ON \
-    -DENABLE_GFX=ON \
-    -DENABLE_GUI=ON \
-    -DENABLE_INFO=ON \
-    -DUSE_SHADER=ON \
+    -DENABLE_GFX="${OST_ENABLE_GFX}" \
+    -DENABLE_GUI="${OST_ENABLE_GUI}" \
+    -DENABLE_INFO="${OST_ENABLE_INFO}" \
+    -DUSE_SHADER="${OST_USE_SHADER}" \
     -DUSE_DOUBLE_PRECISION=OFF \
     -DENABLE_MM=ON \
     -DOPEN_MM_LIBRARY="${PREFIX}/lib/libOpenMM${SHLIB_EXT}" \
