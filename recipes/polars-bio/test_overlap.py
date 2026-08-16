@@ -2,6 +2,11 @@
 
 Exercises the compiled Rust extension end to end rather than only importing it,
 so a package that imports but cannot execute a query fails the build.
+
+Run as a plain script (`python test_overlap.py`), NOT under pytest: bioconda
+re-runs the recipe's test commands inside the mulled biocontainer, which holds
+only the package's run dependencies. `test/requires` is not available there, so
+a `python -m pytest` command fails with "No module named pytest".
 """
 
 import polars as pl
@@ -42,3 +47,8 @@ def test_overlap_finds_expected_pairs():
     assert row["start_1"] == 100
     assert row["chrom_2"] == "chr1"
     assert row["start_2"] == 150
+
+
+if __name__ == "__main__":
+    test_overlap_finds_expected_pairs()
+    print("overlap smoke test passed")
