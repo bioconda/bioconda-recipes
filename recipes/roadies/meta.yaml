@@ -17,13 +17,20 @@ build:
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  skip: True  # [win or osx]
+  # win still unsupported: build.sh is bash-only and libpll's autotools build
+  # needs a POSIX toolchain neither of which conda-build provides on win.
+  # Also, bioconda-recipes' CI has no Windows build job at all.
+  skip: True  # [win]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
+    # Only for MLIPPER (genuinely GPU-only, no CPU fallback in its own
+    # Makefile). TWILIGHT is CPU/GPU-capable and built on every platform
+    # regardless (see build.sh) - placement mode needs it either way. No
+    # osx CUDA reqs here at all, since there's no CUDA toolchain for macOS.
     - cuda-nvcc  # [linux]
     - cuda-cudart-dev  # [linux]
     - cuda-version >=12.2,<13  # [linux]
@@ -81,7 +88,8 @@ test:
   commands:
     - python $PREFIX/ROADIES/run_roadies.py --help
     - mashtree --help
-    - test -x $PREFIX/ROADIES/MLIPPER/MLIPPER
+    - test -x $PREFIX/ROADIES/TWILIGHT/bin/twilight
+    - test -x $PREFIX/ROADIES/MLIPPER/MLIPPER  # [linux]
 
 about:
   home: "https://github.com/TurakhiaLab/ROADIES"
