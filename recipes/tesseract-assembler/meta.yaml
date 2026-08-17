@@ -1,0 +1,94 @@
+{% set name = "tesseract-assembler" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "531deb558ec928ab14e67c447ed3c900f67e719609d63a1aadf5d39daa3b8584" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # A hashed release tarball rather than a git checkout: bioconda builds must be
+  # byte-reproducible from the recipe alone, and a tag can be moved after the fact.
+  url: https://github.com/iowa69/TesserACT/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # Nothing here is architecture-independent: the k-mer packing and the threading compile
+  # down to the host. The build steps live in build.sh -- conda-build rejects a recipe that
+  # has both that file and a build/script section.
+  run_exports:
+    # Bioconda convention, and their linter expects it on a compiled package: 8,480 of the
+    # 11,080 recipes carry one, including every comparable assembler (spades, megahit,
+    # abyss, velvet, unicycler). Strictly it publishes a pin to packages that depend on this
+    # one, and nothing links against an assembler -- but declaring it costs nothing and
+    # means a future dependent gets a sane pin for free.
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    # Pins the C standard library the package is built against. Required alongside a
+    # compiler in current conda-build; bioconda's linter rejects the recipe without it
+    # (compiler_needs_stdlib_c). Older recipes in the tree predate the rule.
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+  # --map-polish shells out to one of these. They are not needed to assemble, so they
+  # constrain rather than depend: installing the package should not drag in an aligner.
+  run_constrained:
+    - bowtie2
+    - bwa
+
+test:
+  commands:
+    - tessera --version
+    - tessera --help
+    - tessera-model --help
+    # The flag checks live in run_test.sh, against help text captured to a file.
+    #
+    # They were `tessera --help | grep -q -- --flag` and that is a race: grep -q exits on
+    # the first match and closes the pipe while tessera is still writing, tessera takes
+    # SIGPIPE and exits 141, and under pipefail the pipeline fails. Whether it fails depends
+    # on which flag matches soon enough to kill the writer first, so it passed here and on
+    # ARM and failed on the Linux runner, on --model, with --model plainly present in the
+    # help it had just printed.
+  # The functional test lives in run_test.sh, which conda-build picks up automatically from
+  # the recipe directory. An assembler that installs but cannot assemble is worth catching
+  # here rather than in someone's pipeline.
+  requires:
+    - python
+
+about:
+  home: "https://github.com/iowa69/TesserACT"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "De novo short-read assembler for bacterial isolates, with optional genus models."
+  description: |
+    TesserACT assembles bacterial isolates from paired-end Illumina reads. It builds a de
+    Bruijn graph over a ladder of k-mer sizes, simplifies it, resolves repeats with
+    paired-end information, closes gaps and polishes the result, in C++17 with no
+    dependencies beyond a compiler, zlib and pthreads.
+
+    Where a repeat is longer than a sequencing fragment there is no paired evidence to
+    settle it, and tessera stops rather than guessing. Supplying a genus model built from
+    closed genomes of the same organism lets it settle those junctions from independent
+    evidence instead. Measured on 666 Klebsiella pneumoniae isolates that each have a closed
+    reference genome, with leave-cluster-out models so no test genome is in its own panel:
+    higher genome fraction and fewer mismatches per 100 kb than SPAdes, longer NGA50, at the
+    cost of slightly more redundant sequence and slightly more misassemblies.
+
+    With a model carrying a plasmid panel it also labels every contig chromosomal, plasmid
+    or unknown, groups the contigs of one plasmid, and marks contigs whose two ends join as
+    complete replicons. Pre-built Klebsiella models are attached to the GitHub releases.
+  doc_url: "https://github.com/iowa69/TesserACT#readme"
+  dev_url: "https://github.com/iowa69/TesserACT"
+
+extra:
+  recipe-maintainers:
+    - iowa69
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
