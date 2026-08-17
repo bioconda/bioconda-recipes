@@ -1,5 +1,5 @@
---- d4-hts/build.rs	2026-08-17 14:07:12.265895943 +0200
-+++ d4-hts/build.rs	2026-08-17 14:16:06.235883599 +0200
+--- d4-hts/build.rs
++++ d4-hts/build.rs
 @@ -8,7 +8,13 @@
  fn create_hts_bindings(includes: &[PathBuf], version: &str, system: bool) -> Result<(), ()> {
      let mut include_params: Vec<_> = includes
@@ -15,13 +15,25 @@
          .collect();
      if system {
          include_params.push("-DUSE_SYSTEM_HTSLIB".to_string());
-@@ -20,6 +26,9 @@
+@@ -20,7 +26,11 @@
              .layout_tests(false)
              .generate_comments(false)
              .generate_inline_functions(false)
-+            .whitelist_type("(?i)(bam|hts|sam).*")
-+            .whitelist_function("(?i)(bam|hts|sam).*")
-+            .whitelist_var("(?i)(bam|hts|sam).*")
-             .generate()?
+-            .generate()?
++            .allowlist_type("(?i)(bam|hts|sam).*")
++            .allowlist_function("(?i)(bam|hts|sam).*")
++            .allowlist_var("(?i)(bam|hts|sam).*")
++            .generate()
++            .map_err(|_| ())?
              .write_to_file("generated/hts.rs")
              .expect("Unable to write the generated file");
+     }
+--- d4-hts/Cargo.toml
++++ d4-hts/Cargo.toml
+@@ -10,5 +10,5 @@
+ [dependencies]
+ 
+ [build-dependencies]
+-bindgen = "0.55.1"
++bindgen = "0.72.1"
+ pkg-config = "0.3.18"
