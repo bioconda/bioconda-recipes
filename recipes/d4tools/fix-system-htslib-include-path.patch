@@ -15,19 +15,33 @@
          .collect();
      if system {
          include_params.push("-DUSE_SYSTEM_HTSLIB".to_string());
-@@ -20,7 +26,11 @@
+@@ -20,7 +26,8 @@
              .layout_tests(false)
              .generate_comments(false)
              .generate_inline_functions(false)
 -            .generate()?
-+            .allowlist_type("(?i)(bam|hts|sam).*")
-+            .allowlist_function("(?i)(bam|hts|sam).*")
-+            .allowlist_var("(?i)(bam|hts|sam).*")
 +            .generate()
 +            .map_err(|_| ())?
              .write_to_file("generated/hts.rs")
              .expect("Unable to write the generated file");
      }
+@@ -55,13 +62,11 @@
+     let link_system_lib = env::var("HTSLIB").map_or(false, |htslib| htslib == "system");
+ 
+     let (htslib_includes, lib_version, system) = if link_system_lib {
+-        pkg_config::Config::new()
++        let lib = pkg_config::Config::new()
+             .atleast_version("1.6")
+             .probe("htslib")
+-            .map_or_else(
+-                |_| build_own_htslib(),
+-                |lib| (lib.include_paths, lib.version, true),
+-            )
++            .expect("HTSLIB=system requested but htslib was not found via pkg-config");
++        (lib.include_paths, lib.version, true)
+     } else {
+         build_own_htslib()
+     };
 --- d4-hts/Cargo.toml
 +++ d4-hts/Cargo.toml
 @@ -10,5 +10,5 @@

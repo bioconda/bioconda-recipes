@@ -8,6 +8,11 @@ export PKG_CONFIG_ALLOW_CROSS=1
 export HTSLIB=system
 export RUSTFLAGS="${RUSTFLAGS:-} -L${PREFIX}/lib"
 
+# conda-forge's bzip2 package ships no .pc file on any platform, but htslib.pc's
+# Requires.private lists bzip2 on osx-64 (not on linux-64/osx-arm64/aarch64, where htslib
+# links it via a raw -lbz2 flag instead). Without this, pkg-config fails to resolve htslib on
+# osx-64 and d4-hts silently falls back to a broken vendored-htslib build. No version
+# constraint is placed on bzip2 in htslib.pc, so the Version here is unchecked and arbitrary.
 if [ ! -f "${PREFIX}/lib/pkgconfig/bzip2.pc" ]; then
 cat > "${PREFIX}/lib/pkgconfig/bzip2.pc" <<PCEOF
 prefix=${PREFIX}

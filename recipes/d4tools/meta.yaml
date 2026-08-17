@@ -10,6 +10,11 @@ source:
   sha256: 376e61c93cfe2efc15f5e74b75214e065e278146555e67b8769818bf49594726
   patches:
     # pull request for fix: https://github.com/38/d4-format/pull/119
+    # also bumps the pinned bindgen 0.55.1 -> 0.72.1: 0.55.1 panics generating bindings for real
+    # htslib structs (e.g. htsFormat) on some platforms, since it detects anonymous
+    # structs/unions by checking for an empty clang-reported name rather than clang's own
+    # is_anonymous() API, and can hand a non-identifier debug string to Ident::new(). Fixed
+    # upstream in rust-bindgen PR #2319 (bindgen/bindgen#2319), included by 0.72.1.
     - fix-system-htslib-include-path.patch
 
 build:
@@ -43,8 +48,9 @@ requirements:
 test:
   commands:
     - d4tools --help
-    # check if the htslib that d4tools uses is the same as the one vendored by bioconda
-    - ldd $(command -v d4tools) | grep -q libhts.so  # [linux]
+    # check that d4tools resolves libhts to the conda environment's htslib, not some other one
+    - ldd $(command -v d4tools) | grep libhts.so | grep -Fq "${PREFIX}/lib"  # [linux]
+    - otool -L $(command -v d4tools) | grep libhts | grep -Fq "${PREFIX}/lib"  # [osx]
 
 about:
   home: "https://github.com/38/d4-format"
