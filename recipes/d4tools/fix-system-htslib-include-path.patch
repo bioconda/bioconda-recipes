@@ -1,8 +1,6 @@
---- d4-hts/build.rs	2026-08-16 20:59:48.135338546 +0200
-+++ d4-hts/build.rs	2026-08-16 20:59:58.067384115 +0200
-@@ -6,9 +6,15 @@
- use std::process::Command;
- 
+--- d4-hts/build.rs	2026-08-17 14:07:12.265895943 +0200
++++ d4-hts/build.rs	2026-08-17 14:16:06.235883599 +0200
+@@ -8,7 +8,13 @@
  fn create_hts_bindings(includes: &[PathBuf], version: &str, system: bool) -> Result<(), ()> {
      let mut include_params: Vec<_> = includes
          .iter()
@@ -17,3 +15,13 @@
          .collect();
      if system {
          include_params.push("-DUSE_SYSTEM_HTSLIB".to_string());
+@@ -20,6 +26,9 @@
+             .layout_tests(false)
+             .generate_comments(false)
+             .generate_inline_functions(false)
++            .whitelist_type("(?i)(bam|hts|sam).*")
++            .whitelist_function("(?i)(bam|hts|sam).*")
++            .whitelist_var("(?i)(bam|hts|sam).*")
+             .generate()?
+             .write_to_file("generated/hts.rs")
+             .expect("Unable to write the generated file");
