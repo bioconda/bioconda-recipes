@@ -15,17 +15,18 @@ source:
 
 build:
   number: 0
-  skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
+  skip: True  # [win or osx]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
-    #- {{ compiler('cuda') }}
-    #- cuda-version >=12.2,<13
+    - cuda-nvcc  # [linux]
+    - cuda-cudart-dev  # [linux]
+    - cuda-version >=12.2,<13  # [linux]
     - cmake
     - make
     - autoconf  # libpll's build system
@@ -49,7 +50,6 @@ requirements:
     - liblapack
     - libblas
     - tbb-devel
-    #- cuda-cudart-dev >=12.2,<12.3
   run:
     - python ==3.11
     - biopython
@@ -75,8 +75,7 @@ requirements:
     - epa-ng
     - gappa
     - tbb
-    - cuda-cudart  # [linux]
-    #- {{ pin_compatible("cuda-version", min_pin="x.x", max_pin="x") }}  # [linux]
+    - cuda-cudart >=12.2,<13  # [linux]
 
 test:
   commands:
@@ -96,9 +95,6 @@ about:
     ROADIES is an end-to-end pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. ROADIES_XP extends this with GPU-accelerated alignment/tree-building and a placement mode for growing or updating an existing species tree with new genomes.
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   recipe-maintainers:
     - ang037
   identifiers:
