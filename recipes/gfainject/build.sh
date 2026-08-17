@@ -3,7 +3,7 @@ set -xeuo pipefail
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -std=c11 -Wno-int-conversion -Wno-implicit-function-declaration"
+export CFLAGS="${CFLAGS} -Wno-int-conversion -Wno-implicit-function-declaration"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
