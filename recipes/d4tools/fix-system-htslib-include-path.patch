@@ -1,0 +1,19 @@
+--- d4-hts/build.rs	2026-08-16 20:59:48.135338546 +0200
++++ d4-hts/build.rs	2026-08-16 20:59:58.067384115 +0200
+@@ -6,9 +6,23 @@
+ use std::process::Command;
+ 
+ fn create_hts_bindings(includes: &[PathBuf], version: &str, system: bool) -> Result<(), ()> {
+     let mut include_params: Vec<_> = includes
+         .iter()
+-        .map(|x| format!("-I{}/htslib", x.to_str().unwrap()))
++        .map(|x| {
++            if system {
++                format!("-I{}", x.to_str().unwrap())
++            } else {
++                format!("-I{}/htslib", x.to_str().unwrap())
++            }
++        })
+         .collect();
+     if system {
+         include_params.push("-DUSE_SYSTEM_HTSLIB".to_string());
