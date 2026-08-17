@@ -1,4 +1,0 @@
-unset BASILISK_CUSTOM_PYTHON_3_11_9
-unset BASILISK_NO_PYENV
-echo "BASILISK_CUSTOM_PYTHON_3_11_9 has been unset"
-echo "BASILISK_NO_PYENV has been unset"
