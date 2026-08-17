@@ -31,6 +31,12 @@ pipeline <- SingleCellPipeline(
   barcodes_file = bc_allow
 )
 
+python <- Sys.getenv("BASILISK_CUSTOM_PYTHON_3_11_9") 
+modules <- c("pip", "venv")
+print(stringr::str_c("Python version: ", reticulate::python_version(python)))
+print(stringr::str_c("Python has modules 'pip' and 'venv': ", reticulate::python_has_modules(python, modules)))
+print(stringr::str_c("Python config is: ", reticulate::python_config(python, modules)))
+
 # print warnings when they occur
 options(warn=1)
 pipeline <-run_FLAMES(pipeline)
