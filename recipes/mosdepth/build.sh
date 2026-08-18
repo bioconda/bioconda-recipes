@@ -11,7 +11,11 @@ rm -rf *.bak
 pushd d4-format
 cargo build --release --package=d4binding
 popd
-D4_LIB_DIR="$(pwd)/d4-format/target/release"
+# Not d4-format/target/release: conda-forge's rust_<platform> activation sets
+# CARGO_BUILD_TARGET to an explicit target triple even for a "native" build (observed on
+# osx-arm64), which makes cargo place output under target/<triple>/release/ instead. Locating
+# the actual output on disk works regardless of whether a target triple is in play.
+D4_LIB_DIR="$(dirname "$(find "$(pwd)/d4-format/target" -name 'libd4binding.a' -not -path '*/deps/*' -print -quit)")"
 D4_INCLUDE_DIR="$(pwd)/d4-format/d4binding/include"
 # Cargo emits a shared library (libd4binding.so/.dylib) alongside the static one; removing it
 # forces the linker to pick up the static .a instead, since both gcc and clang prefer a
