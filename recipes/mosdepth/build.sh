@@ -38,10 +38,24 @@ fi
 # `nimble build` (used here previously) generates a --path for each dependency assuming it
 # keeps its sources under src/. d4-nim doesn't (its own nimble metadata already warns about
 # this: the actual d4.nim lives at the package root, with a "d4pkg" subdirectory alongside
-# it), so `nimble build` fails to find it. Fetching dependencies and invoking nim directly with
-# --nimblePath instead of nimble's generated --path list resolves packages the same way nim's
-# own global nimble integration does, and isn't tripped up by d4-nim's layout.
+# it), so `nimble build` fails to find it.
+#
+# Fetching dependencies and invoking nim directly instead avoids that specific bug, but a
+# single --nimblePath:nimbledeps/pkgs2 isn't a reliable replacement: whether `nimble install`
+# leaves a package's sources nested under its own src/ or flattens src/'s contents into the
+# package root turns out to depend on the nimble version (observed both ways across the
+# nim/nimble versions this recipe builds with across platforms), and --nimblePath doesn't
+# handle both layouts uniformly. Resolving each installed package's actual root explicitly,
+# by checking which layout it actually got on disk this run, works regardless of that.
 nimble --localdeps install -y --verbose --depsOnly
-nim c -d:d4 -d:release --mm:refc --nimblePath:nimbledeps/pkgs2 -o:mosdepth mosdepth.nim
+nim_paths=()
+for pkg_dir in nimbledeps/pkgs2/*/; do
+	if [ -d "${pkg_dir}src" ]; then
+		nim_paths+=("--path:${pkg_dir}src")
+	else
+		nim_paths+=("--path:${pkg_dir}")
+	fi
+done
+nim c -d:d4 -d:release --mm:refc "${nim_paths[@]}" -o:mosdepth mosdepth.nim
 
 install -v -m 0755 mosdepth "${PREFIX}/bin"
