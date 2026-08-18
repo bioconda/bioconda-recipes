@@ -77,9 +77,15 @@ test:
     - ldd $(command -v d4tools) | grep -q libhts.so  # [linux]
     - otool -L $(command -v d4tools) | grep -q libhts  # [osx]
     # exercise real CRAM decoding (test.cram is CRAM v3.1, the format this recipe's
-    # system-htslib fix targets -- see test-data/README.md) rather than just linking/--help
-    - d4tools create -r test-data/ref.fa.fai test-data/test.cram test-output.d4
-    - d4tools view test-output.d4 | diff - test-data/expected_output.txt
+    # system-htslib fix targets -- see test-data/README.md) rather than just linking/--help.
+    # Guarded on the fixture file's presence: bioconda's mulled-build second-stage container
+    # test runs this same command list against a bare package install and never copies
+    # `test: files:` in (bioconda_utils/pkg_test.py's get_tests() only reads test/commands out
+    # of the built package's recorded recipe metadata), so without this guard the mulled test
+    # would always fail here with "No such file or directory" regardless of whether d4tools
+    # itself works. The primary build+test phase, where the files really are present, still
+    # runs the real check and fails on a genuine regression.
+    - if [ -f test-data/test.cram ]; then d4tools create -r test-data/ref.fa.fai test-data/test.cram test-output.d4 && d4tools view test-output.d4 | diff - test-data/expected_output.txt; fi
 
 about:
   home: "https://github.com/38/d4-format"
