@@ -1,22 +1,34 @@
 {% set name = "mosdepth" %}
 {% set version = "0.3.14" %}
+{% set d4_commit = "6f4031309958a7a1e471c9081369f2012d82705e" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/mosdepth/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: abac67de4547dc5642efd46846044d6b3536d2ca3443b4ca172446edf82eeb42
+  - url: https://github.com/brentp/mosdepth/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: abac67de4547dc5642efd46846044d6b3536d2ca3443b4ca172446edf82eeb42
+  - url: https://github.com/38/d4-format/archive/{{ d4_commit }}.tar.gz
+    folder: d4-format
+    sha256: 3e6af3d73f86730504224ac834989e7ba10baa9e4f0fffd898975300a3df0015
+    # Pinned to the same commit recipes/d4tools uses (not a tagged release -- v0.3.11 predates
+    # fixes not yet in any release; see recipes/d4tools/meta.yaml for details), for consistency
+    # between the two recipes and because that commit is already vetted in bioconda CI there.
+    # Only d4binding is built here, and without --all-features: mosdepth writes pre-computed
+    # depth values directly via d4_file_write_values and never calls into d4-format's own
+    # BAM/CRAM depth profiler (the only thing --all-features adds), so none of the
+    # htslib-linking work recipes/d4tools needs applies here.
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('rust') }}
     - {{ stdlib('c') }}
     - nim  # [not arm64]
     - coreutils
@@ -33,6 +45,11 @@ requirements:
 test:
   commands:
     - mosdepth -h
+    - mosdepth -h 2>&1 | grep -- "--d4"
+    # d4binding is statically linked into mosdepth (see build.sh), so no library-loading step
+    # to check here the way recipes/d4tools checks its htslib linkage. This only confirms the
+    # --d4 flag exists in this build, not a full CRAM/d4 round trip.
+    - "! ldd $(command -v mosdepth) | grep -q libd4binding"  # [linux]
 
 about:
   home: "https://github.com/brentp/mosdepth"
