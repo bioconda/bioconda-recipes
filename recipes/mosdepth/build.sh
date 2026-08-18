@@ -22,7 +22,16 @@ D4_INCLUDE_DIR="$(pwd)/d4-format/d4binding/include"
 # dynamic library over a static one of the same name when both are on the search path.
 rm -f "${D4_LIB_DIR}"/libd4binding.so "${D4_LIB_DIR}"/libd4binding.dylib
 
+# d4binding pulls in reqwest (for d4::ssio::http -- d4binding/src/stream.rs uses
+# HttpReader unconditionally, so the "http_reader" feature can't be dropped the way
+# "depth_profiler" was), which on macOS needs CoreFoundation/SystemConfiguration for its TLS
+# and network-reachability code. cargo normally links those frameworks in automatically for
+# its own binaries, but not here, since libd4binding.a is only getting linked into mosdepth
+# afterwards by nim/clang, well outside cargo's own build.
+extra_link_flags=()
 if [[ "$(uname -m)" == "arm64" ]]; then
+	extra_link_flags+=(--passL:"-framework CoreFoundation" --passL:"-framework Security" --passL:"-framework SystemConfiguration")
+
 	nim_build="macosx_arm64"
 	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
 	unxz -c ${nim_build}.tar.xz | tar -x
@@ -63,7 +72,7 @@ done
 # nim runs and works locally outside this sandbox) -- passing -L/-I straight through nim's own
 # --passL/--passC makes it end up on the actual compiler command line no matter what.
 nim c -d:d4 -d:release --mm:refc "${nim_paths[@]}" \
-	--passL:"-L${D4_LIB_DIR}" --passC:"-I${D4_INCLUDE_DIR}" \
+	--passL:"-L${D4_LIB_DIR}" --passC:"-I${D4_INCLUDE_DIR}" "${extra_link_flags[@]}" \
 	-o:mosdepth mosdepth.nim
 
 install -v -m 0755 mosdepth "${PREFIX}/bin"
