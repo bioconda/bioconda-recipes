@@ -1,16 +1,27 @@
 {% set name = "d4tools" %}
-{% set version = "0.3.11" %}
+{% set version = "0.3.12.dev0" %}
+{% set commit = "6f4031309958a7a1e471c9081369f2012d82705e" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/38/d4-format/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 376e61c93cfe2efc15f5e74b75214e065e278146555e67b8769818bf49594726
+  # v0.3.11 is the latest tagged release, but it predates upstream commit 729ed9d ("Fix off by
+  # one bug when converting BAM files to d4 files", 38/d4-format#97, merged Feb 2025), which
+  # fixes two real depth-counting bugs: a read's coverage end was miscounted by one, and every
+  # position's reported depth used the coverage heap's state from *before* that position's own
+  # reads were added to it. No release has included this fix yet, so this recipe builds from a
+  # specific commit on upstream's master instead of a tagged release, per
+  # https://bioconda.github.io/contributor/guidelines.html#packages-appropriate-for-bioconda
+  # ("If uploading of an unreleased version is necessary, please follow the versioning scheme of
+  # conda for pre- and post-releases"). Move back to a tagged release once one exists that
+  # includes 729ed9d.
+  url: https://github.com/38/d4-format/archive/{{ commit }}.tar.gz
+  sha256: 3e6af3d73f86730504224ac834989e7ba10baa9e4f0fffd898975300a3df0015
   patches:
-    # upstream fix (include-path only): https://github.com/38/d4-format/pull/119
-    # this patch additionally includes two bioconda-specific changes not in #119:
+    # upstream fix (include-path only), still an open PR: https://github.com/38/d4-format/pull/119
+    # this patch additionally includes:
     # - hard-fails instead of silently falling back to a vendored htslib build if HTSLIB=system
     #   is requested but pkg-config can't find htslib
     # - bumps the pinned bindgen 0.55.1 -> 0.72.1: 0.55.1 panics generating bindings for real
@@ -21,7 +32,7 @@ source:
     - fix-system-htslib-include-path.patch
 
 build:
-  number: 4
+  number: 0
   run_exports:
     - {{ pin_subpackage('d4tools', max_pin="x.x") }}
 
@@ -63,7 +74,6 @@ test:
     # aarch64 CI image, ldd's resolved path is a literal, unexpanded "$PREFIX/..." template
     # rather than the real absolute path, even though the library does load correctly (valid
     # address, and the CRAM decode test below proves it's the right one end to end).
-    - ldd $(command -v d4tools)  # [linux]
     - ldd $(command -v d4tools) | grep -q libhts.so  # [linux]
     - otool -L $(command -v d4tools) | grep -q libhts  # [osx]
     # exercise real CRAM decoding (test.cram is CRAM v3.1, the format this recipe's
@@ -78,7 +88,7 @@ about:
   license_file: LICENSE
   summary: "The D4 command line utility program."
   dev_url: "https://github.com/38/d4-format"
-  doc_url: "https://github.com/38/d4-format/blob/v{{ version }}/README.md"
+  doc_url: "https://github.com/38/d4-format/blob/{{ commit }}/README.md"
 
 extra:
   additional-platforms:
