@@ -1,0 +1,53 @@
+{% set version = "0.1.9" %}
+
+package:
+  name: siren-rnai
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/siren-rnai/siren_rnai-{{ version }}.tar.gz
+  sha256: 7f11152b48dea6e668ac3ae6b627c65eb9a2ef70d34fcab49bdad21791e8458d
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - SIREN = siren_rnai.siren_masterV:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('siren-rnai', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9
+    - pandas
+    - biopython
+    - tqdm
+    - primer3-py
+    - matplotlib-base
+    - numpy
+    - seaborn
+    - scipy
+    - rnahybrid
+
+test:
+  imports:
+    - siren_rnai
+  commands:
+    - pip check
+    - SIREN --help
+
+about:
+  home: https://github.com/pablovargasmejia/SIREN
+  summary: 'SIREN: Suite for Intelligent RNAi design and Evaluation of Nucleotide sequences'
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - pablovargasmejia

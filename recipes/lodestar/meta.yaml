@@ -1,0 +1,55 @@
+{% set name = "lodestar" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: lodestar
+  version: {{ version }}
+
+source:
+  url: https://github.com/TQ-Smith/LODESTAR/archive/refs/tags/LODESTARv{{ version }}.tar.gz
+  sha256: 634fb57baf388c855b98a5d66e9631480bfcdf42131a104622fe9ee57cc9673d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - lodestar
+
+about:
+  home: https://github.com/TQ-Smith/LODESTAR
+  summary: LOcal DEcomposition and Similarity To All Regions
+  description: |
+    LODESTAR projects the relatedness between samples into a lower
+    dimension using classical MDS within blocks along a genomes.
+    The user has the option to perform Procrustes analysis between
+    the local regions and either the genome-wide relatedness or a 
+    supplied set of points. Procrustes analysis calculates the correlation
+    between two plots. Therefore, we can identify local regions that are
+    structurally similar to the aggregate population stratification
+    or the relatedness defined by a non-genetic variable, such as 
+    geography. LODESTAR is written in C with no dependencies and is
+    multithreaded.
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/TQ-Smith/LODESTAR/wiki/LODESTAR-Manual
+  dev_url: https://github.com/TQ-Smith/LODESTAR
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - TQ-Smith
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -12,7 +12,7 @@ CONDA_LDFLAGS="${LDFLAGS}"
 export CC=mpicc
 export FC=mpifort
 
-cd esme_netcdf-fortran
+cd "${SRC_DIR}/esme_netcdf-fortran"
 
 export HDF5_PLUGIN_PATH="${PREFIX}/lib/hdf5/plugin"
 

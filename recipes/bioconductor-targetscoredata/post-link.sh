@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "targetscoredata-1.42.0"
+installBiocDataPackage.sh "targetscoredata-1.46.0"

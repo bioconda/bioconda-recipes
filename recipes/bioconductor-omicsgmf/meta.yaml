@@ -1,0 +1,69 @@
+{% set version = "1.0.0" %}
+{% set name = "omicsGMF" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0b35cfa0ea9e5844d21a7f1cd86d54be
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-omicsgmf", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, dplyr, testthat, BiocGenerics, BiocStyle, graphics, grDevices
+requirements:
+  host:
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biocsingular >=1.26.0,<1.27.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - bioconductor-qfeatures >=1.20.0,<1.21.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-scater >=1.38.0,<1.39.0
+    - bioconductor-scuttle >=1.20.0,<1.21.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-ggplot2
+    - r-matrix
+    - r-sgdgmf
+  run:
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biocsingular >=1.26.0,<1.27.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - bioconductor-qfeatures >=1.20.0,<1.21.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-scater >=1.38.0,<1.39.0
+    - bioconductor-scuttle >=1.20.0,<1.21.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-ggplot2
+    - r-matrix
+    - r-sgdgmf
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Dimensionality reduction of (single-cell) omics data in R using omicsGMF
+  description: omicsGMF is a Bioconductor package that uses the sgdGMF-framework of the \code{sgdGMF} package for highly performant and fast matrix factorization that can be used for dimensionality reduction, visualization and imputation of omics data. It considers data from the general exponential family as input, and therefore suits the use of both RNA-seq (Poisson or Negative Binomial data) and proteomics data (Gaussian data). It does not require prior transformation of counts to the log-scale, because it rather optimizes the deviances from the data family specified. Also, it allows to correct for known sample-level and feature-level covariates, therefore enabling visualization and dimensionality reduction upon batch correction. Last but not least, it deals with missing values, and allows to impute these after matrix factorization, useful for proteomics data. This Bioconductor package allows input of SummarizedExperiment, SingleCellExperiment, and QFeature classes.
+

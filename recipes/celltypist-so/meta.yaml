@@ -1,0 +1,53 @@
+{% set name = "celltypist-so" %}
+{% set version = "1.6.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/c/celltypist-so/celltypist_so-{{ version }}.tar.gz
+  sha256: 0da56d4f878a65ac2693fae0977095861ab40b983468b02c8beec2aa3de08f46
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.19.0
+    - pandas >=1.0.5
+    - scikit-learn >=0.24.1
+    - openpyxl >=3.0.4
+    - click >=7.1.2
+    - requests >=2.23.0
+    - scanpy >=1.7.0
+
+test:
+  imports:
+    - celltypist
+  commands:
+    - celltypist --help
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/Mena-SA-Kamel/celltypist-SO
+  summary: Fork of CellTypist without leidenalg in the package requirements.
+  license_file: LICENSE
+  license: MIT
+
+extra:
+  recipe-maintainers:
+    - khaled196
