@@ -1,5 +1,5 @@
 {% set name = "zna" %}
-{% set version = "0.4.1" %}
+{% set version = "0.5.1" %}
 {% set username = "mkiyer" %}
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/{{ username }}/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 9efd68c8f1c4ba2b1cd9f58e25a1b754df386f0f68ad52c9c11f02f44d289830
+  sha256: b33d3a1e5a5a3aeab3b2ad5251ebe80af385c2bf2de5b9e3794b8a8b67bc2d11
 
 build:
   number: 0
@@ -21,6 +21,16 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    # Required since conda-build's stdlib migration, and already present in the
+    # published recipe -- a PR that drops it regresses that migration. Keep it in step
+    # with upstream: this file is the source the bioconda recipe is copied FROM, so
+    # anything upstream gained and this did not comes straight back out on the next bump.
+    #
+    # This is NOT a package name. It resolves through the c_stdlib / c_stdlib_version
+    # variant keys in conda-forge's pinning, which bioconda's CI supplies. Building
+    # locally without that pinning fails with "c_osx-arm64 does not exist", which reads
+    # like a broken channel; pass -m "$CONDA_PREFIX/conda_build_config.yaml" from the
+    # bioconda-build env. See docs/RELEASING.md section 2.
     - {{ stdlib('c') }}
     - cmake >=3.15
     - make  # [unix]
@@ -30,26 +40,36 @@ requirements:
     - pip
     - scikit-build-core >=0.10
     - nanobind >=2.0
-    - zstandard
   run:
     - python
     - zstandard
+    - pyyaml
 
 test:
   imports:
     - zna
     - zna.core
     - zna.cli
+    - zna.merge
+    # `zna merge` is compiled too, and a build that lost it would still pass every
+    # other test here -- the reference backend would quietly take over at 50x the cost.
+    - zna.merge._accel
   commands:
     - zna --help
+    # Exercises the subcommand registration, which resolves through zna/merge/args.py
+    # and must not need the compiled backend just to print help.
+    - zna merge --help
+    - python -c "from zna.merge.backend import available_merge_backends as a; assert 'accel' in a(), 'merge C++ backend did not build'"
     - python -c "import zna; print('ZNA version:', zna.__version__)"
-    - python -c "from zna import is_accelerated; print('C++ acceleration:', is_accelerated())"
-  requires:
-    - pytest
+    # Assert, do not merely print: the whole point of this package is the
+    # compiled extension, and a build that silently fell back to the pure-Python
+    # backend would otherwise pass its own test.
+    - python -c "from zna import is_accelerated; assert is_accelerated(), 'C++ backend did not load'"
+    - python -c "import zna, io; h=zna.ZnaHeader(read_group='t', seq_len_bytes=2); b=io.BytesIO(); w=zna.ZnaWriter(b,h); w.write_record('ACGTACGT',False,True,False); w.close(); r=list(zna.ZnaReader(io.BytesIO(b.getvalue())).records()); assert r[0][0]=='ACGTACGT', r"
 
 about:
   home: https://github.com/{{ username }}/{{ name }}
-  license: GPL-3.0-only
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: LICENSE
   summary: High-performance binary format for compressed nucleic acid sequences
@@ -58,13 +78,13 @@ about:
     storing DNA/RNA sequences with exceptional compression and I/O speed.
     
     Features:
-    - 135 MB/s roundtrip throughput (9.5x faster than Python baseline)
-    - 2.8+ GB/s encoding/decoding for long reads
-    - 3.7-4.0x compression ratio with Zstd
-    - C++ acceleration with pure Python fallback
-    - Block-based architecture for memory efficiency
-    - Supports single-end, paired-end, and interleaved reads
-    - Supports strand-specific protocols
+    - 1.7 GB/s decode and 726 MB/s encode on 150 bp reads; 6.6 GB/s decode on
+      long reads (single core)
+    - ~4x compression from 2-bit packing, more with Zstd on duplicated data
+    - C++ acceleration with a pure Python fallback
+    - Columnar block layout; batch and block-sharded reading for data loaders
+    - Supports single-end, paired-end, interleaved, and overlap-merged reads
+    - Supports strand-specific protocols and per-record fragment geometry
   doc_url: https://github.com/{{ username }}/{{ name }}/blob/main/README.md
   dev_url: https://github.com/{{ username }}/{{ name }}
 
