@@ -27,11 +27,14 @@ rm -f "${D4_LIB_DIR}"/libd4binding.so "${D4_LIB_DIR}"/libd4binding.dylib
 # "depth_profiler" was), which on macOS needs CoreFoundation/SystemConfiguration for its TLS
 # and network-reachability code. cargo normally links those frameworks in automatically for
 # its own binaries, but not here, since libd4binding.a is only getting linked into mosdepth
-# afterwards by nim/clang, well outside cargo's own build.
+# afterwards by nim/clang, well outside cargo's own build. This is every macOS build (osx-64
+# failed on exactly this before it was scoped to arm64 only), not just arm64.
 extra_link_flags=()
-if [[ "$(uname -m)" == "arm64" ]]; then
+if [[ "$(uname)" == "Darwin" ]]; then
 	extra_link_flags+=(--passL:"-framework CoreFoundation" --passL:"-framework Security" --passL:"-framework SystemConfiguration")
+fi
 
+if [[ "$(uname -m)" == "arm64" ]]; then
 	nim_build="macosx_arm64"
 	curl -SL https://github.com/nim-lang/nightlies/releases/download/latest-version-2-2/${nim_build}.tar.xz -o ${nim_build}.tar.xz
 	unxz -c ${nim_build}.tar.xz | tar -x
