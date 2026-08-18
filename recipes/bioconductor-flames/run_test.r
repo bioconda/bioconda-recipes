@@ -45,6 +45,7 @@ pipeline
 # but turning all warnings into errors will also error genuine warnings that
 # occur during the pipeline run. So this seems to be the sanest solution.
 if (length(pipeline@last_error) > 0) {
+    print(pipeline@last_error)
     cli::cli_abort("Found errors during SingleCellPipeline in run_test.r, please debug before finalizing new bioconda package version.")
 }
 
@@ -53,12 +54,13 @@ pipeline2 <- example_pipeline("MultiSampleSCPipeline") # or SingleCellPipeline
 pipeline2@config$pipeline_parameters$bambu_isoform_identification <- FALSE #
 pipeline2@config$pipeline_parameters$oarfish_quantification <- FALSE       #  might as well test the built-in Python scripts
 pipeline2@config$pipeline_parameters$demultiplexer <- "BLAZE"
-pipeline2@expect_cell_number <- rep(100L, length(pipeline@fastq))
+pipeline2@expect_cell_number <- rep(100L, length(pipeline2@fastq))
 pipeline2@controllers <- list(default = crew::crew_controller_local()) # also test if the crew controller works
 
 pipeline2 <- run_FLAMES(pipeline2)
 pipeline2
 if (length(pipeline2@last_error) > 0) {
+    print(pipeline2@last_error)
     cli::cli_abort("Found errors during MultiSampleSCPipeline in run_test.r, please debug before finalizing new bioconda package version.")
 }
 
