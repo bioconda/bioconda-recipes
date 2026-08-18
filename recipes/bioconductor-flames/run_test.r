@@ -61,6 +61,7 @@ pipeline2 <- run_FLAMES(pipeline2)
 pipeline2
 if (length(pipeline2@last_error) > 0) {
     print(pipeline2@last_error)
+    print(pipeline2@controllers[["default"]]$error)
     cli::cli_abort("Found errors during MultiSampleSCPipeline in run_test.r, please debug before finalizing new bioconda package version.")
 }
 
