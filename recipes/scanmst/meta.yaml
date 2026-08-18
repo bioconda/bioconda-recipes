@@ -20,6 +20,14 @@ build:
   script: |
     export HTSLIB_ROOT="$PREFIX"
     export SCANMST_EMBED_RPATH=ON
+    # Force Ninja explicitly: scikit-build-core's generator auto-detection
+    # does not reliably find the build-prefix `ninja` on bioconda's Linux CI
+    # runner and silently falls back to "Unix Makefiles", which then fails
+    # with CMAKE_MAKE_PROGRAM/compilers not set (no `make` dep, and cmake's
+    # own EnableLanguage compiler probe never runs the conda compiler wrappers
+    # in that path). Local conda-build runs didn't hit this because ninja was
+    # already resolved via the ambient PATH there.
+    export CMAKE_GENERATOR=Ninja
     {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
