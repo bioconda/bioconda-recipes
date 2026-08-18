@@ -7,7 +7,12 @@ set -euo pipefail
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+# macOS ignores LD_LIBRARY_PATH; the equivalent there is DYLD_LIBRARY_PATH.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    export DYLD_LIBRARY_PATH="${PREFIX}/lib"
+else
+    export LD_LIBRARY_PATH="${PREFIX}/lib"
+fi
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
