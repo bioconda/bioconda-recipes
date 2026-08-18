@@ -15,10 +15,17 @@ source:
     # Pinned to the same commit recipes/d4tools uses (not a tagged release -- v0.3.11 predates
     # fixes not yet in any release; see recipes/d4tools/meta.yaml for details), for consistency
     # between the two recipes and because that commit is already vetted in bioconda CI there.
-    # Only d4binding is built here, and without --all-features: mosdepth writes pre-computed
-    # depth values directly via d4_file_write_values and never calls into d4-format's own
-    # BAM/CRAM depth profiler (the only thing --all-features adds), so none of the
-    # htslib-linking work recipes/d4tools needs applies here.
+    # Only d4binding is built here. d4's "depth_profiler" feature (which pulls in d4-hts, and
+    # with it a real htslib) is on by default regardless of --all-features, but d4binding's own
+    # code never uses it -- d4/src/d4file/writer.rs has one unguarded depth_profiler-only
+    # function (load_chrom_info_from_bam) that mosdepth doesn't call either, and that's the
+    # only thing in the "writer" feature mosdepth actually needs that touches d4-hts at all.
+    # disable-depth-profiler.patch turns depth_profiler off, avoiding the htslib cross-compile
+    # failure it causes on osx-arm64 (d4-hts's own vendored-htslib build shells out to
+    # `xcodebuild -find make`, which doesn't exist when cross-compiling from Linux) and all of
+    # the htslib-linking work recipes/d4tools needs for the same feature, which it does need.
+    patches:
+      - disable-depth-profiler.patch
 
 build:
   # existing 0.3.14 package in the channel is already at build number 1
