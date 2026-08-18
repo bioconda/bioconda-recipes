@@ -1,0 +1,40 @@
+Include <cfloat> where DBL_MAX is used.
+
+EmModel.cpp and cfm-train/main.cpp use DBL_MAX but never include <cfloat>.
+They compiled historically because older libstdc++ headers pulled it in
+transitively; current libstdc++ does not, so the build fails:
+
+    EmModel.cpp: error: 'DBL_MAX' was not declared in this scope
+
+This is unrelated to RDKit -- it is ordinary transitive-include tightening, and
+the fix is the include that should always have been there.
+
+Upstream status: not reported, because there is currently no channel to report to.
+Atlassian is sunsetting Bitbucket Issues and Wikis across Cloud; they could no
+longer be enabled from April 2026 and existing issues are removed on 20 August
+2026, so wishartlab/cfm-id-code has no usable tracker. The repository README
+carries no contact address and there is no CONTRIBUTING file. Pull requests are
+unaffected and remain possible; this change has been restated against current
+master and verified to apply with patch -Np1 --binary.
+Remove this patch once upstream adds the includes.
+
+--- a/cfm/cfm-code/EmModel.cpp
++++ b/cfm/cfm-code/EmModel.cpp
+@@ -17,6 +17,7 @@
+ #########################################################################*/
+ 
+ #include "mpi.h"
++#include <cfloat>
+ #include <ctime>
+ #include <chrono>
+ #include <iomanip>
+--- a/cfm/cfm-train/main.cpp
++++ b/cfm/cfm-train/main.cpp
+@@ -17,6 +17,7 @@
+ #########################################################################*/
+ 
+ #include "mpi.h"
++#include <cfloat>
+ 
+ #include <boost/algorithm/string.hpp>
+ #include <boost/lexical_cast.hpp>
