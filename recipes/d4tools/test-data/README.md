@@ -3,8 +3,7 @@ All files in this directory are synthetic test fixtures with no real biological 
 generated with samtools/htslib 1.24 from a fabricated (pseudo-random, seed=42) reference and
 two fabricated reads. A repeating "ACGT..." sequence was tried first and reproduced correctly
 locally, but produced a wrong (mathematically inconsistent) depth result in bioconda CI on the
-exact same htslib build -- likely a compression-codec edge case triggered by the degenerate
-repeating input. Using a non-repetitive sequence avoids that:
+exact same htslib build -- root cause unknown. Using a non-repetitive sequence avoids that:
 
 ```
 python3 -c "

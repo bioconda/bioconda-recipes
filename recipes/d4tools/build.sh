@@ -30,6 +30,7 @@ export RUSTFLAGS="${RUSTFLAGS:-} -L${PREFIX}/lib"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-# build statically linked binary with Rust
+# cargo install links the Rust crates into a single binary as usual; htslib itself is linked
+# dynamically against the system package, per HTSLIB=system above.
 RUST_BACKTRACE=1
 cargo install --verbose --no-track --path d4tools --root "${PREFIX}"
