@@ -1,0 +1,37 @@
+Adapt to RDKit's ROMol::operator[] returning a raw Bond*.
+
+In the RDKit generation CFM-ID 4.4.10 targets (2017_09_3), ROMol::operator[]
+returned a smart-pointer-like wrapper, so `.get()` was needed to reach the
+underlying Bond. In currently packaged RDKit it returns `RDKit::Bond*`
+directly, and calling .get() on a raw pointer fails to compile:
+
+    MILP.cpp:276: error: request for member 'get' in
+    '...RDKit::ROMol::operator[](...)', which is of pointer type
+    'RDKit::Bond*' (maybe you meant to use '->' ?)
+
+The dereference is simply no longer required. This is the only occurrence of
+the pattern in the CFM sources.
+
+Applied on top of cxx17-for-modern-rdkit.patch; both are needed to build
+against a modern RDKit.
+
+Upstream status: not reported, because there is currently no channel to report to.
+Atlassian is sunsetting Bitbucket Issues and Wikis across Cloud; they could no
+longer be enabled from April 2026 and existing issues are removed on 20 August
+2026, so wishartlab/cfm-id-code has no usable tracker. The repository README
+carries no contact address and there is no CONTRIBUTING file. Pull requests are
+unaffected and remain possible; this change has been restated against current
+master and verified to apply with patch -Np1 --binary.
+Remove this patch once upstream supports current RDKit itself.
+
+--- a/cfm/cfm-code/MILP.cpp
++++ b/cfm/cfm-code/MILP.cpp
+@@ -273,7 +273,7 @@
+ 
+             for ( ; cbond_beg != cbond_end; ++ cbond_beg ){
+             //for (; it != ip.second; ++it) {
+-                RDKit::Bond *cbond = (*mol)[*cbond_beg].get();
++                RDKit::Bond *cbond = (*mol)[*cbond_beg];
+                 int cbond_broken;
+                 cbond->getProp("Broken", cbond_broken);
+                 if(cbond_broken)

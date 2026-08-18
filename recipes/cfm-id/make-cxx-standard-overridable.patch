@@ -1,0 +1,51 @@
+Let the C++ standard be chosen from the cmake command line.
+
+CFM-ID pins CMAKE_CXX_STANDARD to 11 (14 on upstream master). That matched
+RDKit 2017_09_3, which upstream's Dockerfile still builds against, but RDKit's
+public headers have since moved to C++17. Building against any currently
+packaged RDKit fails inside RDKit's own headers before CFM's code is reached:
+
+    RDGeneral/RDValue.h: error: 'any' in namespace 'std' does not name a type
+    RDGeneral/RDValue.h: error: 'any_cast' is not a member of 'std'
+    RDGeneral/Invariant.h: error: 'string_view' is not a member of 'std'
+    error: 'is_same_v' is not a member of 'std'; did you mean 'is_same'?
+    error: 'exchange' is not a member of 'std'
+
+std::any, std::string_view, std::is_same_v and std::exchange are all C++17.
+Measured, not assumed: a build with CMAKE_CXX_STANDARD 14 and the other two
+patches applied still fails on std::any.
+
+The obvious fix -- passing -DCMAKE_CXX_STANDARD=17 -- does not work on its own,
+because a plain set() creates a normal variable that shadows the cache variable
+the command line defines. So the set() has to be made conditional.
+
+This patch does NOT raise the standard. It only makes the existing default
+yield to an explicit choice; build.sh then passes -DCMAKE_CXX_STANDARD=17.
+That distinction matters upstream: their default is untouched, so anyone still
+building against RDKit 2017 is unaffected, which would not be true of a patch
+that simply forced 17 on everyone.
+
+Upstream note: cfm/INSTALL.md already says "Newer RDKit may work but we have not
+test it yet". This is part of what it takes for that to be true.
+Upstream status: not reported, because there is currently no channel to report to.
+Atlassian is sunsetting Bitbucket Issues and Wikis across Cloud; they could no
+longer be enabled from April 2026 and existing issues are removed on 20 August
+2026, so wishartlab/cfm-id-code has no usable tracker. The repository README
+carries no contact address and there is no CONTRIBUTING file. Pull requests are
+unaffected and remain possible; this change has been restated against current
+master and verified to apply with patch -Np1 --binary.
+Remove this patch once upstream accepts the overridable form.
+
+--- a/cfm/CMakeLists.txt
++++ b/cfm/CMakeLists.txt
+@@ -13,7 +13,9 @@
+ #########################################################################*/
+ # We may need higher verison cmake
+ cmake_minimum_required(VERSION 3.7.0)
+-set(CMAKE_CXX_STANDARD 11)
++if(NOT DEFINED CMAKE_CXX_STANDARD)
++    set(CMAKE_CXX_STANDARD 11)
++endif()
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # Set a default build type if none was specified
