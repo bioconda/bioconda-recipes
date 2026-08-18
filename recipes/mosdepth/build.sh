@@ -17,8 +17,6 @@ D4_INCLUDE_DIR="$(pwd)/d4-format/d4binding/include"
 # forces the linker to pick up the static .a instead, since both gcc and clang prefer a
 # dynamic library over a static one of the same name when both are on the search path.
 rm -f "${D4_LIB_DIR}"/libd4binding.so "${D4_LIB_DIR}"/libd4binding.dylib
-export LIBRARY_PATH="${D4_LIB_DIR}:${LIBRARY_PATH:-}"
-export C_INCLUDE_PATH="${D4_INCLUDE_DIR}:${C_INCLUDE_PATH:-}"
 
 if [[ "$(uname -m)" == "arm64" ]]; then
 	nim_build="macosx_arm64"
@@ -56,6 +54,12 @@ for pkg_dir in nimbledeps/pkgs2/*/; do
 		nim_paths+=("--path:${pkg_dir}")
 	fi
 done
-nim c -d:d4 -d:release --mm:refc "${nim_paths[@]}" -o:mosdepth mosdepth.nim
+# LIBRARY_PATH/C_INCLUDE_PATH aren't reliable here (observed nim's own invocation of the C
+# compiler not picking up LIBRARY_PATH for -ld4binding in CI, even though it's exported before
+# nim runs and works locally outside this sandbox) -- passing -L/-I straight through nim's own
+# --passL/--passC makes it end up on the actual compiler command line no matter what.
+nim c -d:d4 -d:release --mm:refc "${nim_paths[@]}" \
+	--passL:"-L${D4_LIB_DIR}" --passC:"-I${D4_INCLUDE_DIR}" \
+	-o:mosdepth mosdepth.nim
 
 install -v -m 0755 mosdepth "${PREFIX}/bin"
