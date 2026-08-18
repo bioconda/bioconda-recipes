@@ -1,0 +1,63 @@
+{% set version = "0.9.5" %}
+
+package:
+  name: rikin
+  version: {{ version }}
+
+source:
+  url: https://github.com/s-will/rikin/archive/refs/tags/v{{ version }}.tar.gz
+  sha256:  a057cc24728218232c977f0c400e2ee401c1900b3b19ae829105e810129b8f5d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rikin', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gengetopt
+    - make
+  host:
+    - viennarna
+    - locarna
+    - zlib
+  run:
+    - viennarna
+    - locarna
+    - python >=3.9
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+    - seaborn
+    - octave
+
+test:
+  commands:
+    - rikin_enum --help
+    - rikin_barriers --help
+    - rikin_prune --help
+    - rikin_pipeline.py --help
+    - rikin_plot.py --help
+
+about:
+  home: https://github.com/s-will/rikin
+  license: AGPL-3.0-or-later 
+  license_file: COPYING
+  license_family: AGPL
+  summary: Fast computation of RNA-RNA interaction kinetics
+  description: |
+    RNAInterKin (RIKin) implements tools for the fast computation of RNA-RNA
+    interaction kinetics in a detailed RNAup/IntaRNA-inspired interaction
+    model, based on RNA secondary structure and the full Turner nearest-
+    neighbor energy model.
+
+extra:
+  recipe-maintainers:
+    - s-will
