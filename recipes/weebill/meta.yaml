@@ -1,0 +1,46 @@
+{% set version = "0.3.0" %}
+{% set name = "weebill" %}
+{% set sha256 = "129489473ed959ebfe43164353cc60922b5bb99e2fd81b820c5c2784307ec8df" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wwood/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+
+test:
+  commands:
+    - {{ name }} --version | grep '{{ version }}'
+
+about:
+  home: "https://github.com/wwood/weebill"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Compression-focused fork of sylph, a fast species-level metagenomic profiler."
+  dev_url: "https://github.com/wwood/weebill"
+  doc_url: "https://github.com/wwood/weebill/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -3,28 +3,17 @@ set -ex
 
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-# Use conda-forge's htslib (host/run dep) instead of building the bundled
-# submodule. ext/htslib stays in place because the Makefile has explicit
-# dependency rules listing ext/htslib/htslib/*.h as prereqs of bwa-mem3's
-# object files; deleting the dir breaks those rules. Instead the bundled
-# 1.21 headers stay on the include path for compilation, while linking
-# resolves -lhts via conda's -L${PREFIX}/lib (which precedes the bundled
-# -Lext/htslib in the link line). The Makefile's $(HTS_LIB): rule has no
-# prerequisites, so when HTS_LIB points at an already-existing file make
-# treats it as up-to-date and skips the autoreconf+configure+make chain.
-# The 1.21->1.23 ABI drift across bwa-mem3's small htslib API surface
-# (hts_open/close, sam_hdr_init/add_line/add_lines/destroy/write,
-# bam_aux_append) is zero -- all stable since htslib 1.0.
+# Use conda-forge htslib instead of building the bundled submodule.
+# ext/htslib stays on disk because the Makefile has explicit prereqs
+# on ext/htslib/htslib/*.h; pointing HTS_LIB at the conda-forge file
+# makes the bundled $(HTS_LIB): rule a no-op and -lhts resolves via
+# -L${PREFIX}/lib. The meta.yaml htslib pin keeps the bundled headers
+# ABI-compatible with the conda shared library.
 
 MAKE_ARGS=(
   -j${CPU_COUNT}
   CC="${CC}"
   CXX="${CXX}"
-  # safestringlib's safeclib_private.h calls abort()/memcpy() via macros
-  # without including <stdlib.h>/<string.h>. bwa-mem3's Makefile force-
-  # includes them for clang/Darwin only; modern conda gcc on Linux also
-  # promotes -Wimplicit-function-declaration to an error.
-  SAFE_EXTRA_CFLAGS="-include stdlib.h -include ctype.h"
   # bwa-mem3's Makefile derives VERSION_STRING from `git describe`; the
   # source tarball has no .git, so set the version explicitly.
   VERSION_STRING="${PKG_VERSION}"
@@ -38,7 +27,24 @@ MAKE_ARGS=(
   # (Sandy/Ivy Bridge, Bulldozer/Piledriver, older Atom) are not
   # supported by this build.
   BASELINE_ARCH=avx2
+  # Use conda-forge libsais: clearing LIBSAIS_OBJS skips the bundled
+  # compile, and -lsais (in LIBS_EXTRA below) resolves the symbols.
+  # The meta.yaml libsais pin keeps the bundled headers in
+  # ext/libsais/include ABI-compatible with the conda shared library.
+  LIBSAIS_OBJS=""
 )
+
+# Use conda-forge sse2neon on ARM: overriding SSE2NEON_INCLUDES replaces
+# the bundled -Iext/sse2neon with the conda-forge header location. The
+# conda-forge package installs the header at ${PREFIX}/include/sse2neon/
+# (subdir), so the include path points one level deeper to let
+# bwa-mem3's `#include "sse2neon.h"` resolve. ARM-only because the
+# Makefile only references sse2neon under its IS_ARM branch.
+case "$(uname -m)" in
+  aarch64|arm64)
+    MAKE_ARGS+=( SSE2NEON_INCLUDES="-I${PREFIX}/include/sse2neon" )
+    ;;
+esac
 
 if [ "$(uname)" = "Darwin" ]; then
   # The Makefile's macOS branch expects LIBOMP_PREFIX to point at a directory
@@ -53,23 +59,32 @@ if [ "$(uname)" = "Darwin" ]; then
     MIMALLOC_LIB="${PREFIX}/lib/libmimalloc.dylib"
     MIMALLOC_LDFLAGS="-L${PREFIX}/lib -lmimalloc -Wl,-rpath,${PREFIX}/lib"
     HTS_LIB="${PREFIX}/lib/libhts.dylib"
+    LIBS_EXTRA="-L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
   )
 else
   # bwa-mem3 calls shm_open/shm_unlink, which on conda's CentOS-7 sysroot
   # (glibc 2.17) live in librt. Newer Linux glibc (>= 2.34) folds them
   # into libc, so upstream CI on ubuntu-latest doesn't need this.
-  MAKE_ARGS+=( LIBS_EXTRA="-lrt" )
-  # Use conda-forge's mimalloc and htslib. conda-forge ships only the
-  # shared library form on Linux (no .a), so switch from the upstream
-  # Makefile's `-Wl,--whole-archive libmimalloc.a -Wl,--no-whole-archive`
-  # static linking to dynamic linking. mimalloc's docs note that placing
-  # `-lmimalloc` before `-lc` in link order is sufficient for malloc
-  # interposition via ELF symbol resolution order; the upstream LIBS
-  # variable already places $(MIMALLOC_LDFLAGS) before the implicit -lc.
+  #
+  # mimalloc: build and statically link the bundled ext/mimalloc submodule
+  # (the Makefile's default `-Wl,--whole-archive libmimalloc.a`) rather than
+  # dynamically linking conda-forge's libmimalloc.so. conda-forge's Linux
+  # libmimalloc.so exports only the mi_* API, NOT an overriding malloc/free
+  # (it is built without MI_OVERRIDE symbol interposition). Dynamically
+  # linking it therefore loads mimalloc but leaves every malloc/free on the
+  # system allocator -- `bwa-mem3 version` still prints a mimalloc version
+  # (mi_version() resolves), but the hot alignment path runs on glibc malloc,
+  # costing ~30% wall on multi-threaded WGS. The `-lmimalloc before -lc`
+  # interposition claimed by the old comment here only holds when the .so
+  # exports malloc, which conda-forge's does not. Static whole-archive of the
+  # bundled MI_OVERRIDE=ON libmimalloc.a is the only robust override on Linux,
+  # so we drop the MIMALLOC_LIB/MIMALLOC_LDFLAGS overrides and let the
+  # Makefile default build the vendored allocator. (macOS is unaffected: there
+  # conda's libmimalloc.dylib interposes via dyld __interpose regardless of
+  # symbol export, so the Darwin branch above keeps the conda-forge mimalloc.)
   MAKE_ARGS+=(
-    MIMALLOC_LIB="${PREFIX}/lib/libmimalloc.so"
-    MIMALLOC_LDFLAGS="-L${PREFIX}/lib -lmimalloc -Wl,-rpath,${PREFIX}/lib"
     HTS_LIB="${PREFIX}/lib/libhts.so"
+    LIBS_EXTRA="-lrt -L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
   )
 fi
 
