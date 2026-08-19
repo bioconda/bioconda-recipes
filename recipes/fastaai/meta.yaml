@@ -25,12 +25,14 @@ build:
 
 requirements:
   build:
-    # The C compiler is here for the linker pyo3's cdylib needs, not to compile
-    # any C of ours. `stdlib('c')` has to accompany it: bioconda's
-    # compiler_needs_stdlib_c lint is an error, not a warning.
-    - {{ compiler('c') }}
-    - {{ stdlib('c') }}
+    # No `{{ compiler('c') }}`: there is no C to compile, and the rust compiler
+    # package brings the linker pyo3's cdylib needs. Asking for the C compiler
+    # as well broke the osx-64 build — conda-build's post-processing ran
+    # `llvm-otool -l` on the built extension and it died with SIGABRT. The
+    # stdlib is still required, and is what the compiler_needs_stdlib_c lint
+    # actually wants. Same shape as the oxbow and gb-io recipes.
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
   host:
     # Bare `python`: conda-build injects the variant's own pin here, and a
     # `>=3.9` alongside it concatenates into an invalid spec. The floor is
