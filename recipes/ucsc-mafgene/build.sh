@@ -26,10 +26,10 @@ rm -rf kent/src/optimalLeaf/*.bak
 rm -rf kent/src/jkOwnLib/*.bak
 rm -rf kent/src/hg/lib/straw/*.bak
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-    export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
-fi
+#if [[ "$(uname -s)" == "Darwin" ]]; then
+#    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+#    export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
+#fi
 
 if [[ "$(uname -m)" == "arm64" ]]; then
     rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/mafGene .

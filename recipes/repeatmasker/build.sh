@@ -10,14 +10,29 @@ export LC_ALL="en_US.UTF-8"
 
 # configure
 cd ${RM_DIR}
-perl ./configure -libdir "${RM_DIR}/Libraries" -trf_prgm "${PREFIX}/bin/trf" \
-	-rmblast_dir "${PREFIX}/bin" -hmmer_dir "${PREFIX}/bin" \
-	-abblast_dir "${PREFIX}/bin" -crossmatch_dir "${PREFIX}/bin" \
-	-default_search_engine rmblast
 
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
+# configure with the famdb dir
+perl ./configure \
+	-trf_prgm "${PREFIX}/bin/trf" \
+	-rmblast_dir "${PREFIX}/bin" \
+	-hmmer_dir "${PREFIX}/bin" \
+	-abblast_dir "${PREFIX}/bin" \
+	-crossmatch_dir "${PREFIX}/bin" \
+	-default_search_engine rmblast \
+	-famdb_dir "${famdb_dir}"
+
+# BELOW NOT NEEDED FOR 4.2.4
 # Delete huge Dfam file, will be downloaded by post-link.sh
 # Do it now only, because configure needs the full version
-echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
+#echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
 
 # ----- add tools within the bin ------
 

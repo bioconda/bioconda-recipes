@@ -1,23 +1,26 @@
 {% set name = "refgenconf" %}
-{% set version = "0.12.2" %}
+{% set version = "0.13.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "6c9f9ecd8b91b4f75a535cfbdbdfb136f2dc9e9864142d07aa0352c61cf0cf78"
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "4653d5ada163a2716ef61f834207c55761d0ad681c8204a1a4873ef3708eb027"
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3.6
+    - setuptools
   run:
     - python >=3.6
     - pyyaml

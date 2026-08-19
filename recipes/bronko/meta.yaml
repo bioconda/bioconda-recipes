@@ -1,4 +1,4 @@
-{% set version = "0.1.0" %}
+{% set version = "0.1.5" %}
 
 package:
   name: bronko
@@ -6,12 +6,15 @@ package:
 
 source:
   url: "https://github.com/treangenlab/bronko/archive/refs/tags/v{{ version }}.tar.gz"
-  sha256: 5284dfb99a6dcec441836fdea08409b95a9df59257bcf3f38988c81d3fe56548
+  sha256: 05a7d357f103e5be19988505fa0d88e226410ccfeb8e3a03bc0bc0543c3f8b14
 
 build:
   number: 0
   run_exports:
     - {{ pin_subpackage('bronko', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 test:
   commands:
@@ -21,6 +24,8 @@ test:
 requirements:
   build: 
     - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - {{ stdlib("c") }}   
     - make
   run:
     - kmc >=3.2
@@ -38,6 +43,5 @@ extra:
   recipe-maintainers:
     - rdoughty10
   additional-platforms:
-    -linux-aarch64
-    -osx-arm64
-
+    - linux-aarch64
+    - osx-arm64

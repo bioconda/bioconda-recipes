@@ -1,5 +1,5 @@
 {% set name = "ggCaller" %}
-{% set version = "1.4.1" %}
+{% set version = "1.5.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,12 @@ package:
 
 source:
   url: https://github.com/bacpop/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 6c381e4f9c69a6f5eb77152dbaec5995e92d9d4f7d961ff76bd2dc26d9dee311
+  sha256: df1c9e836c5fd68255145b2a9a92735538f8fda57ccb5f93d7f7b902df5b6d13
 
 build:
   number: 0
-  skip: True  # [osx or py < 39]
+  skip: true # [osx_arm64 or py < 39]
+  string: h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}
   entry_points:
     - ggcaller = ggCaller.__main__:main
   run_exports:
@@ -21,11 +22,12 @@ requirements:
   build:
     - {{ compiler('c')}}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake >=3.10
     - make
-    - tbb
-    - tbb-devel
-    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - tbb =2021
+    - tbb-devel =2021
+    - mkl-devel =2022
     - openblas  # [osx]
     - protobuf
     - pytorch-cpu =1.10
@@ -43,12 +45,12 @@ requirements:
     - setuptools
     - llvm-openmp # [osx]
     - libgomp # [linux]
-    - mkl-devel >=2021.4.0,<2023.0.0 # [linux]
+    - mkl-devel =2022
     - lapack # [osx]
     - openblas # [osx]
     - eigen =3.3
-    - tbb
-    - tbb-devel
+    - tbb =2021
+    - tbb-devel =2021
     - protobuf
   run:
     - python >=3.9
@@ -58,12 +60,8 @@ requirements:
     - bifrost >=1.2
     - biopython =1.80
     - bcbio-gff
-    - diamond >=2.0
     - pytorch-cpu =1.10
     - pytorch =1.10
-    - hmmer
-    - mafft
-    - snp-sites
     - zlib
     - pthread-stubs
     - matplotlib-base
@@ -76,24 +74,18 @@ requirements:
     - xorg-libxpm
     - xorg-libxaw
     - xorg-libxfixes
-    - intbitset
-    - networkx
     - uncertainties
-    - tqdm
-    - seaborn
-    - rapidnj
     - python-edlib
     - joblib
     - gffutils
-    - cd-hit
     - python-wget
     - boost-cpp
+    - networkx
 
 test:
   imports:
     - ggCaller_cpp
     - ggCaller
-    - panaroo_runner
   commands:
     - ggcaller -h | grep -q "Generates ORFs from a Bifrost graph."
 

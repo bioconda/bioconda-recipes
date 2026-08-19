@@ -6,19 +6,24 @@ package:
 
 source:
     url: https://github.com/phac-nml/sequenoscope/archive/v{{ version }}.tar.gz
-    sha256: dc3ca8cbab66a7e5e7c2f8396e1f6a2328bd0351ed2b199093a1897a4c9b95cb   
+    sha256: 29072c63e073aa2e77b2ba773888dc5fc3740a20cc5cab59e74feb07dddd1fa7
+
 
 build:
-    number: 0
+    number: 1
     noarch: python
+    script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
     run_exports:
-      - {{ pin_subpackage("sequenoscope", max_pin="x.x") }}
-    script: python -m pip install .
+        - {{ pin_subpackage('sequenoscope', max_pin='x') }}
+    entry_points:
+        - sequenoscope=sequenoscope.main:main
 
 requirements:
     host:
         - python
         - pip
+        - setuptools
+        - wheel
     run:
         - python >=3.7.12,<4
         - {{ pin_compatible('pandas') }}
@@ -30,19 +35,28 @@ requirements:
         - seqtk >=1.4
         - plotly >=5.16.1
         - biopython >=1.7
-        - scipy >=1.7.3
+        - {{ pin_compatible('scipy') }}
         - six >=1.14.0
         - {{ pin_compatible('numpy') }}
 test:
-    import:
+    imports:
         - sequenoscope
     commands:
-        - "sequenoscope --help"
-
+        - sequenoscope --help
+        - sequenoscope --check_dependencies
+        - sequenoscope filter_ONT --help
+        - sequenoscope analyze --help
+        - sequenoscope plot --help
+        
+     
+    
 
 about:
     license: Apache-2.0
-    summary: sequenoscope is a versatile bioinformatic pipeline for the analysis of sequencing data.
-    author: Abdallah Meknas, James Robertson
+    license_family: Apache
+    license_file: LICENSE
+    summary: Sequenoscope - A Modular Pipeline for ONT Adaptive Sampling and Comparative Microbial Genomics Visualization
+    description: Sequenoscope is an integrated modular pipeline for evaluating Oxford Nanopore adaptive sampling performance and automating microbial genomic analysis through interactive visualizations.
     home: https://github.com/phac-nml/sequenoscope
     dev_url: https://github.com/phac-nml/sequenoscope
+    doc_url: https://github.com/phac-nml/sequenoscope/blob/master/README.md

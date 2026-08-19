@@ -1,5 +1,5 @@
 {% set name = "zipstrain" %}
-{% set version = "0.1.8" %}   # ← change to your current released version
+{% set version = "1.0.3" %}   
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bc14431114e146504981cc8c91fae3fc01f997cc10572875b9214a8ea02d1ea7  
+  sha256: beb6a8615a136500704d7e198fbdf2c162ae80764e1160ad6b2e9ea8e6cc0580
 
 build:
   noarch: python
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
   run_exports:
-    - {{ pin_subpackage('zipstrain', max_pin="0.1.7") }}
+    - {{ pin_subpackage('zipstrain', max_pin="x.x") }}
+
 requirements:
   host:
     - python >=3.12
@@ -31,21 +32,28 @@ requirements:
     - seaborn
     - scipy
     - pyarrow
-    - intervaltree
     - aiofiles
-    - pydantic
+    - pydantic >=2,<3
     - rich
     - psutil
+    - duckdb
+    - pandas
+    - matplotlib-base
+    - h5py
+    - pytorch
 test:
   imports:
     - zipstrain
   commands:
     - zipstrain --help
     - samtools --version
+    - zipstrain compare --help
+    - zipstrain utilities --help
 
 about:
   home: https://github.com/OlmLab/ZipStrain  
   summary: Fast strain-level metagenomics
   license: MIT     
   license_family: MIT
+  dev_url: https://github.com/OlmLab/ZipStrain
 

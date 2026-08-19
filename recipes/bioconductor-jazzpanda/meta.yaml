@@ -1,0 +1,62 @@
+{% set version = "1.2.0" %}
+{% set name = "jazzPanda" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 072476d55dd7b0c3c30d4d2b94fe6ace
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-jazzpanda", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown, spatstat, Seurat, statmod, corrplot, ggplot2, ggraph, ggrepel, gridExtra, reshape2, igraph, jsonlite, vdiffr, patchwork, ggpubr, tidyr, SpatialFeatureExperiment, ExperimentHub, TENxXeniumData, SingleCellExperiment, SFEData, Matrix, data.table, scran, scater, grid, GenomeInfoDb, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-bumpymatrix >=1.18.0,<1.19.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - r-base
+    - r-caret
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-glmnet
+    - r-magrittr
+    - r-spatstat.geom
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-bumpymatrix >=1.18.0,<1.19.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - r-base
+    - r-caret
+    - r-doparallel
+    - r-dplyr
+    - r-foreach
+    - r-glmnet
+    - r-magrittr
+    - r-spatstat.geom
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Finding spatially relevant marker genes in image based spatial transcriptomics data
+  description: This package contains the function to find marker genes for image-based spatial transcriptomics data. There are functions to create spatial vectors from the cell and transcript coordiantes, which are passed as inputs to find marker genes. Marker genes are detected for every cluster by two approaches. The first approach is by permtuation testing, which is implmented in parallel for finding marker genes for one sample study. The other approach is to build a linear model for every gene. This approach can account for multiple samples and backgound noise.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

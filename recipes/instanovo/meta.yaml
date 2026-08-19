@@ -10,7 +10,7 @@ source:
   sha256: 65b42a46e4d61ddb8a77d3e433e815019696dc839cf45de8afd0c95ae3c0f598
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script:
     - sed -i.bak -e 's|"Apache-2.0"|{file = "LICENSE.md"}|' pyproject.toml
@@ -32,6 +32,7 @@ requirements:
     - datasets >=3.5.0
     - gitpython >=3.1.44
     - hydra-core >=1.3.2
+    - importlib-resources >=6.5.2 # Neptune has a transitive dependency on swagger_spec_validator, which tries to import importlib_resources. That package is not included in Python ≥3.9, because its functionality was merged into stdlib (importlib.resources)
     - jaxtyping >=0.2.34
     - jiwer >=3.0.5
     - matchms >=0.28.1
@@ -39,6 +40,7 @@ requirements:
     - numpy >=2.0.2
     - omegaconf >=2.3.0
     - pandas >=2.2.3
+    - platformdirs >=4.5.1 # spectrum_utils depends on platformdirs but does not list it properly in some older releases
     - polars >=1.12.0
     - pubchempy >=1.0.4
     - pyteomics >=4.7.5
@@ -47,7 +49,7 @@ requirements:
     - requests >=2.32.3
     - s3fs >=2024.12.0 
     - scikit-learn >=1.5.2
-    - signalrcore
+    - signalrcore >=0.9.5
     - spectrum_utils >=0.4.2
     - tensorboard >=2.18.0
     - tqdm >=4.67.0
@@ -58,6 +60,9 @@ test:
   commands:
     - instanovo version
     - instanovo --help
+    # Generate the test data file on the fly
+    - python -c "open('spectra.mgf', 'w').write('BEGIN IONS\nTITLE=0\nPEPMASS=451.25348\nCHARGE=2+\nSCANS=F1:2478\nRTINSECONDS=824.574\nSEQ=IAHYNKR\n63.994834899902344 0.0611930787563324\n70.06543731689453 0.06860413402318954\n84.081298828125 0.22455614805221558\n85.08439636230469 0.06763620674610138\n86.09666442871094 0.22344912588596344\n110.07109069824219 0.3034861385822296\n129.1020050048828 0.0932231917977333\n138.06597900390625 0.07667151838541031\n157.13291931152344 0.14716865122318268\n175.1185302734375 0.19198034703731537\n185.1283721923828 0.09717456996440887\n209.10263061523438 0.13139843940734863\n273.1337890625 0.09324286878108978\n301.1282958984375 0.08515828102827072\n303.21221923828125 0.07235292345285416\n304.17529296875 0.07120858132839203\n322.1859130859375 0.15834060311317444\n350.6787414550781 0.07397215068340302\n417.2552185058594 0.14982180297374725\n580.3185424804688 0.31572264432907104\n630.36572265625 0.06255878508090973\n717.376708984375 0.5990896821022034\n753.3748779296875 0.09976936876773834\n788.4207763671875 0.35858696699142456\n866.4544677734375 0.12016354501247406\nEND IONS\n')"
+    - instanovo predict --data-path spectra.mgf --output-path predictions.csv --with-refinement
 
 about:
   home: https://github.com/instadeepai/instanovo
@@ -66,9 +71,11 @@ about:
   license_family: APACHE
   license_file: LICENSE.md
   dev_url: https://github.com/instadeepai/instanovo
+  doc_url: https://instadeepai.github.io/InstaNovo/
 
 extra:
   recipe-maintainers:
     - BioGeek
   identifiers:
     - doi:10.1038/s42256-025-01019-5
+    - biotools:instanovo

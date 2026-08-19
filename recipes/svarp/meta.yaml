@@ -1,5 +1,5 @@
 {% set name = "svarp" %}
-{% set version = "1.0.1" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,27 +7,27 @@ package:
 
 source:
   url: https://github.com/asylvz/SVarp/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: cfbc812a4c436452ef9534b963dd975c2917df5a4b90e543fece0bf21e8778cd
+  sha256: 17203cbd36a138dec8b4fae9b3afdc7fef45f3289661d0ad1336e81886163f50
 
 build:
   number: 0
+  # _stdio.h:78:10: fatal error: _bounds.h: No such file or directory
+  skip: True  # [not linux]
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
-  skip: true # [not linux]
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-
   build:
     - {{ compiler('cxx') }}
     - make
-    - wget
-
+    - pkg-config
   host:
     - zlib
     - htslib
-
+    - wget
   run:
     - samtools
+    # graphaligner not available on aarch64/arm64
     - graphaligner
     - minimap2
 
@@ -46,6 +46,5 @@ about:
 extra:
   identifiers:
     - doi:10.1101/2024.02.18.580171
-  maintainers:
+  recipe-maintainers:
     - asylvz
-
