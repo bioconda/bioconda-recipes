@@ -1,0 +1,92 @@
+{% set name = "fastaai" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # The 1.5.0 release asset is the maturin sdist of `fastaai1_5/`, so the
+  # package sits at the root of this tarball. The repo's own auto-generated
+  # tag tarball would not: it carries the whole checkout, package one level
+  # down, and would need the build script to descend into it.
+  url: https://github.com/KGerhardt/FastAAI-v1.5/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 591c74ab301919216e26b051a4ca7434f895514ab4feba2729d1f47470c33d09
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - fastaai = fastaai.cli:main
+
+requirements:
+  build:
+    # The C compiler is here for the linker pyo3's cdylib needs, not to compile
+    # any C of ours.
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+  host:
+    # Bare `python`: conda-build injects the variant's own pin here, and a
+    # `>=3.9` alongside it concatenates into an invalid spec. The floor is
+    # declared in pyproject.toml, which pip enforces at install time.
+    - python
+    - pip
+    - maturin >=1.7,<2.0
+  run:
+    - python
+    - pyfastx >=2.0
+    - pyrodigal >=3.0
+    - pyhmmer >=0.10
+    - numpy >=1.21
+
+test:
+  imports:
+    - fastaai
+  commands:
+    # The CLI resolves, and FastAAI 1 command lines still reach it.
+    - fastaai --help
+    - fastaai build --help
+    - fastaai query --help
+    # The bundled model set must survive packaging: without it `build` cannot
+    # run without --hmm, which is the whole point of shipping it.
+    - python -c "from fastaai.search import ModelSet; m = ModelSet(); assert len(m) == 122, len(m); print('bundled models:', len(m), m.fingerprint[:16])"
+    # The packaged GTDB sets travel too, and `gtdb-all` is their union: a
+    # concatenation would be 173 with 5 accessions repeated.
+    # No ": " anywhere in this command — YAML reads a colon-space inside an
+    # unquoted scalar as a mapping and refuses to parse the recipe.
+    - python -c "from fastaai.search import ModelSet, MODEL_SETS; s = {k:ModelSet(k) for k in MODEL_SETS}; n = {k:len(v) for k,v in s.items()}; assert [n[k] for k in ('gtdb-bact','gtdb-arch','gtdb-all')] == [120, 53, 168], n; assert len({v.fingerprint for v in s.values()}) == 3; print('gtdb sets', n)"
+    # And the engine works end to end on a real single-copy protein.
+    - python -c "import fastaai; d = fastaai.Database(['a']); d.add_genome('g', [(0, b'MFRFFKSIGQEMREVDWPNFKQLRKDSSTVISTSVFFIAFLALARLANSIVP')]); d.seal(); r = fastaai.search(d, d, threads=1); print('self jaccard:', r.jaccard[0][0])"
+
+about:
+  home: https://github.com/KGerhardt/FastAAI-v1.5
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Fast whole-genome average amino acid identity from single-copy protein tetramer sketches
+  description: |
+    FastAAI estimates average amino acid identity between microbial genomes from
+    tetramer sketches of single-copy protein-coding genes. This release replaces
+    the SQLite-backed search with a Rust counting kernel over a partitioned
+    inverted index, and streams both the index and the results so neither has to
+    fit in memory.
+
+    Output is FastAAI 1's TSV schema and FastAAI 1 command lines are rerouted, so
+    existing pipelines keep working.
+
+    The 122 single-copy protein HMMs FastAAI 1 shipped are bundled and used by
+    default. They are redistributed under the MIT licence and carry their
+    original notice; see the README beside them.
+
+    GTDB's bac120 and ar53 marker sets are bundled as well, selected with
+    --hmm gtdb-bact, gtdb-arch or gtdb-all, so an install needs no HMM
+    download. They are assembled from Pfam and TIGRFAM rather than copied from
+    GTDB-Tk, and the Pfam versions GTDB pins have since moved on, so they do not
+    reproduce GTDB's trees.
+
+extra:
+  # Who maintains the *recipe*, not who wrote the software — bioconda pings
+  # these accounts on every bot PR and version bump, so it lists only people
+  # who have agreed to that. Authors are in the package metadata.
+  recipe-maintainers:
+    - KGerhardt
