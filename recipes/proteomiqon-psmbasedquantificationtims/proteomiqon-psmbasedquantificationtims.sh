@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-export LD_LIBRARY_PATH="${CONDA_PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+PREFIX="${CONDA_PREFIX:-/usr/local}"
 
-exec dotnet "$CONDA_PREFIX/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$@"
+export LD_LIBRARY_PATH="${PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+
+exec "${PREFIX}/lib/dotnet/dotnet" \
+    "${PREFIX}/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$@"
