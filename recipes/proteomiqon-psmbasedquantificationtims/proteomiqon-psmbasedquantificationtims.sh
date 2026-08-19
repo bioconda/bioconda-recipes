@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-exec "${PREFIX}/lib/dotnet/dotnet" \
-    "${PREFIX}/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$@"
+exec dotnet "$CONDA_PREFIX/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$@"
