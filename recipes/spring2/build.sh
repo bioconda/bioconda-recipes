@@ -24,5 +24,5 @@ cmake ${CMAKE_ARGS} \
 	"${PLATFORM_FLAGS[@]}" \
 	"${SRC_DIR}" || (cat CMakeFiles/CMakeConfigureLog.yaml && exit 1)
 
-make -j"${CPU_COUNT}"
-make install
+cmake --build . --parallel "${CPU_COUNT}" --target spring2
+cmake --install .
