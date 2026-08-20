@@ -18,8 +18,10 @@ else
 fi
 
 # OpenMP_ROOT: keep FindOpenMP on the conda prefix instead of Homebrew's libomp
+# SPRING_ENABLE_PRECOMPILED_HEADERS=OFF: PCH is incompatible with conda-forge's macOS toolchain
 cmake ${CMAKE_ARGS} \
 	-DSPRING_ENABLE_COMPILER_CACHE=OFF \
+	-DSPRING_ENABLE_PRECOMPILED_HEADERS=OFF \
 	-DOpenMP_ROOT="${PREFIX}" \
 	"${PLATFORM_FLAGS[@]}" \
 	"${SRC_DIR}" || (cat CMakeFiles/CMakeConfigureLog.yaml && exit 1)
