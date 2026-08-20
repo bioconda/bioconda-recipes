@@ -1,0 +1,43 @@
+{% set version = "0.1.0" %}
+{% set github = "https://github.com/acidgenomics/py-acidplyr" %}
+
+package:
+  name: acidplyr
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 74da666e294702fbfd0bd94940342dc5d04e80173095a3ec93fec44b35bb514f
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('acidplyr', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - uv-build >=0.11,<1
+  run:
+    - python >=3.12
+    - numpy
+    - pandas
+
+test:
+  imports:
+    - acidplyr
+
+about:
+  home: https://python.acidgenomics.com/acidplyr/
+  dev_url: "{{ github }}"
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: A pandas-based grammar for data frame manipulation.
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

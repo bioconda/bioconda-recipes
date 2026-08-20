@@ -1,0 +1,17 @@
+diff --git a/src/busco/busco_tools/bbtools.py b/src/busco/busco_tools/bbtools.py
+index 9b67f9a..24b44d8 100644
+--- a/src/busco/busco_tools/bbtools.py
++++ b/src/busco/busco_tools/bbtools.py
+@@ -47,6 +47,12 @@ class BBToolsRunner(BaseRunner):
+         bbtools_job.add_parameter("format=2")
+         bbtools_job.add_parameter("in={}".format(self.input_file))
+         bbtools_job.add_parameter("n={}".format(self.contig_break))
++
++        # Add memory parameter if environment variable is set
++        bbtools_memory = os.environ.get('BUSCO_BBTOOLS_MEMORY')
++        if bbtools_memory:
++            bbtools_job.add_parameter("-Xmx{}".format(bbtools_memory))
++
+         if self.scaffold_composition:
+             bbtools_job.add_parameter(
+                 "gc={}".format(

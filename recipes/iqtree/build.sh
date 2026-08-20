@@ -53,6 +53,7 @@ cmake -S . -B build \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DEIGEN3_INCLUDE_DIR="${PREFIX}/include/eigen3" \
 	"${DCMAKE_ARGS[@]}" \
 	-DIQTREE_FLAGS="omp" \
 	-DUSE_LSD2=ON \
