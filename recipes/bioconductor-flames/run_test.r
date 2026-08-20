@@ -50,8 +50,9 @@ if (length(pipeline@last_error) > 0) {
 }
 
 # Also test BLAZE as an alternative demultiplexer
-pipeline2 <- example_pipeline("MultiSampleSCPipeline") # or SingleCellPipeline
-pipeline2@config$pipeline_parameters$bambu_isoform_identification <- FALSE #
+pipeline2 <- example_pipeline("MultiSampleSCPipeline")
+ # turn to FALSE later, once the internal scripts can handle the test case data: https://github.com/bioconda/bioconda-recipes/pull/68065#issuecomment-5340208383
+pipeline2@config$pipeline_parameters$bambu_isoform_identification <- TRUE
 pipeline2@config$pipeline_parameters$oarfish_quantification <- FALSE       #  might as well test the built-in Python scripts
 pipeline2@config$pipeline_parameters$demultiplexer <- "BLAZE"
 pipeline2@expect_cell_number <- rep(100L, length(pipeline2@fastq))
