@@ -1,0 +1,23 @@
+Fix segmentation fault in paired-end mode.
+
+initRead() allocates the buffer-2 read counters (_r_buf2_pos, _r_buf2_size)
+in the paired-end branch but never initialises them, so the first read of
+each is of uninitialised heap memory. The single-end branch is unaffected
+because it aliases the buffer-1 counters, which ARE initialised on the line
+immediately above (`*_r_buf1_size = *_r_buf1_pos = 0;`). This patch restores
+that symmetry for buffer 2.
+
+Offered upstream at https://github.com/sfu-compbio/mrsfast/pull/21
+(upstream has been dormant since ~2015).
+diff --git a/Reads.c b/Reads.c
+index 8654b1b..d7b31d5 100644
+--- a/Reads.c
++++ b/Reads.c
+@@ -432,6 +432,7 @@ int initRead(char *fileName1, char *fileName2)
+ 		_r_buf2 = getMem(10000000);
+ 		_r_buf2_pos = getMem(sizeof(int));
+ 		_r_buf2_size = getMem(sizeof(int));
++		*_r_buf2_size = *_r_buf2_pos = 0;
+ 	}
+ 	else
+ 	{
