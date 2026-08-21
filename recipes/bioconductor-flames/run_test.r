@@ -50,11 +50,23 @@ if (length(pipeline@last_error) > 0) {
 }
 
 # Also test BLAZE as an alternative demultiplexer
-pipeline2 <- example_pipeline("MultiSampleSCPipeline")
- # turn to FALSE later, once the internal scripts can handle the test case data: https://github.com/bioconda/bioconda-recipes/pull/68065#issuecomment-5340208383
-pipeline2@config$pipeline_parameters$bambu_isoform_identification <- TRUE
-pipeline2@config$pipeline_parameters$oarfish_quantification <- FALSE       #  might as well test the built-in Python scripts
-pipeline2@config$pipeline_parameters$demultiplexer <- "BLAZE"
+outdir2 <- tempfile()
+pipeline2 <- SingleCellPipeline(
+  # use the default configs
+  config_file = create_config(
+    outdir2,
+    # turn to FALSE later, once the test case data is sufficient for the internal scripts: https://github.com/bioconda/bioconda-recipes/pull/68065#issuecomment-5340208383
+    pipeline_parameters.bambu_isoform_identification = TRUE,
+    pipeline_parameters.demultiplexer = "BLAZE",
+    pipeline_parameters.oarfish_quantification = FALSE
+  ),
+  outdir = outdir2,
+  # the input fastq file
+  fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
+  # reference annotation file
+  annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
+  genome_fa = genome_fa
+) 
 pipeline2@expect_cell_number <- rep(100L, length(pipeline2@fastq))
 pipeline2@controllers <- list(default = crew::crew_controller_local()) # also test if the crew controller works
 
