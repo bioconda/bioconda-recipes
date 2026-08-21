@@ -46,7 +46,7 @@ pipeline
 # occur during the pipeline run. So this seems to be the sanest solution.
 if (length(pipeline@last_error) > 0) {
     print(pipeline@last_error)
-    cli::cli_abort("Found errors during SingleCellPipeline in run_test.r, please debug before finalizing new bioconda package version.")
+    cli::cli_abort("Found errors during first SingleCellPipeline in run_test.r, please debug before finalizing new bioconda package version.")
 }
 
 # Also test BLAZE as an alternative demultiplexer
@@ -57,7 +57,6 @@ pipeline2 <- SingleCellPipeline(
     outdir2,
     # turn to FALSE later, once the test case data is sufficient for the internal scripts: https://github.com/bioconda/bioconda-recipes/pull/68065#issuecomment-5340208383
     pipeline_parameters.bambu_isoform_identification = TRUE,
-    pipeline_parameters.demultiplexer = "BLAZE",
     pipeline_parameters.oarfish_quantification = FALSE
   ),
   outdir = outdir2,
@@ -68,6 +67,7 @@ pipeline2 <- SingleCellPipeline(
   genome_fa = genome_fa
 ) 
 pipeline2@expect_cell_number <- rep(100L, length(pipeline2@fastq))
+pipeline2@pipeline_parameters$demultiplexer <- "BLAZE"
 pipeline2@controllers <- list(default = crew::crew_controller_local()) # also test if the crew controller works
 
 pipeline2 <- run_FLAMES(pipeline2)
@@ -75,6 +75,6 @@ pipeline2
 if (length(pipeline2@last_error) > 0) {
     print(pipeline2@last_error)
     print(pipeline2@controllers[["default"]]$error)
-    cli::cli_abort("Found errors during MultiSampleSCPipeline in run_test.r, please debug before finalizing new bioconda package version.")
+    cli::cli_abort("Found errors during second SingleCellPipeline (with BLAZE) in run_test.r, please debug before finalizing new bioconda package version.")
 }
 
