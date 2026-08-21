@@ -12,6 +12,13 @@ if [[ "${target_platform}" == "linux-aarch64" ]]; then
 		"-DCMAKE_C_FLAGS=-march=armv8-a+crc"
 		"-DCMAKE_CXX_FLAGS=-march=armv8-a+crc"
 	)
+elif [[ "${target_platform}" == osx-* ]]; then
+	# std::filesystem requires macOS 10.15+; conda-forge osx-64 stdlib defaults MACOSX_DEPLOYMENT_TARGET
+	# to 10.13, which prevents cmake from propagating the right version min to compile commands.
+	export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-11.0}"
+	export CFLAGS="${CFLAGS} -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+	export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+	PLATFORM_FLAGS=("-DCMAKE_OSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}")
 else
 	# SPRING_NASM_EXECUTABLE: upstream otherwise prefers its vendored nasm over PATH
 	PLATFORM_FLAGS=("-DSPRING_NASM_EXECUTABLE=${BUILD_PREFIX}/bin/nasm")
