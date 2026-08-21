@@ -57,8 +57,10 @@ pipeline2 <- SingleCellPipeline(
     outdir2,
     # turn to FALSE later, once the test case data is sufficient for the internal scripts: https://github.com/bioconda/bioconda-recipes/pull/68065#issuecomment-5340208383
     pipeline_parameters.bambu_isoform_identification = TRUE,
+    pipeline_parameters.demultiplexer = "BLAZE",
     pipeline_parameters.oarfish_quantification = FALSE
   ),
+  expect_cell_number <- 100L,
   outdir = outdir2,
   # the input fastq file
   fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
@@ -66,8 +68,6 @@ pipeline2 <- SingleCellPipeline(
   annotation = system.file("extdata", "rps24.gtf.gz", package = "FLAMES"),
   genome_fa = genome_fa
 ) 
-pipeline2@expect_cell_number <- rep(100L, length(pipeline2@fastq))
-pipeline2@pipeline_parameters$demultiplexer <- "BLAZE"
 pipeline2@controllers <- list(default = crew::crew_controller_local()) # also test if the crew controller works
 
 pipeline2 <- run_FLAMES(pipeline2)
