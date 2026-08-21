@@ -12,7 +12,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - Makefile.patch
-    - null-sort-order-segfault.patch
+    - backport-upstream-master.patch
 
 
 about:
@@ -36,9 +36,14 @@ requirements:
 
 build:
   number: 6
+  run_exports:
+    - {{ pin_subpackage("genrich", max_pin="x.x") }}
 
 
 test:
   commands:
     - which Genrich
     - Genrich -V 2>&1 | grep 'John M. Gaspar'
+    # -L is only recognised once the backport patch is applied; stock 0.6.1
+    # answers "invalid option -- 'L'" instead.
+    - Genrich -L 1000 2>&1 | grep 'Need input/output files'
