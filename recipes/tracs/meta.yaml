@@ -1,4 +1,4 @@
-{% set version = "1.0.1" %} 
+{% set version = "1.1.1" %} 
 {% set name = "tracs" %}
 
 package:
@@ -7,28 +7,31 @@ package:
 
 source:
   url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: ea54a443c2a1a2bda7bb4dc9b79f79ffe5bfffc340ef8e6cc61f1df249ba4e5c
+  sha256: c92881c41df50d1103064bac6bfaace43499a3331bb28c2871eb460889fa7235
 
 build:
-  number: 1
+  number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  skip: true # [py<312]
   run_exports:
     - {{ pin_subpackage('tracs', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }} 
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - python >=3.12
+    - python
     - pip
+    - setuptools
     - pybind11
     - boost-cpp
     - zlib
     - libgomp # [linux]
     - llvm-openmp # [osx]
   run:
-    - python >=3.12
+    - python
     - numpy
     - pandas
     - sourmash
@@ -41,6 +44,7 @@ requirements:
     - samtools
     - htsbox
     - minimap2
+    - matplotlib-base
 
 test:
   imports:
