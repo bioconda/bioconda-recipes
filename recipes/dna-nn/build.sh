@@ -6,7 +6,7 @@ export CPATH="${PREFIX}/include"
 mkdir -p "${PREFIX}/bin"
 
 sed -i.bak 's|-O2|-O3|' Makefile
-sed -i.bak 's|-lpthread|-pthread|' Makefile
+sed -i.bak "s|-lz -lpthread|${LDFLAGS} -lz -pthread|" Makefile
 rm -rf *.bak
 
 make CC="${CC}" -j"${CPU_COUNT}"
