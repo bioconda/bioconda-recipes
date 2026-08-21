@@ -1,5 +1,5 @@
 {% set name = "rmats2sashimiplot" %}
-{% set version = "3.0.0" %}
+{% set version = "4.0.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,14 +7,16 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 5d8e0fa3e7c5db2e595dc08e4cdb652385c18d7f2b70468d81a0fb3d957d03ce
+  sha256: 4f1442b22c305fe7fc75b84f38d471b0668ca9ae6ef55363d3e4fcbba71425ec
 
 build:
-  number: 2
+  number: 0
+  noarch: python
   entry_points:
     - rmats2sashimiplot=rmats2sashimiplot.rmats2sashimiplot:main
     - index_gff=MISO.misopy.index_gff:main
     - sashimi_plot=MISO.misopy.sashimi_plot.sashimi_plot:main
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -22,6 +24,7 @@ requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - bedtools
     - matplotlib-base
@@ -49,7 +52,3 @@ about:
   license_family: GPL2
   license_file: LICENSE
   summary: "rmats2sashimiplot"
-
-extra:
-  skip-lints:
-    - should_be_noarch_generic  # needs separate builds with and without 2to3

@@ -1,0 +1,46 @@
+{% set name = "serovar_detector" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c0102fa8e571e136e52b65d67c78bc58323ab81fa0b8bf45ca55418724cf76d3
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - serovar_detector = serovar_detector.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  run_exports:
+    {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - hatchling
+  run:
+    - python >=3.8
+    - snakemake >=8.0
+    - kma
+    - conda
+
+test:
+  commands:
+    - serovar_detector -h
+
+about:
+  home: https://github.com/KasperThystrup/serovar_detector
+  license: MIT
+  license_file: LICENSE
+  summary: 'A pipeline for detecting and typing serovariants of A. pleuropneumoniae'
+  doc_url: https://github.com/KasperThystrup/serovar_detector
+
+extra:
+  recipe-maintainers:
+    - KasperThystrup
+
