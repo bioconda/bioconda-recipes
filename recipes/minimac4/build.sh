@@ -26,6 +26,9 @@ else
   export CONFIG_ARGS=""
 fi
 
+sed -i.bak 's|VERSION 3.2|VERSION 3.5|' src/CMakeLists.txt
+rm -f src/*.bak
+
 # Set up dependencies and directories
 if [[ ! -f ./requirements.txt ]]; then
     echo "Error: requirements.txt not found"
