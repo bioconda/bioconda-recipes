@@ -1,0 +1,54 @@
+{% set name = "nextssr" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nextssr-{{ version }}.tar.gz
+  sha256: 91cd52c2d82e1b9307beb9e0618c29fdbcd39d9623d8dc1d0aa58965f1cebed7
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - nextssr = nextssr.cli:main
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - click >=8.0.0
+    - rich >=12.0.0
+    - pyyaml >=6.0
+    - pydantic >=2.0.0
+    - biopython >=1.80
+
+test:
+  imports:
+    - nextssr
+    - nextssr.outputs
+  commands:
+    - nextssr --help
+    - nextssr init-config
+
+about:
+  home: https://github.com/LaBiOmicS/nextSSR
+  license: MIT
+  license_file: LICENSE
+  summary: "Next-generation High-Performance & FAIR-compliant Simple Sequence Repeat (SSR) platform"
+  description: |
+    nextSSR is a standalone, ultra-fast microsatellite identification engine and automated
+    PCR primer design platform supporting Weber (1990) motif classifications, Sequence Ontology
+    (SO:0000289) GFF3 exports, and W3C RO-Crate (JSON-LD) FAIR provenance metadata.
+  dev_url: https://github.com/LaBiOmicS/nextSSR
+  doc_url: https://github.com/LaBiOmicS/nextSSR#readme
+
+extra:
+  recipe-maintainers:
+    - LaBiOmicS
