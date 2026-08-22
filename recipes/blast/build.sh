@@ -129,7 +129,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
-	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp –-without-gui -–without-internal --without-gbench"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}"
 
 	## LINKING
 	# Dynamically link libraries
@@ -149,7 +149,7 @@ else
 	#   Disable OpenMP extensions for all projects.
 	#   Does not work without hacks for OSX
 	#   See: https://github.com/bioconda/bioconda-recipes/pull/40555
-	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp –-without-gui -–without-internal --without-gbench"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}"
 	# --with(out)-gcrypt:
 	#   Do not use gcrypt (needed on OSX).
 	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
