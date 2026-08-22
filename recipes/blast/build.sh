@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 # For debugging ./configure
-cat << EOF >&2
+cat << 'EOF' >&2
 ENVIRONMENT
 -----------
   uname -a   $(uname -a)
@@ -17,11 +17,7 @@ ARCHITECTURE
   uname -m   $(uname -m)
 EOF
 
-# Source path
-BLAST_SRC_DIR="$SRC_DIR/c++"
-# Work directory
-RESULT_PATH="$BLAST_SRC_DIR/Release"
-
+mkdir -p "$PREFIX/bin"
 
 # C/C++ preprocessor header includes paths
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
@@ -35,6 +31,12 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 fi
 
 LIB_INSTALL_DIR="$PREFIX/lib/ncbi-blast+"
+
+# Source path
+BLAST_SRC_DIR="$SRC_DIR/c++"
+# Work directory
+RESULT_PATH="$BLAST_SRC_DIR/Release"
+
 
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
@@ -172,7 +174,7 @@ export AR="${AR} rcs"
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-./configure.orig "${CONFIGURE_FLAGS} –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}" >&2
+./configure.orig "$CONFIGURE_FLAGS –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX" >&2
 
 
 # Run GNU Make
@@ -214,19 +216,18 @@ fi
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j $n_workers -f Makefile.flat $apps >&2
+make -j"$n_workers" -f Makefile.flat $apps >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
 
 # Copy compiled binaries to the Conda $PREFIX
-mkdir -p "$PREFIX/bin"
 install -v -m 0755 "$RESULT_PATH/bin/"* "$PREFIX/bin"
 # Copy compiled libraries to the Conda $PREFIX
 if [[ "$(uname -s)" == "Linux" ]]; then
 	# Not necessary for osx as that is statically linked
 	mkdir -p "$LIB_INSTALL_DIR"
-	cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
+	cp -f "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
 fi
 
 # Patch Perl shebangs
