@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -o xtrace
 set -o errexit
 set -o nounset
@@ -29,7 +28,7 @@ export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 # Linker library paths
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 # C++ compiler flags
-export CXXFLAGS="$CXXFLAGS -Wno-deprecated-declarations"
+export CXXFLAGS="$CXXFLAGS -O3 -Wno-deprecated-declarations"
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
 	CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
@@ -40,20 +39,20 @@ LIB_INSTALL_DIR="$PREFIX/lib/ncbi-blast+"
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
 # Run `./configure --help` for all flags.
-CONFIGURE_FLAGS="-–without-internal --with-build-root=$RESULT_PATH"
+export CONFIGURE_FLAGS="--with-build-root=$RESULT_PATH"
 
 # platform-independent flags
 ## BUILD CHAIN OPTIONS
 # --with(out)-bin-release:
 #   Build executables suitable for public release
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bin-release"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bin-release"
 # --with(out)-debug:
 #   Build non-debug versions of libs and apps.
 #   Strips -D_DEBUG and -g, engage -DNDEBUG and -O.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-debug"
 # --with(out)-strip:
 #   Strip binaries at build time (remove debugging symbols)
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
 # --with-experimental={ChaosMonkey,Int4GI,Int8GI,StrictGI,PSGLoader,BM64,C++20,C2X}:
 #   Enable named experimental feature (comma-separated list):
 #   - ChaosMonkey  Enable "ChaosMonkey" failure testing.
@@ -65,60 +64,60 @@ CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-strip"
 #   - C++20        Use '-std=gnu++20' compiler flag.
 #   - C2X          Use '-std=gnu2x' compiler flag.
 #   See c++/src/build-system/configure.ac lines 1020:1068 for the named options.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-experimental=Int8GI"
 # --with(out)-mt:
 #   Compile in a multi-threading safe manner.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-mt"
 # --with(out)-autodep:
 #   Do not automatically generate dependencies (one time build).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-autodep"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-autodep"
 # --with(out)-makefile-auto-update:
 #   Do not auto-update generated makefiles (one time build).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-makefile-auto-update"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-makefile-auto-update"
 # --with(out)-flat-makefile:
 #   Generate an all-encompassing flat makefile.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-flat-makefile"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-flat-makefile"
 # --with(out)-caution:
 #   Proceed configuration without asking when in doubt.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-caution"
 # --with(out)-sse42
 #   Disable SSE 4.2 when optimizing.
 #   Old CPU's (read: released befor 2012) may not have this instruction set.
 #   We can consider removing this, considering the NCBI builds enable this now.
 #   See: https://github.com/bioconda/bioconda-recipes/pull/17677
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-sse42"
 
 ## LIBRARIES
 # --with(out)-pcre:
 #   Do not use pcre (Perl regex).
 #   The NCBI release builds also pass this.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-pcre"
 # --with(out)-lzo:
 #   Do not add lzo support (compression lib, req. lzo >2.x).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-lzo"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-lzo"
 # --with(out)-vdb:
 #   Enable VDB/SRA toolkit.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-vdb=$PREFIX"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-vdb=$PREFIX"
 # --with(out)-z:
 #   Set zlib path (compression lib).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-z=$PREFIX"
 # --with(out)-bz2:
 #   Set bzlib path (compression lib).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-bz2=$PREFIX"
 # --with(out)-sqlite3:
 #   Set sqlite3 path (local database lib).
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-sqlite3=$PREFIX"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-sqlite3=$PREFIX"
 # --with(out)-krb5:
 #   Do not use Kerberos 5.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-krb5"
 # --with(out)-gnutls:
 #   Do not use gnutls.
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gnutls"
 # --with(out)-boost:
 #   Do not use Boost.
 #   It tries to search for it and prints some warnings, so might as well tell it beforehand.
 #   See: https://github.com/bioconda/bioconda-recipes/pull/15754
-CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-boost"
+export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-boost"
 
 # platform-specific flags
 if [[ "$(uname -s)" == "Linux" ]]; then
@@ -126,44 +125,44 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 	#   Compile in 64-bit mode instead of 32-bit.
 	#   Flag not available for osx build.
 	if [[ "$(arch)" == "x86_64" ]]; then
-		CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
+		export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-64"
 	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp –-without-gui -–without-internal --without-gbench"
 
 	## LINKING
 	# Dynamically link libraries
 	# --with(out)-dll:
 	#   Use dynamic instead of static library linking.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-dll"
 	# --with(out)-runpath:
 	#   Set runpath for installed $PREFIX location.
 	#   Needed for --with-dll.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-runpath=$LIB_INSTALL_DIR"
 	# --with(out)-hard-runpath:
 	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
 	#   (disallow LD_LIBRARY_PATH override on Linux).
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
 	#   Does not work without hacks for OSX
 	#   See: https://github.com/bioconda/bioconda-recipes/pull/40555
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp –-without-gui -–without-internal --without-gbench"
 	# --with(out)-gcrypt:
 	#   Do not use gcrypt (needed on OSX).
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
 	# --with(out)-zstd:
 	#   Do not use Zstandard.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-zstd"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-zstd"
 
 	## LINKING
 	# Build statically linked programs. For some reason it raises segfaults during compilation on
 	# osx-64 when trying a dynamically linked build.
 	# --with-static --with(out)-dll:
 	#   Use static instead of dynamic library linking.
-	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-static --without-dll"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-static --without-dll"
 fi
 
 # Fixes building on unix (linux and osx)
@@ -173,7 +172,7 @@ export AR="${AR} rcs"
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-./configure.orig $CONFIGURE_FLAGS >&2
+./configure.orig "${CONFIGURE_FLAGS}" >&2
 
 
 # Run GNU Make
@@ -222,8 +221,7 @@ rm "$LIB_INSTALL_DIR"
 
 # Copy compiled binaries to the Conda $PREFIX
 mkdir -p "$PREFIX/bin"
-chmod +x "$RESULT_PATH/bin/"*
-cp "$RESULT_PATH/bin/"* "$PREFIX/bin/"
+install -v -m 0755 "$RESULT_PATH/bin/"* "$PREFIX/bin"
 # Copy compiled libraries to the Conda $PREFIX
 if [[ "$(uname -s)" == "Linux" ]]; then
 	# Not necessary for osx as that is statically linked
