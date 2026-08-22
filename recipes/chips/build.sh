@@ -2,7 +2,7 @@
 
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="$CFLAGS -O3 -I$PREFIX/include"
-export CXXFLAGS="$CXXFLAGS -O3 -std=c++14 -I$PREFIX/include"
+export CXXFLAGS="$CXXFLAGS -O3 -std=c++14 -D_LIBCPP_DISABLE_AVAILABILITY -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib -lz"
 
 mkdir -p "${PREFIX}/bin"
