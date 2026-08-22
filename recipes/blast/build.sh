@@ -129,7 +129,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 	fi
 	# --with(out)-openmp:
 	#   Enable OpenMP extensions for all projects.
-	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-openmp"
 
 	## LINKING
 	# Dynamically link libraries
@@ -149,7 +149,7 @@ else
 	#   Disable OpenMP extensions for all projects.
 	#   Does not work without hacks for OSX
 	#   See: https://github.com/bioconda/bioconda-recipes/pull/40555
-	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}"
+	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-openmp"
 	# --with(out)-gcrypt:
 	#   Do not use gcrypt (needed on OSX).
 	export CONFIGURE_FLAGS="$CONFIGURE_FLAGS --without-gcrypt"
@@ -172,7 +172,7 @@ export AR="${AR} rcs"
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-./configure.orig "${CONFIGURE_FLAGS}" >&2
+./configure.orig "${CONFIGURE_FLAGS} –-without-gui -–without-internal --without-gbench --with-lmdb=${PREFIX}" >&2
 
 
 # Run GNU Make
