@@ -40,7 +40,7 @@ LIB_INSTALL_DIR="$PREFIX/lib/ncbi-blast+"
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
 # Run `./configure --help` for all flags.
-CONFIGURE_FLAGS="--with-build-root=$RESULT_PATH –-without-gui -–without-internal"
+CONFIGURE_FLAGS="-–without-internal --with-build-root=$RESULT_PATH"
 
 # platform-independent flags
 ## BUILD CHAIN OPTIONS
