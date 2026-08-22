@@ -174,8 +174,7 @@ export AR="${AR} rcs"
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-# –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX
-./configure.orig "$CONFIGURE_FLAGS –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX"
+./configure.orig "$CONFIGURE_FLAGS"
 
 
 # Run GNU Make
@@ -217,7 +216,7 @@ fi
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -j"$n_workers" -f Makefile.flat $apps >&2
+make -f Makefile.flat $apps -j"$n_workers" >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
