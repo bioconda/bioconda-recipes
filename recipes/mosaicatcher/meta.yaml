@@ -7,23 +7,24 @@ package:
 
 source:
   url: https://github.com/friendsofstrandseq/mosaicatcher/archive/refs/tags/{{ version }}-bioconda.tar.gz
-  sha256: '{{sha256}}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 4
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('mosaicatcher', max_pin="x.x") }}
 
 requirements:
   build:
     - cmake
     - make
     - pkg-config
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
   host:
     - boost-cpp
     - htslib
-
   run:
     - boost-cpp
     - htslib
@@ -33,9 +34,19 @@ test:
     - mosaicatcher --help
 
 about:
-  home: https://github.com/friendsofstrandseq/mosaicatcher/
-  license: MIT License
+  home: "https://github.com/friendsofstrandseq/mosaicatcher"
+  license: MIT
   developer: Sasha Meiers
   maintainer: Thomas Weber
-  summary: 'mosaicatcher: counts Strand-seq reads and classifies strand states of each chromosome in each cell using a Hidden Markov Model.'
+  summary: "mosaicatcher: counts Strand-seq reads and classifies strand states of each chromosome in each cell using a Hidden Markov Model."
   license_family: MIT
+  license_file: "LICENSE.md"
+  dev_url: "https://github.com/friendsofstrandseq/mosaicatcher"
+  doc_url: "https://github.com/friendsofstrandseq/mosaicatcher/blob/{{ version }}-bioconda/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/nmeth.2206
