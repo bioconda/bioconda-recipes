@@ -10,13 +10,13 @@ grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
 mkdir -p ~/.R
 
-echo -e "CC=$CC
-FC=$FC
-CC17=$CC -std=gnu11
-CXX=$CXX
-CXX98=$CXX
-CXX11=$CXX
-CXX14=$CXX" > ~/.R/Makevars
+#echo -e "CC=$CC
+#FC=$FC
+#CC17=$CC -std=gnu11
+#CXX=$CXX
+#CXX98=$CXX
+#CXX11=$CXX
+#CXX14=$CXX" > ~/.R/Makevars
 
 export R_MAKEVARS_USER="${SRC_DIR}/Makevars.c17"
 cat > "${R_MAKEVARS_USER}" <<'EOF'
