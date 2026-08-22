@@ -24,7 +24,7 @@ export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 # Linker library paths
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 # C++ compiler flags
-export CXXFLAGS="$CXXFLAGS -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="$CXXFLAGS -Wno-deprecated-declarations"
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
 	CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
@@ -174,7 +174,8 @@ export AR="${AR} rcs"
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-./configure.orig "$CONFIGURE_FLAGS –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX" >&2
+# –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX
+./configure.orig "$CONFIGURE_FLAGS –-without-gui -–without-internal --without-gbench --with-lmdb=$PREFIX"
 
 
 # Run GNU Make
