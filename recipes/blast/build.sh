@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 # For debugging ./configure
-cat << 'EOF' >&2
+cat << EOF >&2
 ENVIRONMENT
 -----------
   uname -a   $(uname -a)
@@ -17,26 +17,24 @@ ARCHITECTURE
   uname -m   $(uname -m)
 EOF
 
-mkdir -p "$PREFIX/bin"
+# Source path
+BLAST_SRC_DIR="$SRC_DIR/c++"
+# Work directory
+RESULT_PATH="$BLAST_SRC_DIR/Release"
+
 
 # C/C++ preprocessor header includes paths
-CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 # Linker library paths
-LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 # C++ compiler flags
-CXXFLAGS="$CXXFLAGS -Wno-deprecated-declarations"
+export CXXFLAGS="$CXXFLAGS -Wno-deprecated-declarations"
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	# See https://conda-forge.org/docs/maintainer/knowledge_base.html#newer-c-features-with-old-sdk for -D_LIBCPP_DISABLE_AVAILABILITY
 	CXXFLAGS="$CXXFLAGS -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 LIB_INSTALL_DIR="$PREFIX/lib/ncbi-blast+"
-
-# Source path
-BLAST_SRC_DIR="$SRC_DIR/c++"
-# Work directory
-RESULT_PATH="$BLAST_SRC_DIR/Release"
-
 
 # Configuration synopsis:
 # https://ncbi.github.io/cxx-toolkit/pages/ch_config.html#ch_config.ch_configget_synopsi
@@ -145,7 +143,7 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 	# --with(out)-hard-runpath:
 	#   Hard-code runtime path, ignoring LD_LIBRARY_PATH
 	#   (disallow LD_LIBRARY_PATH override on Linux).
-	eCONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
+	CONFIGURE_FLAGS="$CONFIGURE_FLAGS --with-hard-runpath"
 else
 	# --with(out)-openmp:
 	#   Disable OpenMP extensions for all projects.
@@ -168,13 +166,13 @@ else
 fi
 
 # Fixes building on unix (linux and osx)
-AR="${AR} rcs"
+export AR="${AR} rcs"
 
 # Run configure script
 cd "$BLAST_SRC_DIR"
 # use configure.orig, per docs recommendations (last sentence of section)
 # see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
-./configure.orig "$CONFIGURE_FLAGS" >&2
+./configure.orig $CONFIGURE_FLAGS >&2
 
 
 # Run GNU Make
@@ -216,12 +214,13 @@ fi
 
 cd "$RESULT_PATH/build"
 echo "RUNNING MAKE" >&2
-make -f Makefile.flat $apps -j"$n_workers" >&2
+make -j $n_workers -f Makefile.flat $apps >&2
 
 # remove temporary link
 rm "$LIB_INSTALL_DIR"
 
 # Copy compiled binaries to the Conda $PREFIX
+mkdir -p "$PREFIX/bin"
 install -v -m 0755 "$RESULT_PATH/bin/"* "$PREFIX/bin"
 # Copy compiled libraries to the Conda $PREFIX
 if [[ "$(uname -s)" == "Linux" ]]; then
