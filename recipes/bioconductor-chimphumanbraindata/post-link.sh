@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chimphumanbraindata-1.44.0"
+installBiocDataPackage.sh "chimphumanbraindata-1.48.0"

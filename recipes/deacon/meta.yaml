@@ -1,5 +1,5 @@
 {% set name = "deacon" %}
-{% set version = "0.13.2" %}
+{% set version = "0.17.0" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/bede/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: c80c8424f2236a984393e8ec542b3abcc35a3e8eb45650c4bc36ecb1f2413cb2
+  sha256: 9e4659aed1cceb4c68c26030dcde2c9aa088304f39c971cc71f1735d14523ca5
 
 build:
-  number: 1
+  number: 0
   script:
     # The default config.toml has target-cpu=native,
     # but we don't want that for portable CI builds.
@@ -19,10 +19,12 @@ build:
     - mv .cargo/config-portable.toml .cargo/config.toml
     - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
   run_exports:
-    - {{ pin_subpackage('deacon', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
@@ -34,10 +36,13 @@ test:
     - deacon filter --help
 
 about:
-  home: https://github.com/bede/deacon
+  home: "https://github.com/bede/deacon"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: Fast alignment-free sequence filter
+  summary: "Fast alignment-free sequence filter."
+  dev_url: "https://github.com/bede/deacon"
+  doc_url: "https://github.com/bede/deacon/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
@@ -45,3 +50,6 @@ extra:
     - osx-arm64
   recipe-maintainers:
     - bede
+  identifiers:
+    - doi:10.1101/2025.06.09.658732
+    - doi:10.1101/2025.01.27.634998
