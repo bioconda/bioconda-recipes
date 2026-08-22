@@ -1,4 +1,4 @@
-{% set version = "5.8.6" %}
+{% set version = "6.3.12" %}
 {% set siriusDistDir = "sirius_gui_dist" %}
 
 package:
@@ -6,6 +6,7 @@ package:
   version: {{ version }}
 
 build:
+  # Builds and passes its tests on linux-64, osx-64 and osx-arm64.
   number: 0
   script_env:
     - siriusDistName={{ siriusDistDir }}-sirius
@@ -14,22 +15,31 @@ build:
     - {{ pin_subpackage('sirius-csifingerid', max_pin="x") }}
 
 source:
-  - url: https://github.com/boecker-lab/sirius/archive/refs/tags/v{{ version }}.zip
-    sha256: f769a474140d6e28168d6d1526afc9e923e66eaeb0ace400e6c2ae77aa7f9202
+  - url: https://github.com/sirius-ms/sirius/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 80f7ce3dc95fcc10477e97c4f1b58f5f707b57aea61527885547679beb03e6b3
 
 requirements:
   build:
-    - openjdk 17.*
+    - openjdk 25.*
   run:
-    - openjdk 17.*
+    - openjdk 25.*
     - coin-or-cbc  # [not win]
+
 test:
-  requires:
-    - wget  # [not win]
+  commands:
+    - java -version
+    - sirius --version | grep -F "${PKG_VERSION}"
+    # Quoted: the colon-space in "Usage: sirius" is YAML mapping syntax.
+    - 'sirius --help | grep -q "Usage: sirius"'
+    - sirius formulas --help | grep -q "formulas"
+    # write-summaries is an alias for summaries, which is what its help prints.
+    - sirius write-summaries --help | grep -q "summaries"
+    - sirius login --help | grep -qF -- "--user-env"
+    - sirius login --help | grep -qF -- "--password-env"
 
 about:
-  home: https://bio.informatik.uni-jena.de/software/sirius/
-  license: AGPL-3.0-only AND OTHER
+  home: https://v6.docs.sirius-ms.io/
+  license: AGPL-3.0-or-later AND OTHER
   license_file:
     - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/COPYING.txt
     - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/LICENSE.txt
@@ -39,10 +49,15 @@ about:
     small molecules of biological interest. SIRIUS integrates a collection of our tools, including CSI:FingerID
     (with COSMIC), ZODIAC and CANOPUS.  In particular, both the graphical user interface and the command line version
     of SIRIUS seamlessly integrate the CSI:FingerID and CANOPUS web services.
-  doc_url: https://boecker-lab.github.io/docs.sirius.github.io/
-  dev_url: https://github.com/boecker-lab/sirius
+  doc_url: https://v6.docs.sirius-ms.io/
+  dev_url: https://github.com/sirius-ms/sirius
 
 extra:
   skip-lints:
     - should_not_be_noarch_source
     - should_be_noarch_generic
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1038/s41592-019-0344-8
