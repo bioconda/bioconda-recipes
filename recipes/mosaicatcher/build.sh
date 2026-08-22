@@ -24,6 +24,9 @@ fi
 
 mkdir -p "$PREFIX/bin"
 
+sed -i.bak 's|VERSION 3.1|VERSION 3.5|' src/CMakeLists.txt
+rm -f src/*.bak
+
 cmake -S src -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
