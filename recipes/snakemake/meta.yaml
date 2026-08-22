@@ -1,7 +1,7 @@
 # Attention: when upgrading the version, please compare below dependencies with
 # https://github.com/snakemake/snakemake/blob/{version}/setup.cfg
 {% set name = "snakemake" %}
-{% set version = "9.20.0" %}
+{% set version = "9.25.2" %}
 
 package:
   name: {{ name }}
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/{{ name }}/snakemake-{{ version }}.tar.gz
-  sha256: 66ff407f4d0a471588bc35778ae1b0d3bd91ec94024f4317bdc3a0af68b9407c
+  sha256: dac732795a43eeb25c2a4f3f1441c66385911703493c6059efd8bc2efac956da
 
 build:
   number: 0
@@ -21,6 +21,9 @@ requirements:
   run:
     - snakemake-minimal ={{ version }}
     # pandas is optional, but required for many workflows
+    # we stick to pandas 2 for ensuring compat in workflows
+    # that share pandas objects between scripts and the main
+    # workflow process
     - pandas <3
     # options.extras_require: messaging
     - slack_sdk
@@ -92,18 +95,18 @@ outputs:
         - setuptools-scm
       run:
         # Keep in sync with snakemake's pyproject.toml: https://github.com/snakemake/snakemake/blob/main/pyproject.toml
-        - python >=3.11,<3.14
+        - python >=3.11
         - platformdirs
         - immutables
         - configargparse
         - connection_pool >=0.0.3
-        - docutils
+        - docutils >=0.20,<0.23
         - gitpython
         - humanfriendly
         - jinja2 >=3.0,<4.0
         - jsonschema
         - nbformat
-        - packaging >=24.0
+        - packaging >=24.0,<26
         - psutil
         - pulp >=2.3.1,<3.4
         - pyyaml
@@ -113,7 +116,7 @@ outputs:
         - smart_open >=4.0,<8.0
         - snakemake-interface-executor-plugins >=9.3.2,<10.0
         - snakemake-interface-common >=1.20.1,<2.0
-        - snakemake-interface-storage-plugins >=4.3.2,<5.0
+        - snakemake-interface-storage-plugins >=4.4.1,<5.0
         - snakemake-interface-report-plugins >=1.2.0,<2.0.0
         - snakemake-interface-logger-plugins >=1.1.0,<3.0.0
         - snakemake-interface-scheduler-plugins>=2.0.0,<3.0.0
