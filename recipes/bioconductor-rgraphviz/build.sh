@@ -18,6 +18,12 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 
+export R_MAKEVARS_USER="${SRC_DIR}/Makevars.c17"
+cat > "${R_MAKEVARS_USER}" <<'EOF'
+CC17 = $(CC) -std=gnu17
+C17FLAGS = $(CFLAGS)
+EOF
+
 autoreconf -if
 
 $R CMD INSTALL --build . ${R_ARGS}
