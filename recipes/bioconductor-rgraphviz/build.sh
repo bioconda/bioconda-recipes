@@ -20,4 +20,4 @@ CXX14=$CXX" > ~/.R/Makevars
 
 autoreconf -if
 
-$R CMD INSTALL --build .
+$R CMD INSTALL --build . ${R_ARGS}
