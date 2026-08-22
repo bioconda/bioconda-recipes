@@ -2,8 +2,8 @@
 {% set version = "0.11.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/FOI-Bioinformatics/nanometa_live/archive/{{ version }}.tar.gz
@@ -12,23 +12,21 @@ source:
 build:
   number: 0
   entry_points:
-    - nanometa-sim = nanometa_live.nanopore_simulator:nano_sim
-    - nanometa-new = nanometa_live.nanometa_new:main
-    - nanometa-backend = nanometa_live.nanometa_backend:main
-    - nanometa-gui = nanometa_live.nanometa_gui:run_app
-    - nanometa-live = nanometa_live.nanometa_runner:main
-    - nanometa-prepare = nanometa_live.nanometa_prepare:main
-  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+    - nanometa-live = nanometa_live.nanometa_live:main
+    - nanometa-prepare = nanometa_live.cli.prepare:main
+    - nanometa-report = nanometa_live.cli.report:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   noarch: python
   run_exports:
-    - {{ pin_subpackage('nanometa-live', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.9
+    - python >=3.11
+    - setuptools >=67.6.0
   run:
-    - python >=3.9
+    - python >=3.11
     - dash >=2.8.1
     - dash-daq >=0.5.0
     - dash-bootstrap-components >=1.3.1
@@ -57,9 +55,9 @@ test:
     - nanometa-backend --help
 
 about:
-  home: https://github.com/FOI-Bioinformatics/nanometa_live
-  license: GPL-3.0-or-later
+  home: "https://github.com/FOI-Bioinformatics/nanometa_live"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
-  license_file: LICENSE.txt
-  summary: 'Workflow and GUI for real-time species classification and pathogen characterization of nanopore sequence reads.'
-  doc_url: https://github.com/FOI-Bioinformatics/nanometa_live/wiki
+  license_file: "LICENSE.txt"
+  summary: "Workflow and GUI for real-time species classification and pathogen characterization of nanopore sequence reads."
+  doc_url: "https://github.com/FOI-Bioinformatics/nanometa_live/wiki"
