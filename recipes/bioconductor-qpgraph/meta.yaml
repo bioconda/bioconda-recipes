@@ -1,10 +1,10 @@
-{% set version = "2.44.0" %}
+{% set version = "2.46.0" %}
 {% set name = "qpgraph" %}
-{% set bioc = "3.22" %}
+{% set bioc = "3.23" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,18 +12,19 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-  md5: bbe1bd3c6c2c0019cc8ea8d98f53523a
+  sha256: 019692900c18ab54396a082ec97054e6b768e70caed99a3fa4d37c6761e4a65d
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-qpgraph", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-qpgraph', max_pin="x.x") }}
 
 # Suggests: RUnit, BiocGenerics, BiocStyle, genefilter, org.EcK12.eg.db, rlecuyer, snow, Category, GOstats
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - automake
     - make
@@ -69,19 +70,20 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  summary: Estimation of Genetic and Molecular Regulatory Networks from High-Throughput Genomics Data
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  summary: "Estimation of Genetic and Molecular Regulatory Networks from High-Throughput Genomics Data."
   description: Estimate gene and eQTL networks from high-throughput expression and genotyping assays.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:qpgraph
   parent_recipe:
     name: bioconductor-qpgraph
     path: recipes/bioconductor-qpgraph
     version: 2.14.0
-
