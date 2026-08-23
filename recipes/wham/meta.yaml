@@ -3,31 +3,37 @@
 
 package:
   name: wham
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
   # Needs Git for recursive bamtools retrieval:
   git_url: https://github.com/zeeev/wham.git
   git_rev: {{ revision }}
+  sha256: unused
   patches:
     # Fix issues with build on version of bamtools included in wham
     # https://github.com/pezmaster31/bamtools/pull/150
-    - bamtools-gcc-fix.diff
+    #- 0001-bamtools.patch
 
 build:
-  number: 2
-  skip: true # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('wham', max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
   run:
-    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -35,15 +41,20 @@ test:
     - wham --help 2>&1 | grep WHAM-BAM
 
 about:
-  home: https://github.com/zeeev/wham
+  home: "https://github.com/zeeev/wham"
   license: MIT
   license_family: MIT
-  summary: Structural variant detection and association testing
+  summary: "Structural variant detection and association testing."
+  doc_url: "https://zeeev.github.io/wham"
+  dev_url: "https://github.com/zeeev/wham"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
-    - biotools:Wham6216
+    - biotools:wham-variants
+    - doi:10.1371/journal.pcbi.1004572
   skip-lints:
     # This needs git for recursive checkouts
     - uses_vcs_url
-    - missing_hash

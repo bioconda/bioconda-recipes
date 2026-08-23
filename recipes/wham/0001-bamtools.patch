@@ -1,0 +1,84 @@
+diff --git a/src/api/algorithms/Sort.h b/src/api/algorithms/Sort.h
+index 32902e1..c03790c 100644
+--- a/src/api/algorithms/Sort.h
++++ b/src/api/algorithms/Sort.h
+@@ -76,7 +76,7 @@ struct API_EXPORT Sort {
+         { }
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) {
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const {
+             return sort_helper(m_order, lhs.Name, rhs.Name);
+         }
+ 
+@@ -112,7 +112,7 @@ struct API_EXPORT Sort {
+         { }
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) {
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const {
+ 
+             // force unmapped aligmnents to end
+             if ( lhs.RefID == -1 ) return false;
+@@ -161,7 +161,7 @@ struct API_EXPORT Sort {
+         { }
+ 
+         // comparison function
+-        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) {
++        bool operator()(const BamTools::BamAlignment& lhs, const BamTools::BamAlignment& rhs) const {
+ 
+             // force alignments without tag to end
+             T lhsTagValue;
+diff --git a/src/api/internal/bam/BamMultiMerger_p.h b/src/api/internal/bam/BamMultiMerger_p.h
+index 3000097..ceac8ed 100644
+--- a/src/api/internal/bam/BamMultiMerger_p.h
++++ b/src/api/internal/bam/BamMultiMerger_p.h
+@@ -61,7 +61,7 @@ struct MergeItemSorter : public std::binary_function<MergeItem, MergeItem, bool>
+             : m_comp(comp)
+         { }
+ 
+-        bool operator()(const MergeItem& lhs, const MergeItem& rhs) {
++        bool operator()(const MergeItem& lhs, const MergeItem& rhs) const {
+             const BamAlignment& l = *lhs.Alignment;
+             const BamAlignment& r = *rhs.Alignment;
+             return m_comp(l,r);
+diff --git a/src/toolkit/bamtools_resolve.cpp b/src/toolkit/bamtools_resolve.cpp
+index 9e5fb84..91df474 100644
+--- a/src/toolkit/bamtools_resolve.cpp
++++ b/src/toolkit/bamtools_resolve.cpp
+@@ -412,7 +412,7 @@ bool ResolveTool::ReadNamesFileReader::Read(map<string, ReadGroupResolver>& read
+         ReadGroupResolver& resolver = (*rgIter).second;
+ 
+         // store read name with resolver
+-        resolver.ReadNames.insert( make_pair<string,bool>(fields[1], true) ) ;
++        resolver.ReadNames.insert( make_pair(fields[1], true) ) ;
+     }
+ 
+     // if here, return success
+@@ -609,7 +609,7 @@ bool ResolveTool::StatsFileReader::ParseReadGroupLine(const string& line,
+     resolver.IsAmbiguous = ( fields.at(6) == TRUE_KEYWORD );
+ 
+     // store RG entry and return success
+-    readGroups.insert( make_pair<string, ReadGroupResolver>(name, resolver) );
++    readGroups.insert( make_pair(name, resolver) );
+     return true;
+ }
+ 
+@@ -1016,7 +1016,7 @@ bool ResolveTool::ResolveToolPrivate::MakeStats(void) {
+         }
+ 
+         // if read name not found, store new entry
+-        else resolver.ReadNames.insert( make_pair<string, bool>(al.Name, isCurrentMateUnique) );
++        else resolver.ReadNames.insert( make_pair(al.Name, isCurrentMateUnique) );
+     }
+ 
+     // close files
+@@ -1048,7 +1048,7 @@ void ResolveTool::ResolveToolPrivate::ParseHeader(const SamHeader& header) {
+     SamReadGroupConstIterator rgEnd  = header.ReadGroups.ConstEnd();
+     for ( ; rgIter != rgEnd; ++rgIter ) {
+         const SamReadGroup& rg = (*rgIter);
+-        m_readGroups.insert( make_pair<string, ReadGroupResolver>(rg.ID, ReadGroupResolver()) );
++        m_readGroups.insert( make_pair(rg.ID, ReadGroupResolver()) );
+     }
+ }
+ 
