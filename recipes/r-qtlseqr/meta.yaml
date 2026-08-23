@@ -1,6 +1,5 @@
 package:
-  name: r-qtlseqr
-
+  name: 'r-qtlseqr'
   version: "0.7.5.2"
 
 source:
@@ -9,16 +8,20 @@ source:
   sha256: unused
 
 build:
-  number: 7
-
+  number: 8
   rpaths:
     - lib/R/lib/
     - lib/
+  script:
+    - export DISABLE_AUTOBREW=1
+    - ${R} CMD INSTALL --build . ${R_ARGS}
+  run_exports:
+    - {{ pin_subpackage('r-qtlseqr', max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-
   host:
     - r-base
     - r-mass
@@ -30,7 +33,6 @@ requirements:
     - r-readr
     - r-tidyr
     - r-locfit
-
   run:
     - r-base
     - r-mass
@@ -45,14 +47,19 @@ requirements:
 
 test:
   commands:
-
     - $R -e "library('QTLseqr')"
 
 about:
-  home: https://github.com/bmansfeld/QTLseqr
-  license: GPL (>= 3)
-  summary: QTLseqr is an R package for QTL mapping using NGS Bulk Segregant Analysis.
+  home: "https://github.com/bmansfeld/QTLseqr"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "QTLseqr is an R package for QTL mapping using NGS Bulk Segregant Analysis."
+  dev_url: "https://github.com/bmansfeld/QTLseqr"
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
     - uses_vcs_url
   recipe-maintainers:
