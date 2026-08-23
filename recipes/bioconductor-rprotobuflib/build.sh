@@ -18,6 +18,8 @@ CXX14=$CXX" > ~/.R/Makevars
 for f in $(find . -name config.sub); do cp "$BUILD_PREFIX/share/gnuconfig/config.sub"   "$f"; done
 for f in $(find . -name config.guess); do cp "$BUILD_PREFIX/share/gnuconfig/config.guess" "$f"; done
 
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* src/
+
 autoreconf -if
 
 $R CMD INSTALL --build . "${R_ARGS}"
