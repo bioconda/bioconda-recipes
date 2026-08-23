@@ -6,17 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  # Bioconda recipes pull from a tagged PyPI release.
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  # Verified against the published sdist:
-  #   curl -sL https://pypi.io/packages/source/p/prform/prform-0.2.1.tar.gz | sha256sum
   sha256: a79ccbaff7290559576070a190bdc522117e4cc99a61340fc91e56a0e7164334
 
 build:
   number: 0
   noarch: python
-  # 0.x versioning: semver allows breaking changes in minor releases, so pin
-  # downstream dependents to the current major.minor (bioconda lint case 2).
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
