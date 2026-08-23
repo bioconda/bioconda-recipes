@@ -1,37 +1,53 @@
-{% set version="beta_1.3" %}
+{% set version = "beta_1.6" %}
 
 package:
   name: minnow
   version: {{ version }}
 
 source:
-  url: https://github.com/COMBINE-lab/minnow/archive/{{ version  }}.tar.gz
-  md5: 422860eb0126e6ea9fa3fd313364f151
+  url: https://github.com/COMBINE-lab/minnow/archive/refs/tags/{{ version }}.tar.gz
+  sha256: f0af8dcd2105bcc5b615532144e16fefb88fa3b938156697e83e055d9f305ccf
+  patches:
+    - 0001-CMakeLists.patch
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('minnow', max_pin="x") }}
 
 requirements:
   build:
     - make
+    - cmake <3.20.0
     - autoconf
-    - cmake
+    - automake
+    - libtool
+    - pkg-config
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - icu 
+    - icu
     - zlib
     - bzip2
     - unzip
-  run:
-    - zlib
-    - bzip2
 
 test:
   commands:
     - minnow --help
 
 about:
-  home: https://github.com/COMBINE-lab/minnow
-  license: GPLv3
-  summary: A principled framework for rapid simulation of dscRNA-seq data at the read level
+  home: "https://github.com/COMBINE-lab/minnow"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "A principled framework for rapid simulation of dscRNA-seq data at the read level."
+  dev_url: "https://github.com/COMBINE-lab/minnow"
+  doc_url: "https://github.com/COMBINE-lab/minnow/blob/minnow-velocity/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:minnow
+    - doi:10.1093/bioinformatics/btz351
