@@ -17,32 +17,31 @@ source:
 
 build:
   number: 0
-  skip: true  # [py != 310]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: True  # [py != 310]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - nucleoatac = nucleoatac.cli:main
     - pyatac = pyatac.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
   host:
-    - python 3.10.*
+    - python
     - pip
     - setuptools >=68
-    - wheel
     - cython <3
     - numpy >=1.23,<2
     - pysam >=0.19,<0.21
     - htslib
   run:
-    - {{ pin_compatible('python') }}
-    - {{ pin_compatible('numpy') }}
+    - python
+    - numpy
     - scipy >=1.9
-    - {{ pin_compatible('pysam', max_pin="x.x") }}
+    - pysam
     - htslib
     - matplotlib-base >=3.5
     - samtools >=1.18
@@ -59,18 +58,21 @@ test:
     - pyatac --help
 
 about:
-  home: https://github.com/GreenleafLab/NucleoATAC
-  dev_url: https://github.com/alecethell/NucleoATAC/tree/py311-modernization
-  doc_url: https://nucleoatac.readthedocs.io/
+  home: "https://github.com/GreenleafLab/NucleoATAC"
+  dev_url: "https://github.com/alecethell/NucleoATAC/tree/py311-modernization"
+  doc_url: "https://nucleoatac.readthedocs.io"
   license: MIT
   license_family: MIT
-  summary: Nucleosome calling from ATAC-seq data
+  summary: "Nucleosome calling from ATAC-seq data."
   description: |
     NucleoATAC calls nucleosome positions from ATAC-seq data and provides
     helper utilities for paired-end ATAC-seq signal processing. This recipe
     packages the Python 3 modernization fork used by nf-core/atacportray.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1101/gr.192294.115
   recipe-maintainers:
