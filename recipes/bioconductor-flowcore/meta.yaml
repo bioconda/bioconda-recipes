@@ -1,10 +1,10 @@
-{% set version = "2.22.1" %}
+{% set version = "2.24.0" %}
 {% set name = "flowCore" %}
-{% set bioc = "3.22" %}
+{% set bioc = "3.23" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,19 +12,20 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-  md5: f8af4e04d1225cadc85fc24189fdfd37
+  sha256: 9e2906cdea659535f778ac744bbc6803fb2ea8d61ad770166e097e47fbcb2707
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-flowcore", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-flowcore', max_pin="x.x") }}
 
 # Suggests: Rgraphviz, flowViz, flowStats (>= 3.43.4), testthat, flowWorkspace, flowWorkspaceData, openCyto, knitr, ggcyto, gridExtra
 # SystemRequirements: GNU make, C++17
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
@@ -60,14 +61,16 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: 'flowCore: Basic structures for flow cytometry data'
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "Artistic-2.0"
+  summary: 'flowCore: Basic structures for flow cytometry data.'
   description: Provides S4 data structures and basic functions to deal with flow cytometry data.
+  dev_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:flowcore
     - doi:10.1186/1471-2105-10-106
@@ -75,4 +78,3 @@ extra:
     name: bioconductor-flowcore
     path: recipes/bioconductor-flowcore
     version: 1.46.2
-
