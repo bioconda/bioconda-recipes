@@ -29,7 +29,7 @@ cmake -S . -B build -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-cmake --build build --clean-first -j "${CPU_COUNT}"
+cmake --build build -j "${CPU_COUNT}"
 
 "${STRIP}" build/src/minnow
 "${STRIP}" build/src/constructgraph
