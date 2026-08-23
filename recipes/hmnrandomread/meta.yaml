@@ -14,6 +14,8 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
   script:
+    - export LIBCLANG_PATH=$BUILD_PREFIX/lib
+    - cargo bundle-licenses --format yaml --output THIRDPARTY.yaml    
     - cargo install -v --locked --no-track --profile=release --root $PREFIX --path .
 
 requirements:
@@ -22,6 +24,19 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - clang
+    - libclang
+    - make
+    - perl
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+    - curl
+    - openssl
+  run:
+    - zlib
+    - curl
+    - openssl
 
 test:
   commands:
@@ -32,8 +47,13 @@ about:
   summary: A sequence-read simulator program for NGS
   description: A sequence-read simulator program for NGS
   license: MIT
-  license_file: LICENSE
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yaml
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - guillaume-gricourt
