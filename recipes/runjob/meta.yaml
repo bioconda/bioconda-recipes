@@ -13,37 +13,48 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir . https://pypi.io/packages/source/{{ bc[0] }}/{{ bc }}/{{ bc }}-{{ bcv }}.tar.gz
+  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir . https://pypi.org/packages/source/{{ bc[0] }}/{{ bc }}/{{ bc }}-{{ bcv }}.tar.gz
   entry_points:
-    - runjob = runjob.qsub:main
+    - runflow = runjob.main:entry_exec
+    - runjob = runjob.main:entry_exec
+    - runsge = runjob.main:entry_exec
+    - runshell = runjob.main:entry_exec
+    - qs = runjob.jobstat:qs
+    - qslurm = runjob.jobstat:qslurm
+    - runjob-server = runjob.jobsocket:job_server
+    - runjob-client = runjob.jobsocket:job_client
+    - runjob-report = runjob.jobsocket:job_report
   run_exports:
     - {{ pin_subpackage('runjob', max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.5
+    - python >=3.7
     - setuptools
+    - unzip
   run:
-    - python >=3.5
-    - psutil >=5.7.0
-    - ratelimiter >=1.2.0
-    - prettytable >=3.2.0
-    - configparser >=5.0.2
+    - python >=3.7
+    - psutil
+    - prettytable
+    - configparser
+    - rich-argparse
+    - asyncio
+    - apscheduler
 
 test:
   imports:
     - runjob
   commands:
-    #- runjob --version
-    - runsge --version
+    - runjob --help
+    - runsge --help
 
 about:
-  home: https://github.com/yodeng/runjob
+  home: "https://github.com/yodeng/runjob"
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: "Manage jobs or pipeline of bioinfomation."
   description: "Runjob is a program for managing a group of related bioinformatic jobs or pipelines running on a compute cluster."
-  dev_url: https://github.com/yodeng/runjob
-  doc_url: https://runjob.readthedocs.io/en/latest
+  dev_url: "https://github.com/yodeng/runjob"
+  doc_url: "https://runjob.readthedocs.io/en/latest"
