@@ -4,7 +4,7 @@ set -ex
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
 
 case $(uname -m) in
     aarch64)
