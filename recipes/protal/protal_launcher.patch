@@ -1,0 +1,69 @@
+diff --git a/protal_launcher b/protal_launcher
+index 469d424..fc16a5f 100755
+--- a/protal_launcher
++++ b/protal_launcher
+@@ -1,22 +1,50 @@
+ #!/usr/bin/env python3
+-import sys
++"""Dispatch to the protal binary that matches this machine's CPU.
++
++Two protal binaries are installed side by side: ``protal_avx2`` (built for
++x86-64-v3) and ``protal_plain`` (baseline). Pick the fastest one this CPU can
++actually execute and hand over to it via exec(), so protal's exit status,
++signals, stdio and argument quoting are all preserved unchanged.
++"""
+ import os
+-import subprocess
++import shutil
++import sys
+ 
+-cmd = sys.argv
++AVX2_CANDIDATES = ["protal_avx2", "protal_plain"]
++BASELINE_CANDIDATES = ["protal_plain"]
+ 
+-try_tools = ["protal_avx2", "protal_plain"]
+ 
+-def Try(program):
++def supports_avx2():
++    """True if /proc/cpuinfo advertises AVX2. Assume no on anything else."""
+     try:
+-        result = subprocess.run([program], text=True, capture_output=True)
+-    except subprocess.CalledProcessError:
+-        return False
+-    return result.returncode == 0
++        with open("/proc/cpuinfo") as handle:
++            for line in handle:
++                if line.startswith("flags") or line.startswith("Features"):
++                    return "avx2" in line.split()
++    except OSError:
++        pass
++    return False
++
++
++def resolve(name):
++    """Prefer the binary sitting next to this launcher, else fall back to PATH."""
++    sibling = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
++    if os.access(sibling, os.X_OK):
++        return sibling
++    return shutil.which(name)
++
++
++def main():
++    candidates = AVX2_CANDIDATES if supports_avx2() else BASELINE_CANDIDATES
++    for name in candidates:
++        binary = resolve(name)
++        if binary:
++            os.execv(binary, [binary] + sys.argv[1:])
++    sys.exit(
++        "protal: no runnable protal binary found (tried: %s)"
++        % ", ".join(candidates)
++    )
+ 
+-for tool in try_tools:
+-    if Try(tool):
+-        cmd[0] = tool
+-        break
+ 
+-os.system(' '.join(cmd))
++if __name__ == "__main__":
++    main()
