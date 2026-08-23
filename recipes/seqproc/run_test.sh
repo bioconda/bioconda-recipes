@@ -13,7 +13,7 @@ if printf '%s\n' "${version_output}" | grep -F "compiler CPU target: native"; th
 fi
 case "$(uname -m)" in
   x86_64) printf '%s\n' "${version_output}" | grep -F "SIMD backend: x86-sse2" ;;
-  arm64|aarch64) printf '%s\n' "${version_output}" | grep -F "SIMD backend: arm-neon" ;;
+  arm64|aarch64) printf '%s\n' "${version_output}" | grep -F "SIMD backend: aarch64-neon" ;;
   *) echo "unsupported test architecture: $(uname -m)" >&2; exit 1 ;;
 esac
 
