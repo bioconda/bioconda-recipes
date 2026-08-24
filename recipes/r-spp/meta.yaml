@@ -46,6 +46,16 @@ requirements:
     - bioconductor-rsamtools
     - r-catools
     - zlib
+    # configure.ac runs AC_CHECK_LIB(bz2, ...), which on success both defines
+    # HAVE_LIBBZ2 -- gating the .bz2 branches of the tag readers in
+    # src/bed2vector.cpp -- and prepends -lbz2 to @LIBS@, i.e. to PKG_LIBS.
+    # Until build 13 bzip2 was never declared here, so it reached the build only
+    # as a transitive dependency of r-base: the shipped spp.so has
+    # NEEDED libbz2.so.1.0 and undefined BZ2_bzReadOpen/BZ2_bzReadClose while
+    # the package metadata constrains no bzip2 at all. Declaring it makes the
+    # .bz2 support deterministic and lets bzip2's run_exports pin the runtime
+    # dependency the library actually has.
+    - bzip2
   run:
     - r-base
     - r-bh >=1.66
