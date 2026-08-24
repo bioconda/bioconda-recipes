@@ -60,7 +60,7 @@ pipeline2 <- SingleCellPipeline(
     pipeline_parameters.demultiplexer = "BLAZE",
     pipeline_parameters.oarfish_quantification = FALSE
   ),
-  expect_cell_number <- 100L,
+  expect_cell_number = 100,
   outdir = outdir2,
   # the input fastq file
   fastq = system.file("extdata", "fastq", "musc_rps24.fastq.gz", package = "FLAMES"),
