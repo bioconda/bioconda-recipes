@@ -6,6 +6,9 @@ export MACHTYPE="$(uname -m)"
 export BINDIR="$(pwd)/bin"
 mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${{PREFIX}}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${{PREFIX}}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${{PREFIX}}/include"
 export LIBRARY_PATH="${{PREFIX}}/lib"
 export LDFLAGS="${{LDFLAGS}} -L${{PREFIX}}/lib"
 export CFLAGS="${{CFLAGS}} -O3"

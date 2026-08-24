@@ -1,21 +1,22 @@
 {% set package = "ucsc-stringify" %}
 {% set program = "stringify" %}
-{% set version = "482" %}
-{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
+{% set version = "502" %}
+{% set sha256 = "38e29dbf7c1e6d49aaf358014960c5781fd59aa3b7b406dadc9557c98e895f22" %}
 
 package:
-  name: {{ package }}
-  version: {{ version }}
+  name: "{{ package }}"
+  version: "{{ version }}"
 
 source:
-  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
-  sha256: {{ sha256 }}
+  url: "https://hgdownload.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
   patches:
-    - include.patch
-    - include.linux.patch  # [linux]
+    - 0001-include.patch
+    - 0003-common.mk.patch
+    - 0004-straw.patch
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
@@ -23,21 +24,25 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
-    - mysql-connector-c  # [not arm64]
-    - libopenssl-static
+    - mysql-connector-c # [not arm64]
+    - openssl
     - clangdev  # [osx]
     - rsync  # [osx]
-    - zlib
+    - libiconv
     - bzip2
     - liblzma-devel
+    - zlib
+    - libcurl
   run:
+    # gzip called via fork so runtime only
+    - gzip
     - libpng
     - libuuid
-    - mysql-connector-c  # [not arm64]
-    - libopenssl-static
+    - mysql-connector-c # [not arm64]
 
 test:
   commands:
@@ -45,9 +50,9 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  home: "https://hgdownload.soe.ucsc.edu/admin/exe"
   license: "Varies; see https://genome.ucsc.edu/license"
-  summary: "Convert file to C strings."
+  summary: "Convert file to C strings"
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
   doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 

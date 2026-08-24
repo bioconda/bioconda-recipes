@@ -5,6 +5,9 @@ set -xe
 mkdir -p "${{PREFIX}}/bin"
 export MACHTYPE=$(uname -m)
 export INCLUDE_PATH="${{PREFIX}}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${{PREFIX}}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${{PREFIX}}/include"
 export LIBRARY_PATH="${{PREFIX}}/lib"
 export LDFLAGS="${{LDFLAGS} -L${{PREFIX}}/lib"
 export CFLAGS="${{CFLAGS}} -O3 ${{LDFLAGS}}"

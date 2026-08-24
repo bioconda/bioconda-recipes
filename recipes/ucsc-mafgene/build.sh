@@ -6,6 +6,9 @@ export MACHTYPE="$(uname -m)"
 export BINDIR="$(pwd)/bin"
 mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${PREFIX}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
@@ -26,10 +29,10 @@ rm -rf kent/src/optimalLeaf/*.bak
 rm -rf kent/src/jkOwnLib/*.bak
 rm -rf kent/src/hg/lib/straw/*.bak
 
-#if [[ "$(uname -s)" == "Darwin" ]]; then
-#    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-#    export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
-#fi
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+    export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
+fi
 
 if [[ "$(uname -m)" == "arm64" ]]; then
     rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/mafGene .

@@ -189,6 +189,28 @@ manual_descriptions = {
         """),
 }
 
+# Programs UCSC ships in admin/exe but does not document in FOOTER, so they never
+# appear in the parsed program list. Their descriptions cannot be refreshed from
+# upstream and are maintained here.
+UNDOCUMENTED = {
+    'chainBridge': 'Attempt to extend alignments through double-sided gaps of similar size',
+    'chainCleaner': 'Remove chain-breaking alignments from chains that break nested chains.',
+    'chainScore': 'Score chains.',
+    'clusterGenes': 'Cluster genes from genePred tracks',
+    'endsInLf': 'Check that last letter in files is end of line',
+    'faToVcf': 'Extract VCF from a multi-sequence FASTA alignment.',
+    'hgGoldGapGl': 'Put chromosome .agp and .gl files into browser database.',
+    'hgvsToVcf': 'Convert HGVS terms to VCF tab-separated output',
+    'matrixClusterColumns': 'Group the columns of a matrix into clusters, and output a matrix with the same number of rows and generally much fewer columns. Combines columns by taking mean.',
+    'matrixMarketToTsv': 'Convert matrix file from Matrix Market sparse matrix format to tab-separated-values.',
+    'matrixNormalize': "Normalize a matrix somehow - make it's columns or rows all sum to one or have vector length one.",
+    'matrixToBarChartBed': 'Attach a labeled expression matrix to a bed file joining.',
+    'pslProtToRnaCoords': 'Convert protein alignments to RNA coordinates.',
+    'pslSortAcc': 'Sort pslSort .psl output file by accession.',
+    'pslSpliceJunctions': 'Extract splice junctions from a PSL file.',
+    'pslSplitOnTarget': 'Split psl files into one per target.',
+}
+
 # programs listed in FOOTER that should not be considered a "ucsc utility"
 SKIP = [
     'sizeof',
@@ -200,12 +222,9 @@ SKIP = [
 
 # A list of programs which have problems to build on linux-aarch64
 SKIP_AARCH64 = [
-    'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
-    'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
     'bedCoverage',
     'bedExtendRanges',
     'bedItemOverlapCount',
-    'bedToGenePred',
     'checkCoverageGaps',
     'checkTableCoords',
     'chromGraphFromBin',
@@ -213,23 +232,14 @@ SKIP_AARCH64 = [
     'dbTrash',
     'estOrient',
     'featureBits',
-    'gapToLift',
-    'genePredCheck',
     'genePredFilter',
     'genePredHisto',
     'genePredSingleCover',
-    'genePredToBed',
-    'genePredToBigGenePred',
-    'genePredToFakePsl',
-    'genePredToGtf',
     'genePredToMafFrames',
     'genePredToProt',
     'getRna',
     'getRnaPred',
-    'gff3ToGenePred',
-    'gtfToGenePred',
     'hgFindSpec',
-    'hgGcPercent',
     'hgLoadBed',
     'hgLoadChain',
     'hgLoadMaf',
@@ -242,7 +252,6 @@ SKIP_AARCH64 = [
     'hubCheck',
     'hubPublicCheck',
     'ldHgGene',
-    'liftOver',
     'liftUp',
     'mafCoverage',
     'mafFetch',
@@ -257,10 +266,8 @@ SKIP_AARCH64 = [
     'overlapSelect',
     'positionalTblCheck',
     'pslLiftSubrangeBlat',
-    'pslToBigPsl',
     'raSqlQuery',
     'tdbQuery',
-    'transMapPslToGenePred',
     'validateFiles'
 ]
 
@@ -300,7 +307,17 @@ custom_meta = {
 }
 
 
-for block in parse_footer('FOOTER'):
+def all_programs():
+    """
+    Yield parse_footer() blocks for every program to build a recipe for: those
+    documented in FOOTER, followed by the undocumented ones.
+    """
+    yield from parse_footer('FOOTER')
+    for program, description in UNDOCUMENTED.items():
+        yield [program, (program, description)]
+
+
+for block in all_programs():
     sys.stderr.write('.')
     # If len == 2, then a description was parsed.
     if len(block) == 2:
@@ -386,6 +403,9 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
+    # Recipes on a custom meta template carry their own patch list; don't
+    # drop the standard patches into them.
+    if program not in custom_meta:
+        shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
 
 sys.stderr.write('\n')
