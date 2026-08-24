@@ -290,20 +290,19 @@ custom_build_scripts = {
     'paraNodeStatus': 'template-build-parasol.sh',
     'parasol': 'template-build-parasol.sh',
     'paraTestJob': 'template-build-parasol.sh',
-    'bedJoinTabOffset': 'template-build-cp-short.sh',
     'webSync': 'template-build-cp-short.sh',
 }
 
 custom_tests = {
+    # faToVcf prints usage and exits 1 rather than kent's usual 255
+    'faToVcf': 'template-run_test-exit1.sh',
     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
-    'bedJoinTabOffset': 'template-run_test-exit1.sh',
     'webSync': 'template-run_test-exit1.sh',
 }
 
 custom_meta = {
-    'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
-    'bedJoinTabOffset': 'template-meta-with-python.yaml',
-    'webSync': 'template-meta-with-python.yaml',
+    'expMatrixToBarchartBed': 'template-meta-with-python.yaml.in',
+    'webSync': 'template-meta-with-python.yaml.in',
 }
 
 
@@ -368,7 +367,7 @@ for block in all_programs():
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         _template = open(
-            custom_meta.get(program, 'template-meta.yaml')
+            custom_meta.get(program, 'template-meta.yaml.in')
         ).read()
         fout.write(
             _template.format(
