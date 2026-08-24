@@ -2,61 +2,6 @@
 {% set version = "4.4.10" %}
 {% set commit = "cced92452e0f230acacc0427d19908b266811dc9" %}
 
-# NEW package, deliberately not a bump of the existing `cfm` recipe.
-#
-# `cfm` is pinned at version 33, which is CFM-ID 3-era software built against
-# rdkit 2018.09.1. This packages the CFM-ID 4 generation under a name matching
-# the software and its executables, and leaves `cfm=33` working for anything
-# that still depends on it.
-#
-# Most of the build knowledge below (build.sh, the cmake flags, the INCHI-API
-# header copy, the dependency shape) comes straight from the `cfm` recipe. What
-# is NOT carried over: its source.patch, which fixes version-33 bugs and must
-# not be applied blind to 4.4.10.
-#
-# SOURCE: upstream publishes tags on Bitbucket. Pinned to the commit the
-# CFM-ID_4.4.10 tag points at, rather than the tag name, because Bitbucket's
-# auto-generated tag archives are not guaranteed byte-stable.
-#
-# RDKIT WINDOW -- measured, not guessed.
-#
-# CEILING (<2024) comes from the INCHI headers. CFM includes
-# <INCHI-API/inchi.h>; conda-forge's rdkit ships that as GraphMol/inchi.h, but
-# stopped at some point. Probed by downloading each package and looking:
-#
-#     rdkit 2020.09.5  -> GraphMol/inchi.h present
-#     rdkit 2021.03.1  -> present
-#     rdkit 2022.03.1  -> present
-#     rdkit 2023.09.6  -> present
-#     rdkit 2024.03.5  -> ABSENT
-#     rdkit 2024.09.6  -> ABSENT
-#
-# Both 2024 releases were checked, so the ceiling really is at the 2023/2024
-# boundary rather than being extrapolated from one probe.
-#
-# FLOOR (>=2021.03.1) is conservative rather than derived, and an earlier
-# version of this comment justified it wrongly:
-#
-#   * It is NOT the oldest rdkit with the INCHI header -- 2020.09.5 has it too.
-#   * It is NOT "the oldest rdkit conda-forge ships". conda-forge still carries
-#     rdkit 2017.09.3, the very version upstream pins. Nothing was deleted. It
-#     is unusable for a different reason: it was only ever built for Python
-#     2.7/3.5/3.6 against boost 1.66, so it cannot enter a modern solve.
-#
-# The genuine hard floor is rdkit 2018.03, where ROMol::operator[] changed to
-# return a raw Bond* -- see rdkit-operator-returns-raw-bond.patch, which will
-# not compile against anything older. Verified against RDKit's own source:
-# Release_2017_09_3 returns BOND_SPTR, Release_2018_03_1 returns Bond*.
-#
-# 2021.03.1 is kept as a deliberately cautious floor: it is well clear of the
-# 2018.03 API break, and in practice only rdkit >=2022.03.1 has builds for
-# python >=3.10 anyway, so nothing older is reachable in a current environment.
-# Upstream's INSTALL.md says "Newer RDKit may work but we have not test it yet",
-# so this whole window is the untested case, entered with a bounded pin.
-#
-# If CFM-ID is ever to build against current rdkit, conda-forge would need to
-# ship INCHI headers again, or upstream would need to stop depending on them.
-
 package:
   name: {{ name }}
   version: {{ version }}
@@ -65,36 +10,15 @@ source:
   url: https://bitbucket.org/wishartlab/cfm-id-code/get/{{ commit }}.tar.gz
   sha256: 41dd958bc70e353eb2e8956b5c93ac63421dd720a8580360074ccb2effd7d7cb
   patches:
-    # Two minimal, upstreamable patches are needed to build 4.4.10 against a
-    # modern RDKit. Order matters: the standard bump first, then the API fix it
-    # exposes. Both carry their full diagnosis in the patch header and should be
-    # dropped once upstream supports current RDKit.
-    #
-    # 1. CFM pins CMAKE_CXX_STANDARD 11; modern RDKit headers need C++17.
-    #    Without this the build dies inside RDKit's own headers on std::any /
-    #    std::string_view / std::is_same_v.
     - make-cxx-standard-overridable.patch
-    # 2. ROMol::operator[] now returns a raw Bond*, so the old .get() call no
-    #    longer compiles. One line, one file.
     - rdkit-operator-returns-raw-bond.patch
-    # 3. DBL_MAX used without <cfloat>. Unrelated to RDKit: current libstdc++
-    #    no longer pulls it in transitively.
     - add-cfloat-include.patch
 
 build:
   number: 0
-  # Skipped on arm, not on macOS. conda-forge has no arm64 build of liblbfgs
-  # for either osx-arm64 or linux-aarch64, and CFM cannot build without it.
-  # osx-64 and linux-64 both have liblbfgs 1.10 and are supported.
   skip: True  # [aarch64 or arm64]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  # `cfm` and `cfm-id` both install binaries named cfm-id, cfm-predict and
-  # fraggraph-gen, so they cannot share an environment. Without this the clash
-  # surfaces late, as a file-clobber error after solving; with it the solver
-  # refuses up front. Nothing satisfies "<0a0", making the two mutually
-  # exclusive. run_constrained never pulls a package in -- it only constrains
-  # one that is being installed anyway.
   run_constrained:
     - cfm <0a0
 
@@ -103,32 +27,9 @@ requirements:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    # Required by bioconda lint (compiler_needs_stdlib_c) whenever a compiler
-    # is requested: pins the C standard library the package is built against.
-    #
     - {{ stdlib('c') }}
     - cmake >=3.7
   host:
-    # INSTALL.md requires Boost >=1.62 with regex, serialization, filesystem,
-    # system, thread, program_options and test.
-    # boost-cpp, deliberately, even though conda-forge has renamed the boost
-    # packages and boost-cpp is now only a ~17 kB shim over libboost-devel,
-    # frozen at 1.85.0 while libboost-devel has reached 1.91.0.
-    #
-    # Switching to libboost-devel BREAKS THE BUILD, and it is worth knowing
-    # why before anyone modernises this line again:
-    #
-    #     conda-forge-pinning pins   libboost_devel: 1.88
-    #     rdkit 2023.09.6 requires   libboost >=1.84.0,<1.85.0a0
-    #
-    # Naming libboost-devel therefore drags in the pinned 1.88 and the solve
-    # fails against every rdkit in our <2024 window. boost-cpp is not in the
-    # global pinning, so it floats and settles on whatever boost rdkit wants
-    # (1.84.0 in practice). The legacy name is doing real work here.
-    #
-    # This is fragile: if conda-forge ever removes boost-cpp outright, this
-    # recipe needs an explicit libboost-devel bound matching the rdkit window
-    # rather than the pinned default.
     - boost-cpp
     - liblbfgs =1.10
     - lp_solve =5.5
@@ -145,20 +46,12 @@ test:
     - which cfm-annotate
     - which cfm-id-precomputed
     - which fraggraph-gen
-    # cfm-train is intentionally NOT built (see build.sh: it needs MPI, which
-    # does not probe successfully under the stdlib sysroot, and training is out
-    # of scope for the Galaxy wrapper).
-    # Real work, not just presence: fragment graph generation needs the
-    # compiled RDKit/lp_solve stack to actually function.
     - fraggraph-gen CC 2 + fullgraph
     - fraggraph-gen CC 2 "*" fragonly
-    # Proves the pretrained parameters installed by build.sh are found.
     - test -d "${PREFIX}/share/{{ name }}-{{ version }}/cfmid4"
 
 about:
   home: https://cfmid.wishartlab.com/
-  # Verified from LICENSE.md in the 4.4.10 source. The `cfm` v33 recipe says
-  # GPL-2; 4.4.10 ships LGPL-2.1.
   license: LGPL-2.1-only
   license_family: LGPL
   license_file: LICENSE.md
