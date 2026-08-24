@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -e
+
+# Detect Operating System
+OS="$(uname -s)"
+
+case "$OS" in
+    Linux*)
+        # Verify the user is running on a GUI-capable environment
+        if [ -z "$XDG_DATA_HOME" ]; then
+            LOCAL_APPS_DIR="$HOME/.local/share/applications"
+        else
+            LOCAL_APPS_DIR="$XDG_DATA_HOME/applications"
+        fi
+
+        mkdir -p "$LOCAL_APPS_DIR"
+        TARGET_FILE="$LOCAL_APPS_DIR/oxbreaker.desktop"
+
+        # Copy and rewrite the template based on their active environment
+        cp "$CONDA_PREFIX/share/oxbreaker/oxbreaker.desktop" "$TARGET_FILE"
+        sed -i "s|__PREFIX__|$CONDA_PREFIX|g" "$TARGET_FILE"
+        chmod +x "$TARGET_FILE"
+
+        echo "Success! Shortcut created at: $TARGET_FILE"
+        ;;
+    Darwin*)
+        APP_DIR="/Applications/OxBreaker.app"
+        PNG_ICON="$CONDA_PREFIX/share/oxbreaker/oxbreaker.png" # Needs to be converted to .icns
+
+        # 1. Create the standard macOS app directory structure
+        sudo mkdir -p "$APP_DIR/Contents/MacOS"
+        sudo mkdir -p "$APP_DIR/Contents/Resources"
+
+        # 2. Convert PNG to ICNS on the fly if the icon exists
+        if [ -f "$PNG_ICON" ]; then
+            ICONSET_DIR="$(mktemp -d)/OxBreaker.iconset"
+            mkdir -p "$ICONSET_DIR"
+
+            # Generate standard resolution sizes required by macOS
+            sips -z 16 16     "$PNG_ICON" --out "$ICONSET_DIR/icon_16x16.png" >/dev/null 2>&1
+            sips -z 32 32     "$PNG_ICON" --out "$ICONSET_DIR/icon_16x16@2x.png" >/dev/null 2>&1
+            sips -z 32 32     "$PNG_ICON" --out "$ICONSET_DIR/icon_32x32.png" >/dev/null 2>&1
+            sips -z 64 64     "$PNG_ICON" --out "$ICONSET_DIR/icon_32x32@2x.png" >/dev/null 2>&1
+            sips -z 128 128   "$PNG_ICON" --out "$ICONSET_DIR/icon_128x128.png" >/dev/null 2>&1
+            sips -z 256 256   "$PNG_ICON" --out "$ICONSET_DIR/icon_128x128@2x.png" >/dev/null 2>&1
+            sips -z 256 256   "$PNG_ICON" --out "$ICONSET_DIR/icon_256x256.png" >/dev/null 2>&1
+            sips -z 512 512   "$PNG_ICON" --out "$ICONSET_DIR/icon_256x256@2x.png" >/dev/null 2>&1
+            sips -z 512 512   "$PNG_ICON" --out "$ICONSET_DIR/icon_512x512.png" >/dev/null 2>&1
+            sips -z 1024 1024 "$PNG_ICON" --out "$ICONSET_DIR/icon_512x512@2x.png" >/dev/null 2>&1
+
+            # Compile the iconset into a single .icns file
+            iconutil -c icns "$ICONSET_DIR" -o "/tmp/appicon.icns"
+            sudo mv "/tmp/appicon.icns" "$APP_DIR/Contents/Resources/appicon.icns"
+
+            # Clean up temp folder
+            rm -rf "$(dirname "$ICONSET_DIR")"
+        fi
+
+        # 3. Create the executable launcher script inside the app bundle **MUST BE NOT INDENTED**
+cat <<'EOF' > "/tmp/OxBreaker_Launcher"
+#!/usr/bin/env bash
+# Inherit active Conda prefix
+export PATH="$CONDA_PREFIX/bin:$PATH"
+
+# Launch oxbreaker
+exec oxbreaker "$@"
+EOF
+        sudo mv "/tmp/OxBreaker_Launcher" "$APP_DIR/Contents/MacOS/OxBreaker"
+        sudo chmod +x "$APP_DIR/Contents/MacOS/OxBreaker"
+
+        # 4. Create Info.plist to register the app executable and icon **MUST BE NOT INDENTED**
+cat <<'EOF' > "/tmp/OxBreaker_Info.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <key>OxBreaker</key>
+    <key>CFBundleIconFile</key>
+    <key>appicon.icns</key>
+    <key>CFBundleIdentifier</key>
+    <key>com.oxbreaker.app</key>
+    <key>CFBundleName</key>
+    <key>OxBreaker</key>
+    <key>CFBundlePackageType</key>
+    <key>APPL</key>
+    <key>LSUIElement</key>
+    <false/>
+</dict>
+</plist>
+EOF
+        mv "/tmp/OxBreaker_Info.plist" "$APP_IDR/Contents/Info.plist"
+        # 5. Refresh Finder cache so the icon displays immediately
+        sudo touch "$APP_DIR"
+        
+        echo "Success! Shortcut created at: $APP_DIR"
+	;;
+    *)
+        echo "Error: Unsupported operative system ($OS)."
+        exit 1
+        ;;
+esac
