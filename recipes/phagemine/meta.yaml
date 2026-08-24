@@ -1,0 +1,49 @@
+{% set name = "phagemine" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/emmannaemeka/PhageMine/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b6e5cc174bccec1d5f364d29b22409f584e4f8e0dba2086ef60169b95f4c6adc
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('phagemine', max_pin="x") }}
+  entry_points:
+    - phagemine = phagemine.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - phanotate
+    - hmmer
+    - mmseqs2
+    - diamond
+
+test:
+  commands:
+    - phagemine --version
+    - phagemine --help
+    - phagemine batch --help
+    - phagemine extract --help
+    - python -c "import phagemine"
+
+about:
+  home: https://github.com/emmannaemeka/PhageMine
+  dev_url: https://github.com/emmannaemeka/PhageMine
+  summary: Evidence-based bacteriophage genome annotation and discovery mining
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  maintainers:
+    - emmannaemeka
