@@ -1,0 +1,686 @@
+diff -ruN coltron/crc.py coltron/crc.py
+--- coltron/crc.py	2026-07-13 18:32:40
++++ coltron/crc.py	2026-07-13 18:32:40
+@@ -39,20 +39,19 @@
+ ######################
+ 
+ import sys
+-import utils
++from . import utils
+ import os
+ import subprocess
+ 
+ import numpy
+ import networkx as nx
+-from networkx.algorithms.clique import find_cliques_recursive
++from networkx.algorithms.clique import find_cliques
+ 
+-from string import upper
+ from collections import defaultdict
+ import pickle
+ 
+ import gzip
+-import urllib2
++import urllib.request, urllib.error, urllib.parse
+ 
+ ######################
+ # Functions
+@@ -71,10 +70,10 @@
+         
+ 
+ def downloadFile(location,downloadDir):
+-    print "Downloading data file:%s"%location 
+-    data_file = urllib2.urlopen(location)
++    print("Downloading data file:%s"%location) 
++    data_file = urllib.request.urlopen(location)
+     out_name = "%s%s"%(downloadDir, location.split("/")[-1])
+-    print "Downloading to:%s"%(out_name)
++    print("Downloading to:%s"%(out_name))
+     with open(out_name,'w') as out_file:
+         out_file.write(data_file.read())
+         out_file.close()
+@@ -93,7 +92,7 @@
+         downloadDir = utils.formatFolder("%s/%s"%(genomeLocation,genome),True)
+         filePath = 'http://hgdownload.soe.ucsc.edu/goldenPath/%s/chromosomes/'%genome
+         numChromosomes = 23 if 'hg' in genome else 20
+-        chromosomes = range(1,numChromosomes)+["X"]+["Y"]
++        chromosomes = list(range(1,numChromosomes))+["X"]+["Y"]
+         for i in chromosomes:
+             downloadName = "chr%s.fa.gz"%i
+             downloadFile("%s/%s"%(filePath,downloadName), downloadDir)
+@@ -111,7 +110,7 @@
+     by calling bamliquidator
+     '''
+ 
+-    print 'GENERATING AN ACTIVITY TABLE USING CHIP DATA'
++    print('GENERATING AN ACTIVITY TABLE USING CHIP DATA')
+ 
+     annotTable = utils.parseTable(annotationFile, '\t')
+     output = []
+@@ -140,7 +139,7 @@
+ 
+     subprocess.call(mappingCmd, shell=True)
+ 
+-    print mappingCmd      
++    print(mappingCmd)      
+     return outputname
+ 
+ def createEnhancerLoci(enhancerTable, Enumber='super'):
+@@ -149,7 +148,7 @@
+     output a table of Loci of the super enhancers
+     '''
+ 
+-    print 'CREATING SUPER LOCUS COLLECTION'
++    print('CREATING SUPER LOCUS COLLECTION')
+ 
+     output = []
+ 
+@@ -176,7 +175,7 @@
+     output: a dictionary keyed by refseq that points to activity
+     '''
+ 
+-    print 'CREATING EXPRESSION DICTIONARY'
++    print('CREATING EXPRESSION DICTIONARY')
+ 
+     expresionFilename = projectFolder + 'bamliquidator/matrix.txt'
+     expressionTable = utils.parseTable(expresionFilename, '\t')
+@@ -201,8 +200,8 @@
+         elif geneName not in expressionDictGene:
+             expressionDictGene[geneName] = exp
+ 
+-    cutoff = numpy.percentile(expressionDictGene.values(), expCutoff)
+-    print 'Expression cutoff: ' + str(cutoff)
++    cutoff = numpy.percentile(list(expressionDictGene.values()), expCutoff)
++    print('Expression cutoff: ' + str(cutoff))
+ 
+     expressedGenes = []
+     expressedNM = []
+@@ -229,7 +228,7 @@
+     Return a dictionary keyed by TF that points to a list of loci
+     '''
+ 
+-    print 'FINDING CANIDATE TFs'
++    print('FINDING CANIDATE TFs')
+ 
+     enhancerAssignment = []
+     TFtoEnhancerDict = defaultdict(list)
+@@ -307,7 +306,7 @@
+ 
+     # Add promoter is it's not contained in the super
+     if promoter:
+-        for gene in TFtoEnhancerDict.keys():
++        for gene in list(TFtoEnhancerDict.keys()):
+             promoter = utils.Locus(startDict[gene]['chr'], int(startDict[gene]['start'][0]) - 2000, 
+                                    int(startDict[gene]['start'][0]) + 2000, startDict[gene]['sense'])
+             overlapBool = False
+@@ -334,7 +333,7 @@
+ 
+     used = []
+  
+-    for gene in TFtoEnhancerDict.keys():
++    for gene in list(TFtoEnhancerDict.keys()):
+         for superEnh in TFtoEnhancerDict[gene]:
+ 
+             check = (refseqToNameDict[gene], superEnh.chr(), superEnh.start(), superEnh.end())
+@@ -461,14 +460,14 @@
+     returns a dictionary of refseqs with all valley loci that are associated
+     '''
+ 
+-    print 'IDENTIFYING VALLEYS IN SUPER ENHANCERS'
++    print('IDENTIFYING VALLEYS IN SUPER ENHANCERS')
+ 
+     valleyBED = []
+     valleyDict = {}
+ 
+-    for gene in TFtoEnhancerDict.keys():
++    for gene in list(TFtoEnhancerDict.keys()):
+         valleyDict[gene] = []
+-        print gene
++        print(gene)
+         for region in TFtoEnhancerDict[gene]:
+             scoreArray = scoreValley(region, bamFile, projectName, projectFolder, valleyParamater)
+             for index,score in enumerate(scoreArray):
+@@ -484,7 +483,7 @@
+ 
+     bedfilename = projectFolder + projectName + '_valleys.bed'
+     utils.unParseTable(valleyBED, bedfilename, '\t')
+-    print bedfilename
++    print(bedfilename)
+ 
+     return bedfilename
+ 
+@@ -501,7 +500,7 @@
+     subpeakLoci = [utils.Locus(l[0], int(l[1]), int(l[2]), '.') for l in subpeakTable]
+     subpeakCollection = utils.LocusCollection(subpeakLoci, 50)
+ 
+-    for gene in TFtoEnhancerDict.keys():
++    for gene in list(TFtoEnhancerDict.keys()):
+         subpeakDict[gene] = []
+         for region in TFtoEnhancerDict[gene]:
+             overlaps = subpeakCollection.getOverlap(region)
+@@ -550,7 +549,7 @@
+     for line in motifDatabase:
+         motifDatabaseDict[line[1]].append(line[0])
+ 
+-    print 'GENERATING TF NETWORK'
++    print('GENERATING TF NETWORK')
+ 
+     # select the TF candidates that have motifs
+     canidateMotifs = []
+@@ -558,7 +557,7 @@
+         if gene in motifNames:
+             canidateMotifs.append(gene)
+ 
+-    print 'Number of annotated canidate TFs that have motifs: ' + str(len(canidateMotifs))
++    print('Number of annotated canidate TFs that have motifs: ' + str(len(canidateMotifs)))
+     canidateMotifs = sorted(canidateMotifs)
+ 
+     # generate FIMO background file
+@@ -570,7 +569,7 @@
+     # begin FIMO command here
+     fimoCmd = 'fimo'
+     for TF in canidateMotifs:
+-        print TF
++        print(TF)
+         for x in motifDatabaseDict[TF]:
+             fimoCmd += ' --motif ' + "'%s'" % (str(x))
+ 
+@@ -581,7 +580,7 @@
+     fimoCmd += ' ' + motifDatabaseFile + ' '
+     fimoCmd += projectFolder + projectName + '_SUBPEAKS.fa'
+     fimoCmd += ' > '+ projectFolder + 'FIMO/fimo.txt' 
+-    print fimoCmd
++    print(fimoCmd)
+ 
+     fimoOutput = subprocess.call(fimoCmd, shell=True)  #will wait that fimo is done to go on
+ 
+@@ -623,7 +622,7 @@
+     utils.formatFolder(projectFolder + 'motifBED/', True)
+ 
+     # Make a bed file from the motif dict for each factor
+-    for gene in motifDict.keys():
++    for gene in list(motifDict.keys()):
+         if motifDict[gene]:
+             bed = []
+             for loc in motifDict[gene]:
+@@ -650,7 +649,7 @@
+     # output the adjacency list and nodelist
+ 
+     nodeFile = projectFolder + projectName + '_NODELIST.txt'
+-    nodeList = [ [n] for n in graph.nodes_iter()]
++    nodeList = [ [n] for n in graph.nodes()]
+     utils.unParseTable(nodeList, nodeFile, '\t')
+ 
+     adjFile = projectFolder + projectName + '_ADJ_LIST.txt'
+@@ -682,7 +681,7 @@
+ 
+ 
+     # TFs regulating their own enhancer
+-    autoreg = graph.selfloop_edges()
++    autoreg = nx.selfloop_edges(graph)
+     selfLoops = [x for x,y in autoreg]
+     selfLoopFile = projectFolder + projectName + '_SELF_LOOPS.txt'
+     utils.unParseTable(selfLoops, selfLoopFile, '')
+@@ -697,7 +696,7 @@
+ 
+     # Find cliques
+     unDirGraph = nx.from_edgelist(pairs)
+-    cliqueGen = find_cliques_recursive(unDirGraph)
++    cliqueGen = find_cliques(unDirGraph)
+     cliqueList = list(cliqueGen)
+ 
+     utils.unParseTable(cliqueList, projectFolder + projectName + '_CLIQUES_ALL.txt', '\t')
+@@ -735,8 +734,8 @@
+     utils.unParseTable(factorRankingTable, factorRankingFile, '\t')
+ 
+     # Clique ranking algorithm
+-    print 'Number of cliques:'
+-    print len(cliqueList)
++    print('Number of cliques:')
++    print(len(cliqueList))
+ 
+     #count the occurences of the TFs accross the loops
+ 
+@@ -744,7 +743,7 @@
+     
+     for clique in cliqueList:
+         for TF in clique:
+-            if dicoTFinloopsCounts.has_key(TF):
++            if TF in dicoTFinloopsCounts:
+                 dicoTFinloopsCounts[TF]+=1
+             else:
+                 dicoTFinloopsCounts[TF]=1
+@@ -790,7 +789,13 @@
+     parser.add_option("-b","--bam",dest="bam",nargs =1, default = None,
+                       help = "Provide a bam that corresponds to the super enhancer table")
+     parser.add_option("-g","--genome",dest="genome",nargs =1, default = None,
+-                      help = "Provide the build of the genome to be used for the analysis. Currently supports HG19, HG18 and MM9")
++                      help = "Provide the genome build to be used for the analysis. Built-in annotations support HG19, HG18 and MM9. HG38 and custom builds require --annotation, --tf-file and --genome-directory.")
++    parser.add_option("--annotation", dest="annotation", nargs=1, default=None,
++                      help="Custom UCSC/refSeq-style annotation table. Required for custom genomes such as HG38 unless packaged annotation files are available.")
++    parser.add_option("--tf-file", dest="tf_file", nargs=1, default=None,
++                      help="Custom TF list mapping RefSeq transcript ids to TF gene symbols.")
++    parser.add_option("--genome-directory", dest="genome_directory", nargs=1, default=None,
++                      help="Directory containing chromosome FASTA files used to extract subpeak sequences.")
+     parser.add_option("-o","--output",dest="output",nargs =1, default = None,
+                       help = "Enter an output folder")
+     parser.add_option("-n","--name",dest="name",nargs =1, default = None,
+@@ -846,24 +851,40 @@
+             bam = utils.Bam(bamFile)
+ 
+         genome = options.genome
+-        genome = upper(genome)
++        genome = genome.upper()
++        genome_key = genome.lower()
+ 
++        genomeDirectory = '%s/genome/%s/' % (dataDir, genome_key)
++        annotationFile = '%s/%s_refseq.ucsc' % (annotationDir, genome_key)
++        TFfile = '%s/TFlist_NMid_%s.txt' % (annotationDir, genome_key)
++
+         if genome == 'HG19':
+-            genomeDirectory = '/grail/genomes/Homo_sapiens/UCSC/hg19/Sequence/Chromosomes/'
+             annotationFile = '%s/hg19_refseq.ucsc'%(annotationDir)
+             TFfile = '%s/TFlist_NMid_hg19.txt'%(annotationDir)
+ 
+         if genome == 'HG18':
+-            genomeDirectory = '/grail/genomes/Homo_sapiens/human_gp_mar_06_no_random/fasta/'
+             annotationFile = '%s/hg18_refseq.ucsc'%(annotationDir)
+             TFfile = '%s/TFlist_NMid_hg19.txt'%(annotationDir)
+ 
+         if genome == 'MM9':
+-            genomeDirectory = '/grail/genomes/Mus_musculus/UCSC/mm9/Sequence/Chromosomes/'
+             annotationFile = '%s/mm9_refseq.ucsc'%(annotationDir)
+             TFfile = '%s/TFlist_NMid_mm9.txt'%(annotationDir)
+ 
++        if options.annotation:
++            annotationFile = options.annotation
++        if options.tf_file:
++            TFfile = options.tf_file
++        if options.genome_directory:
++            genomeDirectory = utils.formatFolder(options.genome_directory, False)
+ 
++        if not os.path.exists(annotationFile):
++            raise IOError("Annotation file not found for genome %s: %s. Provide --annotation for custom genomes such as HG38." % (genome, annotationFile))
++        if not os.path.exists(TFfile):
++            raise IOError("TF list not found for genome %s: %s. Provide --tf-file for custom genomes such as HG38." % (genome, TFfile))
++        if not os.path.isdir(genomeDirectory):
++            raise IOError("Genome FASTA directory not found for genome %s: %s. Provide --genome-directory for custom genomes such as HG38." % (genome, genomeDirectory))
++
++
+         TFtable = utils.parseTable(TFfile, '\t')
+         TFlist = [line[0] for line in TFtable]
+         TFlistGene = [line[1] for line in TFtable]
+@@ -911,14 +932,14 @@
+         expressedNM, expressionDictNM = createExpressionDict(annotationFile, projectFolder, projectName, refseqToNameDict, expCutoff)
+         TFtoEnhancerDict = findCanidateTFs(annotationFile, enhancerLoci, expressedNM, expressionDictNM,  bamFile, TFlist, refseqToNameDict, projectFolder, projectName, promoter)
+         formatEnhancerAssignment(TFtoEnhancerDict, refseqToNameDict, projectName, projectFolder)
+-        canidateGenes = [upper(refseqToNameDict[x]) for x in TFtoEnhancerDict.keys()]
++        canidateGenes = [upper(refseqToNameDict[x]) for x in list(TFtoEnhancerDict.keys())]
+         
+         if additionalTFs:
+             for tf in additionalTFs.split(','):
+                 canidateGenes.append(tf)
+         canidateGenes = utils.uniquify(canidateGenes)
+ 
+-        print canidateGenes
++        print(canidateGenes)
+ 
+         if subpeakFile == None:
+             subpeakFile = findValleys(TFtoEnhancerDict, bamFile, projectName, projectFolder, 
+@@ -940,4 +961,3 @@
+ 
+ if __name__ == '__main__':
+     main()
+-
+diff -ruN coltron/utils.py coltron/utils.py
+--- coltron/utils.py	2026-07-13 18:32:40
++++ coltron/utils.py	2026-07-13 18:32:40
+@@ -53,8 +53,6 @@
+ except ImportError:
+     pass
+ 
+-from string import join
+-
+ import subprocess
+ import datetime
+ 
+@@ -247,7 +245,7 @@
+         os.listdir(folderName)
+         return folderName
+     except OSError:
+-        print('folder %s does not exist' % (folderName))
++        print(('folder %s does not exist' % (folderName)))
+         if create:
+             os.mkdir(folderName)
+             return folderName
+@@ -290,7 +288,7 @@
+     if fileExists:
+         return True
+     else:
+-        print('OPERATION TIMED OUT. FILE %s NOT FOUND' % (fileName))
++        print(('OPERATION TIMED OUT. FILE %s NOT FOUND' % (fileName)))
+         return False
+ 
+ def getParentFolder(inputFile):
+@@ -299,7 +297,7 @@
+     returns the parent folder for any file
+     '''
+ 
+-    parentFolder = join(inputFile.split('/')[:-1],'/') +'/'
++    parentFolder = '/'.join(inputFile.split('/')[:-1]) +'/'
+     if parentFolder =='':
+         return './'
+     else:
+@@ -324,10 +322,10 @@
+     if annotFile.upper().count('REFSEQ') == 1:
+         refseqTable,refseqDict = importRefseq(annotFile)
+         if len(geneList) == 0:
+-            geneList = refseqDict.keys()
++            geneList = list(refseqDict.keys())
+         startDict = {}
+         for gene in geneList:
+-            if refseqDict.has_key(gene) == False:
++            if (gene in refseqDict) == False:
+                 continue
+             startDict[gene]={}
+             startDict[gene]['sense'] = refseqTable[refseqDict[gene][0]][3]
+@@ -354,7 +352,7 @@
+             TSS.append(line[4])
+         if line[3] == '-':
+             TSS.append(line[5])
+-    TSS = map(int,TSS)
++    TSS = list(map(int,TSS))
+ 
+     return TSS
+ 
+@@ -374,7 +372,7 @@
+     refseqDict = {}
+     ticker = 1
+     for line in refseqTable[1:]:
+-        if refseqDict.has_key(line[1]):
++        if line[1] in refseqDict:
+             refseqDict[line[1]].append(ticker)
+         else:
+             refseqDict[line[1]] = [ticker]
+@@ -397,7 +395,7 @@
+ def refseqFromKey(refseqKeyList,refseqDict,refseqTable):
+     typeRefseq = []
+     for name in refseqKeyList:
+-        if refseqDict.has_key(name):
++        if name in refseqDict:
+             typeRefseq.append(refseqTable[refseqDict[name][0]])
+     return typeRefseq
+ 
+@@ -416,7 +414,7 @@
+     else:
+         genes = []
+     if type(geneList) == str:
+-        print('importing gene list from %s' % (geneList))
++        print(('importing gene list from %s' % (geneList)))
+         geneList = parseTable(geneList,'\t')
+         geneList = [line[0] for line in geneList]
+ 
+@@ -425,7 +423,7 @@
+         refTable,refDict = importRefseq(annotFile)
+ 
+         if len(geneList) == 0:
+-            geneList = refDict.keys()
++            geneList = list(refDict.keys())
+ 
+         for refseqID in geneList:
+             if refseqID not in refDict:
+@@ -434,8 +432,8 @@
+ 
+             geneIndex = refDict[refseqID][0]
+             geneLine = refTable[int(geneIndex)]
+-            exonStarts = map(int,geneLine[9].split(',')[:-1])
+-            exonEnds = map(int,geneLine[10].split(',')[:-1])
++            exonStarts = list(map(int,geneLine[9].split(',')[:-1]))
++            exonEnds = list(map(int,geneLine[10].split(',')[:-1]))
+ 
+             gene = Gene(refseqID,geneLine[2],geneLine[3],[int(geneLine[4]),int(geneLine[5])],[int(geneLine[6]),int(geneLine[7])],exonStarts,exonEnds,geneLine[12])
+ 
+@@ -461,7 +459,7 @@
+         locusList = []
+         ticker = 0
+         if len(geneList) == 0:
+-            geneList = refseqDict.keys()
++            geneList = list(refseqDict.keys())
+ 
+         for line in refseqTable[1:]:
+             if line[1] in geneList:
+@@ -487,7 +485,7 @@
+     '''
+     startDict=  makeStartDict(annotFile)
+     nameDict = defaultdict(list)
+-    for refID in startDict.keys():
++    for refID in list(startDict.keys()):
+ 
+         name = startDict[refID]['name']
+         nameDict[name].append(refID)
+@@ -563,7 +561,7 @@
+         coords = sorted([int(start), int(end)])
+         # this method for assigning chromosome should help avoid storage of
+         # redundant strings.
+-        if not(self.__chrDict.has_key(chr)): self.__chrDict[chr] = chr
++        if not(chr in self.__chrDict): self.__chrDict[chr] = chr
+         self._chr = self.__chrDict[chr]
+         self._sense = self.__senseDict[sense]
+         self._start = int(coords[0])
+@@ -663,9 +661,9 @@
+                 phastBases += lineLen
+ 
+         if phastBases > self.len():
+-            print "this locus is sad %s. please debug me" % (self.__str__())
+-            print "locus length is %s" % (self.len())
+-            print "phastBases are %s" % (phastBases)
++            print("this locus is sad %s. please debug me" % (self.__str__()))
++            print("locus length is %s" % (self.len()))
++            print("phastBases are %s" % (phastBases))
+ 
+ 
+         return phastSum/self.len()
+@@ -680,20 +678,20 @@
+         for lcs in loci: self.__addLocus(lcs)
+ 
+     def __addLocus(self,lcs):
+-        if not(self.__loci.has_key(lcs)):
++        if not(lcs in self.__loci):
+             self.__loci[lcs] = None
+             if lcs.sense()=='.': chrKeyList = [lcs.chr()+'+', lcs.chr()+'-']
+             else: chrKeyList = [lcs.chr()+lcs.sense()]
+             for chrKey in chrKeyList:
+-                if not(self.__chrToCoordToLoci.has_key(chrKey)): self.__chrToCoordToLoci[chrKey] = dict()
++                if not(chrKey in self.__chrToCoordToLoci): self.__chrToCoordToLoci[chrKey] = dict()
+                 for n in self.__getKeyRange(lcs):
+-                    if not(self.__chrToCoordToLoci[chrKey].has_key(n)): self.__chrToCoordToLoci[chrKey][n] = []
++                    if not(n in self.__chrToCoordToLoci[chrKey]): self.__chrToCoordToLoci[chrKey][n] = []
+                     self.__chrToCoordToLoci[chrKey][n].append(lcs)
+ 
+     def __getKeyRange(self,locus):
+-        start = locus.start() / self.__winSize
+-        end = locus.end() / self.__winSize + 1 ## add 1 because of the range
+-        return range(start,end)
++        start = locus.start() // self.__winSize
++        end = locus.end() // self.__winSize + 1 ## add 1 because of the range
++        return list(range(start,end))
+ 
+     def __len__(self): return len(self.__loci)
+ 
+@@ -701,9 +699,9 @@
+     def extend(self,newList):
+         for lcs in newList: self.__addLocus(lcs)
+     def hasLocus(self,locus):
+-        return self.__loci.has_key(locus)
++        return locus in self.__loci
+     def remove(self,old):
+-        if not(self.__loci.has_key(old)): raise ValueError("requested locus isn't in collection")
++        if not(old in self.__loci): raise ValueError("requested locus isn't in collection")
+         del self.__loci[old]
+         if old.sense()=='.': senseList = ['+','-']
+         else: senseList = [old.sense()]
+@@ -712,7 +710,7 @@
+                 self.__chrToCoordToLoci[old.chr()+sense][k].remove(old)
+ 
+     def getWindowSize(self): return self.__winSize
+-    def getLoci(self): return self.__loci.keys()
++    def getLoci(self): return list(self.__loci.keys())
+ 
+     def getSize(self):
+            size = 0
+@@ -725,8 +723,8 @@
+         # i need to remove the strand info from the chromosome keys and make
+         # them non-redundant.
+         tempKeys = dict()
+-        for k in self.__chrToCoordToLoci.keys(): tempKeys[k[:-1]] = None
+-        return tempKeys.keys()
++        for k in list(self.__chrToCoordToLoci.keys()): tempKeys[k[:-1]] = None
++        return list(tempKeys.keys())
+ 
+     def __subsetHelper(self,locus,sense):
+         sense = sense.lower()
+@@ -740,12 +738,12 @@
+         else: raise ValueError("sense value was inappropriate: '"+sense+"'.")
+         for s in filter(lamb, senses):
+             chrKey = locus.chr()+s
+-            if self.__chrToCoordToLoci.has_key(chrKey):
++            if chrKey in self.__chrToCoordToLoci:
+                 for n in self.__getKeyRange(locus):
+-                    if self.__chrToCoordToLoci[chrKey].has_key(n):
++                    if n in self.__chrToCoordToLoci[chrKey]:
+                         for lcs in self.__chrToCoordToLoci[chrKey][n]:
+                             matches[lcs] = None
+-        return matches.keys()
++        return list(matches.keys())
+ 
+     # sense can be 'sense' (default), 'antisense', or 'both'
+     # returns all members of the collection that overlap the locus
+@@ -754,12 +752,12 @@
+         ### now, get rid of the ones that don't really overlap
+         realMatches = dict()
+         if sense=='sense' or sense=='both':
+-            for i in filter(lambda lcs: lcs.overlaps(locus), matches):
++            for i in [lcs for lcs in matches if lcs.overlaps(locus)]:
+                 realMatches[i] = None
+         if sense=='antisense' or sense=='both':
+-            for i in filter(lambda lcs: lcs.overlapsAntisense(locus), matches):
++            for i in [lcs for lcs in matches if lcs.overlapsAntisense(locus)]:
+                 realMatches[i] = None
+-        return realMatches.keys()
++        return list(realMatches.keys())
+ 
+     # sense can be 'sense' (default), 'antisense', or 'both'
+     # returns all members of the collection that are contained by the locus
+@@ -768,12 +766,12 @@
+         ### now, get rid of the ones that don't really overlap
+         realMatches = dict()
+         if sense=='sense' or sense=='both':
+-            for i in filter(lambda lcs: locus.contains(lcs), matches):
++            for i in [lcs for lcs in matches if locus.contains(lcs)]:
+                 realMatches[i] = None
+         if sense=='antisense' or sense=='both':
+-            for i in filter(lambda lcs: locus.containsAntisense(lcs), matches):
++            for i in [lcs for lcs in matches if locus.containsAntisense(lcs)]:
+                 realMatches[i] = None
+-        return realMatches.keys()
++        return list(realMatches.keys())
+ 
+     # sense can be 'sense' (default), 'antisense', or 'both'
+     # returns all members of the collection that contain the locus
+@@ -782,12 +780,12 @@
+         ### now, get rid of the ones that don't really overlap
+         realMatches = dict()
+         if sense=='sense' or sense=='both':
+-            for i in filter(lambda lcs: lcs.contains(locus), matches):
++            for i in [lcs for lcs in matches if lcs.contains(locus)]:
+                 realMatches[i] = None
+         if sense=='antisense' or sense=='both':
+-            for i in filter(lambda lcs: lcs.containsAntisense(locus), matches):
++            for i in [lcs for lcs in matches if lcs.containsAntisense(locus)]:
+                 realMatches[i] = None
+-        return realMatches.keys()
++        return list(realMatches.keys())
+ 
+     def stitchCollection(self,stitchWindow=1,sense='both'):
+ 
+@@ -891,8 +889,8 @@
+         else:
+             self._cdLocus = Locus(chr,min(cdCoords),max(cdCoords),sense)
+ 
+-        exStarts = sorted(map(lambda i: i, exStarts))
+-        exEnds = sorted(map(lambda i: i, exEnds))
++        exStarts = sorted([i for i in exStarts])
++        exEnds = sorted([i for i in exEnds])
+ 
+         self._txExons = []
+         self._cdExons = []
+@@ -946,9 +944,9 @@
+     def sense(self): return self._txLocus.sense()
+     def txLocus(self): return self._txLocus   ## locus of full transcript
+     def cdLocus(self): return self._cdLocus   ## locus from start codon to end codon
+-    def txExons(self): return map(lambda i: i, self._txExons)  ## list of loci
+-    def cdExons(self): return map(lambda i: i, self._cdExons)  ## list of loci
+-    def introns(self): return map(lambda i: i, self._introns)  ## list of loci
++    def txExons(self): return [i for i in self._txExons]  ## list of loci
++    def cdExons(self): return [i for i in self._cdExons]  ## list of loci
++    def introns(self): return [i for i in self._introns]  ## list of loci
+     def fpUtr(self): return self._fpUTR  ## locus
+     def tpUtr(self): return self._tpUTR  ## locus
+     def isCoding(self): return not(self._cdLocus.start()==0 and self._cdLocus.end()==0)  # boolean; is this gene protein-coding?
+@@ -1120,7 +1118,7 @@
+         reads = reads[0].split('\n')[:-1]
+         reads = [read.split('\t') for read in reads]
+         if includeJxnReads == False:
+-            reads = filter(lambda x: x[5].count('N') < 1,reads)
++            reads = [x for x in reads if x[5].count('N') < 1]
+ 
+         #convertDict = {'16':'-','0':'+','64':'+','65':'+','80':'-','81':'-','129':'+','145':'-'}
+         #convertDict = {'16':'-','0':'+','64':'+','65':'+','80':'-','81':'-','129':'+','145':'-','256':'+','272':'-','99':'+','147':'-'}
+@@ -1189,7 +1187,7 @@
+                 #then it filters out the '' and converts them to integers
+                 #only works for reads that span one junction
+ 
+-                [first,gap,second] = [int(x) for x in filter(lambda x: len(x) > 0, re.findall(numPattern,read[5]))][0:3]
++                [first,gap,second] = [int(x) for x in [x for x in re.findall(numPattern,read[5]) if len(x) > 0]][0:3]
+                 if IDtag == 'sequence':
+                     loci.append(Locus(chrom,start,start+first,strand,ID[0:first]))
+                     loci.append(Locus(chrom,start+first+gap,start+first+gap+second,strand,ID[first:]))
+@@ -1287,7 +1285,7 @@
+         omitNone = True
+ 
+     n  = len(x)
+-    ix = range(n)
++    ix = list(range(n))
+     if None not in x:
+         ix.sort(reverse = decreasing, key = lambda j : x[j])
+     else:
+@@ -1299,7 +1297,7 @@
+                 return not(elem is None), elem
+             else:
+                 return elem is None, elem
+-        ix = range(n)
++        ix = list(range(n))
+         ix.sort(key=key, reverse=decreasing)
+ 
+     if omitNone:
+@@ -1392,7 +1390,7 @@
+ 
+ def pair(nuc):
+     pairDict = {'A':'T','C':'G','G':'C','T':'A','U':'A','a':'t','c':'g','g':'c','t':'a','u':'a'}
+-    if pairDict.has_key(nuc):
++    if nuc in pairDict:
+         return pairDict[nuc]
+     else:
+         return nuc
+@@ -1403,9 +1401,9 @@
+ 
+ def revComp(seq,rev = True, RNA=False):
+     if rev:
+-        revComp = join(map(pair,seq[::-1]),'')
++        revComp = ''.join(list(map(pair,seq[::-1])))
+     else:
+-        revComp = join(map(pair,seq),'')
++        revComp = ''.join(list(map(pair,seq)))
+     if RNA:
+         revComp = revComp.replace('T','U') # Not sure this is defined (!)
+         revComp = revComp.replace('t','u')
