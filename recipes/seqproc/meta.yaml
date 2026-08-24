@@ -1,0 +1,51 @@
+{% set name = "seqproc" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/COMBINE-lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 538e746bc9f1882aff355ee1099d85e8a1b5c3aa9494d80c86c40c27147d956b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ stdlib("c") }}
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - xz
+
+test:
+  commands:
+    - seqproc --version
+    - seqproc --version --verbose
+    - 'if seqproc --version --verbose | grep -F "compiler CPU target: native"; then exit 1; fi'
+    - 'seqproc --version --verbose | grep -F "SIMD backend: x86-sse2"'  # [x86_64]
+    - 'seqproc --version --verbose | grep -F "SIMD backend: aarch64-neon"'  # [aarch64 or arm64]
+
+about:
+  home: https://github.com/COMBINE-lab/seqproc
+  dev_url: https://github.com/COMBINE-lab/seqproc
+  doc_url: https://combine-lab.github.io/seqproc
+  license: BSD-3-Clause
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: A fast, programmable preprocessing engine for sequencing reads
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p

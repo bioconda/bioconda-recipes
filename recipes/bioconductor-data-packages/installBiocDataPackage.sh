@@ -5,12 +5,14 @@ set -ex
 SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
 json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
+FN=`echo $FN | tr -d \"`  # Strip quotes from filename
 ##readarray is bash4, while OSX only has bash 3
 #readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
 while IFS= read -r value; do
   URLS+=($value);
 done < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
+MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -19,9 +21,33 @@ STAGING=$PREFIX/share/"$1"
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
+# Prepare caching of binary package
+CACHE_DIR="${CONDA_PKGS_DIRS:-$HOME/.conda/pkgs}/bioc_data_cache/$1/$MD5"
+mkdir -p $CACHE_DIR
+R_PLATFORM=$(Rscript -e 'cat(R.version$platform)')
+BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.tar.gz"
+CACHED_BINARY_TARBALL="$CACHE_DIR/$BINARY_TARBALL"
+
+# Install CACHED_BINARY_TARBALL if it exists
+if [[ -f "$CACHED_BINARY_TARBALL" ]]; then
+  R CMD INSTALL --library=$PREFIX/lib/R/library $CACHED_BINARY_TARBALL
+  exit 0
+fi
+
+# Set URLs from environment variables or use provided defaults
+BIOCONDUCTOR_URL="${BIOCONDUCTOR_MIRROR:-"https://bioconductor.org"}"
+GALAXY_BIOARCHIVE_URL="${GALAXY_BIOARCHIVE_MIRROR:-"https://bioarchive.galaxyproject.org"}"
+GALAXY_DEPOT_URL="${GALAXY_DEPOT_MIRROR:-"https://depot.galaxyproject.org"}"
+
+# Remove trailing slashes
+BIOCONDUCTOR_URL=`echo $BIOCONDUCTOR_URL | sed 's#/$##'`
+GALAXY_BIOARCHIVE_URL=`echo $GALAXY_BIOARCHIVE_URL | sed 's#/$##'`
+GALAXY_DEPOT_URL=`echo $GALAXY_DEPOT_URL | sed -e 's#/$##'`
+
 SUCCESS=0
 for URL in ${URLS[@]}; do
   URL=`echo $URL | tr -d \"`  # Trim any flanking quotes
+  URL=`echo $URL | sed -e "s#^BIOCONDUCTOR#$BIOCONDUCTOR_URL# ; s#^GALAXY_BIOARCHIVE#$GALAXY_BIOARCHIVE_URL# ; s#^GALAXY_DEPOT#$GALAXY_DEPOT#"`
   MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
   curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
@@ -44,10 +70,19 @@ done
 if [[ $SUCCESS != 1 ]]; then
   echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:"
   printf '%s\n' "${URLS[@]}"
+  echo "If you are behind a proxy and have a mirror available you can use it by setting one of the environment variables: BIOCONDUCTOR_MIRROR, GALAXY_BIOARCHIVE_MIRROR or GALAXY_DEPOT_MIRROR"
   exit 1
 fi
 
-# Install and clean up
-R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
+# Build binary package and delete source package
+R CMD INSTALL --build $TARBALL
 rm $TARBALL
+
+# Install binary package
+R CMD INSTALL --library=$PREFIX/lib/R/library $BINARY_TARBALL
+
+# Cache binary package
+mv $BINARY_TARBALL $CACHED_BINARY_TARBALL
+
+# delete staging
 rmdir $STAGING
