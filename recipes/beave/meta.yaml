@@ -1,0 +1,56 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: beave
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/b/beave/beave-{{ version }}.tar.gz
+  sha256: 63cbed87699d4689df0993c775590575a4d6e9c1af2b8e6c3d572b73a3ecd274
+
+build:
+  skip: true # [win or osx]
+  run_exports:
+    - {{ pin_subpackage('beave', max_pin="x.x") }}
+  entry_points:
+    - beave = beave.__main__:async_main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }} 
+    - {{ stdlib('c') }}
+    - cmake >=4.2.3
+    - pip >=26.0.1
+    - make
+  host:
+    - python >=3.13
+    - scikit-build-core >=0.4.3
+    - nanobind >=2.13.0
+    - pip
+  run:
+    - python >=3.13
+    - numpy >=2.4.0
+    - polars >=1.41.1
+    - scipy >=1.17.0
+
+test:
+  imports:
+    - beave
+  commands:
+    - pip check
+    - beave --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/beave/
+  summary: A very Canadian utility for genomic clustering and distance querying.
+  license: "Apache-2.0"
+
+extra:
+  recipe-maintainers:
+    - mattheww95

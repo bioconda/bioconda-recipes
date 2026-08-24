@@ -1,0 +1,69 @@
+{% set name = "txnova" %}
+{% set version = "0.1.9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "2c5b5b794c9195838c9b65577d574567d34236fd2ab2f3101649149ead38ac14"
+
+build:
+  number: 0
+  skip: true  # [win]
+  script:
+    - export LIBCLANG_PATH="${PREFIX}/lib"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('txnova', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+  host:
+    - python >=3.10
+    - pip
+    - maturin >=1.7,<2
+    - clangdev
+    - libclang
+    - llvmdev
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - python >=3.10
+    - typer >=0.12
+    - pydantic >=2.5,<3
+    - pyyaml >=6.0
+    - pandas >=2.0,<3
+    - rich >=13.0
+    - jinja2 >=3.1
+    - pydeseq2 >=0.4
+    - numpy >=1.23,<3
+    - scipy >=1.9
+
+test:
+  imports:
+    - txnova
+    - txnova._core
+  commands:
+    - txnova --version
+    - txnova --help
+
+about:
+  home: https://github.com/leelieber2025/TxNova
+  dev_url: https://github.com/leelieber2025/TxNova
+  doc_url: https://txnova.readthedocs.io
+  summary: Experimental-group-specific novel intergenic transcripts from bulk RNA-seq BAMs
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - leelieber2025
+  notes: |
+    Input is a coordinate-sorted, indexed BAM from STAR or HISAT2.
+    Windows is not built; use WSL2.
