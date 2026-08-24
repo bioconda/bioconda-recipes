@@ -1,0 +1,60 @@
+{% set name = "chemembed" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1e50a5a59728cbde35c78cfc95cdf344bb737aa4bc3999d07d5645afbc9607c9
+
+build:
+  number: 0
+  noarch: python
+  script: 
+    - "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.9
+    - numpy >=1.18.0
+    - pandas >=1.0.0
+    - scipy >=1.4.0
+    - pytorch >=1.13.0
+    - pyYAML >=5.3.0
+    - rdkit >=2020.09.1
+    - tqdm >=4.0.0
+
+test:
+  commands:
+    - chemembed --help
+
+about:
+  home: https://github.com/faizanurv/ChemEmbed
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Metabolite identification from MS/MS spectra using molecular embeddings
+  description: |
+    ChemEmbed identifies metabolites by transforming an experimental MS/MS
+    spectrum into a learned molecular embedding with a convolutional neural
+    network, then ranking candidate structures from a reference database by
+    cosine similarity against that predicted embedding.
+
+    Models and the reference database are not included and must be supplied
+    separately. NOTE: upstream distributes the reference database as a Python
+    pickle. Deserialising a pickle executes arbitrary code, so only
+    administrator-controlled reference data should ever be used; never accept a
+    pickle from an untrusted user.
+  dev_url: https://github.com/faizanurv/ChemEmbed
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
