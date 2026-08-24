@@ -16,7 +16,16 @@ build:
   entry_points:
     - winnow = winnow.scripts.main:app
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: |
+    # winnow-fdr requires pyahocorasick >=2.3.1, but 2.3.1 only adds linux ARM
+    # wheels to PyPI - no library changes (see the project's CHANGELOG). conda-forge
+    # already builds 2.3.0 for linux-aarch64, so relax the bound to keep the
+    # installed metadata consistent with the run requirement below.
+    # Upstream is relaxing this too (instadeepai/winnow#241); once a release with
+    # that change is out, bump the version and drop this patch.
+    sed -i.bak 's/pyahocorasick>=2.3.1/pyahocorasick>=2.3.0/' pyproject.toml
+    rm -f pyproject.toml.bak
+    {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   run_exports:
     - {{ pin_subpackage("winnow-fdr", max_pin="x") }}
@@ -42,7 +51,7 @@ requirements:
     - safetensors >=0.7.0
     - polars >=1.39.3
     - biopython >=1.87
-    - pyahocorasick >=2.3.1
+    - pyahocorasick >=2.3.0
 
 test:
   imports:
