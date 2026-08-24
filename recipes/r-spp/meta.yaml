@@ -5,13 +5,24 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
+  # spp was archived by CRAN, so only the second (Archive) URL resolves; the
+  # first is kept because it is the CRAN skeleton convention and costs one 404.
   url:
     - {{ cran_mirror }}/src/contrib/spp_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/spp/spp_{{ version }}.tar.gz
   sha256: 3c890f3c414183167f9643b556621dcdc14ce6a1b54a04d618c74070fdebfd23
+  patches:
+    # Restores the PROTECT/UNPROTECT calls that upstream removed from
+    # src/wdl.cpp for the 1.16.0 CRAN submission. Without it R's GC can reclaim
+    # the peak-calling result vectors mid-.Call, which either aborts
+    # find.binding.positions() with "INTEGER() can only be applied to a
+    # 'integer', not a '<other type>'" or returns corrupted peaks. Not
+    # available upstream: hms-dbmi/spp master is 1.15.5 and its protection
+    # counts do not balance. See the patch header for the full rationale.
+    - restore-gc-protection.patch
 
 build:
-  number: 12
+  number: 13
   run_exports:
     - {{ pin_subpackage('r-spp', max_pin="x") }}
   rpaths:
@@ -21,6 +32,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - autoconf
     - automake
@@ -45,13 +57,20 @@ test:
   commands:
     - $R -e "library('spp')"           # [not win]
     - "\"%R%\" -e \"library('spp')\""  # [win]
+    # restore-gc-protection.patch deliberately leaves DESCRIPTION alone so the R
+    # package keeps reporting the version this recipe declares (hms-dbmi/spp#45
+    # is a user unable to tell which spp bioconda gave them). This fails if a
+    # DESCRIPTION version bump is ever folded into that patch.
+    - $R -e "stopifnot(packageVersion('spp') == '{{ version }}')"           # [not win]
+    - "\"%R%\" -e \"stopifnot(packageVersion('spp') == '{{ version }}')\""  # [win]
 
 about:
   home: "https://CRAN.R-project.org/package=spp"
   license: "GPL-2.0-only"
-  summary: "Analysis of ChIP-seq and other functional sequencing data [Kharchenko PV (2008) <DOI:10.1038/nbt.1508>]."
-  license_file: DESCRIPTION
   license_family: GPL
+  license_file: DESCRIPTION
+  summary: "Analysis of ChIP-seq and other functional sequencing data [Kharchenko PV (2008) <DOI:10.1038/nbt.1508>]."
+  dev_url: "https://github.com/hms-dbmi/spp"
   doc_url: "https://CRAN.R-project.org/package=spp"
 
 extra:
