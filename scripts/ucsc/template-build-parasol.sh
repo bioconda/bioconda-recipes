@@ -17,6 +17,18 @@ export CXXFLAGS="${{CXXFLAGS}} -O3"
 export BINDIR=$(pwd)/bin
 export L="${{LDFLAGS}}"
 mkdir -p "${{BINDIR}}"
+sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/jkOwnLib/makefile
+sed -i.bak 's|ld|$(LD)|' kent/src/hg/lib/straw/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/lib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/cgilib/makefile
+sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/hg/lib/makefile
+rm -rf kent/src/optimalLeaf/*.bak
+rm -rf kent/src/jkOwnLib/*.bak
+rm -rf kent/src/hg/lib/straw/*.bak
+
 # CFLAGS must stay out of the make argument list: a command-line variable
 # overrides the makefile, so common.mk's "CFLAGS += -std=c11" would be dropped
 # and kent's unprototyped declarations fail under the compiler's default -std.
