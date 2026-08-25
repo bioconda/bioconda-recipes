@@ -1,0 +1,51 @@
+{% set name = "rastqc" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Huang-lab/RastQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8f1417836958637602e17e1c17ced3e4a05bcbe7d013dd6cc34ed0dc341136d1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+    - pkg-config
+
+test:
+  commands:
+    - rastqc --version
+    - rastqc --help
+
+about:
+  home: https://github.com/Huang-lab/RastQC
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast Rust-based quality control for high-throughput sequencing data
+  description: |
+    RastQC is a drop-in replacement for FastQC written in Rust. It implements
+    all 12 FastQC modules with matching algorithms and output formats (HTML,
+    fastqc_data.txt, ZIP, native MultiQC JSON). The streaming parallel
+    pipeline runs 2-3x faster than FastQC on real sequencing data. For Oxford
+    Nanopore data (Fast5 + POD5 readers and long-read modules), install the
+    sibling package `rastqc-nanopore`.
+  dev_url: https://github.com/Huang-lab/RastQC
+  doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Huang-lab
