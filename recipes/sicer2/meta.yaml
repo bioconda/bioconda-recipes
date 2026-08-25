@@ -37,7 +37,11 @@ test:
   imports:
     - sicer
   commands:
-    - python -c "from sicer.lib.GenomeData import species_chroms, species_chrom_lengths; assert 'mm39' in species_chroms; assert species_chrom_lengths['mm39']['chr1'] == 195154279"
+    # NOTE: no '[' subscripts here. conda-build's selector regex treats any line
+    # ending in [...] as a selector, and the rendered meta.yaml folds long lines,
+    # so a trailing ['chr1'] gets silently stripped when the mulled test re-reads
+    # info/recipe/meta.yaml. Use .get() instead.
+    - python -c "import sicer.lib.GenomeData as g; assert 'mm39' in g.species_chroms; assert g.species_chrom_lengths.get('mm39').get('chr1') == 195154279"
 
 about:
   home: "https://pypi.org/project/SICER2/"
