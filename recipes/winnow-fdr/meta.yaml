@@ -99,6 +99,11 @@ test:
       dataset.spectrum_path_or_directory=spectra.ipc
       dataset.predictions_path=predictions.csv
     - test -f results/calibrated_dataset.csv
+    # Remove what the run produced. The mulled-build container runs as root with
+    # its working directory bind-mounted from a host temporary directory, so
+    # root-owned output directories left here make bioconda-utils' own cleanup of
+    # that directory fail with EACCES after the test has already passed.
+    - rm -rf models results spectra.ipc predictions.csv
   requires:
     - python
 
