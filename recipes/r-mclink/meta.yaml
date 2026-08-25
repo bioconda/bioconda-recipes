@@ -1,8 +1,5 @@
 {% set version = '1.1.2' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-mclink
   version: {{ version|replace("-", "_") }}
@@ -14,20 +11,11 @@ source:
   sha256: c3a378578da00cbb2fd09f75ac1ca0c177e9d9070c76a5ed89b6bfa5c0aa16a6
 
 build:
-  merge_build_host: True  # [win]
-  # If this is a new build for the same version, increment the build number.
+  noarch: generic
   number: 0
-  # no skip
   script: R CMD INSTALL --build . ${R_ARGS}
-  # This is required to make R link correctly on Linux.
-  rpaths:
-    - lib/R/lib/
-    - lib/
 
 requirements:
-  build:
-    - {{ posix }}zip
-
   host:
     - r-base
     - r-data.table >=1.17.8
@@ -50,10 +38,7 @@ test:
 about:
   home: https://CRAN.R-project.org/package=mclink
   license: GPL-3.0-only
-  summary: Provides tools for analyzing metabolic pathway completeness, abundance, and transcripts
-    using KEGG Orthology (KO) data from (meta)genomic and (meta)transcriptomic studies.
-    Supports both completeness (presence/absence) and abundance-weighted analyses. Includes
-    built-in KEGG reference datasets. For more details see Li et al. (2023) <doi:10.1038/s41467-023-42193-7>.
+  summary: Metabolic pathway completeness and abundance analysis using KEGG Orthology data
   license_family: GPL3
   license_file:
     - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
