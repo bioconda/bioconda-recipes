@@ -5,12 +5,8 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://pypi.org/packages/source/w/winnow-fdr/winnow_fdr-{{ version }}.tar.gz
-    sha256: 08835b95edefb478ad03ad8bb58968facee15d581e7e93cc8c89b9928ec89d15
-  # The PyPI sdist does not include the project's end-to-end example data.
-  - url: https://github.com/instadeepai/winnow/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 74bfcefef400261a95879452a508f9f1760b04f9202de605f15c3affe8a4f4a2
-    folder: test-data
+  url: https://pypi.org/packages/source/w/winnow-fdr/winnow_fdr-{{ version }}.tar.gz
+  sha256: 08835b95edefb478ad03ad8bb58968facee15d581e7e93cc8c89b9928ec89d15
 
 build:
   entry_points:
@@ -56,38 +52,50 @@ requirements:
 test:
   imports:
     - winnow
-  source_files:
-    - test-data/examples/example_data
   commands:
     # No `pip check`: matchms and sparsestack declare upper bounds on numba,
     # pandas, lxml and rdkit on PyPI that their conda packages deliberately drop,
     # so the solver picks newer versions and `pip check` reports false positives
     # for those transitive dependencies.
     - winnow --help
-    # The end-to-end run needs the example data from source_files. conda-build
-    # provides it, but the mulled-build container test only gets the installed
-    # package, so guard it on the data actually being present.
+    # winnow imports matchms lazily, only when reading MGF input, so the
+    # end-to-end run below does not cover it. Check it here instead.
+    - python -c "from matchms.importing import load_from_mgf"
+    # Generate the sample dataset on the fly, mirroring the generator the project
+    # used to ship as scripts/generate_sample_data.py. Doing it here rather than
+    # shipping data through `source_files` means the end-to-end run also works in
+    # the mulled-build container test, which only contains the installed package.
     - >-
-      if [ -f test-data/examples/example_data/spectra.mgf ]; then
+      python -c "import numpy as np, pandas as pd, polars as pl;
+      np.random.seed(42);
+      n = 100;
+      ids = ['spectrum_%d' % i for i in range(n)];
+      aa = list('ACDEFGHIKLMNPQRSTVWY');
+      peps = [''.join(np.random.choice(aa, size=np.random.randint(5, 10))) for _ in range(n)];
+      npk = [int(np.random.randint(10, 50)) for _ in range(n)];
+      pl.DataFrame({'spectrum_id': ids, 'precursor_mz': np.random.uniform(400, 1200, n), 'precursor_charge': np.random.choice([2, 3, 4], n).astype(int), 'retention_time': np.random.uniform(10, 60, n), 'sequence': peps, 'mz_array': [np.random.uniform(100, 1000, k).tolist() for k in npk], 'intensity_array': [np.random.uniform(0.1, 1.0, k).tolist() for k in npk]}).write_ipc('spectra.ipc');
+      d = {'spectrum_id': ids, 'predictions': peps, 'predictions_tokenised': [', '.join(p) for p in peps], 'log_probs': np.log(np.random.uniform(0.1, 0.9, n)), 'sequence': peps};
+      [d.update({'predictions_beam_%d' % b: (peps if b == 0 else [''.join(np.random.choice(aa, size=len(q))) for q in peps]), 'predictions_log_probability_beam_%d' % b: np.log(np.random.uniform(0.1, 0.9, n)) - b, 'predictions_token_log_probabilities_beam_%d' % b: [str([-0.1] * len(q)) for q in peps]}) for b in range(3)];
+      pd.DataFrame(d).to_csv('predictions.csv', index=False)"
+    - >-
       winnow train
-      dataset.spectrum_path_or_directory=test-data/examples/example_data/spectra.mgf
-      dataset.predictions_path=test-data/examples/example_data/predictions.csv
+      dataset.spectrum_path_or_directory=spectra.ipc
+      dataset.predictions_path=predictions.csv
       model_output_dir=models/new_model
       dataset_output_path=results/calibrated_dataset.csv
       calibrator.features.retention_time_feature.train_fraction=0.3
       calibrator.features.retention_time_feature.min_train_points=2
       calibrator.hidden_dims="[32, 16]"
       calibrator.n_iter_no_change=100
-      calibrator.max_epochs=100 &&
+      calibrator.max_epochs=100
+    - >-
       winnow predict
       calibrator.pretrained_model_name_or_path=models/new_model
       fdr_control.fdr_threshold=1.0
-      dataset.spectrum_path_or_directory=test-data/examples/example_data/spectra.mgf
-      dataset.predictions_path=test-data/examples/example_data/predictions.csv &&
-      test -f results/calibrated_dataset.csv;
-      fi
+      dataset.spectrum_path_or_directory=spectra.ipc
+      dataset.predictions_path=predictions.csv
+    - test -f results/calibrated_dataset.csv
   requires:
-    - pip
     - python
 
 about:
