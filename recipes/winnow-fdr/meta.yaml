@@ -62,10 +62,13 @@ test:
     # No `pip check`: matchms and sparsestack declare upper bounds on numba,
     # pandas, lxml and rdkit on PyPI that their conda packages deliberately drop,
     # so the solver picks newer versions and `pip check` reports false positives
-    # for those transitive dependencies. The commands below exercise the package
-    # for real instead.
+    # for those transitive dependencies.
     - winnow --help
+    # The end-to-end run needs the example data from source_files. conda-build
+    # provides it, but the mulled-build container test only gets the installed
+    # package, so guard it on the data actually being present.
     - >-
+      if [ -f test-data/examples/example_data/spectra.mgf ]; then
       winnow train
       dataset.spectrum_path_or_directory=test-data/examples/example_data/spectra.mgf
       dataset.predictions_path=test-data/examples/example_data/predictions.csv
@@ -75,14 +78,14 @@ test:
       calibrator.features.retention_time_feature.min_train_points=2
       calibrator.hidden_dims="[32, 16]"
       calibrator.n_iter_no_change=100
-      calibrator.max_epochs=100
-    - >-
+      calibrator.max_epochs=100 &&
       winnow predict
       calibrator.pretrained_model_name_or_path=models/new_model
       fdr_control.fdr_threshold=1.0
       dataset.spectrum_path_or_directory=test-data/examples/example_data/spectra.mgf
-      dataset.predictions_path=test-data/examples/example_data/predictions.csv
-    - test -f results/calibrated_dataset.csv
+      dataset.predictions_path=test-data/examples/example_data/predictions.csv &&
+      test -f results/calibrated_dataset.csv;
+      fi
   requires:
     - pip
     - python
