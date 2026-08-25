@@ -61,6 +61,10 @@ test:
     # winnow imports matchms lazily, only when reading MGF input, so the
     # end-to-end run below does not cover it. Check it here instead.
     - python -c "from matchms.importing import load_from_mgf"
+    # NOTE: avoid `[...]` literals made only of selector-like characters (no
+    # spaces or commas), e.g. `[-0.1]`. Something between the recipe and the
+    # mulled-build container strips those, most likely selector handling, which
+    # silently corrupts the command. `[32, 16]` and `[2, 3, 4]` come through fine.
     # Generate the sample dataset on the fly, mirroring the generator the project
     # used to ship as scripts/generate_sample_data.py. Doing it here rather than
     # shipping data through `source_files` means the end-to-end run also works in
@@ -75,7 +79,7 @@ test:
       npk = [int(np.random.randint(10, 50)) for _ in range(n)];
       pl.DataFrame({'spectrum_id': ids, 'precursor_mz': np.random.uniform(400, 1200, n), 'precursor_charge': np.random.choice([2, 3, 4], n).astype(int), 'retention_time': np.random.uniform(10, 60, n), 'sequence': peps, 'mz_array': [np.random.uniform(100, 1000, k).tolist() for k in npk], 'intensity_array': [np.random.uniform(0.1, 1.0, k).tolist() for k in npk]}).write_ipc('spectra.ipc');
       d = {'spectrum_id': ids, 'predictions': peps, 'predictions_tokenised': [', '.join(p) for p in peps], 'log_probs': np.log(np.random.uniform(0.1, 0.9, n)), 'sequence': peps};
-      [d.update({'predictions_beam_%d' % b: (peps if b == 0 else [''.join(np.random.choice(aa, size=len(q))) for q in peps]), 'predictions_log_probability_beam_%d' % b: np.log(np.random.uniform(0.1, 0.9, n)) - b, 'predictions_token_log_probabilities_beam_%d' % b: [str([-0.1] * len(q)) for q in peps]}) for b in range(3)];
+      [d.update({'predictions_beam_%d' % b: (peps if b == 0 else [''.join(np.random.choice(aa, size=len(q))) for q in peps]), 'predictions_log_probability_beam_%d' % b: np.log(np.random.uniform(0.1, 0.9, n)) - b, 'predictions_token_log_probabilities_beam_%d' % b: [str(list((-0.1,) * len(q))) for q in peps]}) for b in range(3)];
       pd.DataFrame(d).to_csv('predictions.csv', index=False)"
     - >-
       winnow train
