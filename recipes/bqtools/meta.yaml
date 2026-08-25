@@ -1,0 +1,56 @@
+{% set name = "bqtools" %}
+{% set version = "0.5.14" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ArcInstitute/{{ name }}/archive/refs/tags/{{ name }}-{{ version }}.tar.gz
+  sha256: e68b56dd2428274d8a9b18e9dfd0da2cd470f4640f940c3787ea57127a609d42
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --locked --no-track --verbose --root "${PREFIX}" --path .
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - clangdev
+    - cmake
+    - make
+    - pkg-config
+
+test:
+  commands:
+    - bqtools --version
+    - bqtools --help
+    - bqtools encode --help
+    - bqtools decode --help
+
+about:
+  home: https://github.com/ArcInstitute/bqtools
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE.md
+    - THIRDPARTY.yml
+  summary: Command-line utility for working with BINSEQ files
+  dev_url: https://github.com/ArcInstitute/bqtools
+  doc_url: https://github.com/ArcInstitute/bqtools/blob/bqtools-{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nrminor
+  identifiers:
+    - doi:10.1371/journal.pcbi.1014181
