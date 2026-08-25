@@ -8,16 +8,19 @@ package:
 source:
   url: "https://github.com/tmx1228/SICER2.1.0/archive/refs/tags/v2.1.tar.gz"
   sha256: 59a40143a83139cb619d5b7a364dc3f2b069735c7154f70b7908cf886f1cf70f
+  patches:
+    - mm39-genome-table.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_compatible(name|lower, max_pin="x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
   script: "{{ PYTHON }} -m pip install --ignore-installed --no-deps ."
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - numpy
     - pip
@@ -25,21 +28,37 @@ requirements:
     - setuptools
     - scipy >=1
   run:
-    - {{ pin_compatible('numpy') }}
+    - bedtools
     - python <3.11
+    - samtools
     - scipy >=1
 
 test:
   imports:
     - sicer
+  commands:
+    - python -c "from sicer.lib.GenomeData import species_chroms, species_chrom_lengths; assert 'mm39' in species_chroms; assert species_chrom_lengths['mm39']['chr1'] == 195154279"
 
 about:
   home: "https://pypi.org/project/SICER2/"
-  dev_url: "https://github.com/zanglab/SICER2"
-  license: MIT
-  license_family: MIT
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "LICENSE"
   summary: "Redesigned and improved ChIP-seq broad peak calling tool SICER."
+  description: |
+    SICER2 is a redesigned and streamlined implementation of the SICER spatial
+    clustering algorithm for calling broad peaks from ChIP-seq and CUT&Tag data.
+
+    The project originated at https://github.com/zanglab/SICER2, which is the
+    source of the releases up to 1.0.3. This package is built from
+    https://github.com/tmx1228/SICER2.1.0, the continuation of that work which
+    adds paired-end input and direct BAM input, and which is the source of the
+    2.1.0 release packaged here.
+  dev_url: "https://github.com/tmx1228/SICER2.1.0"
+  doc_url: "https://github.com/tmx1228/SICER2.1.0/blob/v2.1/README.md"
 
 extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btp340
   recipe-maintainers:
     - mjsteinbaugh
