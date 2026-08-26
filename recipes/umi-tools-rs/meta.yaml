@@ -12,6 +12,11 @@ source:
 
 build:
   number: 0
+
+  run_exports:
+    - {{ pin_subpackage('umi-tools-rs', max_pin="x.x") }}
+
+    
   script:
     - export CLANG_INCLUDE_DIR=$(dirname "$(find "$BUILD_PREFIX/lib/clang" -name stddef.h -print -quit)")
     - export BINDGEN_EXTRA_CLANG_ARGS="-I${CLANG_INCLUDE_DIR}"
@@ -21,9 +26,6 @@ build:
     - install -Dm755 "$UMI_TOOLS" $PREFIX/bin/umi-tools-rs
 
 requirements:
-  run_exports:
-    - {{ pin_subpackage('umi-tools-rs', max_pin="x.x") }}
-
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
