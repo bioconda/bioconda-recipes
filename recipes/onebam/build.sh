@@ -24,4 +24,4 @@ make onebam ONEview ONEstat seqstat seqconvert \
     ZSTD_OBJS="" \
     R_PATH="${LDFLAGS}"
 
-install -m 755 onebam ONEview ONEstat seqstat seqconvert "${PREFIX}/bin"
+install -m 755 onebam bamsort ONEview ONEstat seqstat seqconvert "${PREFIX}/bin"
