@@ -1,0 +1,66 @@
+{% set name = "eefinder" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5dc43af1e1baa976ed10d2225436e782356a5100db8cecffd8fcad563f12caa2
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - eefinder = eefinder.scripts.main:main
+
+requirements:
+  host:
+    - python >=3.9,<3.12
+    - pip
+    - hatchling
+  run:
+    - python >=3.9,<3.12
+    - click >=8.1
+    - biopython >=1.79,<1.86
+    - pandas >=1.4,<3
+    - numpy >=1.22,<3
+    - blast >=2.5
+    - diamond >=2.0.15
+    - bedtools >=2.27
+
+test:
+  imports:
+    - eefinder
+  commands:
+    - eefinder --version
+    - eefinder --help
+    - blastx -version
+    - diamond --version
+    - bedtools --version
+
+about:
+  home: https://github.com/WallauBioinfo/EEfinder
+  summary: Identification of endogenous viral and bacterial elements in eukaryotic genomes
+  description: |
+    EEfinder identifies Endogenous Elements (EEs) -- sequences of non-host
+    origin integrated into eukaryotic genomes, most commonly derived from
+    viruses or bacteria. It combines a translated protein-level similarity
+    search (BLAST or DIAMOND) with host-gene bait filtering, redundant-hit
+    resolution, merging of fragmented elements and flanking-region extraction.
+
+    The tool is taxon-agnostic: what it searches for is defined entirely by the
+    reference protein database and metadata table supplied by the user.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://eefinder.readthedocs.io
+  dev_url: https://github.com/WallauBioinfo/EEfinder
+
+extra:
+  recipe-maintainers:
+    - dezordi
+  identifiers:
+    - doi:10.1016/j.csbj.2024.10.012
