@@ -1,5 +1,5 @@
 {% set name = "RRIkinDP" %}
-{% set version = "0.0.2" %}
+{% set version = "0.0.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,10 @@ package:
 
 source:
   url: https://github.com/mwaldl/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3bdaa7657224b90945d864d0238010cf3337975f58c41106ab60427dd52bc93f
-  patches:
-    - 0001-fix-type-mismatch.patch
+  sha256: 0a2a57b4510ba1230b291d72e0d91d1407e1053a66f5fae90968d8bc3bf625ee
 
 build:
-  number: 3
+  number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x.x") }}
 
@@ -28,8 +26,8 @@ requirements:
     - intarna
     - python
     - pip
-    - setuptools
-    - pybind11
+    - setuptools >=77
+    - pybind11 >=2.10
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
   run:
@@ -42,6 +40,8 @@ requirements:
     - matplotlib-base >=3.7.0
     - seaborn-base >=0.12.0
     - pandas >=2.0.0
+    # required by MarkovProcess; treekin is only built for linux-64
+    - treekin >=0.5.1  # [linux and x86_64]
 
 test:
   commands:
@@ -54,13 +54,15 @@ about:
   license: "GPL-3.0-only"
   license_family: GPL3
   license_file: COPYING
-  summary: "Evaluation of thermodynamic and kinetic features of RNA-RNA interactions."
+  summary: "Targeted RNA–RNA interaction kinetics."
   description: |
-    RRIkinDP evaluated thermodynamic and kinetic features of RNA-RNA interactions. As input, two RNA
-    sequences as well as their interaction structure is provided. The tool generates the state space of
-    all intermediate interactions from single base pair interactions to the full input interaction.
-    On top of this state space it computes the barrier energy for the best direct path from a given
-    start interaction to the full input interaction.
+    RRIkinDP computes thermodynamic and kinetic features of RNA-RNA interactions based on a direct paths
+    interaction formation model. As input, two RNA sequences as well as their interaction structure are
+    provided. The tool generates the state space of all intermediate interactions from single base pair
+    or seed interaction to the full input interaction. On top of this state space it computes the barrier
+    energy for the best direct path from a given start interaction to the full input interaction. In
+    addition, the included python library enables modeling of the interaction formation as a markov
+    process on this state space.
   doc_url: "https://doi.org/10.1101/2023.07.28.548983"
   dev_url: "https://github.com/mwaldl/RRIkinDP"
 
