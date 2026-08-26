@@ -1,42 +1,27 @@
 {% set name = "fastaai" %}
-{% set version = "1.5.0" %}
+{% set version = "1.5.1" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  # The 1.5.0 release asset is the maturin sdist of `fastaai1_5/`, so the
-  # package sits at the root of this tarball. The repo's own auto-generated
-  # tag tarball would not: it carries the whole checkout, package one level
-  # down, and would need the build script to descend into it.
   url: https://github.com/KGerhardt/FastAAI-v1.5/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 591c74ab301919216e26b051a4ca7434f895514ab4feba2729d1f47470c33d09
+  sha256: 8858d9a36d6457e3a02158131c91bcf290c1663548af0999ea8cdf4bacb4e921
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - fastaai = fastaai.cli:main
-  # Semantic versioning, so pin to the major. Required by bioconda's
-  # missing_run_exports lint even though nothing links against this package.
   run_exports:
     - {{ pin_subpackage('fastaai', max_pin="x") }}
 
 requirements:
   build:
-    # No `{{ compiler('c') }}`: there is no C to compile, and the rust compiler
-    # package brings the linker pyo3's cdylib needs. Asking for the C compiler
-    # as well broke the osx-64 build — conda-build's post-processing ran
-    # `llvm-otool -l` on the built extension and it died with SIGABRT. The
-    # stdlib is still required, and is what the compiler_needs_stdlib_c lint
-    # actually wants. Same shape as the oxbow and gb-io recipes.
     - {{ compiler('rust') }}
     - {{ stdlib('c') }}
   host:
-    # Bare `python`: conda-build injects the variant's own pin here, and a
-    # `>=3.9` alongside it concatenates into an invalid spec. The floor is
-    # declared in pyproject.toml, which pip enforces at install time.
     - python
     - pip
     - maturin >=1.7,<2.0
@@ -51,19 +36,11 @@ test:
   imports:
     - fastaai
   commands:
-    # The CLI resolves, and FastAAI 1 command lines still reach it.
     - fastaai --help
     - fastaai build --help
     - fastaai query --help
-    # The bundled model set must survive packaging: without it `build` cannot
-    # run without --hmm, which is the whole point of shipping it.
     - python -c "from fastaai.search import ModelSet; m = ModelSet(); assert len(m) == 122, len(m); print('bundled models:', len(m), m.fingerprint[:16])"
-    # The packaged GTDB sets travel too, and `gtdb-all` is their union: a
-    # concatenation would be 173 with 5 accessions repeated.
-    # No ": " anywhere in this command — YAML reads a colon-space inside an
-    # unquoted scalar as a mapping and refuses to parse the recipe.
     - python -c "from fastaai.search import ModelSet, MODEL_SETS; s = {k:ModelSet(k) for k in MODEL_SETS}; n = {k:len(v) for k,v in s.items()}; assert [n[k] for k in ('gtdb-bact','gtdb-arch','gtdb-all')] == [120, 53, 168], n; assert len({v.fingerprint for v in s.values()}) == 3; print('gtdb sets', n)"
-    # And the engine works end to end on a real single-copy protein.
     - python -c "import fastaai; d = fastaai.Database(['a']); d.add_genome('g', [(0, b'MFRFFKSIGQEMREVDWPNFKQLRKDSSTVISTSVFFIAFLALARLANSIVP')]); d.seal(); r = fastaai.search(d, d, threads=1); print('self jaccard:', r.jaccard[0][0])"
 
 about:
@@ -93,8 +70,5 @@ about:
     reproduce GTDB's trees.
 
 extra:
-  # Who maintains the *recipe*, not who wrote the software — bioconda pings
-  # these accounts on every bot PR and version bump, so it lists only people
-  # who have agreed to that. Authors are in the package metadata.
   recipe-maintainers:
     - KGerhardt
