@@ -1,24 +1,13 @@
 #!/bin/bash
 set -xe
 
-# add Configuration and example files to opt
-export falco="$PREFIX/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p $falco
-cp -rf ./* $falco
-
-cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* .
-
-#to fix problems with htslib
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:"${PREFIX}/include"
-export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:"${PREFIX}/include"
-export LIBRARY_PATH=$LIBRARY_PATH:"${PREFIX}/lib"
-export LD_LIBRARY_PATH=$LIBRARY_PATH:"${PREFIX}/lib"
-
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
+
+mkdir -p "${PREFIX}/bin"
 
 case $(uname -m) in
     aarch64)
@@ -34,25 +23,22 @@ esac
 
 if [[ `uname -s` == "Darwin" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
-cd $falco
+if [[ `uname -s` == "Darwin" && `uname -m` == "arm64" ]]; then
+	export CONFIG_ARGS+="-DUSE_ISAL=off"
+else
+	export CONFIG_ARGS="-DUSE_ISAL=on"
+fi
 
-autoreconf -if
-./configure --prefix="$falco" \
-  CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
-  LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS}" \
-  --enable-hts --disable-option-checking \
-  --enable-silent-rules --disable-dependency-tracking
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	"${CONFIG_ARGS}" \
+	-DFALCO_TESTS=off \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 
-make clean
+cmake --build build -j "${CPU_COUNT}"
 
-make CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}";
-make install
-
-for i in $(ls -1 | grep -v Configuration | grep -v bin);
-do
-  rm -rf ${i};
-done
-
-install -v -m 0755 $falco/bin/falco "$PREFIX/bin"
+install -v -m 0755 build/falco "$PREFIX/bin"
