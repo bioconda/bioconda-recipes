@@ -6,7 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/zhejilab/RibORF.git
+  url: https://github.com/zhejilab/RibORF/archive/be74bf9bf0b42b653d969a51f046cd38832136d9.tar.gz
+  sha256: 4cba7b225b35de52d52ac10a78436093d77105a823a100b1e79c2258a91bcc13
 
 build:
   noarch: generic
@@ -15,7 +16,11 @@ build:
     - {{ pin_subpackage('riborf', max_pin='x') }}
   script: |
     mkdir -p $PREFIX/bin
-    cp -r $SRC_DIR/RibORF.2.0/* $PREFIX/bin/
+    src_subdir="$(find "$SRC_DIR" -maxdepth 2 -type d -name 'RibORF.*' | head -n1)"
+    if [ -z "$src_subdir" ]; then
+      src_subdir="$SRC_DIR"
+    fi
+    cp -r "$src_subdir"/* "$PREFIX/bin/"
     for pl_file in $PREFIX/bin/*.pl; do
       if [ -f "$pl_file" ]; then
         if ! head -1 "$pl_file" | grep -q "^#!/usr/bin/env perl"; then
@@ -31,7 +36,6 @@ build:
 
 requirements:
   host:
-    - git
     - perl
   run:
     - perl
@@ -63,6 +67,5 @@ about:
     from the command line without prefixing with 'perl'.
 
 extra:
-  skip-lints:
-    - uses_vcs_url
-    - missing_hash
+  recipe-maintainers:
+    - SiYangming
