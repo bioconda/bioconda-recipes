@@ -25,6 +25,10 @@ build:
     # portable Bioconda binaries.
     - rm -f .cargo/config.toml
     - export CARGO_INCREMENTAL=0
+    # Full LTO leaves the four-core ARM CI runner silent in the final link long
+    # enough to trigger CircleCI's heartbeat timeout.
+    - export CARGO_PROFILE_RELEASE_LTO=false  # [aarch64]
+    - export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=8  # [aarch64]
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     # The v0.3.0 source archive does not contain Cargo.lock.
     - cargo install -v --no-track --root "${PREFIX}" --path . --bin cphasing-rs
