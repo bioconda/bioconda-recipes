@@ -1,5 +1,5 @@
 {% set name = "pyeuk" %}
-{% set version = "0.5.0" %}
+{% set version = "0.6.0" %}
 
 package:
   name: {{ name }}
@@ -7,14 +7,14 @@ package:
 
 source:
   url: https://github.com/spond/pyeuk/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3bb4f26e8fb4a1ec42c3a34822022a6ccbae5da582911aae90c706dd7a336e58
+  sha256: 74dee55ed9dbcd6ec5569dfc25c9e5ce67e6befebbe7e5a6a87668dec7c7781a
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - pyeuk=cyclospora_pyeuk.cli:main
-    - cyclospora-typing=cyclospora_pyeuk.cli:main
+    - pyeuk=pyeuk.cli:main
+    - cyclospora-typing=pyeuk.cli:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage("pyeuk", max_pin="x.x") }}
@@ -35,11 +35,12 @@ requirements:
 
 test:
   imports:
+    - pyeuk
+    - pyeuk.distance_engine
+    - pyeuk.clustering
+    - pyeuk.naming
+    - pyeuk.amplicon
     - cyclospora_pyeuk
-    - cyclospora_pyeuk.distance_engine
-    - cyclospora_pyeuk.clustering
-    - cyclospora_pyeuk.naming
-    - cyclospora_pyeuk.amplicon
   commands:
     - pyeuk --help
     - cyclospora-typing --help
