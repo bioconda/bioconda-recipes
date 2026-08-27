@@ -17,6 +17,12 @@ SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 mkdir -p "${SHARE}" "${PREFIX}/bin"
 
 cp -R epac epa_trainer.py epa_classifier.py sativa.py sativa.cfg raxml "${SHARE}/"
+
+# The bundled example, at a path that does not carry the version, so the recipe's test can
+# name it. It has to ship inside the package: the container test runs with the package
+# installed and nothing else, no recipe directory and no source tree.
+mkdir -p "${PREFIX}/share/${PKG_NAME}"
+cp -R example "${PREFIX}/share/${PKG_NAME}/example"
 # No build leftovers, and no temp directory: an installed SATIVA writes its temporary files
 # under the output directory (see check_args in sativa.py), not next to its code.
 rm -rf "${SHARE}"/raxml/builddir.* "${SHARE}"/raxml/*.stamp "${SHARE}"/raxml/*.tar.gz
