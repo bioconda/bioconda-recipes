@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
+sed -i.bak 's/-march=native/-mtune=generic/' Makefile
+
 make -j"${CPU_COUNT}" \
     CXX="${CXX}" \
     EIGEN_INC="${PREFIX}/include/eigen3" \
