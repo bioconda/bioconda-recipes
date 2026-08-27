@@ -1,5 +1,5 @@
 {% set name = "pyeuk" %}
-{% set version = "0.4.0" %}
+{% set version = "0.5.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/spond/pyeuk/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: e730e6d3a906971e20dbccf8670b236eabbef7fb57e49392a3a770aeea8aa1b2
+  sha256: 3bb4f26e8fb4a1ec42c3a34822022a6ccbae5da582911aae90c706dd7a336e58
 
 build:
   number: 0
@@ -31,15 +31,21 @@ requirements:
     - pandas >=1.3.0
     - scikit-learn >=1.0.0
     - numba >=0.53.0
+    - pysam >=0.22
 
 test:
   imports:
     - cyclospora_pyeuk
     - cyclospora_pyeuk.distance_engine
     - cyclospora_pyeuk.clustering
+    - cyclospora_pyeuk.naming
+    - cyclospora_pyeuk.amplicon
   commands:
     - pyeuk --help
     - cyclospora-typing --help
+    - pyeuk define-windows --help
+    - pyeuk call-haplotypes --help
+    - pyeuk build-sheet --help
 
 about:
   home: https://github.com/spond/pyeuk
@@ -56,8 +62,14 @@ about:
     assembled contigs, a weighted identity-by-state (wIBS) distance engine
     with selectable allele weighting, pairwise-complete dropout tolerance
     and optional PSD Gram matrix projection, and unsupervised Ward
-    hierarchical clustering with knee-based selection of the cluster
-    count.
+    hierarchical clustering with either knee-based selection of the
+    cluster count or a distance-threshold cut for surveillance cohorts
+    whose structure is mostly singletons. An amplicon front end turns
+    aligned reads into the haplotype sheet directly: analysis windows are
+    derived from the reads themselves, and each haplotype is read off a
+    single read that spans the window end to end, so linkage between
+    positions is observed on one molecule rather than inferred across
+    molecules.
   dev_url: https://github.com/spond/pyeuk
 
 extra:
