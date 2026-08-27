@@ -1,6 +1,6 @@
 {% set name = "sativa-epang" %}
-{% set version = "0.9.3.2" %}
-{% set sha256 = "3666cfe2928258533c51420a35c8bf08370cce740cd08e38cb29e7b4bbf5c20f" %}
+{% set version = "0.9.3.3" %}
+{% set sha256 = "31b41b73682362e12e14f4b8594b10436a255182fbba7a0c0bd0fee782567363" %}
 
 package:
   name: {{ name|lower }}
@@ -38,9 +38,10 @@ test:
     # conda-build, CONDA_PREFIX by the container's env-activate.sh.
     - E="${PREFIX:-${CONDA_PREFIX:-/usr/local}}/share/sativa-epang/example"; sativa-epang -s "$E/test.phy" -t "$E/test.tax" -x bac -n run -T 2
     - test -s run.mis
-    # the staged entry points, which is what a workflow manager drives
-    - sativa-epang -h | grep -q -- "loo-tasks"
-
+    # the reference as a step of its own, which is what a workflow manager schedules apart
+    - E="${PREFIX:-${CONDA_PREFIX:-/usr/local}}/share/sativa-epang/example"; sativa-epang -s "$E/test.phy" -t "$E/test.tax" -x bac -n ref -T 2 -stage reference
+    - test -s ref.refjson
+    - test -s ref.model
 about:
   home: https://github.com/Aaramis/sativa-epang
   license: GPL-3.0-or-later
