@@ -31,15 +31,12 @@ requirements:
     - epa-ng >=0.3.8
 
 test:
-  # copies of example/ from the source, kept here rather than pulled in with source_files:
-  # the container test runs the same commands with only the package installed, and the
-  # source tree is not there.
-  files:
-    - test.phy
-    - test.tax
   commands:
-    # end to end: reference tree with RAxML, leave-one-out with EPA-ng, mislabels written
-    - sativa-epang -s test.phy -t test.tax -x bac -n run -T 2
+    # End to end on the bundled example: reference tree with RAxML, leave-one-out with
+    # EPA-ng, mislabels written. The data ships in the package rather than in the recipe,
+    # because the container test runs with only the package installed. PREFIX is set by
+    # conda-build, CONDA_PREFIX by the container's env-activate.sh.
+    - E="${PREFIX:-${CONDA_PREFIX:-/usr/local}}/share/sativa-epang/example"; sativa-epang -s "$E/test.phy" -t "$E/test.tax" -x bac -n run -T 2
     - test -s run.mis
     # the staged entry points, which is what a workflow manager drives
     - sativa-epang -h | grep -q -- "loo-tasks"
