@@ -1,0 +1,63 @@
+{% set version = "1.0.4" %}
+
+package:
+  name: scgbinner
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/S/SCGBinner/scgbinner-{{ version }}.tar.gz
+  sha256: 4d6aac0204af59f5c55a5d6e4749fbf738a0199a9eae97c6c4c59d0050d0a777
+
+build:
+  noarch: python
+  run_exports:
+   - {{ pin_subpackage("scgbinner", max_pin="x.x") }}
+  entry_points:
+    - scgbinner = SCGBinner.wrapper:main
+    - split_contigs = SCGBinner.Split_contigs:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.9,<3.10
+    - setuptools >=61
+    - pip
+  run:
+    - python >=3.9,<3.10
+    - biopython
+    - numpy =1.19
+    - scipy
+    - igraph
+    - leidenalg
+    - joblib
+    - pandas =1.4
+    - scikit-learn
+    - pyyaml
+    - tensorboard
+    - tqdm
+    - hnswlib
+    - atomicwrites
+    - bedtools
+    - fraggenescan
+    - hmmer
+test:
+  imports:
+    - SCGBinner
+  commands:
+    - pip check
+    - scgbinner
+    - split_contigs --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/htaohan/SCGBinner
+  summary: Metagenomic binning method
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - htaohan
