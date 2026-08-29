@@ -1,0 +1,58 @@
+{% set name = "metacooc" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d77f19d7f3d0a03c006d06d26b4d0491949e64918d29f1c4e1666449c0c0db33
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+    - adjusttext
+    - requests
+    - pyarrow
+    - platformdirs
+    - tqdm
+
+test:
+  imports:
+    - metacooc
+    - metacooc.plot
+  commands:
+    - metacooc --help
+    - metacooc --version
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/bcoltman/metacooc
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Co-occurrence analysis of microorganisms in metagenomes.
+  doc_url: https://metacooc.readthedocs.io
+  dev_url: https://github.com/bcoltman/metacooc
+
+extra:
+  recipe-maintainers:
+    - bcoltman
+    - dspeth
