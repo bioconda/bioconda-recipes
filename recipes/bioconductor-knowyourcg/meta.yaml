@@ -1,58 +1,81 @@
-{% set version = "1.2.0" %}
+{% set version = "1.6.3" %}
 {% set name = "knowYourCG" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: knowYourCG automates the functional analysis of DNA methylation data. The package tests the enrichment of discrete CpG probes across thousands of curated biological and technical features. GSEA-like analysis can be performed on continuous methylation data query sets. knowYourCG can also take beta matrices as input to perform feature aggregation over the curated database sets.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: MIT + file LICENSE
-  license_file: LICENSE
-  summary: Functional analysis of DNA methylome datasets
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 8db6b30c020ff6b60865eb7cb50f5fef
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-knowyourcg", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: testthat (>= 3.0.0), SummarizedExperiment, rmarkdown, knitr, sesame, gprofiler2
+# Suggests: testthat (>= 3.0.0), SummarizedExperiment, rmarkdown, knitr, sesame, gprofiler2, ggrastr
 requirements:
-  host:
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-sesamedata >=1.24.0,<1.25.0
-    - r-base
-    - r-dplyr
-    - r-reshape2
-    - r-rlang
-    - r-stringr
-  run:
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-sesamedata >=1.24.0,<1.25.0
-    - r-base
-    - r-dplyr
-    - r-reshape2
-    - r-rlang
-    - r-stringr
 
-source:
-  md5: 2bc64fc886cd4f244fc4c9e6d744bd80
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  build:
+    - {{ compiler('c') }}
+    - make
+
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-sesamedata >=1.28.0,<1.29.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-magrittr
+    - r-reshape2
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-wheatmap
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-sesamedata >=1.28.0,<1.29.0
+    - r-base
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-magrittr
+    - r-reshape2
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-wheatmap
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Functional analysis of DNA methylome datasets
+  description: KnowYourCG (KYCG) is a supervised learning framework designed for the functional analysis of DNA methylation data. Unlike existing tools that focus on genes or genomic intervals, KnowYourCG directly targets CpG dinucleotides, featuring automated supervised screenings of diverse biological and technical influences, including sequence motifs, transcription factor binding, histone modifications, replication timing, cell-type-specific methylation, and trait-epigenome associations. KnowYourCG addresses the challenges of data sparsity in various methylation datasets, including low-pass Nanopore sequencing, single-cell DNA methylomes, 5-hydroxymethylation profiles, spatial DNA methylation maps, and array-based datasets for epigenome-wide association studies and epigenetic clocks.
+  license_file: LICENSE
 

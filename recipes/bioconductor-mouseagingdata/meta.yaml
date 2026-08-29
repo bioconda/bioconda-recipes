@@ -1,0 +1,44 @@
+{% set version = "1.6.0" %}
+{% set name = "MouseAgingData" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1885170ed9055be0ba0a12ddfa4debab
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mouseagingdata", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, scater
+requirements:
+  host:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - r-base
+  run:
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - r-base
+    - curl
+    - bioconductor-data-packages >=20260207
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Multi-omics data access for studies investigating the effects of aging
+  description: The MouseAgingData package provides analysis-ready data resources from different studies focused on aging and rejuvenation in mice. The package currently provides two 10x Genomics single-cell RNA-seq datasets. The first study profiled the aging mouse brain measured across 37,089 cells (Ximerakis et al., 2019). The second study investigated parabiosis by profiling a total of 105,329 cells (Ximerakis & Holton et al., 2023). The datasets are provided as SingleCellExperiment objects and provide raw UMI counts and cell metadata.
+
