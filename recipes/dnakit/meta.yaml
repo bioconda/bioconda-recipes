@@ -1,0 +1,59 @@
+{% set name = "dnakit" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e7d616019b49d69ffbeba36dbb528c3e972f3b8924b62730b741c015a323dfcb
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - dnakit=dnakit.cli.app:run
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10
+    - pyyaml >=6.0
+    - rich >=13.7
+    - tomli >=2.0
+    - typer >=0.12
+
+test:
+  imports:
+    - dnakit
+  requires:
+    - pip
+  commands:
+    - dnakit --version
+    - dnakit normalize ACGU
+    - pip check
+
+about:
+  home: https://github.com/mapengsen/DNAKit
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - DISCLAIMER.md
+  summary: Deterministic tools for DNA sequence analysis
+  description: |
+    DNAKit is a reproducible Python toolkit for DNA sequence normalization,
+    file conversion, descriptors, pattern scanning, similarity analysis,
+    dataset preparation, evaluation, simulation, and visualization.
+  doc_url: https://mapengsen.github.io/DNAKit/
+  dev_url: https://github.com/mapengsen/DNAKit
+
+extra:
+  recipe-maintainers:
+    - mapengsen
