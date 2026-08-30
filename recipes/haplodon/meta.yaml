@@ -1,0 +1,54 @@
+{% set name = "haplodon" %}
+{% set version = "0.17.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fxwiegand/haplodon/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 227a076acb128142af0686ecb3b816f990683b249bcd53704191e4c5bbeefb0e
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+    - clangdev <22
+  host:
+    - gsl
+    - libcblas
+    - libcurl
+    - openssl  # [not osx]
+
+test:
+  commands:
+    - haplodon --help
+
+about:
+  home: "https://github.com/fxwiegand/haplodon"
+  license: MIT
+  license_family: MIT
+  summary: "Haplodon is a command-line tool designed for uncertainty-aware haplotype-based genomic variant effect prediction."
+  dev_url: "https://github.com/fxwiegand/haplodon"
+  doc_url: "https://github.com/fxwiegand/haplodon/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - fxwiegand
+    - felixmoelder
+    - johanneskoester
+  skip-lints:
+    - compiler_needs_stdlib_c

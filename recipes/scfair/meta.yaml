@@ -1,0 +1,55 @@
+{% set name = "scfair" %}
+{% set version = "0.10.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fc4ec6f12c924cc7ea46078720ef495ef49c259abc0681170f1582dbab15bb10
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('scfair', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - anndata >=0.10
+    - numpy >=1.24
+    - pandas >=2.0
+    # Requires sc.tl.leiden(flavor="igraph"), introduced in 1.10
+    - scanpy >=1.10
+    - scipy >=1.10
+    - scikit-learn >=1.2
+    # Conda package name for PyPI's "igraph"
+    - python-igraph >=0.10
+    # Required for default flavor="seurat_v3"
+    - scikit-misc >=0.3
+
+test:
+  imports:
+    - scfair
+    - scfair.pp
+
+about:
+  home: https://github.com/leelieber2025/scFair
+  dev_url: https://github.com/leelieber2025/scFair
+  doc_url: https://scfair.readthedocs.io
+  summary: Fair highly variable gene selection for single-cell RNA-seq
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - leelieber2025
