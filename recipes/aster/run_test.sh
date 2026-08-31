@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Package activation must preserve library paths supplied by the caller.
-export CONDA_PREFIX="${PREFIX}"
-export LD_LIBRARY_PATH=/__aster_test_existing_library_path__
-export SINGULARITYENV_LD_LIBRARY_PATH=/__aster_test_singularity_library_path__
-for hook in "${PREFIX}"/etc/conda/activate.d/aster_*.sh; do
-    if [[ -f "${hook}" ]]; then
-        source "${hook}"
-    fi
+# ASTER must not install hooks that change library lookup for other programs.
+for hook_dir in activate.d deactivate.d; do
+    for hook in "${PREFIX}/etc/conda/${hook_dir}"/aster_*.sh; do
+        if [[ -e "${hook}" || -L "${hook}" ]]; then
+            printf 'Unexpected ASTER Conda hook: %s\n' "${hook}" >&2
+            exit 1
+        fi
+    done
 done
-[[ "${LD_LIBRARY_PATH}" == /__aster_test_existing_library_path__ ]]
-[[ "${SINGULARITYENV_LD_LIBRARY_PATH}" == /__aster_test_singularity_library_path__ ]]
