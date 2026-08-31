@@ -13,9 +13,8 @@ mkdir -p "${GOCACHE}"
 mkdir -p "${PREFIX}/bin"
 
 # build bwa
-make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}" -C gobwa/bwa libbwa.a bwa
+make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}" -C gobwa/bwa libbwa.a
 
 # build arachne
 go build -ldflags "-X arachne/aligner.VERSION=${PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
-install -v -m 0755 gobwa/bwa/bwa "${PREFIX}/bin"
