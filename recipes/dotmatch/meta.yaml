@@ -1,6 +1,6 @@
 {% set name = "dotmatch" %}
-{% set version = "0.2.2" %}
-{% set sha256 = "52536b70e379f1aa09d891b3e44c7f67b02875086826f55fabe25f3bcfab89b9" %}
+{% set version = "0.4.0" %}
+{% set sha256 = "618231404db7b4310241afd48dc6a14cd33c4b2cfaa68abc7d4fbc82a8e9a026" %}
 
 package:
   name: {{ name }}
@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   skip: True  # [win or py<39]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -47,6 +47,8 @@ test:
     - dotmatch assay --help | grep 'dotmatch assay'
     - dotmatch barcode --help | grep 'dotmatch barcode'
     - dotmatch panel --help | grep 'dotmatch panel'
+    - dotmatch agent tools --json | grep 'prepare_assay'
+    - dotmatch agent tools --json | grep 'handoff_assay'
     - test -f "${PREFIX}/include/qdalign.h"
     - test -f "${PREFIX}/lib/libdotmatch.a"
     - test -f "${PREFIX}/lib/libdotmatch.so" || test -f "${PREFIX}/lib/libdotmatch.dylib"
@@ -79,6 +81,10 @@ test:
     - test -f panel_out/barcodes.tsv
     - test -f panel_out/design_report.json
     - chmod -R a+rwX panel_out
+    - mkdir exported-skill
+    - dotmatch agent export-skill --target exported-skill
+    - test -f exported-skill/SKILL.md
+    - test -f exported-skill/agents/openai.yaml
 
 about:
   home: "https://dnncha.github.io/dotmatch"
