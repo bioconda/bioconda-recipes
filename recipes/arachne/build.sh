@@ -18,3 +18,5 @@ make CC="${CC}" CFLAGS="${CFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" -
 # build arachne
 go build -ldflags "-X arachne/aligner.VERSION=${PKG_VERSION}" -o $PREFIX/bin/arachne
 chmod +x $PREFIX/bin/arachne
+
+go-licenses save . --save_path="${SRC_DIR}/library_licenses"  
