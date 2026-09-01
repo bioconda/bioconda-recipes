@@ -2,16 +2,16 @@
 {% set version = "3.9" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: d018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  noarch: python
   entry_points:
     - humann = humann.humann:main
     - humann3 = humann.humann:main
@@ -33,14 +33,15 @@ build:
     - humann_barplot = humann.tools.humann_barplot:main
     - humann_benchmark = humann.tools.humann_benchmark:main
     - humann_expand_cluster = humann.tools.expand_cluster:main
-  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  script: pip install . --config-settings bypass-dependencies-install=true -vvv
   run_exports:
-    - {{ pin_subpackage('humann', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python >=3
+    - setuptools
   run:
     - python >=3
     - metaphlan >=4.0
@@ -81,11 +82,12 @@ about:
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "HUMAnN: The HMP Unified Metabolic Analysis Network, version 3"
+  summary: "HUMAnN: The HMP Unified Metabolic Analysis Network, version 3."
   doc_url: "http://huttenhower.sph.harvard.edu/humann"
   dev_url: "https://github.com/biobakery/humann"
 
 extra:
   identifiers:
     - doi:10.7554/eLife.65088
+    - usegalaxy-eu:humann
     - biotools:humann
