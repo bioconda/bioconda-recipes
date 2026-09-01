@@ -83,7 +83,7 @@ def main():
 
     # Find Bruker libraries in MSFragger installation and add to path for diaTracer
     # do not use CONDA_PREFIX (since it is not available in biocontainer)
-    conda_prefix = Path(__file__).resolve().parent.parent
+    conda_prefix = Path(__file__).parent.parent
     bruker_path = glob.glob('share/msfragger-*/MSFragger-*/ext/bruker', root_dir=conda_prefix)[0]
     ld_library_path = f'{conda_prefix}/{bruker_path}:{os.getenv("LD_LIBRARY_PATH","")}'
 
