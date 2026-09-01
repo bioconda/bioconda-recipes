@@ -1,4 +1,4 @@
-{% set version = "1.1" %}
+{% set version = "1.2" %}
 {% set github = "https://github.com/lehner-lab/MoCHI" %}
 
 package:
@@ -6,34 +6,40 @@ package:
   version: '{{ version }}'
 
 source:
-  url: {{ github }}/archive/v{{ version }}.tar.gz
-  sha256: d021a858a3929858c8e8d0a6d5173680aa6097d90a8f05858f9ae08cb6902c17
+  url: https://github.com/Eric-Kobayashi/MoCHI/archive/e4c15d2b75d9dbfca09472c57d84d8803ca6fdbd.tar.gz
+  sha256: f97ba263692beedc81e3cd926f8801bdc64bdba6539ee9c731d954cb1f84dbe0
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install ./ --ignore-installed --no-deps -vv
+  script: SETUPTOOLS_SCM_PRETEND_VERSION={{ version }} {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   run_exports:
     - {{ pin_subpackage('pymochi', max_pin="x") }}
 
 requirements:
   host:
-    - python =3.9
+    - python >=3.11
     - pip
+    - setuptools >=64
+    - setuptools-scm >=8
+    - wheel
   run:
-    - python =3.9
-    - pandas >=1.4.2
-    - matplotlib-base >=3.5.1
-    - numpy >=1.21.2
-    - pyreadr >=0.4.4
-    - pytorch >=1.10.1
-    - scikit-learn >=1.0.2
-    - scipy >=1.8.0
-    - seaborn >=0.11.2
+    - python >=3.11
+    - loguru
+    - matplotlib-base
+    - nextflow >=25.10.4,<26
+    - numpy
+    - pandas
+    - pyreadr
+    - pytorch
+    - scikit-learn
+    - scipy
+    - seaborn
 
 test:
   commands:
-    - run_mochi.py -h
+    - pymochi --help
+    - pymochi-nextflow --help
 
 about:
   home: {{ github }}
