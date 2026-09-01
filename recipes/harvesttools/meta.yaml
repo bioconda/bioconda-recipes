@@ -1,6 +1,6 @@
 {% set version = "1.3" %}
 {% set base = "https://github.com/marbl/harvest-tools/releases/download" %}
-{% set sha256linux = "1bc347967cd43e93121039f28f8938e624e42b16f2629af963a593f0f4e78a6a" %}
+{% set sha256linux = "ffbcf0a115c74507695fd6cee4a9d5ba27a700db36b32d226521ef8dd3309264" %}
 {% set sha256osx = "e69fa113b8a5146f8dd3044cbfbcaf6a79c496e2121e052d1f1941be80060d0e" %}
 
 package:
@@ -8,21 +8,39 @@ package:
   version: {{ version }}
 
 source:
-  - url: '{{ base }}/v{{ version }}/harvesttools-Linux64-v{{ version }}.tar.gz'   # [linux]
+  - url: 'https://github.com/marbl/harvest-tools/archive/refs/tags/v{{ version }}.tar.gz'   # [linux]
     sha256: '{{ sha256linux }}'                                         # [linux]
   - url: '{{ base }}/v{{ version }}/harvesttools-OSX64-v{{ version }}.tar.gz'     # [osx]
     sha256: '{{ sha256osx }}'                                           # [osx]
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('harvesttools', max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}  # [linux]
+    - {{ compiler('cxx') }}  # [linux]
+    - make
+    - cmake
+    - automake
+    - autoconf
+    - protobuf
+    - libprotobuf <=4.25.3
+    - libprotobuf-static
+    - zlib
+    - autoconf
+    - capnproto
+    - pkg-config
+    - abseil-cpp
   host:
     - zlib
+    - protobuf
+    - capnproto
   run:
-    - zlib
+    - libgcc-ng  # [linux]
+    - libstdcxx-ng  # [linux]
 
 test:
   commands:
@@ -33,8 +51,14 @@ about:
   license: "Custom; see https://raw.githubusercontent.com/marbl/harvest-tools/master/LICENSE.txt"
   summary: "HarvestTools is a part of the Harvest software suite and provides file conversion between Gingr files and various standard text formats."
   dev_url: "https://github.com/marbl/harvest-tools"
+  description: |
+    HarvestTools is part of the Harvest software suite. It provides conversion
+    between Gingr files and various standard text formats. Gingr is a graphical
+    viewer for phylogenetic trees and metadata.
 
 extra:
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
