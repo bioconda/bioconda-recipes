@@ -6,7 +6,7 @@ mkdir -p "${PREFIX}"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++17"
 
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
 cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* m4/
@@ -22,10 +22,7 @@ else
 	export EXTRA_ARGS="--host=x86_64"
 fi
 
-aclocal
-libtoolize --automake --force --copy
-automake --add-missing
-autoconf
+autoreconf -i
 
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" \
@@ -35,5 +32,5 @@ autoconf
 	--disable-dependency-tracking \
 	"${EXTRA_ARGS}"
 
-make
+make -j"${CPU_COUNT}"
 make install
