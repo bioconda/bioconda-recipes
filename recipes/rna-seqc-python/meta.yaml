@@ -1,0 +1,48 @@
+{% set pypi_name = "rnaseqc" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: "rna-seqc-python"
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ pypi_name[0] }}/{{ pypi_name }}/rnaseqc-{{ version }}.tar.gz
+  sha256: 857ad1ad54f2b563163d75ff8c5f2439208d06980b7c8ded279bd59d19c48a0f
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("rna-seqc-python", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy
+    - pandas
+    - matplotlib-base
+    - seaborn
+    - qtl
+    - nbformat
+
+test:
+  imports:
+    - rnaseqc
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/broadinstitute/rnaseqc
+  summary: Multi-sample visualization of metrics from RNA-SeQC
+  license: BSD 3-clause
+  license_family: BSD
+
+extra:
+  recipe-maintainers:
+    - lrvdijk
