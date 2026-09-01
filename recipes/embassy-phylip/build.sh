@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CFLAGS="${CFLAGS} -fcommon"
+
 ./configure --prefix=$PREFIX --without-x
 make
 make install
