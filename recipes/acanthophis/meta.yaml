@@ -1,0 +1,48 @@
+{% set name = "acanthophis" %}
+{% set version = "0.3.2" %}
+{% set sha = "6d6900b0d12b9b1d745189c23fed7cdb9741d07ba4ba9e83c3c18bcca13a430e" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{name}}-{{ version }}.tar.gz"
+  sha256: "{{ sha }}"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("acanthophis", max_pin="x") }}
+
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools_scm
+    - setuptools_scm_git_archive
+    - snakemake >=8
+  run:
+    - python
+    - snakemake >=8
+    - natsort
+
+test:
+  commands:
+    - acanthophis-init --help
+
+about:
+  home: https://github.com/kdm9/Acanthophis
+  license: "Mozilla Public 2.0 (MPL 2.0)"
+  license_family: MOZILLA
+  license_file:  LICENSE
+  summary: "A comprehensive, opinionated plant variant calling pipeline in Snakemake"
+  doc_url: https://github.com/kdm9/Acanthophis
+  dev_url: https://github.com/kdm9/Acanthophis 
+
+extra:
+  recipe-maintainers:
+    - kdm9
