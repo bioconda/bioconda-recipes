@@ -1,0 +1,59 @@
+{% set name = "pyrho" %}
+{% set version = "0.2.1" %}
+{% set commit = "fe7d1cfe1e5b10bee1f1d0828dbf1dc5391d9888" %}
+{% set sha256 = "84d074c18af4e6ced0be85a3e0053d245db89c3ca7e1f7d0e1e6bd14e3a76417" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/popgenmethods/{{ name }}/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - pyrho = pyrho.frontend:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage('pyrho', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy >=1.14.2
+    - scipy >=1.0.0
+    - msprime >=0.7.0,<1.0
+    - numba >=0.47.0
+    - pandas >=0.23.4
+    - pytables >=3.3.0
+    - cyvcf2 >=0.10.9
+    - ldpop
+    - importlib_resources
+
+test:
+  imports:
+    - pyrho
+  commands:
+    - pyrho --help
+
+about:
+  home: https://github.com/popgenmethods/pyrho
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: Fast inference of fine-scale recombination rates using fused-LASSO
+  dev_url: https://github.com/popgenmethods/pyrho
+  doc_url: https://github.com/popgenmethods/pyrho#readme
+
+extra:
+  recipe-maintainers:
+    - d-callan
+  identifiers:
+    - doi:10.1126/sciadv.aaw9206
