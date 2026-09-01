@@ -8,5 +8,8 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/lib"
 
 sed -i.bak 's|=/usr/local|=${PREFIX}|g' Makefile
 sed -i.bak 's/CC=gcc//g' Makefile
+if [ `uname -m` == "aarch64" ]; then
+    sed -i.bak 's/  CFLAGS += -m64/  CFLAGS += -mabi=lp64/g' Makefile
+fi
 make install
 make test
