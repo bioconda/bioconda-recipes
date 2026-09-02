@@ -1,3 +1,17 @@
+Honour $(CC), $(CFLAGS) and $(LDFLAGS) in the Makefile.
+
+Upstream hardcodes gcc and passes neither CFLAGS nor LDFLAGS, so the build
+cannot be pointed at conda's compiler or at zlib under $PREFIX. That breaks
+the osx (clang) build and the cross-compiled linux-aarch64 / osx-arm64
+builds outright, and is not specific to conda -- any packager installing
+zlib outside the system prefix hits it.
+
+$(CC) defaults to cc in GNU make and both flag variables default to empty,
+so a plain "make" in a normal checkout builds exactly as it does today.
+
+Reported upstream at:
+https://github.com/jsh58/Genrich/issues/102#issuecomment-5513399276
+
 diff --git a/Makefile b/Makefile
 index 03b388e..946a94d 100644
 --- a/Makefile
