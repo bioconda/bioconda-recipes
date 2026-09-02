@@ -31,8 +31,11 @@ test:
     - Genrich -V 2>&1 | grep 'John M. Gaspar'
     - Genrich -V 2>&1 | grep '0.6.2'
     # -L is upstream code as of 0.6.2. The -L 0 check is the regression test
-    # for getlong-reject-nonpositive.patch: without it, a non-positive -L is
-    # accepted and the genome length is silently auto-computed instead.
+    # for getlong-reject-nonpositive.patch: without it stock 0.6.2 accepts any
+    # non-positive -L. 0 falls through to the auto-computed genome length,
+    # while a negative value is cast to uint64_t and wraps to 2^64-1, which
+    # collapses the background lambda and inflates every q-value derived from
+    # it -- silently, at exit status 0.
     - Genrich -L 0 2>&1 | grep 'Genome length must be a positive int'
     - Genrich -L 1000 2>&1 | grep 'Need input/output files'
 
