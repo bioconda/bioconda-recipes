@@ -1,0 +1,52 @@
+{% set name = "fastvep" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Huang-lab/fastVEP/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ad82fca322c7e2363d50f554ccf93a8a531a14c11feff0d3b695463c302a2b03
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - make
+
+test:
+  commands:
+    - fastvep --version
+    - fastvep --help
+    - fastvep-web --help
+
+about:
+  home: https://github.com/Huang-lab/fastVEP
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE.md
+    - THIRDPARTY.yml
+  summary: A high-performance variant effect predictor with clinical database integration, written in Rust
+  description: |
+    fastVEP predicts the functional consequences of genomic variants (SNPs,
+    insertions, deletions, structural variants) on genes, transcripts, and
+    protein sequences, with direct integration of clinical and population
+    databases (ClinVar, gnomAD, dbSNP, COSMIC, 1000 Genomes, TOPMed,
+    MitoMap). It is inspired by Ensembl VEP and Illumina Nirvana and ships
+    both a CLI (`fastvep`) and a production web server (`fastvep-web`).
+  dev_url: https://github.com/Huang-lab/fastVEP
+  doc_url: https://github.com/Huang-lab/fastVEP/blob/v{{ version }}/README.md
+
+extra:
+  recipe-maintainers:
+    - kuanlinhuang
