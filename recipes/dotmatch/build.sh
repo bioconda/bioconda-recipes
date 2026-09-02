@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Bioconda sets -march=core2 on osx-64, which conflicts with DotMatch's Makefile
+# unconditionally appending -mavx2 for x86_64 and can abort clang during qdalign.c.
+if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
+  sed -i.bak '/CFLAGS += -mavx2/d; /CXXFLAGS += -mavx2/d' Makefile
+fi
+
 make \
   DOTMATCH_VERSION="${PKG_VERSION}" \
   CC="${CC}" \
