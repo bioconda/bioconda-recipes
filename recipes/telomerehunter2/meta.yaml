@@ -1,0 +1,50 @@
+{% set version = "1.0.11" %}
+
+package:
+  name: telomerehunter2
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/t/telomerehunter2/telomerehunter2-{{ version }}.tar.gz
+  sha256: 0c783112ed2a217067552c5dc88c7e4a8331073ba3260c121fdc21d9b44be397
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - telomerehunter2 = telomerehunter2.telomerehunter2_main:main
+    - telomerehunter2-sc = telomerehunter2.telomerehunter2_sc:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('telomerehunter2', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0.0
+    - python-build >=0.10.0
+    - pip
+  run:
+    - python >=3.8
+    - pysam >=0.20.0
+    - pandas >=1.4.0
+    - numpy >=1.22.0
+    - pypdf2 >=2.0.0
+    - plotly >=5.0.0
+    - python-kaleido >=0.2.1
+
+test:
+  imports:
+    - telomerehunter2
+  commands:
+    - telomerehunter2 --help
+    - telomerehunter2-sc --help
+
+about:
+  home: "https://github.com/ferdinand-popp/telomerehunter2"
+  summary: "An advanced version of TelomereHunter for Python 3. Single-cell and bulk telomere content estimation from NGS data with improved accuracy and new features."
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  doc_url: "https://ferdinand-popp.github.io/telomerehunter2"
+  dev_url: "https://github.com/ferdinand-popp/telomerehunter2"
