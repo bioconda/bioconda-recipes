@@ -1,2 +1,2 @@
 #!/bin/bash
-matrixClusterColumns 2>/dev/null || [[ "$?" == 255 ]]
+matrixClusterColumns 2> /dev/null || [[ "$?" == 255 ]]

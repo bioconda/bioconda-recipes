@@ -3,9 +3,16 @@ set -xe
 
 mkdir -p "${PREFIX}/bin"
 export MACHTYPE="$(uname -m)"
+# kent ships lib/x86_64 and parasol/lib/x86_64 but no dir for any other arch,
+# and "make libs" builds topLibs and hgLib in parallel, so hg/cgilib can ar into
+# lib/${MACHTYPE} before lib/makefile has created it.
+mkdir -p "kent/src/lib/${MACHTYPE}" "kent/src/parasol/lib/${MACHTYPE}"
 export BINDIR="$(pwd)/bin"
 mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${PREFIX}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"

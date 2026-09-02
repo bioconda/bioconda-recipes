@@ -1,2 +1,2 @@
 #!/bin/bash
-pslSpliceJunctions 2>/dev/null || [[ "$?" == 255 ]]
+pslSpliceJunctions 2> /dev/null || [[ "$?" == 255 ]]
