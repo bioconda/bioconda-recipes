@@ -1,0 +1,56 @@
+{% set name = "shovill" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "bfbbe76711c0da605705ae697b4b43ef206911fb5c28e988684fc2e86fc27308" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  run:
+    - perl >=5.32.0
+    - perl-file-spec
+    - perl-findbin
+    - spades >=3.14
+    - skesa >=2.5
+    - megahit >=1.2.9
+    - velvet >=1.2.10
+    - lighter >=1.1
+    - bwa >=0.7.17
+    - kmc >=3.2
+    - flash >=1.2
+    - pilon >=1.22
+    - samclip >=0.4
+    - trimmomatic >=0.36
+    - samtools >=1.10
+    - seqkit
+    - seqtk
+    - csvtk
+    - pigz
+
+test:
+  commands:
+    - {{ name }} --version | grep -F '{{ version }}'
+    - {{ name }} --check
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL2
+  license_file: LICENSE
+  summary: Microbial assembly pipeline for Illumina paired-end reads
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - usegalaxy-eu:{{ name }}
