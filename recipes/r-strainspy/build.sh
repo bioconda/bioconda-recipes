@@ -6,9 +6,10 @@ set -eo pipefail
 # Prefer conda's shared libraries over Homebrew bottles fetched by autobrew.
 export DISABLE_AUTOBREW=1
 
-# R refuses to build packages that mark themselves as Priority: Recommended.
-mv DESCRIPTION DESCRIPTION.old
-grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
-
+# Some R tooling refuses to build packages that set a Priority field; strip it if present.
+if grep -q '^Priority:' DESCRIPTION; then
+  awk '!/^Priority: /' DESCRIPTION > DESCRIPTION.tmp
+  mv DESCRIPTION.tmp DESCRIPTION
+fi
 # shellcheck disable=SC2086
 "${R}" CMD INSTALL --build . ${R_ARGS:-}
