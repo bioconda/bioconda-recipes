@@ -1,0 +1,100 @@
+{% set version = "0.99.1" %}
+{% set sha256 = "7adbeaec985909f2b9b47d5d4a5a390c34137631a7f4754a2f1edba1c9be8e43" %}
+
+package:
+  name: r-strainspy
+  version: {{ version }}
+
+source:
+  url: https://github.com/gtonkinhill/strainspy/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # strainspy is pure R - there is no src/ directory, no LinkingTo and no
+  # NeedsCompilation - so one architecture-independent build serves linux-64,
+  # linux-aarch64, osx-64 and osx-arm64. No compilers and no rpaths are needed
+  # for the same reason.
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("r-strainspy", max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-ape
+    - r-data.table
+    - r-dplyr
+    - r-ggforce
+    - r-ggplot2
+    - r-ggrepel
+    - r-ggthemes
+    - r-glmmtmb
+    - r-harmonicmeanp
+    - r-lmertest
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-purrr
+    - r-r.utils >=2.13.0
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-viridis
+    - bioconductor-biocparallel
+    - bioconductor-ggtree
+    - bioconductor-s4vectors
+    - bioconductor-summarizedexperiment
+  run:
+    - r-base
+    - r-ape
+    - r-data.table
+    - r-dplyr
+    - r-ggforce
+    - r-ggplot2
+    - r-ggrepel
+    - r-ggthemes
+    - r-glmmtmb
+    - r-harmonicmeanp
+    - r-lmertest
+    - r-magrittr
+    - r-matrix
+    - r-patchwork
+    - r-purrr
+    - r-r.utils >=2.13.0
+    - r-rlang
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+    - r-viridis
+    - bioconductor-biocparallel
+    - bioconductor-ggtree
+    - bioconductor-s4vectors
+    - bioconductor-summarizedexperiment
+
+test:
+  commands:
+    # Loading the namespace exercises every Imports entry, so a missing or
+    # mis-named dependency fails here rather than for the first user.
+    - $R -e "library('strainspy')"
+    # The bundled example data is what the README and vignette are built on;
+    # check it survived packaging and that a reader can parse it.
+    - $R -e "stopifnot(nzchar(system.file('extdata', 'example_sylph_profile.tsv.gz', package='strainspy', mustWork=TRUE)))"
+    - $R -e "se <- strainspy::read_sylph(system.file('extdata','example_sylph_profile.tsv.gz', package='strainspy')); stopifnot(nrow(se) > 0, ncol(se) > 0)"
+
+about:
+  home: https://github.com/gtonkinhill/strainspy
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - LICENSE.md
+  summary: Strain level microbiome wide association studies
+  description: |
+    Fits statistical models to detect microbial strains associated with a
+    phenotype. For small sample sizes, models can be fitted using empirical
+    Bayes maximum a posteriori (MAP) priors to improve detection power.
+    Supports various experimental design scenarios, including repeated
+    measures.
+  dev_url: https://github.com/gtonkinhill/strainspy
