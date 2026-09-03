@@ -1,0 +1,50 @@
+{% set name = "fastppm" %}
+{% set version = "1.1.1" %}
+{% set build_number = 0 %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/elkebir-group/fastppm/releases/download/v{{ version }}/fastppm-{{ version }}-full.tar.gz
+  sha256: 5c63d3f9f7dde0c502ab7ba9ebd67590b135d4745481d25e972e2288a81ecc44
+
+build:
+  number: {{ build_number }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('cxx') }}
+    - python
+    - pybind11
+  host:
+    - python
+    - pybind11
+  run:
+    - python
+
+test:
+  commands:
+    - fastppm-cli --help
+    # Test that the python module imports and has the right version logic
+    - python -c "import fastppm; print(fastppm.__version__)"
+
+about:
+  home: "https://github.com/elkebir-group/fastppm"
+  license: "MIT"
+  license_file: "LICENSE"
+  summary: "Fast Perfect Phylogeny Mixture Regression using Tree-Structured Dual Dynamic Programming"
+  description: |
+    `fastppm` (fast perfect phylogeny mixtures) is a C++/Python library
+    for fast estimation of unknown frequency matrices, given variant and
+    total read counts over an n-clonal tree. 
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

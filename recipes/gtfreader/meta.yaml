@@ -1,0 +1,44 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: gtfreader
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/g/gtfreader/gtfreader-{{ version }}.tar.gz
+  sha256: 59c0dece31c8fcb2b398beb247fd6b6214d0a20bd6122987ed5fd67efb11b61d
+
+build:
+  number: 0
+  skip: True  # [py < 312]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('gtfreader', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools >=69
+    - cython >=3.0
+    - pip
+  run:
+    - python
+    - pandas >=2.0
+
+test:
+  imports:
+    - gtfreader
+
+about:
+  home: "https://pypi.org/project/gtfreader"
+  summary: "Fast Cython-backed parsing for GTF attribute columns."
+  license: MIT
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

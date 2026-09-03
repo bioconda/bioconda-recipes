@@ -11,8 +11,18 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak 's|3.0.9|3.2.1|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
-sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
 sed -i.bak 's|-O2|-O3|' Makefile
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8-a|' Makefile
+	;;
+    arm64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a|' Makefile
+	;;
+    x86_64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=x86-64-v3|' Makefile
+	;;
+esac
 rm -rf *.bak
 
 LDFLAGS=""

@@ -9,7 +9,7 @@ ARCH=$(uname -m)
 FEATURES=""
 if [[ "${OS}" == "Linux" ]]; then
     if [[ "${ARCH}" == "x86_64" ]]; then
-        FEATURES="annembed_intel-mkl,simdeez_f"
+        FEATURES="annembed_intel-mkl,stdsimd_f"
     elif [[ "${ARCH}" == "arm64" || "${ARCH}" == "aarch64" ]]; then
         FEATURES="annembed_openblas-system,stdsimd_f"
     else
@@ -30,5 +30,6 @@ fi
 
 # build statically linked binary with Rust
 export RUSTC_BOOTSTRAP=1
-RUST_BACKTRACE=1 cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
-RUST_BACKTRACE=1 cargo install --verbose --path ./binaux --root $PREFIX --force
+export RUST_BACKTRACE=1
+cargo install --features "${FEATURES}" --verbose --path . --root $PREFIX
+RUSTFLAGS="-C target-cpu=native" cargo install --verbose --path ./binaux --root $PREFIX --force

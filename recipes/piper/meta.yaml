@@ -1,26 +1,27 @@
 {% set name = "piper" %}
-{% set version = "0.14.4" %}
+{% set version = "0.15.1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "70adf4d151cad655e882936ff49eaf77f6f91c1075338cd3af6ad53e12bb5215"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0fd2d4d4483ddac9c6fefd005b95ea528a7159c9e7f72a085bb4d36daf6fff9d
 
 build:
   number: 0
   noarch: python
-  script: "2to3 . && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  #script: 2to3 . && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('piper', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python >=3
-    - setuptools
+    - hatchling
   run:
     - logmuse >=0.2.4
     - pandas

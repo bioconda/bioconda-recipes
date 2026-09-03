@@ -1,0 +1,48 @@
+{% set name = "branchsnv" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RhysWhite/branchsnv/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 76d0e3d9a6c2f4e43770815be5b0a7d441241944cffd81524991a04815e27750
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  run_exports:
+    - {{ pin_subpackage('branchsnv', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - branchsnv
+  commands:
+    - branchsnv --help
+    - branchsnv --version
+
+about:
+  home: https://github.com/RhysWhite/branchsnv
+  license: MIT
+  license_file: LICENSE
+  summary: Separates clade-exclusive markers from branch-reconstructed substitutions in rooted phylogenies.
+  description: |
+    BRANCHSNV is a dependency-free Python command-line tool that reports
+    strict clade-exclusive nucleotide markers separately from substitutions
+    reconstructed on selected edges of rooted phylogenetic trees.
+  dev_url: https://github.com/RhysWhite/branchsnv
+
+extra:
+  recipe-maintainers:
+    - RhysWhite

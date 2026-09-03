@@ -1,28 +1,38 @@
-about:
-  home: http://soap.genomics.org.cn/soapdenovo.html
-  license: 'GNU'
-  summary: 'a tool named GapCloser for SOAPdenovo.'
-
-build:
-  number: 2
-
 package:
   name: soapdenovo2-gapcloser
-  version: '1.12'
-
-requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-  host:
-    - zlib
-  run:
-    - zlib
+  version: "1.12"
 
 source:
   url: https://sourceforge.net/projects/soapdenovo2/files/GapCloser/src/r6/GapCloser-src-v1.12-r6.tgz
   sha256: a6d4b21c6da838bb4274b537c6625d4688624166673bc22c74eca00c061a6911
 
+build:
+  number: 3
+  # error: reference to 'hash' is ambiguous
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('soapdenovo2-gapcloser', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - zlib
+
 test:
   commands:
     - GapCloser 2>&1 | grep "input scaffold file name"
+
+about:
+  home: "https://sourceforge.net/projects/soapdenovo2/files/GapCloser"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A tool named GapCloser for SOAPdenovo."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

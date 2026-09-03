@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rtcga.methylation-1.34.0"
+installBiocDataPackage.sh "rtcga.methylation-1.38.0"

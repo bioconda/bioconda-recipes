@@ -1,0 +1,72 @@
+{% set version = "1.0.0" %}
+{% set name = "anansi" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 946813a8d5e7c2f07be052d94fc3ffa2
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-anansi", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, dplyr, tidyr, graph, mia, KEGGREST, testthat (>= 3.0.0), knitr, rmarkdown
+requirements:
+  host:
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-treesummarizedexperiment >=2.18.0,<2.19.0
+    - r-base
+    - r-forcats
+    - r-ggforce
+    - r-ggplot2
+    - r-ggraph
+    - r-igraph
+    - r-matrix
+    - r-patchwork
+    - r-rlang
+    - r-s7
+    - r-tidygraph
+  run:
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-treesummarizedexperiment >=2.18.0,<2.19.0
+    - r-base
+    - r-forcats
+    - r-ggforce
+    - r-ggplot2
+    - r-ggraph
+    - r-igraph
+    - r-matrix
+    - r-patchwork
+    - r-rlang
+    - r-s7
+    - r-tidygraph
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Annotation-Based Analysis of Specific Interactions
+  description: Studies including both microbiome and metabolomics data are becoming more common. Often, it would be helpful to integrate both datasets in order to see if they corroborate each others patterns. All vs all association is imprecise and likely to yield spurious associations. This package takes a knowledge-based approach to constrain association search space, only considering metabolite-function pairs that have been recorded in a pathway database. This package also provides a framework to assess differential association.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

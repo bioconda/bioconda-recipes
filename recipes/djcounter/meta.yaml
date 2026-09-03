@@ -1,0 +1,64 @@
+{% set name = "djcounter" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # For the bioconda PR, point at the released tarball and fill in the sha256:
+  #   curl -sL https://github.com/marbl/DJCounter/archive/refs/tags/v{{ version }}.tar.gz | shasum -a 256
+  url: https://github.com/marbl/DJCounter/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6cde1b453d855f7d25854779bca1d814bb6569b969c53a0c26bfb673b06148ec
+
+build:
+  number: 0
+  noarch: generic
+  # No compilation; pure shell + data files.
+  run_exports:
+    - {{ pin_subpackage('djcounter', max_pin="x") }}
+
+requirements:
+  run:
+    - bash
+    - coreutils
+    - gawk
+    - grep
+    - sed
+    - bc
+    - samtools >=1.21
+    - meryl >=1.4.2
+    - merqury
+    - openjdk
+
+test:
+  commands:
+    # Wrappers exist and print usage.
+    - djcounter-kmer 2>&1 | grep -q "Usage:"
+    - djcounter-map  2>&1 | grep -q "Usage:"
+    # Data files were installed.
+    - test -d "$PREFIX/share/djcounter/resources/DJtarget.meryl"
+    - test -f "$PREFIX/share/djcounter/roi/GRCh38/DJ_filt.bed"
+    # External tools are on PATH.
+    - samtools --version | head -n1
+    - meryl --version 2>&1 | head -n1 || true
+
+about:
+  home: https://github.com/marbl/DJCounter
+  license: LicenseRef-US-Government-Public-Domain
+  license_file: LICENSE
+  summary: "Estimate copy number of ribosomal-DNA distal junctions (DJs) from sequencing data."
+  description: |
+    DJCounter estimates the number of copies of the ribosomal-DNA distal
+    junction (DJ) in a human genome from short and long-read sequencing data.
+    It supports a mapping-based mode (coverage over curated DJ regions,
+    normalized to autosomal background) and a reference-free k-mer mode
+    (median multiplicity of a curated DJ 31-mer set, normalized to the
+    2-copy peak of the read k-mer histogram via Merqury).
+  dev_url: https://github.com/marbl/DJCounter
+  doc_url: https://github.com/marbl/DJCounter
+
+extra:
+  recipe-maintainers:
+    - jjuhyunkim
+    - arangrhie

@@ -1,0 +1,48 @@
+{% set name = "compressed_lists" %}
+{% set version = "0.4.5" %}
+
+package:
+  name: compressed-lists
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 48d3861e0ea973995bdd6ab8ce7a4248f9fb56e94dcb8a0726c4d6fc96da93d1
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('compressed-lists', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=46.1.0
+    - setuptools-scm >=5
+    - pip
+  run:
+    - python
+    - numpy
+    - biocutils >=0.3.3
+    - biocframe >=0.7.2
+
+test:
+  imports:
+    - compressed_lists
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biocpy/compressed-lists
+  summary: Memory-efficient container for list-like objects.
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

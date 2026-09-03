@@ -1,0 +1,64 @@
+{% set version = "1.2.0" %}
+{% set name = "mist" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 1dd7075c9ed4029aa9b8210a0a125308
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mist", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, RUnit, ggplot2, BiocStyle
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-car
+    - r-matrix
+    - r-mcmcpack
+    - r-mvtnorm
+    - r-rlang
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-car
+    - r-matrix
+    - r-mcmcpack
+    - r-mvtnorm
+    - r-rlang
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Differential Methylation Analysis for scDNAm Data
+  description: mist (Methylation Inference for Single-cell along Trajectory) is a hierarchical Bayesian framework for modeling DNA methylation trajectories and performing differential methylation (DM) analysis in single-cell DNA methylation (scDNAm) data. It estimates developmental-stage-specific variations, identifies genomic features with drastic changes along pseudotime, and, for two phenotypic groups, detects features with distinct temporal methylation patterns. mist uses Gibbs sampling to estimate parameters for temporal changes and stage-specific variations.
+  license_file: LICENSE
+

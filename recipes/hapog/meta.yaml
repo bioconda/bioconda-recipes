@@ -4,24 +4,33 @@ package:
   name: hapog
   version: {{ version }}
 
-build:
-  skip: True  # [py < 37]
-  number: 2
-  run_exports:
-    - {{ pin_subpackage("hapog", max_pin="x") }}
-
 source:
   url: https://github.com/institut-de-genomique/HAPO-G/archive/refs/tags/{{ version }}.tar.gz
-  sha256: "822f4c7e688ae2b3004ac444911b592beaa25db6800b766503c1d41f0290af4b"
+  sha256: 822f4c7e688ae2b3004ac444911b592beaa25db6800b766503c1d41f0290af4b
+  patches:
+    - 0001-master.patch
+
+build:
+  skip: True  # [py < 37]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage('hapog', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - cmake
+    - cmake <4
     - make
+    - autoconf
+    - libtool
+    - pkg-config
   host:
     - python
+    - setuptools
     - htslib
+    - curl
+    - bzip2
+    - xz
     - zlib
   run:
     - htslib
@@ -39,14 +48,19 @@ test:
     - hapog
 
 about:
-  home: https://github.com/institut-de-genomique/HAPO-G
-  license: CECILL-2.1
+  home: "https://github.com/institut-de-genomique/HAPO-G"
+  license: "CECILL-2.1"
   license_family: OTHER
-  license_file: LICENSE.md
-  summary: Haplotype-Aware Polishing of Genomes
-  doc_url: https://www.genoscope.cns.fr/hapog/
-  dev_url: https://github.com/institut-de-genomique/HAPO-G
+  license_file: "LICENSE.md"
+  summary: "Haplotype-Aware Polishing of Genomes."
+  doc_url: "https://www.genoscope.cns.fr/hapog"
+  dev_url: "https://github.com/institut-de-genomique/HAPO-G"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/nargab/lqab034
+    - biotools:hapog
+    - usegalaxy-eu:hapog

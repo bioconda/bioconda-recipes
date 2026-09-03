@@ -1,0 +1,60 @@
+{% set name = "isopedia" %}
+{% set version = "1.6.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/zhengxinchang/isopedia/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 321b3521412f734a54fc617434740749efd2db15fe0b09c4dca641702097f4e2
+
+build:
+  number: 0
+  skip: True  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage('isopedia', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - cmake
+    - make
+    - perl
+    - clangdev
+    - libclang
+  host:
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+  run:
+    - python >=3.6
+
+test:
+  commands:
+    - isopedia --help
+    - isopedia --version
+    - isopedia-splice-viz.py --help
+    - test -f $PREFIX/share/isopedia/isopedia-splice-viz-temp.html
+about:
+  home: https://github.com/zhengxinchang/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY_LICENSES
+  summary: 'Simultaneous exploration of thousands of long-read transcriptomes by read-level indexing'
+  description: |
+    Simultaneous exploration of thousands of long-read transcriptomes by read-level indexing
+  doc_url: https://github.com/zhengxinchang/{{ name }}
+  dev_url: https://github.com/zhengxinchang/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - zhengxinchang

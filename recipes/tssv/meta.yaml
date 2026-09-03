@@ -1,5 +1,5 @@
 {% set name = "tssv" %}
-{% set version = "1.1.2" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,14 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/tssv-{{ version }}.tar.gz
-  sha256: 28b0b5071bcb50362841a053e94d860be371bc0fc1420c28678399b3abb22383
-  patches: tssv-sources.patch
+  sha256: e37e35c18469c4a96dabb973392b87cc0d6a0c31a56d033ab62795877c110a9e
+  #patches: tssv-sources.patch
 
 build:
-  number: 6
-  skip: True  # [osx]
+  number: 0
   script:
-    - export CFLAGS="${CFLAGS} -DNO_SSE -O3 -Xlinker -zmuldefs"
+    - export CFLAGS="${CFLAGS} -DNO_SSE -O3 -Xlinker -zmuldefs"  # [linux]
+    - export CFLAGS="${CFLAGS} -DNO_SSE -O3"  # [osx]
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - tssv = tssv.cli:main
@@ -25,13 +25,15 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - pip
-    - setuptools
+    - setuptools <82
     - python
   run:
     - biopython >=1.72
     - python
+    - setuptools <82
     - requests
     - xopen
     - setuptools
@@ -53,3 +55,4 @@ extra:
     - Redmar-van-den-Berg
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

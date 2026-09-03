@@ -1,0 +1,60 @@
+{% set name = "enzywizard-flexibility" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-flexibility/archive/refs/tags/{{ version }}.tar.gz
+  sha256: b0c82728d0ae0d95283b123af8ed138e0b6d7ffb58fe44c8488caffed5d4e44b
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.86
+    - prody >=2.6.1
+    - numpy >=1.23.5
+    - scipy >=1.15.2
+    - requests >=2.33.1
+    - packaging
+    - pyparsing
+
+test:
+  imports:
+    - enzywizard_flexibility
+    - enzywizard_flexibility.cli
+    - enzywizard_flexibility.services.flexibility_service
+    - enzywizard_flexibility.algorithms.flexibility_algorithms
+  commands:
+    - enzywizard-flexibility --help
+  # To fully test, would need example input, but basic CLI and import test is good start.
+  # Consider adding a simple run test if example data is small and included, but examples/ not in package.
+  # Note: CLI does not currently support --version flag (can be added to cli.py if desired, e.g. using importlib.metadata.version).
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-flexibility
+  summary: "Command-line tool for estimating protein flexibility (RMSF) from cleaned protein structures using ANM/GNM elastic network models via ProDy, outputting JSON report."
+  description: |
+    EnzyWizard-Flexibility computes per-residue root mean square fluctuation (RMSF) values 
+    using Anisotropic Network Model (ANM) or Gaussian Network Model (GNM) implemented in ProDy.
+    It takes a cleaned protein structure (PDB/CIF) and generates a detailed JSON flexibility report.
+    Useful for structural bioinformatics and protein dynamics analysis.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14

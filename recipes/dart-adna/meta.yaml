@@ -1,0 +1,57 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: dart-adna
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/genomewalker/dart.git
+  git_rev: 1ca34f3
+  sha256: unused
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dart-adna', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.18
+    - make
+    - pkg-config
+  host:
+    - zlib
+    - zstd
+    - libgomp        # [linux]
+    - llvm-openmp    # [osx]
+  run:
+    - libgomp        # [linux]
+    - llvm-openmp    # [osx]
+
+test:
+  commands:
+    - dart --version
+    - dart --help
+    - dart predict --help
+    - dart hits2emi --help
+    - dart damage-annotate --help
+
+about:
+  home: "https://github.com/genomewalker/dart"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DART - Damage-Aware Read Translation for ancient DNA metagenomics."
+  doc_url: "https://github.com/genomewalker/dart/wiki"
+  dev_url: "https://github.com/genomewalker/dart"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - genomewalker
+  skip-lints:
+    - uses_vcs_url

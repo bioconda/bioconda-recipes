@@ -1,0 +1,41 @@
+{% set name = "fqfa" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4624d4595cbefa0c3c0308c307bb123d621837e53768370ba48db5c20dc03cc9
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - hatchling
+  run:
+    - python >=3.7
+
+test:
+  imports:
+    - fqfa
+    - fqfa.fasta
+    - fqfa.fastq
+    - fqfa.util
+
+about:
+  home: https://github.com/CountESS-Project/fqfa
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: A lightweight Python library for handling FASTQ and FASTA files.
+  doc_url: https://fqfa.readthedocs.io/
+  dev_url: https://github.com/CountESS-Project/fqfa

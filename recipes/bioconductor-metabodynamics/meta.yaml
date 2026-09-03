@@ -1,0 +1,92 @@
+{% set version = "2.0.2" %}
+{% set name = "MetaboDynamics" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ecb4bfd991e42183dca989cd5467d15f
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-metabodynamics", max_pin="x.x") }}'
+
+# Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0)
+# SystemRequirements: GNU make
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+
+  host:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-ape
+    - r-base
+    - r-bh >=1.66.0
+    - r-dplyr
+    - r-dynamictreecut
+    - r-ggplot2
+    - r-patchwork
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rlang
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.4.0
+    - r-stanheaders >=2.18.0
+    - r-stringr
+    - r-tidyr
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-ape
+    - r-base
+    - r-bh >=1.66.0
+    - r-dplyr
+    - r-dynamictreecut
+    - r-ggplot2
+    - r-patchwork
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-rlang
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.4.0
+    - r-stanheaders >=2.18.0
+    - r-stringr
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  summary: Bayesian analysis of longitudinal metabolomics data
+  description: MetaboDynamics is an R-package that provides a framework of probabilistic models to analyze longitudinal metabolomics data. It enables robust estimation of mean concentrations despite varying spread between timepoints and reports differences between timepoints as well as metabolite specific dynamics profiles that can be used for identifying "dynamics clusters" of metabolites of similar dynamics. Provides probabilistic over-representation analysis of KEGG functional modules and pathways as well as comparison between clusters of different experimental conditions.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

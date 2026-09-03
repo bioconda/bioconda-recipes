@@ -1,5 +1,5 @@
 {% set name = "muat" %}
-{% set version = "0.1.12" %}
+{% set version = "0.1.22" %}
 
 package:
   name: {{ name|lower }}
@@ -7,25 +7,27 @@ package:
 
 source:
   url: https://github.com/primasanjaya/muat/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 972fa1672c2e8ff260e91116a806b3fbdfec8adf03d3035cf35ffdd42236afb2
+  sha256: 0c2b1a83b882b66d787a443043e1c281637c2691517df9d73f08ed2a2209f57c
+
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}  # Ensures downstream compatibility
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - python
     - pip
     - setuptools
+    - wheel
   run:
     - python
-    - setuptools
     - numpy
     - pandas
     - requests
+    - importlib_resources  # [py<39]
     - bedtools
     - htslib
     - natsort
@@ -51,4 +53,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - primasanjaya 
+    - primasanjaya

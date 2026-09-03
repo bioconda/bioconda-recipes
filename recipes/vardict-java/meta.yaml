@@ -1,18 +1,39 @@
-{% set version = "1.8.3" %}
+{% set version = "1.8.4" %}
 
 package:
   name: vardict-java
   version: {{ version }}
 
 source:
-  url: https://github.com/AstraZeneca-NGS/VarDictJava/releases/download/v{{ version }}/VarDict-{{ version }}.zip
-  sha256: c1940c1b0308a431879010b52036c02c39ca0f97af04fd56c2f1b6febe75734b
+  - url: https://github.com/joachimwolff/VarDictJava/archive/refs/tags/v{{ version }}.zip
+    sha256: 23f532557c1a17646f630fd67f3767ac23210a53e19cfd4f4d86db6fdba4d142
+  # Java dependencies (pinned). conda-build keeps .jar downloads as plain files (as in e.g. picard-slim).
+  - url: https://repo1.maven.org/maven2/commons-cli/commons-cli/1.2/commons-cli-1.2.jar
+    sha256: e7cd8951956d349b568b7ccfd4f5b2529a8c113e67c32b028f52ffda371259d9
+    folder: deps
+  - url: https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar
+    sha256: 1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308
+    folder: deps
+  - url: https://repo1.maven.org/maven2/com/github/samtools/htsjdk/2.21.1/htsjdk-2.21.1.jar
+    sha256: b11093b94452445a9b0c4212a18fe424632376cff3e4f25fe3afb06226e0eed3
+    folder: deps
+  - url: https://repo1.maven.org/maven2/com/edropple/jregex/jregex/1.2_01/jregex-1.2_01.jar
+    sha256: fb66a55aecf33337dab0f23ad3821ed2b70aea41c5bd1415059344dccfbbb25a
+    folder: deps
+  # VarDict Perl/R helper scripts (pinned submodule commit)
+  - url: https://github.com/AstraZeneca-NGS/VarDict/archive/009e017d90b25e497ddd50645dc4fa27c484a193.tar.gz
+    sha256: a129e64224f8e2ddfbab89c328719232407cc20cbcf949dd145dd48a7f555d52
+    folder: vdscripts
 
 build:
   number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage('vardict-java', max_pin="x") }}
 
 requirements:
+  build:
+    - openjdk
   run:
     - openjdk
     - perl
@@ -25,9 +46,15 @@ test:
     - echo -e "Sample\tchrM\tchrM\t16263\t16263\tC\tT\t4\t4\t0\t0\t2\t2\tT/T\t1.0000\t0;2\t25.8\t1\t34.2\t1\t60.0\t3.000\t1.0000\t0\t4\t4.000\t1\t3.0\t3\t3\tACTGCAACTCCAAAGCCACC\tCTCACCCACTAGGATACCAA\tchrM:2-16571\tSNV\t0\t0" | teststrandbias.R
 
 about:
-  home: https://github.com/AstraZeneca-NGS/VarDictJava
+  home: https://github.com/joachimwolff/VarDictJava
   license: MIT
   summary: Java port of the VarDict variant discovery program
+  description: |
+    Community-maintained fork of AstraZeneca-NGS/VarDictJava (upstream's final,
+    unmaintained 1.8.3). Release 1.8.4 reduces peak memory (G1GC + string-dedup JVM
+    defaults, opt-in --chunk region splitting) while keeping variant output
+    byte-identical to 1.8.3.
+  dev_url: https://github.com/joachimwolff/VarDictJava
 
 extra:
   recipe-maintainers:

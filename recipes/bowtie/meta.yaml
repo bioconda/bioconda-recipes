@@ -12,8 +12,7 @@ source:
     - rename_version_to_version_txt.patch
 
 build:
-  skip: True  # [py<30]
-  number: 10
+  number: 11
   run_exports:
     - {{ pin_subpackage("bowtie", max_pin="x.x") }}
 
@@ -21,10 +20,10 @@ requirements:
   build:
     - make
     - patch  # [osx]
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - zlib
   host:
-    - python
     - tbb
     - tbb-devel
     - zlib
@@ -45,6 +44,13 @@ test:
     - bowtie-inspect --help
     - bowtie-inspect-l --help
     - bowtie-inspect-s --help
+    - printf ">ref\nACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT\n" > ref.fa
+    - bowtie-build ref.fa ref
+    - printf "@read1\nACGTACGTACGTACGTACGTACGTACGTACGT\n+\nIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII\n" > reads.fq
+    - bowtie -S ref reads.fq > out.sam
+    - grep -q "^read1" out.sam
+    - bowtie-inspect ref > inspected.fa
+    - grep -q "^>ref" inspected.fa
 
 about:
   home: https://github.com/BenLangmead/bowtie

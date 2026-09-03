@@ -11,20 +11,23 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 4
+  number: 5
   run_exports:
-    - {{ pin_subpackage('mfold', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - pkg-config
+    - gnuconfig
 
 test:
   commands:
-    - mfold 2>&1 | grep "mfold" > /dev/null         
+    - mfold 2>&1 | grep "mfold" > /dev/null
     - mfold_quik 2>&1 | grep "mfold" > /dev/null
     - filter-sort 2>&1 | grep "filter-sort" > /dev/null
     - h-num 2>&1 | grep "h-num" > /dev/null
@@ -34,11 +37,16 @@ test:
     - auxgen 2>&1 | grep "auxgen" > /dev/null
 
 about:
-  home: http://www.unafold.org/mfold/software/download-mfold.php
-  license: Custom OSS
-  license_file: Academic_License.txt
+  home: "https://www.unafold.org/mfold/software/download-mfold.php"
+  license: "Custom OSS"
+  license_file: "Academic_License.txt"
   summary: "Mfold web server for nucleic acid folding and hybridization prediction."
+  doc_url: "https://www.unafold.org/mfold/software/download-mfold.php"
 
 extra:
   identifiers:
     - doi:10.1007/978-94-011-4485-8_2
+    - biotools:mfold
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

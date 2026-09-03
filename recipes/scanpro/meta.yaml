@@ -1,0 +1,52 @@
+{% set name = "scanpro" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/scanpro/scanpro-{{ version }}.tar.gz
+  sha256: f26b2a2ae106da7cab0684b2247a0e1230c6c299c28dc20ea2308615a698ed79
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('scanpro', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - wheel
+    - numpy
+    - pip
+  run:
+    - python >=3.9
+    - pandas
+    - statsmodels
+    - matplotlib-base
+    - numpy
+    - seaborn
+    - patsy
+
+test:
+  imports:
+    - scanpro
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/loosolab/scanpro
+  dev_url: https://github.com/loosolab/scanpro
+  summary: Single-Cell Analysis of Proportions
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - yalayoubi

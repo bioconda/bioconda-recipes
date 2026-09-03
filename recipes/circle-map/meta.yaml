@@ -6,23 +6,24 @@ package:
   version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 2c5337c93477bbb6a899612eb3defc5e2c5995d3958888d09a38e7bdb72437a1
 
 build:
-  noarch : python
-  number: 2
+  noarch: python
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
   entry_points:
     - Circle-Map = circlemap.circle_map:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
 
 requirements:
   host:
     - pip
     - python
   run:
-    - biopython >=1.73,<=1.77
-    - edlib >=1.2.3
+    - biopython <1.78
     - python-edlib >=1.2.3
     - numba >=0.45.0
     - numpy >=1.16.3
@@ -40,10 +41,11 @@ test:
     - Circle-Map --help
 
 about:
-  home: https://github.com/iprada/Circle-Map
+  home: "https://github.com/iprada/Circle-Map"
   license: MIT
   license_family: MIT
-  summary: Circular DNA analysis tools
+  summary: "Circular DNA analysis tools."
+  dev_url: "https://github.com/iprada/Circle-Map"
 
 extra:
   recipe-maintainers:

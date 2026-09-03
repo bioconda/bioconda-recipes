@@ -1,0 +1,43 @@
+{% set version = "0.1.0" %}
+{% set github = "https://github.com/acidgenomics/py-pipette" %}
+
+package:
+  name: pipette
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 6757735e8736936efdc175687d0f4f1e24cefe46aa14a4c43979c51f9c74e222
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('pipette', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - uv-build >=0.11,<1
+  run:
+    - python >=3.12
+    - numpy
+    - pandas
+
+test:
+  imports:
+    - pipette
+
+about:
+  home: https://python.acidgenomics.com/pipette/
+  dev_url: "{{ github }}"
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Unified import and export of data in Python.
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

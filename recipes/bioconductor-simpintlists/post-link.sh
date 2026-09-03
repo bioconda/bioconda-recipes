@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "simpintlists-1.42.0"
+installBiocDataPackage.sh "simpintlists-1.46.0"

@@ -1,0 +1,61 @@
+{% set name = "fg-sra" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: 7294042d415e5f8dddd3ae5056e7ec2cd7f5f62ac6b8f48b5515f903e076da3b
+  - url: https://github.com/ncbi/ncbi-vdb/archive/41a6b24fa8128253912fc1f0b44f06a314a59f9c.tar.gz
+    sha256: 4ab29f180507ba32f32e7c2c61e9c6c4b571b611047b441eaab32f497d5ed9b9
+    folder: vendor/ncbi-vdb
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+    - clangdev
+    - flex
+    - bison
+  host:
+    - zlib
+
+test:
+  commands:
+    - fg-sra --help
+    - fg-sra tosam --help
+
+about:
+  home: "https://github.com/fulcrumgenomics/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "High-performance SRA-to-SAM/BAM/FASTQ converter."
+  description: |
+    fg-sra is a high-performance replacement for NCBI's sam-dump that converts
+    SRA data to SAM, BAM, FASTA, and FASTQ formats. It provides multi-threaded
+    processing, genomic region filtering, quality score quantization, and
+    reference caching.
+  dev_url: "https://github.com/fulcrumgenomics/{{ name }}"
+  doc_url: "https://github.com/fulcrumgenomics/{{ name }}/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13

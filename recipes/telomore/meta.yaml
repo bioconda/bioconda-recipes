@@ -1,0 +1,57 @@
+{% set name = "telomore" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 63854489e810a1354af5ec0ecd533f22e13e6a46100e404693de21ec303686c2
+
+build:
+  run_exports:
+    - {{ pin_subpackage('telomore', max_pin="x.x") }}
+  noarch: python
+  number: 0
+  entry_points:
+    - telomore=telomore.app:entrypoint
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >=3.9
+    - biopython
+    - pysam
+    - bowtie2
+    - emboss
+    - lamassemble
+    - mafft
+    - minimap2 >=2.25
+    - samtools
+
+test:
+  imports:
+    - telomore
+  commands:
+    - telomore --version | grep {{ version }}
+    - telomore --help
+
+about:
+  home: "https://github.com/dalofa/telomore"
+  license: MIT
+  license_family: MIT
+  license_file: 'LICENSE'
+  summary: "Targeted assembly of Streptomycetes telomeres."
+  doc_url: 'https://github.com/dalofa/telomore/blob/{{ version }}/README.md'
+  dev_url: 'https://github.com/dalofa/telomore'
+
+extra:
+  recipe-maintainers: 
+    - 'Adamtaranto'
+    - 'dalofa'

@@ -1,0 +1,55 @@
+{% set name = "PanGBank-api" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/labgem/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: a62403cc020662dc8557cdc88c985660a1ba0a4d199e3f326e02fd1be7cc1af3
+
+build:
+  entry_points:
+    - pangbank_db = pangbank_api.manage_db.pangbank_db:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - sqlmodel >=0.0.32
+    - typer >=0.15.1
+    - pyyaml >=6.0.2
+    - packaging >=24
+    - pydantic-settings >=2.12.0
+    - httpx >=0.28.1
+
+
+test:
+  imports:
+    - pangbank_api
+  commands:
+    - pip check
+    - pangbank_db --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/labgem/{{ name }}
+  license: "CeCiLL-2.1"
+  license_family: OTHER
+  license_file: LICENCE
+  summary: "API for managing the PanGBank pangenome database, including a CLI to add pangenomes to the database."
+
+extra:
+  recipe-maintainers:
+    - JeanMainguy

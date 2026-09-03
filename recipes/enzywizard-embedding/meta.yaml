@@ -1,0 +1,66 @@
+{% set name = "enzywizard-embedding" %}
+{% set version = "1.0.2" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-embedding/archive/refs/tags/{{ version }}.tar.gz
+  sha256: bc23351c28f39869b7b45c96ed41e1daac1656161d90a5bf4a1b2da9015deb29
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - pytorch
+    - fair-esm
+    - biopython
+    - biotite
+    - numpy
+    - scipy
+    - packaging
+    - pyparsing
+    - requests
+    - tqdm
+    - typing-extensions
+
+test:
+  imports:
+    - enzywizard_embedding
+    - enzywizard_embedding.cli
+    - enzywizard_embedding.services.embedding_service
+    - enzywizard_embedding.algorithms.embedding_algorithms
+    - enzywizard_embedding.utils.embedding_utils
+  commands:
+    - enzywizard-embedding --help
+  # Note: First run will download ESM-2 model weights (~ tens to hundreds of MB depending on chosen model).
+  # Models are cached by fair-esm / torch.hub after first use.
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-embedding
+  summary: "Command-line tool to generate per-residue protein sequence embeddings using ESM-2 language models (fair-esm) from FASTA input and output a JSON report."
+  description: |
+    EnzyWizard-Embedding generates high-dimensional embeddings for each residue in a protein
+    sequence using pretrained ESM-2 models (esm2_t6_8M, esm2_t12_35M, or esm2_t30_150M).
+    It takes a cleaned FASTA file and produces a structured JSON report with residue embeddings.
+    Useful for downstream machine learning tasks in structural bioinformatics and protein engineering.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14

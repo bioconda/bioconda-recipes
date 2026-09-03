@@ -1,0 +1,207 @@
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 8d6bc98..f54a5bd 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -3,57 +3,36 @@
+ 
+ DEFS = $(REVISION)
+ 
++bin_PROGRAMS =
+ if WANT_PHYML
+-bin_PROGRAMS = phyml
+-PROG = PHYML
+-else
+-if WANT_PHYTIME
+-bin_PROGRAMS = phytime
+-PROG = PHYTIME
+-else
+-if WANT_RF
+-bin_PROGRAMS = rf
+-PROG = RF
+-else 
+-if WANT_MPI
+-bin_PROGRAMS = phyml-mpi
+-PROG = PHYML
+-else
+-if WANT_WIN
+-bin_PROGRAMS = phyml-windows
+-PROG = PHYML
+-else
+-if WANT_TEST
+-bin_PROGRAMS = test
+-PROG = TEST
+-else
+-if WANT_EVOLVE
+-bin_PROGRAMS = evolve
+-PROG = EVOLVE
+-else
+-if WANT_PHYREX
+-bin_PROGRAMS = phyrex
+-PROG = PHYREX
+-else
+-if WANT_PHYREXSIM
+-bin_PROGRAMS = phyrexsim
+-PROG = PHYREXSIM
+-else
+-if WANT_DATE
+-bin_PROGRAMS = date
+-PROG = DATE
+-else
+-bin_PROGRAMS = phyml
+-PROG = PHYML
++bin_PROGRAMS += phyml
+ endif
++if WANT_PHYTIME
++bin_PROGRAMS += phytime
+ endif
++if WANT_RF
++bin_PROGRAMS += rf
+ endif
++if WANT_MPI
++bin_PROGRAMS += phyml-mpi
+ endif
++if WANT_WIN
++bin_PROGRAMS += phyml-windows
+ endif
++if WANT_TEST
++bin_PROGRAMS += test
+ endif
++if WANT_EVOLVE
++bin_PROGRAMS += evolve
+ endif
++if WANT_PHYREX
++bin_PROGRAMS += phyrex
+ endif
++if WANT_PHYREXSIM
++bin_PROGRAMS += phyrexsim
+ endif
++if WANT_DATE
++bin_PROGRAMS += date
+ endif
+ 
+ 
+@@ -90,8 +69,8 @@ sse.c sse.h\
+ avx.c avx.h\
+ ancestral.c ancestral.h\
+ xml.c xml.h
+-# phytime_LDADD = -lm
+-else 
++phytime_CFLAGS = -DPHYTIME $(AM_CFLAGS)
++endif
+ # if WANT_RWRAP
+ # lib_LTLIBRARIES = librwrap.la
+ # librwrap_la_SOURCES = main.c \
+@@ -123,7 +102,6 @@ else
+ # xml.c xml.h\
+ # mixt.c mixt.h\
+ # rwrapper.c rwrapper.h
+-# librwrap_la_LIBADD = -lm
+ # librwrap_la_LDFLAGS = -I/usr/share/R/include -shared -module -flat_namespace
+ # librwrap_la_CFLAGS=-std=gnu99 -fPIC -Wl,-z,defs
+ # else 
+@@ -162,8 +140,8 @@ date.c date.h\
+ rates.c rates.h\
+ sse.c sse.h\
+ avx.c avx.h
+-# rf_LDADD = -lm
+-else
++rf_CFLAGS = -DRF $(AM_CFLAGS)
++endif
+ if WANT_MPI
+ phyml_mpi_SOURCES = main.c \
+ utilities.c  utilities.h\
+@@ -198,8 +176,8 @@ times.c times.h\
+ cv.c cv.h\
+ evolve.c evolve.h\
+ mpi_boot.c mpi_boot.h
+-# phyml_mpi_LDADD = -lm
+-else
++phyml_mpi_CFLAGS = -DPHYML $(AM_CFLAGS)
++endif
+ if WANT_WIN
+ phyml_windows_SOURCES = main.c \
+ utilities.c  utilities.h\
+@@ -233,8 +211,7 @@ sse.c sse.h\
+ avx.c avx.h\
+ ancestral.c ancestral.h\
+ date.c date.h
+-# phyml_windows_LDADD = -lm
+-else
++endif
+ if WANT_TEST
+ test_SOURCES = main.c \
+ utilities.c  utilities.h\
+@@ -277,8 +254,8 @@ iou.c iou.h\
+ iwn.c iwn.h\
+ ibm.c ibm.h\
+ date.c date.h
+-# test_LDADD = -lm
+-else
++test_CFLAGS = -DTEST $(AM_CFLAGS)
++endif
+ if WANT_EVOLVE
+ evolve_SOURCES = main.c\
+ utilities.c  utilities.h\
+@@ -313,8 +290,8 @@ date.c date.h\
+ cv.c cv.h\
+ m4.c m4.h\
+ evolve.c evolve.h
+-# evolve_LDADD = -lm 
+-else
++evolve_CFLAGS = -DEVOLVE $(AM_CFLAGS)
++endif
+ if WANT_PHYREX
+ phyrex_SOURCES = main.c\
+ utilities.c  utilities.h\
+@@ -356,8 +333,8 @@ ibm.c ibm.h\
+ iwn.c iwn.h\
+ iou.c iou.h\
+ velocity.c velocity.h
+-# phyrex_LDADD = -lm 
+-else
++phyrex_CFLAGS = -DPHYREX $(AM_CFLAGS)
++endif
+ if WANT_PHYREXSIM
+ phyrexsim_SOURCES = main.c\
+ utilities.c  utilities.h\
+@@ -399,8 +376,8 @@ ibm.c ibm.h\
+ iwn.c iwn.h\
+ iou.c iou.h\
+ velocity.c velocity.h
+-# phyrexsim_LDADD = -lm
+-else
++phyrexsim_CFLAGS = -DPHYREXSIM $(AM_CFLAGS)
++endif
+ if WANT_DATE
+ date_SOURCES = main.c \
+ utilities.c  utilities.h\
+@@ -431,8 +408,8 @@ xml.c xml.h\
+ tbe.c tbe.h \
+ mixt.c mixt.h\
+ date.c date.h
+-# date_LDADD = -lm
+-else
++date_CFLAGS = -DDATE $(AM_CFLAGS)
++endif
+ phyml_SOURCES = main.c \
+ utilities.c  utilities.h\
+ optimiz.c  optimiz.h\
+@@ -466,17 +443,7 @@ date.c date.h\
+ times.c times.h\
+ m4.c m4.h\
+ cv.c cv.h
+-# phyml_LDADD = -lm
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+-endif
+-
++phyml_CFLAGS = -DPHYML $(AM_CFLAGS)
+ 
+ all-am:	intro $(bin_PROGRAMS)
+ 	@echo ""

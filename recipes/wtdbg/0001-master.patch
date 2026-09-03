@@ -1,0 +1,541 @@
+diff --git a/Makefile b/Makefile
+index fb45f8f..d37c174 100644
+--- a/Makefile
++++ b/Makefile
+@@ -46,4 +46,4 @@ clear:
+ 	rm -f *.o *.gcda *.gcno *.gcov gmon.out
+ 
+ install: $(PROGS)
+-	mkdir -p $(BIN) && cp -fvu $(PROGS) $(BIN)
++	mkdir -p $(BIN) && cp -fvu $(PROGS) wtdbg2.pl $(BIN)
+diff --git a/README.md b/README.md
+index cb78197..06f831d 100644
+--- a/README.md
++++ b/README.md
+@@ -17,6 +17,7 @@ minimap2 -t16 -ax map-pb -r2k dbg.raw.fa reads.fa.gz | samtools sort -@4 >dbg.ba
+ samtools view -F0x900 dbg.bam | ./wtpoa-cns -t 16 -d dbg.raw.fa -i - -fo dbg.cns.fa
+ 
+ # Addtional polishment using short reads
++bwa index dbg.cns.fa
+ bwa mem -t 16 dbg.cns.fa sr.1.fa sr.2.fa | samtools sort -O SAM | ./wtpoa-cns -t 16 -x sam-sr -d dbg.cns.fa -i - -fo dbg.srp.fa
+ ```
+ 
+@@ -112,6 +113,8 @@ ftp://ftp.dfci.harvard.edu/pub/hli/wtdbg/
+ 
+ If you use wtdbg2, please cite:
+ 
++> Ruan, J. and Li, H. (2019) Fast and accurate long-read assembly with wtdbg2. *Nat Methods* doi:10.1038/s41592-019-0669-3
++
+ > Ruan, J. and Li, H. (2019) Fast and accurate long-read assembly with wtdbg2. *bioRxiv*. doi:10.1101/530972
+ 
+ 
+diff --git a/filereader.h b/filereader.h
+index 4a90869..c26664f 100644
+--- a/filereader.h
++++ b/filereader.h
+@@ -159,18 +159,21 @@ static inline void* file_src_thread_func(void *obj){
+ 						_read = fc->_read = _read_data_file;
+ 						_close = fc->_close = NULL;
+ 					}
++					// fall through
+ 				case FILEREADER_ATTR_PROC:
+ 					if(_file == NULL){
+ 						_file = fc->_file = popen(fc->filename, "r");
+ 						_read = fc->_read = _read_data_file;
+ 						_close = fc->_close = _close_input_proc;
+ 					}
++					// fall through
+ 				case FILEREADER_ATTR_USER:
+ 					if(_file == NULL){
+ 						_file = fc->_file;
+ 						_read = fc->_read;
+ 						_close = fc->_close;
+ 					}
++					// fall through
+ 				default:
+ 					if(_file == NULL){
+ 						_file = fc->_file = open_file_for_read(fc->filename, NULL);
+diff --git a/kbm.h b/kbm.h
+index 0730eef..9d543ff 100644
+--- a/kbm.h
++++ b/kbm.h
+@@ -436,7 +436,7 @@ static inline void bitpush_kbm(KBM *kbm, char *tag, int taglen, u8i *seqs, u8i s
+ 
+ // Please call no more than once
+ static inline u8i filter_reads_kbm(KBM *kbm, u8i retain_size, int strategy){
+-	u8i m, b, e, len;
++	u8i m, beg, end, len;
+ 	if(kbm->reads->size == 0) return 0;
+ 	if(retain_size == 0 || retain_size >= kbm->rdseqs->size) return kbm->rdseqs->size;
+ 	if((kbm->flags & 0x2) == 0){
+@@ -444,25 +444,27 @@ static inline u8i filter_reads_kbm(KBM *kbm, u8i retain_size, int strategy){
+ 			sort_array(kbm->reads->buffer, kbm->reads->size, kbm_read_t, num_cmpgt(b.bincnt, a.bincnt));
+ 			if(strategy == 0){ // longest
+ 				len = 0;
+-				for(e=0;e<kbm->reads->size;e++){
+-					len += kbm->reads->buffer[e].bincnt * KBM_BIN_SIZE;
++				for(end=0;end<kbm->reads->size;end++){
++					len += kbm->reads->buffer[end].bincnt * KBM_BIN_SIZE;
+ 					if(len >= retain_size) break;
+ 				}
+-				kbm->reads->size = e;
++				for(m=end;m<kbm->reads->size;m++) free(kbm->reads->buffer[m].tag);
++				kbm->reads->size = end;
+ 			} else if(strategy == 1){ // median
+ 				m = kbm->reads->size / 2;
+ 				len = kbm->reads->buffer[m].bincnt * KBM_BIN_SIZE;
+-				e = m;
+-				for(b=0;b<=m&&len<retain_size;b++){
+-					len += kbm->reads->buffer[m - b].bincnt * KBM_BIN_SIZE;
+-					len += kbm->reads->buffer[m + b].bincnt * KBM_BIN_SIZE;
++				end = m;
++				for(beg=0;beg<=m&&len<retain_size;beg++){
++					len += kbm->reads->buffer[m - beg].bincnt * KBM_BIN_SIZE;
++					len += kbm->reads->buffer[m + beg].bincnt * KBM_BIN_SIZE;
+ 				}
+-				e = b * 2;
+-				b = m - b;
+-				if(b){
+-					remove_array_kbmreadv(kbm->reads, 0, b);
++				end = beg * 2;
++				beg = m - beg;
++				if(beg){
++					remove_array_kbmreadv(kbm->reads, 0, beg);
+ 				}
+-				kbm->reads->size = e;
++				for(m=end;m<kbm->reads->size;m++) free(kbm->reads->buffer[m].tag);
++				kbm->reads->size = end;
+ 			} else {
+ 				return kbm->rdseqs->size;
+ 			}
+diff --git a/mem_share.h b/mem_share.h
+index 5a6330c..022d183 100644
+--- a/mem_share.h
++++ b/mem_share.h
+@@ -20,9 +20,9 @@
+ #ifndef __MEM_SHARE_RJ_H
+ #define __MEM_SHARE_RJ_H
+ 
+-#ifndef _GNU_SOURCE
+-#define _GNU_SOURCE
+-#endif
++//#ifndef _GNU_SOURCE
++//#define _GNU_SOURCE
++//#endif
+ #if defined(__APPLE__) && defined(__MACH__)
+ #include <machine/endian.h>
+ #else
+@@ -284,38 +284,40 @@ static inline int replace_char(char *str, char src, char dst, int max){
+ }
+ 
+ static inline int file_exists(const char *filename){
+-	char *realpath;
++	char *rpath;
+ 	struct stat s;
+-	realpath = canonicalize_file_name(filename);
+-	if(realpath == NULL) return 0;
+-	if(stat(realpath, &s) == -1){ free(realpath); return 0; }
+-	free(realpath);
++	//realpath = canonicalize_file_name(filename);
++	rpath = realpath(filename, NULL);
++	if(rpath == NULL) return 0;
++	if(stat(rpath, &s) == -1){ free(rpath); return 0; }
++	free(rpath);
+ 	switch(s.st_mode & S_IFMT){
+ 		//case S_IFBLK:
+ 		//case S_IFCHR:
+ 		//case S_IFDIR:
+ 		//case S_IFIFO:
+ 		//case S_IFSOCK:
+-		//case S_IFLNK:
++		case S_IFLNK:
+ 		case S_IFREG: return 1;
+ 		default: return 0;
+ 	}
+ }
+ 
+ static inline int dir_exists(const char *filename){
+-	char *realpath;
++	char *rpath;
+ 	struct stat s;
+-	realpath = canonicalize_file_name(filename);
+-	if(realpath == NULL) return 0;
+-	if(stat(realpath, &s) == -1){ free(realpath); return 0; }
+-	free(realpath);
++	//realpath = canonicalize_file_name(filename);
++	rpath = realpath(filename, NULL);
++	if(rpath == NULL) return 0;
++	if(stat(rpath, &s) == -1){ free(rpath); return 0; }
++	free(rpath);
+ 	switch(s.st_mode & S_IFMT){
+ 		//case S_IFBLK:
+ 		//case S_IFCHR:
+ 		//case S_IFREG:
+ 		//case S_IFIFO:
+ 		//case S_IFSOCK:
+-		//case S_IFLNK:
++		case S_IFLNK:
+ 		case S_IFDIR: return 1;
+ 		default: return 0;
+ 	}
+@@ -791,10 +793,12 @@ static inline size_t mem_size_obj(void *obj, uint8_t mem_type, const obj_desc_t
+ 	if(obj == NULL) return size;
+ 	switch(mem_type){
+ 		case 3: size += mem_size_round(sizeof(void*) * cnt);
++		// fall through
+ 		case 2:
+ 			for(m=0;m<cnt;m++) if(((void**)obj)[m]) size += mem_size_round(desc->size);
+ 			break;
+ 		case 1: size += mem_size_round(cnt * desc->size); // TODO: if desc == &OBJ_DESC_DATA, mem_size_round may waste many memory
++		// fall through
+ 		case 0: break;
+ 	}
+ 	if(desc->n_child == 0) return size;
+@@ -913,17 +917,15 @@ static inline size_t mem_load_obj(void *obj, size_t aux_data, uint8_t mem_type,
+ 		}
+ 	}
+ 	if(desc->n_child == 0 && desc->post == NULL){
+-		switch(mem_type){
+-			case 2:
+-			case 3:
+-				for(m=0;m<cnt;m++){
+-					ptr = ((void**)obj) + m;
+-					if(*ptr == NULL) continue;
+-					*ptr = (void*)addr;
+-					addr += mem_size_round(desc->size);
+-				}
+-			default: return addr;
++		if(mem_type == 2 || mem_type == 3){
++			for(m=0;m<cnt;m++){
++				ptr = ((void**)obj) + m;
++				if(*ptr == NULL) continue;
++				*ptr = (void*)addr;
++				addr += mem_size_round(desc->size);
++			}
+ 		}
++		return addr;
+ 	}
+ 	for(m=0;m<cnt;m++){
+ 		if(mem_type & 0x02){
+@@ -1194,7 +1196,7 @@ static inline void print_tree_obj_file(FILE *out, const obj_desc_t *desc, char *
+ 	fread(aux_data, sizeof(size_t), 1, file);
+ 	psize = getpagesize();
+ 	mem = mmap(0, (((*size) + 4 * sizeof(size_t)) + psize - 1) / psize * psize, PROT_READ, MAP_PRIVATE, fileno(file), 0);
+-	if(mem == NULL){
++	if(mem == MAP_FAILED){
+ 		perror("Cannot mmap");
+ 		return;
+ 	}
+@@ -1258,7 +1260,7 @@ static inline void* mem_read_sub_obj_file(const obj_desc_t *desc, u4i *trace_chi
+ 	fread(aux_data, sizeof(size_t), 1, file);
+ 	psize = getpagesize();
+ 	mem = mmap(0, (((*size) + 4 * sizeof(size_t)) + psize - 1) / psize * psize, PROT_READ, MAP_PRIVATE, fileno(file), 0);
+-	if(mem == NULL){
++	if(mem == MAP_FAILED){
+ 		perror("Cannot mmap");
+ 		return NULL;
+ 	}
+diff --git a/pgzf.h b/pgzf.h
+index 270bd95..ced5808 100644
+--- a/pgzf.h
++++ b/pgzf.h
+@@ -55,7 +55,7 @@ u8i zxval, doff;
+ u1v *dst, *src;
+ u4i token;
+ int level;
+-int task;
++int task, zerosize;
+ thread_end_def(pgz);
+ 
+ typedef struct PGZF {
+@@ -155,7 +155,8 @@ static inline u4i _pgzf_deflate(u1v *dst, u1v *src, int level){
+ 	u4i z_size;
+ 	uLong crc;
+ 	clear_u1v(dst);
+-	if(src->size == 0 || src->size >= MAX_U4) return 0;
++	//if(src->size == 0) return 0;
++	if(src->size >= MAX_U4) return 0;
+ 	z_size = compressBound(src->size);
+ 	encap_u1v(dst, z_size + PGZF_HEAD_SIZE + PGZF_TAIL_SIZE);
+ 	z_size = _zlib_raw_deflate_all(dst->buffer + PGZF_HEAD_SIZE, z_size, src->buffer, src->size, level);
+@@ -323,7 +324,7 @@ dst = pgz->dst;
+ src = pgz->src;
+ thread_beg_loop(pgz);
+ if(pgz->task == PGZF_TASK_DEFLATE){
+-	if(src->size == 0) continue;
++	if(src->size == 0 && !pgz->zerosize) continue;
+ 	clear_u1v(dst);
+ 	_pgzf_deflate(dst, src, pgz->level);
+ 	while(pz->ridx != pgz->token){
+@@ -556,6 +557,7 @@ static inline PGZF* open_pgzf_writer(FILE *out, u4i buffer_size, int ncpu, int l
+ 	pgz->token = 0;
+ 	pgz->level = level;
+ 	pgz->task = PGZF_TASK_NULL;
++	pgz->zerosize = 0;
+ 	thread_end_init(pgz);
+ 	thread_export(pgz, pz);
+ 	return pz;
+@@ -616,9 +618,17 @@ static inline void _end_pgzf_writer(PGZF *pz){
+ 			pgz->token = pz->widx;
+ 			thread_wake(pgz);
+ 			pz->widx ++;
++			thread_wait(pgz);
+ 		}
+ 		widx ++;
+ 	}
++	if(pz->widx == 0){
++		thread_beg_operate(pgz, 0);
++		pgz->zerosize = 1;
++		pgz->task = PGZF_TASK_DEFLATE;
++		thread_wake(pgz);
++		thread_wait(pgz);
++	}
+ 	thread_export(pgz, pz);
+ }
+ 
+diff --git a/scripts/wtdbg-dot2gfa.pl b/scripts/wtdbg-dot2gfa.pl
+index 2b09268..7198647 100755
+--- a/scripts/wtdbg-dot2gfa.pl
++++ b/scripts/wtdbg-dot2gfa.pl
+@@ -12,6 +12,8 @@ TAG:
+ 	sq: sequence can be substr from <rd_name>_<FR>_<off>_<len>, F fwd, R rev, off is based on the fwd strand
+ =cut
+ 
++my $usz = 256;
++
+ while(<>){
+ 	chomp;
+ 	next unless(/^([NF]\d+)\s(->\s([NF]\d+)\s)?\[([^\]]+)\]$/);
+@@ -21,18 +23,18 @@ while(<>){
+ 	if(defined $n2){
+ 		if($label=~/label=\"(\S)(\S):(\d+):(\-?\d+)\"/){
+ 			if($4 >= 0){
+-				print "L\t$n1\t$1\t$n2\t$2\t0S\tgl:i:$4\trc:i:$3\n";
++				print "L\t$n1\t$1\t$n2\t$2\t0M\tgl:i:$4\trc:i:$3\n";
+ 			} else {
+-				print "L\t$n1\t$1\t$n2\t$2\t". (0 - $4) . "M\trc:i:$3\n";
++				print "L\t$n1\t$1\t$n2\t$2\t". ((0 - $4) * $usz) . "M\trc:i:$3\n";
+ 			}
+ 		} else {
+ 			die("Bad format: $_");
+ 		}
+ 	} else {
+ 		if($label=~/\{N\d+\s(\d+)\s\|\s(\S+)\s\|\s([FR])_(\d+)_(\d+)\}/){
+-			print "S\t$n1\t*\tLN:i:$5\tsq:Z:$2_$3_$4_$5\n"
++			print "S\t$n1\t*\tLN:i:" . ($5 * $usz) . "\tsq:Z:$2_$3_" . ($4 * $usz) . "_" . ($5 * $usz) . "\n"
+ 		} elsif($label=~/\{F\d+\s(\d+)\s(\d+)\/(\d+)\s\|/){
+-			print "S\t$n1\t*\tLN:i:$2\n";
++			print "S\t$n1\t*\tLN:i:" . ($2 * $usz) . "\n";
+ 		} else {
+ 			die("Bad format: $_");
+ 		}
+diff --git a/wtdbg-graph.h b/wtdbg-graph.h
+index 225ee90..9955a0a 100644
+--- a/wtdbg-graph.h
++++ b/wtdbg-graph.h
+@@ -4341,10 +4341,12 @@ for(i=mlay->pb;i<mlay->pe;i++){
+ 	}
+ }
+ thread_end_loop(mlay);
++free_seqletv(lets);
+ free_subnodev(heap);
+ free_readregv(rds);
+ free_subedgev(edges);
+ free_subnodehash(nodes);
++free_bitvec(rdbits);
+ thread_end_func(mlay);
+ 
+ static inline u8i print_ctgs_graph(Graph *g, u8i uid, u8i beg, u8i end, char *prefix, char *lay_suffix, u4i ncpu, FILE *log){
+diff --git a/wtdbg.h b/wtdbg.h
+index 48ff85c..2861c96 100644
+--- a/wtdbg.h
++++ b/wtdbg.h
+@@ -1,4 +1,5 @@
+ /*
++ * 
+  *
+  * Copyright (c) 2011, Jue Ruan <ruanjue@gmail.com>
+  *
+@@ -1045,7 +1046,7 @@ thread_end_func(mupd);
+ //TODO: reg_t to store regs, sort them by rank, and sort them by rid in another u4i/u8i array
+ //TODO: fast generate nodes and read_link, then select important intervals
+ static inline void mul_update_regs_graph(Graph *g, rdregv *regs, rnkrefv *nds, u4i ncpu, u8i upds[3]){
+-	u8i idx, vt;
++	u8i idx, vt, inc;
+ 	u4i i, j, pass;
+ 	read_t *rd;
+ 	node_t *n;
+@@ -1056,7 +1057,13 @@ static inline void mul_update_regs_graph(Graph *g, rdregv *regs, rnkrefv *nds, u
+ 	for(i=0;i<g->reads->size;i++){
+ 		g->reads->buffer[i].visit = 0; // in which round did the read be touched
+ 	}
+-	encap_regv(g->regs, regs->size + 1); // make sure next_ref_regv in this function is thread-safe
++	if(0){
++		encap_regv(g->regs, roundup_times(regs->size + 1, 8)); // make sure next_ref_regv in this function is thread-safe
++	}
++	if(0){
++		renew_regv(g->regs, roundup_times(regs->size + 1, 8)); // cannot allocate memory when reg->size is very big, weird
++		ZEROS(next_ref_regv(g->regs));
++	}
+ 	thread_beg_init(mupd, ncpu);
+ 	mupd->g = g;
+ 	mupd->regs = regs;
+@@ -1066,7 +1073,13 @@ static inline void mul_update_regs_graph(Graph *g, rdregv *regs, rnkrefv *nds, u
+ 	thread_end_init(mupd);
+ 	vt = 1;
+ 	upds[0] = upds[1] = upds[2] = 0;
++	inc = 0;
++	for(i=0;i<1024&&i<nds->size;i++) inc += nds->buffer[i].cnt;
+ 	for(idx=0;idx<nds->size+ncpu;idx++){
++		if(g->regs->size + inc > g->regs->cap){
++			thread_wait_all(mupd);
++			encap_regv(g->regs, inc);
++		}
+ 		thread_wait_next(mupd);
+ 		if(mupd->nd){
+ 			pass = 0;
+@@ -1674,6 +1687,7 @@ static inline void build_nodes_graph(Graph *g, u8i maxbp, int ncpu, FileReader *
+ 			mclp->task = 2;
+ 			thread_end_init(mclp);
+ 			thread_wake_all(mclp);
++			thread_wait_all(mclp);
+ 			thread_beg_close(mclp);
+ 			thread_end_close(mclp);
+ 			fprintf(KBM_LOGF, "Done\n"); fflush(KBM_LOGF);
+@@ -1688,6 +1702,7 @@ static inline void build_nodes_graph(Graph *g, u8i maxbp, int ncpu, FileReader *
+ 			mclp->task = 1;
+ 			thread_end_init(mclp);
+ 			thread_wake_all(mclp);
++			thread_wait_all(mclp);
+ 			thread_beg_close(mclp);
+ 			thread_end_close(mclp);
+ 			u8i tot, clp;
+@@ -1796,6 +1811,7 @@ static inline void build_nodes_graph(Graph *g, u8i maxbp, int ncpu, FileReader *
+ 	for(gcov=0,rank=0;gcov<kbcnts->size&&rank<nds->size;gcov++){
+ 		rank += kbcnts->buffer[gcov];
+ 	}
++	free_u4v(kbcnts);
+ 	//psort_array(nds->buffer, nds->size, rnk_ref_t, ncpu, num_cmpgtx(b.cnt, a.cnt, a.rank, b.rank));
+ 	psort_array(nds->buffer, nds->size, rnk_ref_t, ncpu, num_cmpgtx(num_diff(a.cnt, gcov), num_diff(b.cnt, gcov), a.rank, b.rank));
+ 	fprintf(KBM_LOGF, " %llu intervals\n", (u8i)nds->size); fflush(KBM_LOGF);
+@@ -1923,7 +1939,8 @@ static inline int estimate_edge_length(edge_off_t *ps, uint32_t size, uint32_t i
+ 		else if(max < 100) break;
+ 		if(mi - b > e - mi) e = mi;
+ 		else b = mi;
+-		for(i=b,tot=0;i<e;i++) tot += ps[i].off; avg = tot / (e - b);
++		for(i=b,tot=0;i<e;i++) tot += ps[i].off;
++		avg = tot / (e - b);
+ 		if(num_diff(avg, len) < num_max(avg * 0.2, 50)) break;
+ 		len = avg;
+ 	}
+diff --git a/wtpoa-cns.c b/wtpoa-cns.c
+index 1b816fe..221c1c3 100644
+--- a/wtpoa-cns.c
++++ b/wtpoa-cns.c
+@@ -43,6 +43,7 @@ int usage(){
+ 	" -i <string> Input file(s) *.ctg.lay from wtdbg, +, [STDIN]\n"
+ 	"             Or sorted SAM files when having -d/-p\n"
+ 	" -o <string> Output files, [STDOUT]\n"
++	" -e <string> Output the coordinates of orignal edges in consensus sequences, [NULL]\n"
+ 	" -f          Force overwrite\n"
+ 	" -j <int>    Expected max length of node, or say the overlap length of two adjacent units in layout file, [1500] bp\n"
+ 	"             overlap will be default to 1500(or 150 for sam-sr) when having -d/-p, block size will be 2.5 * overlap\n"
+@@ -82,8 +83,8 @@ int main(int argc, char **argv){
+ 	SeqBank *refs;
+ 	FileReader *fr, *db;
+ 	cplist *infs, *dbfs;
+-	FILE *out;
+-	char *outf;
++	FILE *out, *map;
++	char *outf, *mapf;
+ 	u4i i;
+ 	int reglen, shuffle, winlen, winmin, fail_skip;
+ 	int seqmax, wsize, print_lay, flags;
+@@ -100,19 +101,22 @@ int main(int argc, char **argv){
+ 	infs = init_cplist(4);
+ 	dbfs = init_cplist(4);
+ 	outf = NULL;
++	mapf = NULL;
++	map = NULL;
+ 	overwrite = 0;
+ 	print_lay = 0;
+ 	flags = 0;
+-	while((c = getopt(argc, argv, "hqvVt:d:rp:u:i:o:fj:S:B:W:w:Ab:M:X:I:D:E:H:R:c:C:F:N:x:")) != -1){
++	while((c = getopt(argc, argv, "hqvVt:d:rp:u:i:o:e:fj:S:B:W:w:Ab:M:X:I:D:E:H:R:c:C:F:N:x:")) != -1){
+ 		switch(c){
+ 			case 'h': return usage();
+ 			case 't': ncpu = atoi(optarg); break;
+-			case 'p': print_lay = 1;
++			case 'p': print_lay = 1; // fall through
+ 			case 'd': push_cplist(dbfs, optarg); break;
+ 			case 'u': flags = atoi(optarg); break;
+ 			case 'r': par.refmode = 1; break;
+ 			case 'i': push_cplist(infs, optarg); break;
+ 			case 'o': outf = optarg; break;
++			case 'e': mapf = optarg; break;
+ 			case 'f': overwrite = 1; break;
+ 			case 'j': reglen = atoi(optarg); break;
+ 			case 'S': shuffle = atoi(optarg); break;
+@@ -199,6 +203,10 @@ int main(int argc, char **argv){
+ 	if(outf){
+ 		out = open_file_for_write(outf, NULL, 1);
+ 	} else out = stdout;
++	if(mapf){
++		map = open_file_for_write(mapf, NULL, 1);
++		fprintf(map, "#ctg ctg_off edge edge_full_len edge_off edge_len\n");
++	}
+ 	if(shuffle == 2){
+ 		srand48(13);
+ 	}
+@@ -220,6 +228,21 @@ int main(int argc, char **argv){
+ 					}
+ 				}
+ 				fflush(out);
++				if(mapf){
++					edge_cns_t *edge;
++					int coff = 0;
++					for(i=0;i<ctg->rs->size;i++){
++						edge = ref_edgecnsv(ctg->rs, i);
++						fprintf(map, "%s\t%d\tE%u\t%d\t%d\t%d\n", ctg->tag->string, coff, i, edge->slen, edge->beg, edge->end);
++						if(edge->end > edge->beg){
++							coff += edge->end - edge->beg;
++						} else if(coff + edge->end > edge->beg){
++							coff += edge->end - edge->beg;
++						} else {
++							coff = 0;
++						}
++					}
++				}
+ 				if(cc->cycs->size){ // keep only one for reuse
+ 					free_ctg(ctg);
+ 				} else {
+@@ -260,6 +283,21 @@ int main(int argc, char **argv){
+ 					}
+ 				}
+ 				fflush(out);
++				if(mapf){
++					edge_cns_t *edge;
++					int coff = 0;
++					for(i=0;i<ctg->rs->size;i++){
++						edge = ref_edgecnsv(ctg->rs, i);
++						fprintf(map, "%s\t%d\tE%u\t%d\t%d\t%d\n", ctg->tag->string, coff, i, edge->slen, edge->beg, edge->end);
++						if(edge->end > edge->beg){
++							coff += edge->end - edge->beg;
++						} else if(coff + edge->end > edge->beg){
++							coff += edge->end - edge->beg;
++						} else {
++							coff = 0;
++						}
++					}
++				}
+ 				if(cc->cycs->size){ // keep only one for reuse
+ 					free_ctg(ctg);
+ 				} else {
+@@ -273,6 +311,7 @@ int main(int argc, char **argv){
+ 	}
+ 	close_filereader(fr);
+ 	if(outf) fclose(out);
++	if(mapf) fclose(map);
+ 	free_cplist(infs);
+ 	free_cplist(dbfs);
+ 	END_STAT_PROC_INFO(stderr);

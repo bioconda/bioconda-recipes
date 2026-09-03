@@ -1,0 +1,53 @@
+{% set name = "sar11-genome-atlas-tools" %}
+{% set version = "0.1.8" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/sar11-genome-atlas-tools/sar11_genome_atlas_tools-{{ version }}.tar.gz
+  sha256: f4e47369d7ba213819c679afcf96d6c10483794310f1837294457a116946e317
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=68
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.80
+    - pandas >=2.0
+    - pyyaml >=6.0
+    - rich >=13.7
+    - prodigal
+    - hmmer
+    - mafft
+    - epa-ng
+    - fastani
+
+test:
+  requires:
+    - python {{ python_min }}
+  commands:
+    - sga-mapper --version
+    - sga-classify --version
+    - sga-run --version
+
+about:
+  home: https://github.com/stsnsn/SAR11_Atlas
+  summary: SGAmapper and SGAclassifier for the SAR11 Genome Atlas
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - satoshinishino

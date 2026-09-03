@@ -1,0 +1,71 @@
+{% set name = "molamola" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1dec3cb110fd507e53632e28e2272031ceea1f2248307a4079ad93d22f2c0b28
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("molamola", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - molamola = molamola:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - matplotlib-base >=3.6
+    - numpy >=1.23
+    - pandas >=1.5
+    - biopython >=1.80
+    - pycirclize >=1.10
+
+test:
+  imports:
+    - molamola
+  commands:
+    - molamola --help
+  requires:
+    - pip
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/martinandclaude/molamola
+  summary: Plot Oxford Nanopore variation as self-contained HTML reports.
+  description: |
+    A Python plotting tool for Oxford Nanopore variation data.
+    One input in, one self-contained HTML report out. molamola
+    picks the visualiser from its input:
+
+    * VCF with ``##INFO=<ID=SVTYPE,...>``: a circos + linear
+      cytoband SV report (Sniffles2 / cuteSV / SVIM / pbsv /
+      NanoVar).
+    * VCF with ``##INFO=<ID=CSQ,...>`` + ``##FORMAT=<ID=PS,...>``:
+      per-gene phased-haplotype panels for compound-het workup
+      from phased + VEP-annotated small-variant VCFs.
+    * Mosdepth ``regions.bed.gz`` (via ``--mosdepth``): a
+      karyotype coverage report -- genome-wide CN scatter +
+      rolling-median smooth, with an optional BAF panel beneath
+      when paired with a small-variant VCF.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/martinandclaude/molamola
+  dev_url: https://github.com/martinandclaude/molamola
+
+extra:
+  recipe-maintainers:
+    - martinandclaude

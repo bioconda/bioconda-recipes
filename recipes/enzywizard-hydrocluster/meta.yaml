@@ -1,0 +1,58 @@
+{% set name = "enzywizard-hydrocluster" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioinfbrad/enzywizard-hydrocluster/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 95790293fd1f81caaf94be6012cc521571cbb5fb49d6c5b14ba056068f368b81
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - setuptools
+    - setuptools-git-versioning >=2.0,<3
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - numpy
+    - scipy
+    - networkx
+    - packaging
+
+test:
+  imports:
+    - enzywizard_hydrocluster
+    - enzywizard_hydrocluster.cli
+    - enzywizard_hydrocluster.services.hydrocluster_service
+    - enzywizard_hydrocluster.algorithms.hydrocluster_algorithms
+  commands:
+    - enzywizard-hydrocluster --help
+  # Note: Uses NetworkX for graph-based clustering of hydrophobic contacts (ILE/VAL/LEU).
+
+about:
+  home: https://github.com/bioinfbrad/enzywizard-hydrocluster
+  summary: "Command-line tool to identify hydrophobic clusters (ILE, VAL, LEU) in cleaned protein structures using contact area estimation and graph clustering, outputting a detailed JSON report."
+  description: |
+    EnzyWizard-HydroCluster detects hydrophobic clusters formed by ILE, VAL, and LEU residues
+    in cleaned protein structures (CIF/PDB). It estimates side-chain contact areas using
+    sphere sampling and neighbor search, builds a contact graph with NetworkX, and identifies
+    connected components as clusters. Outputs statistics and per-cluster residue details in JSON.
+    Useful for analyzing hydrophobic cores and protein stability.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - khaled196
+    - Mingkai14

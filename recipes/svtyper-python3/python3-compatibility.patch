@@ -1,0 +1,226 @@
+diff --git a/svtyper/classic.py b/svtyper/classic.py
+index 76dc97c..97561f9 100755
+--- a/svtyper/classic.py
++++ b/svtyper/classic.py
+@@ -13,6 +13,10 @@ from svtyper.parsers import Vcf, Variant, Sample, confidence_interval
+ from svtyper.utils import *
+ from svtyper.statistics import bayes_gt
+ 
++try:
++    xrange
++except NameError:
++    xrange = range
+ # --------------------------------------
+ # define functions
+ 
+@@ -126,7 +130,7 @@ def sv_genotype(bam_string,
+             bam_list.append(pysam.AlignmentFile(b, mode='rb'))
+         elif b.endswith('.cram'):
+             bam_list.append(pysam.AlignmentFile(b,
+-                mode='rc',reference_filename=ref_fasta,format_options=["required_fields=7167"]))
++                mode='rc',reference_filename=ref_fasta,format_options=[b"required_fields=7167"]))
+         else:
+             sys.stderr.write('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % b)
+             exit(1)
+@@ -413,12 +417,12 @@ def sv_genotype(bam_string,
+                         out_bam_written_reads = write_alignment(read, out_bam, out_bam_written_reads)
+ 
+             if debug:
+-                print '--------------------------'
+-                print 'ref_span:', ref_span
+-                print 'alt_span:', alt_span
+-                print 'ref_seq:', ref_seq
+-                print 'alt_seq:', alt_seq
+-                print 'alt_clip:', alt_clip
++                print('--------------------------')
++                print('ref_span:', ref_span)
++                print('alt_span:', alt_span)
++                print('ref_seq:', ref_seq)
++                print('alt_seq:', alt_seq)
++                print('alt_clip:', alt_clip)
+ 
+             # in the absence of evidence for a particular type, ignore the reference
+             # support for that type as well
+@@ -443,12 +447,12 @@ def sv_genotype(bam_string,
+                 QR = int(split_weight * ref_seq) + int(disc_weight * ref_span)
+                 QA = int(split_weight * alt_splitters) + int(disc_weight * alt_span)
+                 gt_lplist = bayes_gt(QR, QA, is_dup)
+-                best, second_best = sorted([ (i, e) for i, e in enumerate(gt_lplist) ], key=lambda(x): x[1], reverse=True)[0:2]
++                best, second_best = sorted([ (i, e) for i, e in enumerate(gt_lplist) ], key=lambda x: x[1], reverse=True)[0:2]
+                 gt_idx = best[0]
+ 
+                 # print log probabilities of homref, het, homalt
+                 if debug:
+-                    print gt_lplist
++                    print(gt_lplist)
+ 
+                 # set the overall variant QUAL score and sample specific fields
+                 var.genotype(sample.name).set_format('GL', ','.join(['%.0f' % x for x in gt_lplist]))
+@@ -573,7 +577,7 @@ def main():
+ def cli():
+     try:
+         sys.exit(main())
+-    except IOError, e:
++    except IOError as e:
+         if e.errno != 32:  # ignore SIGPIPE
+             raise
+ 
+diff --git a/svtyper/parsers.py b/svtyper/parsers.py
+index 1357b8c..6f116ec 100644
+--- a/svtyper/parsers.py
++++ b/svtyper/parsers.py
+@@ -3,15 +3,16 @@ from __future__ import print_function
+ import time, re, json, sys
+ from collections import Counter
+ 
+-from svtyper.statistics import mean, stdev, median, upper_mad
++from svtyper.statistics import mean, stdev, median, upper_mad, xrange
++
+ 
+ # ==================================================
+ # VCF parsing tools
+ # ==================================================
+ def confidence_interval(var, tag, alt_tag, max_ci_dist):
+-    ci = map(int, var.info[tag].split(','))
++    ci = list(map(int, var.info[tag].split(',')))
+     if ci[1] - ci[0] > max_ci_dist:
+-        return map(int, var.info[alt_tag].split(','))
++        return list(map(int, var.info[alt_tag].split(',')))
+     return ci
+ 
+ 
+@@ -480,7 +481,7 @@ class Library(object):
+         for r in bam.header['RG']:
+             try:
+                 in_lib = r['LB'] == lib_name
+-            except KeyError, e:
++            except KeyError as e:
+                 in_lib = lib_name == ''
+ 
+             if in_lib:
+@@ -520,8 +521,10 @@ class Library(object):
+         for read in self.bam.fetch():
+             if read.get_tag('RG') not in self.readgroups:
+                 continue
+-            if read.infer_query_length() > max_rl:
+-                max_rl = read.infer_query_length()
++            rl = read.infer_query_length()
++            if rl is None: continue
++            if rl > max_rl:
++                max_rl = rl
+             if counter == num_samp:
+                 break
+             counter += 1
+@@ -669,7 +672,7 @@ class Sample(object):
+         for r in bam.header['RG']:
+             try:
+                 lib_name=r['LB']
+-            except KeyError, e:
++            except KeyError as e:
+                 lib_name=''
+ 
+             # add the new library
+@@ -877,7 +880,7 @@ class SamFragment(object):
+         try:
+             p = float(self.lib.dens[ospan_length]) * conc_prior / (conc_prior * self.lib.dens[ospan_length] + disc_prior * (self.lib.dens[ospan_length - var_length]))
+         except ZeroDivisionError:
+-            p = None
++            return False
+ 
+         return p > 0.5
+ 
+diff --git a/svtyper/singlesample.py b/svtyper/singlesample.py
+index 4acb845..d3b16b0 100644
+--- a/svtyper/singlesample.py
++++ b/svtyper/singlesample.py
+@@ -47,17 +47,33 @@ description: Compute genotype of structural variants based on breakpoint depth o
+     return args
+ 
+ def ensure_valid_alignment_file(afile):
+-    if not (afile.endswith('.bam') or afile.endswith('.cram')):
+-        die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
++    print(afile.__class__.__name__, file=sys.stderr)
++    if not isinstance(afile, str):
++        afile = afile.decode()
++
++    try:
++        if not (afile.endswith('.bam') or afile.endswith('.cram')):
++            die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
++    except TypeError:
++        if not (afile.endswith(b'.bam') or afile.endswith(b'.cram')):
++            die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
+ 
+ def open_alignment_file(afile, reference_fasta):
+     fd = None
+-    if afile.endswith('.bam'):
+-        fd = pysam.AlignmentFile(afile, mode='rb')
+-    elif afile.endswith('.cram'):
+-        fd = pysam.AlignmentFile(afile, mode='rc', reference_filename=reference_fasta)
+-    else:
+-        die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
++    try:
++        if afile.endswith('.bam'):
++            fd = pysam.AlignmentFile(afile, mode='rb')
++        elif afile.endswith('.cram'):
++            fd = pysam.AlignmentFile(afile, mode='rc', reference_filename=reference_fasta)
++        else:
++            die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
++    except TypeError:
++        if afile.endswith(b'.bam'):
++            fd = pysam.AlignmentFile(afile, mode='rb')
++        elif afile.endswith(b'.cram'):
++            fd = pysam.AlignmentFile(afile, mode='rc', reference_filename=reference_fasta)
++        else:
++            die('Error: %s is not a valid alignment file (*.bam or *.cram)\n' % afile)
+ 
+     return fd
+ 
+@@ -417,7 +433,7 @@ def bayesian_genotype(breakpoint, counts, split_weight, disc_weight, debug):
+ 
+     # the actual bayesian calculation and decision
+     gt_lplist = bayes_gt(QR, QA, is_dup)
+-    best, second_best = sorted([ (i, e) for i, e in enumerate(gt_lplist) ], key=lambda(x): x[1], reverse=True)[0:2]
++    best, second_best = sorted([ (i, e) for i, e in enumerate(gt_lplist) ], key=lambda x: x[1], reverse=True)[0:2]
+     gt_idx = best[0]
+ 
+     # print log probabilities of homref, het, homalt
+@@ -846,7 +862,7 @@ def main():
+ def cli():
+     try:
+         sys.exit(main())
+-    except IOError, e:
++    except IOError as e:
+         if e.errno != 32:  # ignore SIGPIPE
+             raise
+ 
+diff --git a/svtyper/statistics.py b/svtyper/statistics.py
+index 51cc3cd..1e005a2 100644
+--- a/svtyper/statistics.py
++++ b/svtyper/statistics.py
+@@ -1,6 +1,11 @@
+ import math
+ from collections import Counter
+ 
++try:
++    xrange
++except NameError:
++    xrange = range
++
+ # ==================================================
+ # Statistical tools
+ # ==================================================
+diff --git a/svtyper/utils.py b/svtyper/utils.py
+index e80793e..f3fac57 100644
+--- a/svtyper/utils.py
++++ b/svtyper/utils.py
+@@ -47,6 +47,10 @@ def write_sample_json(sample_list, lib_info_file):
+         lib_info[sample.name] = s
+ 
+     # write the json file
++    for k, sample in lib_info.items():
++        if isinstance(sample["bam"], bytes):
++            lib_info[k]["bam"] = sample["bam"].decode()
++
+     json.dump(lib_info, lib_info_file, indent=4)
+     lib_info_file.close()
+ 

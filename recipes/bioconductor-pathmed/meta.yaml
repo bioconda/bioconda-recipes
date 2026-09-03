@@ -1,0 +1,74 @@
+{% set version = "1.2.0" %}
+{% set name = "pathMED" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 63ad8ef9978c4a84c9c447f9c219a926
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-pathmed", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: ada, AUCell, Biobase, BiocGenerics, BiocStyle, fgsea (>= 1.15.4), gam, GSEABase, import, kernlab, klaR, knitr, mboost, MLeval, randomForest, ranger, rmarkdown, RUnit, SummarizedExperiment, utils, xgboost
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-decoupler >=2.16.0,<2.17.0
+    - bioconductor-gsva >=2.4.0,<2.5.0
+    - bioconductor-singscore >=1.30.0,<1.31.0
+    - r-base
+    - r-caret
+    - r-caretensemble
+    - r-dplyr
+    - r-factoextra
+    - r-factominer
+    - r-ggplot2
+    - r-magrittr
+    - r-matrixstats
+    - r-metrica
+    - r-pbapply
+    - r-reshape2
+    - r-stringi
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-decoupler >=2.16.0,<2.17.0
+    - bioconductor-gsva >=2.4.0,<2.5.0
+    - bioconductor-singscore >=1.30.0,<1.31.0
+    - r-base
+    - r-caret
+    - r-caretensemble
+    - r-dplyr
+    - r-factoextra
+    - r-factominer
+    - r-ggplot2
+    - r-magrittr
+    - r-matrixstats
+    - r-metrica
+    - r-pbapply
+    - r-reshape2
+    - r-stringi
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: Scoring Personalized Molecular Portraits
+  description: PathMED is a collection of tools to facilitate precision medicine studies with omics data (e.g. transcriptomics). Among its funcionalities, genesets scores for individual samples may be calculated with several methods. These scores may be used to train machine learning models and to predict clinical features on new data. For this, several machine learning methods are evaluated in order to select the best method based on internal validation and to tune the hyperparameters. Performance metrics and a ready-to-use model to predict the outcomes for new patients are returned.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

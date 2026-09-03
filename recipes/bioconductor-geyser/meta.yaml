@@ -1,0 +1,69 @@
+{% set version = "1.2.0" %}
+{% set name = "geyser" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 0dd4f8e8fac29e34d5799daca791e26c
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-geyser", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: airway, knitr, DESeq2, recount3, rmarkdown, stringr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-bslib >=0.6.0
+    - r-dplyr
+    - r-dt
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-htmltools
+    - r-magrittr
+    - r-shiny
+    - r-tibble
+    - r-tidyr
+    - r-tidyselect
+  run:
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-bslib >=0.6.0
+    - r-dplyr
+    - r-dt
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-htmltools
+    - r-magrittr
+    - r-shiny
+    - r-tibble
+    - r-tidyr
+    - r-tidyselect
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CC0
+  summary: Gene Expression displaYer of SummarizedExperiment in R
+  description: Lightweight Expression displaYer (plotter / viewer) of SummarizedExperiment object in R. This package provides a quick and easy Shiny-based GUI to empower a user to use a SummarizedExperiment object to view (gene) expression grouped from the sample metadata columns (in the `colData` slot). Feature expression can either be viewed with a box plot or a heatmap.
+

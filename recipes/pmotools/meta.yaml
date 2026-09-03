@@ -1,0 +1,56 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: pmotools
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pmotools/pmotools-{{ version }}.tar.gz
+  sha256: 84f0064eabaa9f470677641264216ede0ee9528a91ce67f11948654cc0edce93
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pmotools', max_pin="x") }}
+requirements:
+  host:
+    - python >=3.11
+    - uv-build >=0.8.11,<0.9.0
+    - pip
+  run:
+    - python >=3.11
+    - pandas >=2.2.2
+    - biopython >=1.83
+    - jsonschema >=4.23.0
+    - pre-commit
+    - openpyxl >=3.1.5
+
+test:
+  imports:
+    - pmotools
+  commands:
+    - pip check
+    - pmotools-python --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/pmotools/
+  dev_url: https://github.com/PlasmoGenEpi/pmotools
+  summary: Tools for creating and manipulating Portable Microhaplotype Object (PMO) files.
+  description: >
+    pmotools provides utilities for creating, validating, manipulating, and
+    converting Portable Microhaplotype Object (PMO) files. PMO is a JSON-based
+    standard for storing phased targeted sequencing (microhaplotype) data and
+    associated metadata, enabling interoperable analysis, data sharing, and
+    reproducible workflows across targeted sequencing applications.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kathrynmurie
+    - nickjhathaway

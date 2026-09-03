@@ -1,0 +1,76 @@
+{% set name = "pyspoars" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Full-repo tarball: the Python package (spoars-py) is a member of the spoars
+  # workspace and depends on the parent `spoars` crate by path, so a maturin
+  # sdist of spoars-py alone would miss it. Build from the release source
+  # archive of the whole repository instead.
+  url: https://github.com/fg-labs/spoars/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c720b2c23897872812c3b0196698edfb48bf02c1d950ad05ecd30eff92c86978
+
+build:
+  number: 0
+  run_exports:
+    # 0.x: API is not yet stable, so pin downstream consumers to the minor.
+    - {{ pin_subpackage('pyspoars', max_pin="x.x") }}
+  skip: True  # [py < 310]
+  # Build steps live in build.sh (bioconda is unix-only). spoars-py depends on
+  # the parent `spoars` crate by path, so the build cds into it.
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    # Bundles the verbatim license text of the Rust crate dependencies (see
+    # build.sh and the THIRDPARTY.yml entry in license_file below).
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - maturin >=1.5,<2
+  run:
+    - python
+
+test:
+  imports:
+    - spoars
+  requires:
+    - pip
+  commands:
+    - pip check
+    # Exercise the compiled pyo3 extension, not just the import machinery.
+    - python -c "import spoars; g = spoars.poa(['ACGTACGT', 'ACGTTCGT', 'ACGTACGT']); assert g.consensus() == 'ACGTACGT'"
+
+about:
+  home: https://github.com/fg-labs/spoars
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    # Attribution for the upstream spoa algorithm/library that spoars
+    # reimplements (no spoa source is shipped or linked; carried for provenance).
+    - THIRD-PARTY.md
+    # Verbatim license text of the Rust crate closure, generated at build time
+    # by cargo-bundle-licenses (see build.sh).
+    - spoars-py/THIRDPARTY.yml
+  summary: Python bindings for spoars — partial order alignment consensus and MSA
+  description: |
+    Python bindings for spoars, a memory-safe, SIMD-accelerated native-Rust
+    reimplementation of the C++ spoa partial order alignment library. Provides
+    consensus, multiple sequence alignment, and GFA/DOT graph output from a
+    simple `poa()` convenience call or an incremental `Poa` builder.
+  dev_url: https://github.com/fg-labs/spoars
+  doc_url: https://github.com/fg-labs/spoars/blob/v{{ version }}/spoars-py/README.md
+
+extra:
+  recipe-maintainers:
+    - nh13
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

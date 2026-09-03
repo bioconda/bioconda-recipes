@@ -4,8 +4,7 @@ import errno
 import pysam
 
 # check remote access capabilities are present
-try:
-    pysam.AlignmentFile('s3:expect_invalid_argument')
-except EnvironmentError as e:
-    # EPROTONOSUPPORT (Protocol not supported) would indicate no S3 capabilities
-    assert e.errno == errno.EINVAL
+# EPROTONOSUPPORT (Protocol not supported) indicates no plugin capabilities
+url = "https://raw.githubusercontent.com/pysam-developers/pysam/refs/heads/master/tests/pysam_data/ex4.sam"
+fp = pysam.AlignmentFile(url)
+assert fp.is_open()

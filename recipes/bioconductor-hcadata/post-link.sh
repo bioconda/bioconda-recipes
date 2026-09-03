@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hcadata-1.22.0"
+installBiocDataPackage.sh "hcadata-1.26.0"

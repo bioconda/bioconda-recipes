@@ -1,0 +1,65 @@
+{% set name = "filt3r" %}
+{% set version = "20260717" %}
+{% set commit = "38b3853dd7f1c5c7d6eabce54c4166e60f9bc5b2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # FiLT3r has no semantic-version release tag on GitLab (only the 2022
+  # `bmcbioinfo` paper tag, which predates the space-separated --sequences CLI
+  # and the FLT3 reference shipped under data/). We therefore pin to an
+  # immutable master commit and use its date as the package version.
+  url: https://gitlab.univ-lille.fr/filt3r/filt3r/-/archive/{{ commit }}/filt3r-{{ commit }}.tar.gz
+  sha256: 26845d77a34bbcb3636825ba9ad50c7af48b3529d75f831ed1459aaf2ea6cf50
+
+build:
+  number: 0
+  run_exports:
+    # Date/commit-based version (calendar versioning): don't cap the upper bound,
+    # otherwise dependents get pinned to almost this exact build.
+    - {{ pin_subpackage(name, max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    # -h exits 0 and exercises the full CLI11 parser.
+    - filt3r -h
+    # The bundled FLT3 exon 14-15 reference is installed alongside the binary.
+    - test -f "$PREFIX/share/{{ name }}-{{ version }}/flt3_exon14-15.fa"
+    # End-to-end: detect the duplication in the shipped reference against itself.
+    - filt3r -k 12 --ref "$PREFIX/share/{{ name }}-{{ version }}/flt3_exon14-15.fa" --sequences "$PREFIX/share/{{ name }}-{{ version }}/flt3_exon14-15.fa" --out result.json && test -s result.json
+
+about:
+  home: https://gitlab.univ-lille.fr/filt3r/filt3r
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Alignment-free detection of internal (tandem) duplications in raw sequencing data"
+  description: |
+    FiLT3r detects and quantifies internal duplications in raw high-throughput
+    sequencing data using an alignment-free, resource-frugal k-mer approach. It
+    was designed and benchmarked for FLT3 internal tandem duplication (FLT3-ITD)
+    detection and quantification from capture and RNA-Seq data, and ships a
+    ready-to-use FLT3 exon 14-15 reference. Input is FASTA/FASTQ (optionally
+    gzipped); output is a JSON report of breakpoints with duplication size,
+    coverage and variant allele frequency, and optionally a VCF file.
+  doc_url: https://gitlab.univ-lille.fr/filt3r/filt3r/-/blob/{{ commit }}/README.md
+  dev_url: https://gitlab.univ-lille.fr/filt3r/filt3r
+
+extra:
+  identifiers:
+    - doi:10.1186/s12859-022-04983-6
+  recipe-maintainers:
+    - joachimwolff

@@ -1,0 +1,49 @@
+{% set name = "bipangolin" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/b/bipangolin/bipangolin-{{ version }}.tar.gz
+  sha256: 627c2d1387b4717db725ea5bd82f26c8bdc5696608a8b71e7d97507b51c044d2
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - bipangolin = bipangolin.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+  run:
+    - python >=3.9
+    - numpy >=1.20
+    - pyfastx >=2.0
+    - pytorch >=2.0
+
+test:
+  commands:
+    - bipangolin --help
+    - python -c "import bipangolin; print(bipangolin.__version__)"
+    - python -c "from bipangolin import BiPangolinRunner; print('ok')"
+
+about:
+  home: https://github.com/Delayed-Gitification/biPangolin
+  summary: Per-base donor/acceptor splice site predictions from Pangolin representations
+  license: GPL-3.0-only
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_NOTICES.md
+  dev_url: https://github.com/Delayed-Gitification/biPangolin
+
+extra:
+  recipe-maintainers:
+    - ogw

@@ -1,0 +1,62 @@
+{% set version = "1.6.0" %}
+{% set name = "igvShiny" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 94ef96a96b60c4a12a702de7e1f8abf9
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-igvshiny", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, GenomicAlignments, knitr, Rsamtools, rtracklayer, RUnit, shinytest2, VariantAnnotation
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodbdata >=1.2.0,<1.3.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+    - r-checkmate
+    - r-futile.logger
+    - r-htmlwidgets
+    - r-httr
+    - r-jsonlite
+    - r-randomcolor
+    - r-shiny
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodbdata >=1.2.0,<1.3.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+    - r-checkmate
+    - r-futile.logger
+    - r-htmlwidgets
+    - r-httr
+    - r-jsonlite
+    - r-randomcolor
+    - r-shiny
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: 'igvShiny: a wrapper of Integrative Genomics Viewer (IGV - an interactive tool for visualization and exploration integrated genomic data)'
+  description: This package is a wrapper of Integrative Genomics Viewer (IGV). It comprises an htmlwidget version of IGV. It can be used as a module in Shiny apps.
+  license_file: LICENSE
+

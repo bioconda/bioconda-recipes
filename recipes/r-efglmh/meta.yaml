@@ -1,0 +1,53 @@
+{% set name = "EFGLmh" %}
+
+package:
+  name: r-{{ name|lower }}
+  version: "0.1.0"
+
+source:
+  url: https://github.com/delomast/EFGLmh/archive/07aadc4c123991f7870d2df1f8835c347d113f6c.tar.gz
+  sha256: 694e4dd9975e0f74c7fa88e36ef5b4507662f00ed1af06bf8079858d1aa6c994
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: 
+    - {{ pin_subpackage ('r-efglmh', max_pin="x.x") }}
+
+requirements:
+  host:
+    - r-base >=2.10
+    - r-devtools
+    - r-dplyr
+    - r-readr
+    - r-tidyr
+  run:
+    - r-base >=2.10
+    - r-tibble
+    - r-dplyr
+    - r-readr
+    - r-tidyr
+
+test:
+  commands:
+    - R -e "library(EFGLmh)"
+    - $R -e "library('EFGLmh')"
+
+
+about:
+  home: https://github.com/delomast/EFGLmh
+  license: MIT
+  license_file: LICENSE
+  summary: 'Functions For Working With Microhaps for EFGL'
+  description: |
+    Written to work with microhaps and SNPs (which are just short microhaps). 
+    More generally, will function with codominant, diploid genotypes.
+    Uses "Progeny-style" (and FishGen-style) inputs. 
+    Performs basic manipulations, data summaries, and exporting data in
+    formats for other packages/programs.
+  doc_url: https://github.com/delomast/EFGLmh
+  dev_url: https://github.com/delomast/EFGLmh

@@ -1,0 +1,76 @@
+{% set name = "panmap" %}
+{% set version = "0.2.0" %}
+{% set panman_version = "0.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/amkram/panmap/archive/v{{ version }}.tar.gz
+    sha256: c5e5bb6164109c181ef8cd97401b62e7f048bddac624f3e59b831c987481aa7f
+    folder: panmap
+  - url: https://github.com/TurakhiaLab/panman/archive/refs/tags/v{{ panman_version }}.tar.gz
+    sha256: 6e987799cd4f713f88b6e3ddafa9b59798a210c8ff1d8b59381bbc5fd2661c72
+    folder: panman
+
+build:
+  number: 0
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+    # NB: capnp/protoc code generators are taken from the HOST prefix at build
+    # time (see build.sh). Do NOT add capnproto/libprotobuf here — a build-side
+    # libprotobuf drags in a newer abseil that then gets used for headers,
+    # mismatching the host abseil panmap links against.
+  host:
+    - zlib
+    - htslib
+    - libdeflate
+    - libboost-devel
+    - libprotobuf
+    - tbb-devel
+    - capnproto >=1.0
+    - jsoncpp
+    - spdlog
+    - fmt
+    - libabseil
+    - zstd
+    - eigen
+  # runtime library pins come from host run_exports; panmap bundles panmanUtils
+  # (the bioconda `panman` package pins an incompatible older capnproto)
+
+test:
+  commands:
+    - panmap --help
+    - panmanUtils --help
+
+about:
+  home: "https://github.com/amkram/{{ name }}"
+  # effective license: panmap statically links BWA (GPL-3.0-only)
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file:
+    - panmap/LICENSE
+    - panman/LICENSE
+    - panmap/src/3rdparty/bwa/COPYING
+    - panmap/src/3rdparty/bwa/NOTICE-bwt_gen
+    - panmap/src/3rdparty/minimap2/LICENSE
+    - panmap/src/3rdparty/bcftools/LICENSE
+  summary: "Pangenome-based sequence placement, alignment, and genotyping"
+  dev_url: "https://github.com/amkram/{{ name }}"
+
+extra:
+  recipe-maintainers:
+    - amkram
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,46 @@
+{% set version = "0.1.0" %}
+{% set github = "https://github.com/acidgenomics/py-acidbase" %}
+
+package:
+  name: acidbase
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: d6ed4de62c242dbb0d100b8d24c873406c8ed7795fd177eaaeef86a1648b73c9
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('acidbase', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - uv-build >=0.11,<1
+  run:
+    - python >=3.12
+    - numpy
+    - packaging
+    - pandas
+    - psutil
+    - scipy
+
+test:
+  imports:
+    - acidbase
+
+about:
+  home: https://python.acidgenomics.com/acidbase/
+  dev_url: "{{ github }}"
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Base functions for Acid Genomics packages.
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

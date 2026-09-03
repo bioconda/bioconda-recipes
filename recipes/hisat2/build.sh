@@ -1,17 +1,35 @@
 #!/bin/bash
 set -x
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+git clone --recursive https://github.com/simd-everywhere/simde-no-tests simde
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+mkdir -p "${PREFIX}/bin"
+
 # The patch does not move the VERSION file on OSX. Let's make sure it's moved.
 mv VERSION{,.txt} || true
 
-git clone  https://github.com/simd-everywhere/simde-no-tests simde
-
-make -j ${CPU_COUNT} \
-    CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
-    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}"
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+	-j"${CPU_COUNT}"
 
 # copy binaries and python scripts
-mkdir -p "${PREFIX}/bin"
 for i in \
     hisat2 \
     hisat2-align-l \
@@ -24,6 +42,5 @@ for i in \
     hisat2-inspect-s \
     *.py
 do
-    cp "${i}" "${PREFIX}/bin/"
-    chmod +x "${PREFIX}/bin/${i}"
+    install -v -m 0755 "${i}" "${PREFIX}/bin"
 done

@@ -1,23 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 
 # Please don't do the following symlinking elsewhere. It is not nice.
 # Julia packages are retrieved externally and compile things with gcc without using CC etc. env variables...
-ln -s "${GCC}" "${BUILD_PREFIX}/gcc"
+ln -s "${CC}" "${BUILD_PREFIX}/gcc"
 
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
 cp -r $SRC_DIR/scripts $PREFIX
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
-julia -e 'Pkg.init()'
-julia -e 'Pkg.add("ArgParse")'
-julia -e 'Pkg.add("Bio")'
-julia -e 'Pkg.add("OpenGene")'
-julia -e 'Pkg.add("Logging")'
-julia -e 'Pkg.add("Lumberjack")'
-julia -e 'Pkg.add("FastaIO")'
-julia -e 'Pkg.add("JLD")'
-julia -e 'Pkg.add("DataStructures")'
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("Distributed")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("ArgParse")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("BioSequences")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("JSON")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("JLD")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("DataStructures")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("GZip")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("Blosc")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("FileIO")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("TextWrap")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.add("LightXML")';
+"${PREFIX}/bin/julia" -e 'using Pkg; Pkg.instantiate()';
 
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA

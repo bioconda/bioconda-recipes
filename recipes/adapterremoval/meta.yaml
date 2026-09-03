@@ -1,5 +1,5 @@
-{% set version = "2.3.4" %}
-{% set sha256 = "a4433a45b73ead907aede22ed0c7ea6fbc080f6de6ed7bc00f52173dfb309aa1" %}
+{% set version = "3.0.1" %}
+{% set sha256 = "52bef5e9ad5de76a6bd0a1522ad621e95efec0cc23602900bd65a154f96a1f6e" %}
 
 package:
   name: adapterremoval
@@ -8,9 +8,11 @@ package:
 source:
   url: https://github.com/MikkelSchubert/adapterremoval/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - 0001-osx.patch  # [osx]
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('adapterremoval', max_pin="x") }}
 
@@ -18,16 +20,25 @@ requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - pkg-config
+    - cmake
+    - meson
+    - ninja
   host:
+    - isa-l
+    - libdeflate
     - zlib
     - bzip2
     - wget
+    - sphinx
     - perl
+  run:
+    - isa-l
 
 test:
   commands:
-    - AdapterRemoval -h
+    - adapterremoval3 -h
 
 about:
   home: "https://github.com/MikkelSchubert/adapterremoval"
@@ -36,6 +47,7 @@ about:
   license_file: LICENSE
   summary: "The AdapterRemoval v2 tool for merging and clipping reads."
   dev_url: "https://github.com/MikkelSchubert/adapterremoval"
+  doc_url: "https://adapterremoval.readthedocs.io/en/stable"
 
 extra:
   additional-platforms:
@@ -44,3 +56,4 @@ extra:
   identifiers:
     - biotools:adapterremoval
     - usegalaxy-eu:adapter_removal
+    - doi:10.1186/s13104-016-1900-2

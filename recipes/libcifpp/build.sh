@@ -23,6 +23,7 @@ cmake -S . -B build -G Ninja \
     -DBUILD_TESTING=OFF \
     -DCIFPP_DOWNLOAD_CCD=ON \
     -DCIFPP_INSTALL_UPDATE_SCRIPT=OFF \
+    -DBUILD_SQLITE_INTERFACE=ON \
     -DCIFPP_DATA_DIR='' \
     -DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
     ${CONFIG_ARGS}

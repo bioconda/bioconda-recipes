@@ -1,0 +1,60 @@
+{% set name = "whittle" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/erdikilic/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 35f2c783c3ee1ea75f629d76d5bbd8297429ee28c53d5f9e7026f13d37c7ca88
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('whittle', max_pin="x.x") }}
+  # cargo-bundle-licenses collects the licenses of all vendored crates into
+  # THIRDPARTY.yml (bioconda Rust guideline; see about/license_file). The crate's
+  # bundled .cargo/config.toml sets target-cpu=x86-64-v3, so `cargo install`
+  # produces the AVX2 build sassy needs (aarch64 uses NEON by default).
+  script:
+    - 'cargo-bundle-licenses --format yaml --output THIRDPARTY.yml'
+    - 'cargo install --no-track --locked --root "${PREFIX}" --path .'
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+
+test:
+  commands:
+    - whittle --version
+    - whittle --help
+
+about:
+  home: https://github.com/erdikilic/whittle
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast, tag-aware long-read (ONT/PacBio) trimmer for FASTQ and unaligned BAM
+  description: |
+    whittle trims Oxford Nanopore and PacBio long reads in FASTQ, gzipped
+    FASTQ, and unaligned BAM. It keeps position-indexed tags (MM/ML/MN base
+    modifications, per-base kinetics, and ONT signal) in register through
+    every trim and split, so downstream modified-base and signal analyses
+    stay correct after trimming.
+  dev_url: https://github.com/erdikilic/whittle
+  doc_url: https://docs.rs/whittle
+
+extra:
+  recipe-maintainers:
+    - erdikilic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

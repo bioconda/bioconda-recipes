@@ -1,0 +1,48 @@
+{% set name = "clustrx" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: dd7e882fe6dbe4b79bd0d183d4b2c58d72e86c689b6fae5476a7d8862be05400
+
+build:
+  entry_points:
+    - clustrx = clustrx.cli:main
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('clustrx', max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >=3.8
+    - polars
+    - python-igraph
+    - psutil
+    - numpy
+    - mafft
+
+test:
+  commands:
+    - clustrx --help
+
+about:
+  home: https://github.com/mario-benitez-prian/clustrX
+  license: MIT
+  license_family: MIT
+  summary: "Highly Robust and Sensitive Protein Clustering Using Similarity Networks and Leiden Community Detection"
+  dev_url: https://github.com/mario-benitez-prian/clustrX
+
+extra:
+  recipe-maintainers:
+    - mario-benitez-prian
+

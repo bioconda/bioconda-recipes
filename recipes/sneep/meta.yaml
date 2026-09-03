@@ -10,19 +10,22 @@ source:
   sha256: 663a327abb928770c3252630a2ba3a0f69888f81e803567e32a2e5df09d94de9
 
 build:
-  skip: True  # [py2k]
-  number: 3
+  number: 4
   run_exports:
-    - {{ pin_subpackage('sneep', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
    - make
    - {{ compiler('cxx') }}
-   - llvm-openmp  # [osx]
+   - {{ stdlib('c') }}
   host:
    - python
+   - llvm-openmp  # [osx]
+   - libgomp  # [linux]
   run:
+   - llvm-openmp  # [osx]
+   - libgomp  # [linux]
    - python
    - numpy >=1.19
    - scipy
@@ -34,12 +37,15 @@ test:
    - differentialBindingAffinity_multipleSNPs -h
 
 about:
-  home: https://github.com/SchulzLab/SNEEP
-  dev_url: https://github.com/SchulzLab/SNEEP
+  home: "https://github.com/SchulzLab/SNEEP"
+  dev_url: "https://github.com/SchulzLab/SNEEP"
   license: MIT
   license_family: MIT
-  summary: Identify regulatory non-coding SNPs (rSNPs)
+  license_file: LICENSE
+  summary: "Identify regulatory non-coding SNPs (rSNPs)."
+  doc_url: "https://sneep.readthedocs.io/en/latest/index.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

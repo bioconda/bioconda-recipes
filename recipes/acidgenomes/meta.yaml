@@ -1,0 +1,46 @@
+{% set version = "0.1.0" %}
+{% set github = "https://github.com/acidgenomics/py-acidgenomes" %}
+
+package:
+  name: acidgenomes
+  version: "{{ version }}"
+
+source:
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 568040ccd3192f38e804f87ff2d5be079e86203b25cada703a0850424e831c62
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage('acidgenomes', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - uv-build >=0.11,<1
+  run:
+    - python >=3.12
+    - biocframe >=0.7
+    - genomicranges >=0.8
+    - iranges >=0.7
+    - pandas
+    - requests
+
+test:
+  imports:
+    - acidgenomes
+
+about:
+  home: https://python.acidgenomics.com/acidgenomes/
+  dev_url: "{{ github }}"
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Toolkit for downloading and processing genome annotations.
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

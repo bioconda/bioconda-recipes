@@ -1,0 +1,69 @@
+{% set version = "1.2.0" %}
+{% set name = "Polytect" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1ec30217f0d601aabe811a5914776e7d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-polytect", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: testthat (>= 3.0.0), knitr, rmarkdown, ddPCRclust
+requirements:
+  host:
+    - bioconductor-flowpeaks >=1.56.0,<1.57.0
+    - r-base
+    - r-biocmanager
+    - r-cowplot
+    - r-dicekriging
+    - r-dplyr
+    - r-ggplot2
+    - r-lhs
+    - r-mlrmbo
+    - r-mvtnorm
+    - r-paramhelpers
+    - r-rgenoud
+    - r-smoof
+    - r-sn
+    - r-tidyverse
+  run:
+    - bioconductor-flowpeaks >=1.56.0,<1.57.0
+    - r-base
+    - r-biocmanager
+    - r-cowplot
+    - r-dicekriging
+    - r-dplyr
+    - r-ggplot2
+    - r-lhs
+    - r-mlrmbo
+    - r-mvtnorm
+    - r-paramhelpers
+    - r-rgenoud
+    - r-smoof
+    - r-sn
+    - r-tidyverse
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: An R package for digital data clustering
+  description: Polytect is an advanced computational tool designed for the analysis of multi-color digital PCR data. It provides automatic clustering and labeling of partitions into distinct groups based on clusters first identified by the flowPeaks algorithm. Polytect is particularly useful for researchers in molecular biology and bioinformatics, enabling them to gain deeper insights into their experimental results through precise partition classification and data visualization.
+

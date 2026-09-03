@@ -1,0 +1,69 @@
+{% set version = "0.2.0" %}
+
+package:
+  name: ngs45
+  version: {{ version }}
+
+source:
+  url: https://github.com/maidinhvn/ngs45/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 248bb4dda2e760cca16615c55182952cc7db1112cf2fc9a36beb1f5d6931227b
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ngs45', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - ngs45 = ngs45.cli:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python
+    - biopython >=1.79
+    # external tools invoked via subprocess (the package itself is pure-Python)
+    - barrnap
+    - bcftools
+    - blast
+    - bowtie2
+    - bwa
+    - cutadapt
+    - infernal
+    - itsx
+    - samtools
+    - seqkit
+    - spades
+
+test:
+  imports:
+    - ngs45
+  requires:
+    - pip
+  commands:
+    - pip check
+    - ngs45 --version
+
+about:
+  home: https://github.com/maidinhvn/ngs45
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Recover the 45S nrDNA transcribed unit from Illumina short reads"
+  description: |
+    ngs45 recovers the 45S nrDNA transcribed unit (18S-ITS1-5.8S-ITS2-26S) and
+    ITS barcode from Illumina short reads: it baits rDNA reads against a conserved
+    45S seed, assembles them with SPAdes, resolves a single repeat unit, trims to
+    the mature 18S/26S boundaries with Rfam SSU/LSU covariance models, annotates
+    the ITS regions, and reports intragenomic ribotype heterozygosity (a
+    hybridisation / allopolyploidy signal). Short-read counterpart of easy45 (HiFi).
+  dev_url: https://github.com/maidinhvn/ngs45
+  doc_url: https://github.com/maidinhvn/ngs45/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - maidinhvn

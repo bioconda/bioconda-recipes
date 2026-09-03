@@ -1,0 +1,124 @@
+{% set name = "rolypoly-tk" %}
+{% set version = "0.7.17" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/UriNeri/rolypoly/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2d5dc1a627a4203aa8c949c87c41a6366b06af56804d639982511ea761a928c7
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - rolypoly = rolypoly.rolypoly:rolypoly
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - hatchling
+  run:
+    - python >=3.10,<3.14
+
+    # Core Python deps (pyproject [project.dependencies])
+    - mappy >=2.30,<3
+    - needletail >=0.7.3,<0.8
+    - psutil >=7.2.2
+    - pyfastx >=2.3.1,<3
+    - pyhmmer >=0.12.1,<0.13
+    - requests >=2.34.2
+    - rich-click >=1.9.8,<2
+    - rich >=15.0.0
+    - intervaltree >=3.1.0,<4
+    - polars >=1.29.0,<2
+    - numpy >=2.3.0,<3
+    - bbmapy >=0.0.57,<0.0.59
+    - python-xxhash >=3.6.0,<4
+    - pyrodigal-rv >=0.1.0,<0.2
+    - parasail-python >=1.3.4,<2
+    - pyopal >=0.7.3,<0.8
+    - pydustmasker >=3.2.0,<4
+    - pyarrow >=25.0.0,<26
+    - linearfold >=1.0.1.dev20220829,<2
+    - viennarna >=2.7.2,<3
+
+    # Reads
+    - seqkit >=2.13.0,<3
+    - bwa-mem2 >=2.3,<3
+    - falco >=1.3.1
+    - pigz >=2.8
+
+    # Assembly / annotation / identify
+    - mmseqs2 >=18.8cc5c,<19
+    - spades >=4.3.0,<5
+    - megahit >=1.2.9,<2
+    - plass >=5.cf8933,<6
+    - infernal >=1.1.5,<2
+    - aragorn >=1.2.41,<2
+    - trnascan-se >=2.0.13,<3
+    - diamond >=2.2.4,<3
+
+    # Cluster
+    - blast >=2.17.0,<3
+    - python-igraph >=1.0.0,<2
+    - leidenalg >=0.12.0,<0.13
+    - pyskani >=0.2.0,<0.3
+    - pyfastani >=0.6.1,<0.7
+
+    # Misc
+    - aria2 >=1.37.0
+
+test:
+  imports:
+    - rolypoly
+  commands:
+    - rolypoly --help
+    - rolypoly --version
+    - rolypoly get-data --help
+    - rolypoly filter-reads --help
+    - rolypoly shrink-reads --help
+    - rolypoly mask-dna --help
+    - rolypoly assemble --help
+    - rolypoly filter-contigs --help
+    - rolypoly extend --help
+    - rolypoly annotate --help
+    - rolypoly annotate-rna --help
+    - rolypoly annotate-prot --help
+    - rolypoly marker-search --help
+    - rolypoly virus-mapping --help
+    - rolypoly rdrp-motif-search --help
+    - rolypoly termini --help
+    - rolypoly correlate --help
+    - rolypoly cluster --help
+    - rolypoly roll --help
+    - rolypoly fetch-sra --help
+    - rolypoly fastx-stats --help
+    - rolypoly fastx-calc --help
+    - rolypoly rename-seqs --help
+
+about:
+  home: https://github.com/UriNeri/rolypoly
+  doc_url: https://urineri.github.io/rolypoly/
+  dev_url: https://github.com/UriNeri/rolypoly
+  summary: RNA virus analysis toolkit
+  description: |
+    RolyPoly is an RNA virus analysis toolkit. This package installs the
+    Python library and all third-party dependencies/command-line tools for
+    the complete rolypoly suite (all commands), including read processing,
+    assembly, RNA/protein annotation, virus identification, and contig
+    clustering.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - UriNeri
+    - dimitris-karapliafis
+    - apcamargo

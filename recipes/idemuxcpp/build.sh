@@ -2,9 +2,7 @@
 
 set -xe
 
-export CXXFLAGS="-I${PREFIX}/include/bamtools ${CXXFLAGS}"
-export LDFLAGS="-L${PREFIX}/lib/ -lbamtools ${LDFLAGS}"
-./configure --enable-tests --prefix="${PREFIX}"
+./configure --enable-tests --prefix="${PREFIX}" --disable-bamtools
 make -j ${CPU_COUNT}
 make install
 make check

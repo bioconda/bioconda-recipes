@@ -1,0 +1,62 @@
+{% set name = "popqc" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TNS-Schrauwen/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 5d59ba117bdcc025d8e2596d8220e96b35c7b0d22eab3dfce35d223ddb925138
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('popqc', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path crates/popqc-cli
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - zlib
+    - lz4-c
+    - zstd
+    - snappy
+  run:
+    - zlib
+    - lz4-c
+    - zstd
+    - snappy
+
+test:
+  commands:
+    - popqc --help
+    - popqc --version
+
+about:
+  home: https://github.com/TNS-Schrauwen/popqc
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "A population-level quality control and outlier detection tool for large cohort genomics datasets."
+  description: |
+    PopQC is a fast, scalable QC reporting tool that generates interactive HTML reports for quality control analysis of large cohort genomics datasets. It can process QC logs from any genomics workflow including RNA-seq, WGS, WES, variant calling, single-cell, long-read sequencing, and more.
+  dev_url: https://github.com/TNS-Schrauwen/popqc
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - J22160
+    - danielhmendoza01

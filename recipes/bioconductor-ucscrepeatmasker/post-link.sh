@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "ucscrepeatmasker-3.15.2"
+installBiocDataPackage.sh "ucscrepeatmasker-3.22.0"

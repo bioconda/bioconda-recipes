@@ -1,0 +1,55 @@
+{% set name = "uqcme-cli" %}
+{% set pypi_name = "uqcme" %}
+{% set version = "0.9.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/u/{{ pypi_name }}/{{ pypi_name }}-{{ version }}.tar.gz
+  sha256: 06f29c94755556590cf48f23b19284ee57a99c1583898e352997c7ab668beac7
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install ".[cli]" -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12,<3.15
+    - pip
+    - hatchling
+  run:
+    - python >=3.12,<3.15
+    - pandas >=2.0.0,<3
+    - pyyaml >=6.0
+    - pydantic >=2.0.0
+    - pandera >=0.30.0,<0.31
+    - requests >=2.31.0
+
+test:
+  imports:
+    - uQCme
+    - uQCme.cli
+    - uQCme.core
+  commands:
+    - uqcme --help
+
+about:
+  home: https://github.com/ssi-dk/uQCme
+  license: MIT
+  license_file: LICENSE
+  summary: CLI-only microbial sequencing quality control tool
+  description: |
+    uQCme is quality control software for data derived from next-generation
+    whole genome sequencing of microbes. This package installs the CLI-only
+    profile for processing sequencing run metrics with configurable QC rules.
+  dev_url: https://github.com/ssi-dk/uQCme
+
+extra:
+  recipe-maintainers:
+    - PovilasMat
+    - kimleeng
