@@ -1,13 +1,18 @@
-{% set version = "1.22.0" %}
+{% set version = "1.26.0" %}
 {% set name = "mnem" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Mixture Nested Effects Models (mnem) is an extension of Nested Effects Models and allows for the analysis of single cell perturbation data provided by methods like Perturb-Seq (Dixit et al., 2016) or Crop-Seq (Datlinger et al., 2017). In those experiments each of many cells is perturbed by a knock-down of a specific gene, i.e. several cells are perturbed by a knock-down of gene A, several by a knock-down of gene B, ... and so forth. The observed read-out has to be multi-trait and in the case of the Perturb-/Crop-Seq gene are expression profiles for each cell. mnem uses a mixture model to simultaneously cluster the cell population into k clusters and and infer k networks causally linking the perturbed genes for each cluster. The mixture components are inferred via an expectation maximization algorithm.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Mixture Nested Effects Models
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 8790a96d25f573905e409d17c2a62c18
 
 build:
   number: 0
@@ -15,16 +20,6 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-mnem", max_pin="x.x") }}'
-
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:mnem
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
 
 # Suggests: knitr, devtools, rmarkdown, BiocGenerics, RUnit, epiNEM, BiocStyle
 requirements:
@@ -35,9 +30,9 @@ requirements:
     - make
 
   host:
-    - bioconductor-graph >=1.84.0,<1.85.0
-    - bioconductor-linnorm >=2.30.0,<2.31.0
-    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-linnorm >=2.34.0,<2.35.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - r-cluster
     - r-data.table
@@ -54,11 +49,13 @@ requirements:
     - r-wesanderson
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
 
   run:
-    - bioconductor-graph >=1.84.0,<1.85.0
-    - bioconductor-linnorm >=2.30.0,<2.31.0
-    - bioconductor-rgraphviz >=2.50.0,<2.51.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-linnorm >=2.34.0,<2.35.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - r-cluster
     - r-data.table
@@ -74,15 +71,20 @@ requirements:
     - r-tsne
     - r-wesanderson
 
-source:
-  md5: 2d7b90c117bdab6211ab3f7901b1165b
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Mixture Nested Effects Models
+  description: Mixture Nested Effects Models (mnem) is an extension of Nested Effects Models and allows for the analysis of single cell perturbation data provided by methods like Perturb-Seq (Dixit et al., 2016) or Crop-Seq (Datlinger et al., 2017). In those experiments each of many cells is perturbed by a knock-down of a specific gene, i.e. several cells are perturbed by a knock-down of gene A, several by a knock-down of gene B, ... and so forth. The observed read-out has to be multi-trait and in the case of the Perturb-/Crop-Seq gene are expression profiles for each cell. mnem uses a mixture model to simultaneously cluster the cell population into k clusters and and infer k networks causally linking the perturbed genes for each cluster. The mixture components are inferred via an expectation maximization algorithm.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:mnem
 

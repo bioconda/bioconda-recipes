@@ -1,0 +1,69 @@
+{% set name = "molamola" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d67fe27266cfd3c3914488d47078f04582fa61239027fa308fb4b41ecb4a8d06
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("molamola", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - molamola = molamola:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - matplotlib-base >=3.6
+    - numpy >=1.23
+    - pandas >=1.5
+    - biopython >=1.80
+    - pycirclize >=1.10
+
+test:
+  imports:
+    - molamola
+  commands:
+    - molamola --help
+  requires:
+    - pip
+  source_files:
+    - tests/
+
+about:
+  home: https://github.com/martinandclaude/molamola
+  summary: Plot Oxford Nanopore variation as self-contained HTML reports.
+  description: |
+    A Python plotting tool for Oxford Nanopore variation data.
+    One input in, one self-contained HTML report out. molamola
+    picks the visualiser from its input:
+
+    * VCF with ``##INFO=<ID=SVTYPE,...>``: a circos + linear
+      cytoband SV report (Sniffles2 / cuteSV / SVIM / pbsv /
+      NanoVar).
+    * Mosdepth ``regions.bed.gz`` (via ``--mosdepth``): a
+      karyotype coverage report -- genome-wide log2 relative
+      depth, with an optional BAF panel beneath when paired with
+      a small-variant VCF, haplotype-resolved when that VCF is
+      phased.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://martinandclaude.github.io/molamola/
+  dev_url: https://github.com/martinandclaude/molamola
+
+extra:
+  recipe-maintainers:
+    - martinandclaude

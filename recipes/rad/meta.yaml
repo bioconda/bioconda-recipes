@@ -1,0 +1,62 @@
+{% set name = "rad" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/indianewok/rad/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6f5253456adf9b84de66583501d946656297f79645ac76d5b401e83d2f482af9
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rad', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+  host:
+    - boost-cpp
+    - zlib
+    - bzip2
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - boost-cpp
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - pigz
+
+test:
+  commands:
+    - rad --help
+    - rad --version
+    - rad list
+    - test -f "${PREFIX}/share/rad/resources/read_layout/sctagger_sim_read_layout.csv"
+    - test -f "${PREFIX}/share/rad/resources/wl/3M-february-2018-3v3.txt_bitlist.csv.gz"
+
+about:
+  home: "https://github.com/indianewok/rad"
+  dev_url: "https://github.com/indianewok/rad"
+  license: MIT
+  license_family: MIT
+  summary: "Read-structure Agnostic Demultiplexer for long-read single-cell RNA-seq."
+  description: |
+    **rad** implements an alignment-based demultiplexer and
+    whitelist/barcode-correction suite for Nanopore and PacBio single-cell
+    long-read experiments. It bundles edlib and csv-parser in-tree,
+    and depends only on Boost, zlib, and some flavor of openMP.
+  license_file: LICENSE
+  doc_url: "https://github.com/indianewok/rad/blob/v{{ version }}/README.md"
+
+extra:
+  recipe-maintainers:
+    - indianewok
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

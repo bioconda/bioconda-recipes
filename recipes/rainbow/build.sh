@@ -1,6 +1,8 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+export CFLAGS="${CFLAGS} -W -O3 -Wno-self-assign -Wno-unused-function"
+
+mkdir -p "$PREFIX/bin"
 
 # The tarball has "._*" files (something macOS related?!),
 # which also includes "._rainbow_$PKG_VERSION".
@@ -8,15 +10,9 @@ mkdir -p $PREFIX/bin
 # => Add a "|| true" so it is Ok to fail on the "cd".
 cd rainbow_$PKG_VERSION || true
 
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' select_*.pl
+
 make CC="${CC}" CFLAGS="${CFLAGS}"
 
-cp rainbow $PREFIX/bin
-
-cp select_all_rbcontig.pl $PREFIX/bin
-cp select_best_rbcontig.pl $PREFIX/bin
-cp select_sec_rbcontig.pl $PREFIX/bin
-cp select_best_rbcontig_plus_read1.pl $PREFIX/bin
-
-chmod +x $PREFIX/bin/select_*
-
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/select_*.pl
+install -v -m 0755 rainbow "$PREFIX/bin"
+install -v -m 0755 *.pl "$PREFIX/bin"

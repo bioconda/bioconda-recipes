@@ -1,0 +1,67 @@
+{% set name = "r-pio" %}
+{% set version = "0.1.0" %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/caravagn/pio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 446f3ffe61fe50824a4c0519ae9fa4b9575d9f2bc85c1ae44918d5a665870008
+
+build:
+  merge_build_host: True  # [win]
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("r-pio", max_pin="x.x") }}
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ posix }}git
+    - {{ posix }}filesystem      # [win]
+    - {{ posix }}zip             # [win]
+  host:
+    - r-base
+    - r-roxygen2
+    - r-crayon
+    - r-tibble
+    - r-knitr
+    - r-markdown
+  run:
+    - r-base
+    - r-roxygen2
+    - r-crayon
+    - r-tibble
+    - r-knitr
+    - r-markdown
+
+test:
+  commands:
+    - $R -e "library('pio')"  # [not win]
+    - "\"%R%\" -e \"library('pio')\""  # [win]
+
+about:
+  home: https://github.com/caravagn/pio
+  summary: 'Pretty I/O output to the console'
+  description: |
+    pio is a package to print nice coloured outputs to the console. If you work with 
+    R scripts that generate several loads or outputs, or if you just like to organize in a tidy 
+    way on-screen outputs of your computations, then `pio`'s pretty I/O system is the package 
+    that you are looking for.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://caravagn.github.io/pio/
+  dev_url: https://github.com/caravagn/pio
+
+extra:
+  recipe-maintainers:
+    - brandon-hastings
+

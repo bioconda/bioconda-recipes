@@ -1,0 +1,43 @@
+{% set name = "fastan" %}
+{% set version = "0.8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/thegenemyers/FASTAN/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cd4b9c9da2f4dec0e7b19d466a170a4e24fa98d06c2ee7d41235162d55b39294
+  patches:
+    - 0001-Makefile.patch
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - FasTAN 2>&1 | grep "Usage:"
+    - FastLTR 2>&1 | grep "Usage:"
+    - FastTIR 2>&1 | grep "Usage:"
+
+about:
+  home: "https://github.com/thegenemyers/FASTAN"
+  license: Custom
+  license_file: LICENSE
+  summary: "Fast Tandem Repeat Finder (also builds FastLTR and FastTIR)."
+  dev_url: "https://github.com/thegenemyers/FASTAN"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

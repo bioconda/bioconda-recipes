@@ -9,27 +9,24 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 5
-  skip: True  # [osx or py2k]
-  run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x") }}
-
 source:
-  #- url: https://github.com/rikuu/{{ name }}/archive/v{{ version }}.tar.gz
-  #  sha256: {{ sha256 }}
   - url: https://github.com/rikuu/{{ name }}/archive/{{ git_rev }}.zip
     sha256: {{ sha256 }}
   - url: https://github.com/GATB/gatb-core/archive/v{{ gatb_core_version }}.tar.gz
     sha256: {{ gatb_core_sha256 }}
     folder: thirdparty/gatb-core
 
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - pkg-config
-    - cmake
+    - cmake <4
     - make
     - perl
     - coreutils
@@ -40,7 +37,6 @@ requirements:
     - htslib
     - zlib
   run:
-    - zlib
     - python
 
 test:
@@ -51,13 +47,16 @@ test:
     - 'Gap2Seq -h 2>&1 | grep "usage: Gap2Seq"  > /dev/null'
 
 about:
-  home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/
-  license: GPLv3
+  home: "https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq"
+  license: "GPL-3.0-or-later"
   license_file: LICENCE
-  summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
+  summary: "Gap2Seq is a tool for filling gaps between contigs in genome assemblies."
+  doc_url: "https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq"
+  dev_url: "https://github.com/rikuu/Gap2Seq"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - notestaff

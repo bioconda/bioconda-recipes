@@ -1,5 +1,5 @@
 {% set name = "pantax" %}
-{% set version = "1.0.2" %}
+{% set version = "2.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,11 @@ package:
 
 source:
   - url: https://github.com/LuoGroup2023/PanTax/releases/download/v{{ version }}/{{ name }}.tar.gz  
-    sha256: 9433f3d6c5ca6870de4aa0d92cfc591973fda5f8620f5a8e9befa01f954b8dfb
+    sha256: 0a792f2b589e548f2ea608d0edfada079723ff3a31053a44300c712b1251cd01
+
+  - url: https://packages.gurobi.com/11.0/gurobi11.0.3_linux64.tar.gz # [linux]
+    sha256: 82a2c8671c234bbaa9dc64da22b1951abf41c62047fdf77004e65f24a91dfd13  # [linux]
+    folder: gurobi1103  # [linux]
 
 build:
   skip: True  # [osx]
@@ -17,35 +21,47 @@ build:
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
+    - cmake
+    - make
+    - glpk
+    - coin-or-cbc
   host:
     - python ==3.10
     - pip
+    - glpk
+    - clangdev =19 # [linux]
   run:
     - python =3.10
-    - samtools =1.19.2
-    - bcftools =1.19
-    - htslib =1.19.1
+    - r-base >=4.2
+    - glpk
+    - samtools >=1.19.2
+    - bcftools >=1.19
+    - htslib >=1.19.1
     - pggb =0.6.0
-    - vg
-    - graphaligner =1.0.17 
-    - h5py =3.10.0
-    - pandas =2.2.0
+    - vg >=1.59
+    - graphaligner >=1.0.17 
+    - sylph >=0.6.1
+    - hdf5 =1.10.5
+    - pandas >=2.2.0
     - tqdm
-    - numpy =1.26.3
-    - networkx =3.2.1
-    - pyarrow =14.0.2
+    - numpy >=1.26.3
+    - networkx >=3.2.1
+    - pyarrow >=14.0.2
+    - fastani
+    - coin-or-cbc
 
 test:
   commands:
-    - pantax -h
+    - pantax-free -h
 
 about:
   home: https://github.com/LuoGroup2023/PanTax
   license: GPL-3.0-or-later
   license_file: LICENSE
   license_family: GPL3
-  summary: Strain-level taxonomic classification of metagenomic data using pangenome graphs
+  summary: Strain-level metagenomic profiling using pangenome graphs with PanTax
 
 extra:
   skip-lints:

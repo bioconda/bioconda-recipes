@@ -1,15 +1,31 @@
-package:
-  name: gustaf
-  version: "1.0.8"
+{% set name = "gustaf" %}
+{% set version = "1.0.10" %}
+{% set seqan_version = "2.5.1" %}
 
-build:
-  number: 2
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url:  http://packages.seqan.de/gustaf/gustaf-1.0.8-Mac-x86_64.zip # [osx]
-    md5: 9c219eac167750e7745274da69509da3 # [osx]
-  - url:  http://packages.seqan.de/gustaf/gustaf-1.0.8-Linux-x86_64.tar.xz # [linux64]
-    md5: a873ad2048eb2a74e65aff220bba8132 # [linux64]
+  url: https://github.com/seqan/seqan/archive/refs/tags/seqan-v{{ seqan_version }}.tar.gz
+  sha256: 78c80631772dd5919b8e542c6cb4ec9d2cde8db62d53dc2b01eeb669aaf04544
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('gustaf', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - boost-cpp
+    - libxml2
+    - bzip2
+    - zlib
 
 test:
   commands:
@@ -17,11 +33,13 @@ test:
     - gustaf_mate_joining --help 2>&1 > /dev/null
 
 about:
-  home: https://github.com/seqan/seqan/tree/master/apps/gustaf/README.rst
-  license: https://github.com/seqan/seqan/tree/master/apps/gustaf/LICENSE
-  summary: Gustaf is a tool primarily designed for multi-split mapping of sequencing reads.
+  home: "https://github.com/seqan/seqan/tree/master/apps/gustaf/README.rst"
+  license: "https://github.com/seqan/seqan/tree/master/apps/gustaf/LICENSE"
+  summary: "Gustaf is a tool primarily designed for multi-split mapping of sequencing reads."
+  doc_url: "https://github.com/seqan/seqan/tree/master/apps/gustaf/README.rst"
+  dev_url: "https://github.com/seqan/seqan/tree/master/apps/gustaf"
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

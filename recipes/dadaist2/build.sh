@@ -17,6 +17,5 @@ if [ -e "setup/build.sh" ]; then
 else
   echo " * Skipping Python setup: this release does not include new Python scripts."
 fi
-#mv db/* "${PREFIX}/db/"
-#cp -r doc/* "${PREFIX}/share/doc/dadaist2/"
+
 

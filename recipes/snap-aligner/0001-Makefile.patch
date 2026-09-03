@@ -1,0 +1,39 @@
+diff --git a/Makefile b/Makefile
+index 5f8dd2c..62002ae 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,11 +1,11 @@
+ ifndef CXXFLAGS
+-  CXXFLAGS = -O3 -Wno-format -std=c++98
++  CXXFLAGS = -g -O3 -Wno-format -std=c++03
+   #CXXFLAGS = -g -O0 -Wno-format -std=c++98
+ endif
+ 
+-CXXFLAGS += -MMD -ISNAPLib -msse
++CXXFLAGS += -msse -MMD -ISNAPLib -Iapps/snap -I$(PREFIX)/include
+ 
+-LDFLAGS += -pthread
++LDFLAGS += -pthread -L$(PREFIX)/lib
+ 
+ #LIBHDFS_HOME = ../hadoop-2.2.0-src/hadoop-hdfs-project/hadoop-hdfs/src/main/native/libhdfs
+ #JAVA_HOME = /usr/lib/jvm/java-7-oracle
+@@ -31,7 +31,7 @@ ifneq ($(STATIC),)
+   LIBS += $(STATIC_GCC)
+ endif
+ 
+-CXX = g++
++CXX = $(CXX)
+ 
+ LIB_SRC = $(wildcard SNAPLib/*.cpp)
+ LIB_OBJ = $(patsubst %.cpp, %.o, $(LIB_SRC))
+@@ -69,8 +69,8 @@ SNAPCommand: $(LIB_OBJ) $(SNAPCOMMAND_OBJ)
+ 
+ snapxl:
+ 	make clean
+-	make snap CXXFLAGS="-DLONG_READS $(CXXFLAGS)"
+-	mv snap snapxl
++	make snap-aligner CXXFLAGS="-DLONG_READS $(CXXFLAGS)"
++	mv snap-aligner snapxl-aligner
+ 	make clean
+ 
+ roc: $(LIB_OBJ) $(ROC_OBJ)

@@ -1,0 +1,34 @@
+{% set name = "probe" %}
+{% set version = "2.18" %}
+{% set repo_url = "https://github.com/rlabduke/probe" %}
+{% set home_url = "http://kinemage.biochem.duke.edu/software/probe/" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "{{ repo_url }}/archive/refs/tags/0{{ version }}.zip"
+  sha256: 86926e3145e9f5e4c6d16019a2e40987f1173e5841dbef883433a3a9743d4c6d
+
+build:
+  number: 0
+  skip: true # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}  # semantic versioning not always followed, e.g.: https://github.com/rlabduke/probe/issues/11
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake =3.28
+
+test:
+  commands:
+    - probe
+
+about:
+  home: "{{ home_url }}"
+  license: 'Apache 2.0'
+  summary: 'Evaluate and visualize protein interatomic packing'
+  dev_url: "{{ repo_url }}"

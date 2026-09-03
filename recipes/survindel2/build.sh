@@ -1,4 +1,10 @@
+#!/bin/bash
 set -x
+
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+export CFLAGS="${CFLAGS} -O3"
 
 ${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} libs/kdtree.c -o kdtree.o -c
 

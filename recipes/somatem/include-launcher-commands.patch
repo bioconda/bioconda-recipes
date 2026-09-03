@@ -1,0 +1,220 @@
+diff --git a/bin/somatem b/bin/somatem
+index c57faef..0402fe8 100755
+--- a/bin/somatem
++++ b/bin/somatem
+@@ -4,61 +4,141 @@ set -euo pipefail
+ PIPELINE_DIR="@@PIPELINE_DIR@@"
+ 
+ show_help() {
+-    cat <<'EOF'
+-somatem: launch the Somatem Nextflow pipeline
++    cat <<EOF
++Somatem
+ 
+ Usage:
+-  somatem [Nextflow pipeline options]
++  somatem <command> [nextflow args...]
+ 
+-Examples:
+-  somatem -params-file assets/16S_params.yml
+-  somatem -params-file assets/custom_metadata.yaml
+-  somatem --input samplesheet.csv --outdir results -profile conda
+-  somatem -profile docker --input samplesheet.csv --outdir results
++Commands:
++  16S                    Run 16S taxonomic profiling
++  pre_processing         Run the main pipeline with pre-processing analysis
++  mag                    Run the main pipeline with assembly analysis
++  taxonomic_profiling    Run taxonomic profiling (defaults to metagenomic data)
++  genome_dynamics        Run the main pipeline with genome dynamics analysis
++  get_example_data       Download example data
++  download_databases     Download required databases
++  help                   Show this help message
+ 
+-Notes:
+-  - Relative paths passed to -params-file or --params-file that match files
+-    inside the installed Somatem pipeline will be resolved automatically.
+-  - Any other arguments are passed directly to:
+-      nextflow run <pipeline>/main.nf
++Common shortcuts:
++  -i, --input            Input sample sheet CSV
++  -o, --outdir           Output directory
+ 
+-Support:
+-  - If you run into any issues, please feel free to reach out.
+-  - Repository:
+-      https://github.com/treangenlab/Somatem
+-  - Wiki:
+-      https://github.com/treangenlab/Somatem/wiki
+-  - You can look through the GitHub wiki pages for documentation on the
+-    major subworkflows within Somatem.
++Examples:
++  somatem 16S -i samples.csv -o results
++  somatem taxonomic-profiling -i samples.csv -o results
++  somatem taxonomic-profiling --data_type 16S -i samples.csv -o results
++  somatem mag -i samples.csv -o results
++  somatem genome-dynamics -i samples.csv -o results
++  somatem get_example_data --outdir ./somatem_example_data
+ 
+-Help:
+-  somatem -h
+-  somatem --help
++Input CSV format:
++  sample,fastq_1
++  mock1,assets/examples/data/16S/mockm95_sub10k.fastq.gz
++  mock2,assets/examples/data/16S/mockm91_sub10k.fastq.gz
+ EOF
+ }
+ 
+-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+-    show_help
+-    exit 0
+-fi
++resolve_args() {
++    RESOLVED_ARGS=()
++    HAS_DATA_TYPE=0
+ 
+-args=()
+-while [[ $# -gt 0 ]]; do
+-    case "$1" in
+-        -params-file|--params-file)
+-            shift
+-            pf="$1"
+-            if [[ "$pf" != /* && -f "${PIPELINE_DIR}/${pf}" ]]; then
+-                args+=("-params-file" "${PIPELINE_DIR}/${pf}")
+-            else
+-                args+=("-params-file" "$pf")
+-            fi
+-            ;;
+-        *)
+-            args+=("$1")
+-            ;;
+-    esac
++    while [[ $# -gt 0 ]]; do
++        case "$1" in
++            -i)
++                shift
++                RESOLVED_ARGS+=("--input" "$1")
++                ;;
++            --input)
++                shift
++                RESOLVED_ARGS+=("--input" "$1")
++                ;;
++            -o)
++                shift
++                RESOLVED_ARGS+=("--outdir" "$1")
++                ;;
++            --outdir)
++                shift
++                RESOLVED_ARGS+=("--outdir" "$1")
++                ;;
++            --data_type)
++                shift
++                HAS_DATA_TYPE=1
++                RESOLVED_ARGS+=("--data_type" "$1")
++                ;;
++            -params-file|--params-file)
++                shift
++                pf="$1"
++                if [[ "$pf" != /* && -f "${PIPELINE_DIR}/${pf}" ]]; then
++                    RESOLVED_ARGS+=("--params-file" "${PIPELINE_DIR}/${pf}")
++                else
++                    RESOLVED_ARGS+=("--params-file" "$pf")
++                fi
++                ;;
++            *)
++                RESOLVED_ARGS+=("$1")
++                ;;
++        esac
++        shift
++    done
++}
++
++cmd="${1:-help}"
++if [[ $# -gt 0 ]]; then
+     shift
+-done
++fi
++
++resolve_args "$@"
+ 
+-exec nextflow run "${PIPELINE_DIR}/main.nf" "${args[@]}"
++case "${cmd}" in
++    16S|16s)
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --data_type 16S \
++            --analysis_type taxonomic-profiling \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    pre_processing|pre-processing|preprocessing)
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type pre-processing \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    mag|assembly_mags|mag_assembly|assembly)
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type assembly \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    taxonomic_profiling|taxonomic-profiling|tax|profiling)
++        if [[ "${HAS_DATA_TYPE}" -eq 1 ]]; then
++            exec nextflow run "${PIPELINE_DIR}/main.nf" \
++                --analysis_type taxonomic-profiling \
++                "${RESOLVED_ARGS[@]}"
++        else
++            exec nextflow run "${PIPELINE_DIR}/main.nf" \
++                --data_type metagenomic \
++                --analysis_type taxonomic-profiling \
++                "${RESOLVED_ARGS[@]}"
++        fi
++        ;;
++    genome_dynamics|genome-dynamics|dynamics)
++        exec nextflow run "${PIPELINE_DIR}/main.nf" \
++            --analysis_type genome-dynamics \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    get_example_data|example_data|examples)
++        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/get_example_data.nf" \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    download_databases|download-databases|databases|dbs)
++        exec nextflow run "${PIPELINE_DIR}/subworkflows/local/download_databases.nf" \
++            "${RESOLVED_ARGS[@]}"
++        ;;
++    help|-h|--help)
++        show_help
++        ;;
++    *)
++        echo "Error: unknown command '${cmd}'" >&2
++        echo >&2
++        show_help >&2
++        exit 1
++        ;;
++esac
+\ No newline at end of file
+diff --git a/modules/local/gdown/main.nf b/modules/local/gdown/main.nf
+index 379f027..faff291 100644
+--- a/modules/local/gdown/main.nf
++++ b/modules/local/gdown/main.nf
+@@ -1,4 +1,4 @@
+-// downloads test data from google drive `examples` directory into Somatem/assets/examples/ directory
++// downloads test data from google drive `examples` directory 
+ 
+ process GDOWN {
+     label 'process_single'
+diff --git a/subworkflows/local/get_example_data.nf b/subworkflows/local/get_example_data.nf
+index 8d73fbb..22c265a 100644
+--- a/subworkflows/local/get_example_data.nf
++++ b/subworkflows/local/get_example_data.nf
+@@ -2,7 +2,8 @@
+ 
+ include { GDOWN } from '../../modules/local/gdown/main.nf'
+ 
++params.outdir = params.outdir ?: "${launchDir}/somatem_example_data"
++
+ workflow {
+     GDOWN()
+-}
+-    
+\ No newline at end of file
++}
+\ No newline at end of file

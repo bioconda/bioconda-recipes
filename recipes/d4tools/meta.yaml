@@ -1,16 +1,38 @@
 {% set name = "d4tools" %}
-{% set version = "0.3.11" %}
+{% set version = "0.3.11.post0" %}
+{% set commit = "6f4031309958a7a1e471c9081369f2012d82705e" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/38/d4-format/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 376e61c93cfe2efc15f5e74b75214e065e278146555e67b8769818bf49594726
+  # v0.3.11 is the latest tagged release, but it predates upstream commit 729ed9d ("Fix off by
+  # one bug when converting BAM files to d4 files", 38/d4-format#97, merged Feb 2025), which
+  # fixes two real depth-counting bugs: a read's coverage end was miscounted by one, and every
+  # position's reported depth used the coverage heap's state from *before* that position's own
+  # reads were added to it. No release has included this fix yet, so this recipe builds from a
+  # specific commit on upstream's master instead of a tagged release, per
+  # https://bioconda.github.io/contributor/guidelines.html#packages-appropriate-for-bioconda
+  # ("If uploading of an unreleased version is necessary, please follow the versioning scheme of
+  # conda for pre- and post-releases"). Move back to a tagged release once one exists that
+  # includes 729ed9d.
+  url: https://github.com/38/d4-format/archive/{{ commit }}.tar.gz
+  sha256: 3e6af3d73f86730504224ac834989e7ba10baa9e4f0fffd898975300a3df0015
+  patches:
+    # upstream fix (include-path only), still an open PR: https://github.com/38/d4-format/pull/119
+    # this patch additionally includes:
+    # - hard-fails instead of silently falling back to a vendored htslib build if HTSLIB=system
+    #   is requested but pkg-config can't find htslib
+    # - bumps the pinned bindgen 0.55.1 -> 0.72.1: 0.55.1 panics generating bindings for real
+    #   htslib structs (e.g. htsFormat) on some platforms, since it detects anonymous
+    #   structs/unions by checking for an empty clang-reported name rather than clang's own
+    #   is_anonymous() API, and can hand a non-identifier debug string to Ident::new(). Fixed
+    #   upstream in rust-bindgen PR #2319 (bindgen/bindgen#2319), included by 0.72.1.
+    - fix-system-htslib-include-path.patch
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('d4tools', max_pin="x.x") }}
 
@@ -19,31 +41,66 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('rust') }}
-    - gcc  # [not osx]
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
     - clangdev
     - pkg-config
     - make
     - cmake
+    - perl
+  host:
+    - curl
+    - tar
+    - htslib
+    - zlib
+    - xz
+    - bzip2
   run:
     - starcode
+    - htslib
 
 test:
+  files:
+    - test-data/test.cram
+    - test-data/test.cram.crai
+    - test-data/ref.fa
+    - test-data/ref.fa.fai
+    - test-data/expected_output.txt
   commands:
-    - "true"
+    - d4tools --help
+    # confirm htslib is dynamically linked (not a static/vendored htslib creeping back in).
+    # Checking the *resolved path* is unreliable across toolchains: on osx, otool -L reports
+    # each dylib's own (usually @rpath-relative) install name, never an absolute path; on the
+    # aarch64 CI image, ldd's resolved path is a literal, unexpanded "$PREFIX/..." template
+    # rather than the real absolute path, even though the library does load correctly (valid
+    # address, and the CRAM decode test below proves it's the right one end to end).
+    - ldd $(command -v d4tools) | grep -q libhts.so  # [linux]
+    - otool -L $(command -v d4tools) | grep -q libhts  # [osx]
+    # exercise real CRAM decoding (test.cram is CRAM v3.1, the format this recipe's
+    # system-htslib fix targets -- see test-data/README.md) rather than just linking/--help.
+    # Guarded on the fixture file's presence: bioconda's mulled-build second-stage container
+    # test runs this same command list against a bare package install and never copies
+    # `test: files:` in (bioconda_utils/pkg_test.py's get_tests() only reads test/commands out
+    # of the built package's recorded recipe metadata), so without this guard the mulled test
+    # would always fail here with "No such file or directory" regardless of whether d4tools
+    # itself works. The primary build+test phase, where the files really are present, still
+    # runs the real check and fails on a genuine regression.
+    - if [ -f test-data/test.cram ]; then d4tools create -r test-data/ref.fa.fai test-data/test.cram test-output.d4 && d4tools view test-output.d4 | diff - test-data/expected_output.txt; fi
 
 about:
-  home: https://github.com/38/d4-format
+  home: "https://github.com/38/d4-format"
   license: MIT
   license_family: MIT
-  summary: |
-    The D4 command line utility program.
-  dev_url: https://github.com/38/d4-format
+  license_file: LICENSE
+  summary: "The D4 command line utility program."
+  dev_url: "https://github.com/38/d4-format"
+  doc_url: "https://github.com/38/d4-format/blob/{{ commit }}/README.md"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s43588-021-00085-0
   recipe-maintainers:
     - haohou
-  skip-lints:
-    # Because the Rust build script will build all the upstream dependencies and those dependencies contains make file that directly call gcc rather than use $(CC) variable. Thus not forcing install gcc into the environment can cause linking error as the conda system have it's own libc. 
-    - should_use_compilers

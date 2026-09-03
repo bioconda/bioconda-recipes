@@ -1,0 +1,46 @@
+{% set name = "mypmfs_py" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 23732604ad697e77890854f526d67a91c2e353e4eca679e8c6a254e53536de05
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+  noarch: python
+  entry_points:
+    - mypmfs_py = mypmfs_py.module:main
+  run_exports:
+    - {{ pin_compatible(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools
+  run:
+    - python >=3.6
+    - libstdcxx-ng  # [linux]
+    
+test:
+  imports:
+    - MyPMFs_py
+
+about:
+  home: https://github.com/bibip-impmc/mypmfs
+  dev_url: https://github.com/bibip-impmc/mypmfs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "Python package for mypmfs training (includes batch download from PDB)."
+
+extra:
+  recipe-maintainers:
+    - alexhold5
+  identifiers:
+    - doi:10.1016/j.biochi.2018.05.013

@@ -1,0 +1,141 @@
+diff --git a/source/CMakeLists.txt b/source/CMakeLists.txt
+index 33fc4da..c849053 100644
+--- a/source/CMakeLists.txt
++++ b/source/CMakeLists.txt
+@@ -8,10 +8,10 @@ enable_testing()
+ 
+ #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+ 
+-add_subdirectory(thirdparty/boost-cmake-1.67.0)
+-
++find_package(Boost REQUIRED COMPONENTS system program_options filesystem)
++find_package(fmt REQUIRED)
+ # Required to make spdlog work
+-include_directories(thirdparty)
++#include_directories(thirdparty)
+ 
+ add_subdirectory(common)
+ add_subdirectory(io)
+@@ -28,7 +28,8 @@ add_executable(ExpansionHunterDenovo
+ target_include_directories(ExpansionHunterDenovo PUBLIC ${CMAKE_SOURCE_DIR})
+ target_link_libraries(ExpansionHunterDenovo PRIVATE
+         Boost::system Boost::program_options
+-        common region profileworkflow mergeworkflow)
++        common region profileworkflow mergeworkflow
++    fmt::fmt)
+ 
+ add_executable(UnitTests
+         tests/UnitTests.cpp
+@@ -36,7 +37,7 @@ add_executable(UnitTests
+         tests/PurityScoreTest.cpp
+         tests/GenomicRegionTest.cpp
+         tests/IrrFinderTest.cpp)
+-target_link_libraries(UnitTests common reads region)
++target_link_libraries(UnitTests common reads region fmt::fmt)
+ target_include_directories(UnitTests PUBLIC ${CMAKE_SOURCE_DIR})
+ 
+ 
+diff --git a/source/app/ExpansionHunterDenovo.cpp b/source/app/ExpansionHunterDenovo.cpp
+index 5c7a1ab..e7b3af5 100644
+--- a/source/app/ExpansionHunterDenovo.cpp
++++ b/source/app/ExpansionHunterDenovo.cpp
+@@ -24,7 +24,7 @@
+ 
+ #include <boost/program_options.hpp>
+ 
+-#include "thirdparty/spdlog/spdlog.h"
++#include "spdlog/spdlog.h"
+ 
+ #include "app/Version.hh"
+ #include "merge/MergeWorkflow.hh"
+diff --git a/source/io/CMakeLists.txt b/source/io/CMakeLists.txt
+index 3584d21..2639353 100644
+--- a/source/io/CMakeLists.txt
++++ b/source/io/CMakeLists.txt
+@@ -5,33 +5,12 @@ include(FindZLIB)
+ include(FindBZip2)
+ include(FindLibLZMA)
+ 
+-#ExternalProject_Add(htslib
+-#        PREFIX ${CMAKE_BINARY_DIR}/thirdparty/htslib
+-#        GIT_REPOSITORY "https://github.com/samtools/htslib.git"
+-#        GIT_TAG "1.3.1"
+-#        UPDATE_COMMAND ""
+-#        BUILD_IN_SOURCE 1
+-#        CONFIGURE_COMMAND "./configure"
+-#        BUILD_COMMAND make
+-#        INSTALL_COMMAND make install prefix=${CMAKE_BINARY_DIR}/thirdparty/htslib
+-#        LOG_DOWNLOAD 1
+-#        )
+-
+-
+-ExternalProject_Add(htslib_project
+-	URL ${CMAKE_SOURCE_DIR}/thirdparty/htslib-1.9.tar.bz2
+-	SOURCE_DIR ${CMAKE_BINARY_DIR}/thirdparty/htslib-1.9-source
+-	INSTALL_DIR ${CMAKE_BINARY_DIR}/thirdparty/htslib-1.9
+-	CONFIGURE_COMMAND ""
+-	BUILD_COMMAND make -C <SOURCE_DIR> prefix=<INSTALL_DIR>
+-	INSTALL_COMMAND make -C <SOURCE_DIR> install prefix=<INSTALL_DIR>
+-	)
++
++
+ 
+ #set(htslib_static ${CMAKE_BINARY_DIR}/thirdparty/htslib/lib/libhts.a)
+ add_library(htslib STATIC IMPORTED)
+-add_dependencies(htslib htslib_project)
+-set_property(TARGET htslib 
+-	PROPERTY IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/thirdparty/htslib-1.9/lib/libhts.a)
++
+ 
+ 
+ add_library(io STATIC
+@@ -39,10 +18,6 @@ add_library(io STATIC
+         HtsHelpers.hh HtsHelpers.cpp
+         Reference.hh Reference.cpp)
+ 
+-target_include_directories(io PUBLIC
+-        ${CMAKE_SOURCE_DIR}
+-        ${CMAKE_BINARY_DIR}/thirdparty/htslib-1.9/include
+-        )
+ 
+ target_link_libraries(io PUBLIC
+         reads
+diff --git a/source/merge/MergeWorkflow.cpp b/source/merge/MergeWorkflow.cpp
+index ec811eb..f965e55 100644
+--- a/source/merge/MergeWorkflow.cpp
++++ b/source/merge/MergeWorkflow.cpp
+@@ -32,7 +32,7 @@
+ #include <vector>
+ 
+ #include "thirdparty/nlohmann_json/json.hpp"
+-#include "thirdparty/spdlog/spdlog.h"
++#include "spdlog/spdlog.h"
+ 
+ #include "MergeParameters.hh"
+ #include "io/Reference.hh"
+diff --git a/source/profile/ProfileWorkflow.cpp b/source/profile/ProfileWorkflow.cpp
+index df7af41..7678665 100644
+--- a/source/profile/ProfileWorkflow.cpp
++++ b/source/profile/ProfileWorkflow.cpp
+@@ -30,7 +30,7 @@
+ #include <vector>
+ 
+ #include "thirdparty/nlohmann_json/json.hpp"
+-#include "thirdparty/spdlog/spdlog.h"
++#include "spdlog/spdlog.h"
+ 
+ #include "io/HtsFileStreamer.hh"
+ #include "profile/PairCollector.hh"
+diff --git a/source/thirdparty/catch2/catch.hpp b/source/thirdparty/catch2/catch.hpp
+index 1850fff..cc402f8 100755
+--- a/source/thirdparty/catch2/catch.hpp
++++ b/source/thirdparty/catch2/catch.hpp
+@@ -8719,7 +8719,7 @@ namespace Catch {
+ 
+     // 32kb for the alternate stack seems to be sufficient. However, this value
+     // is experimentally determined, so that's not guaranteed.
+-    constexpr static std::size_t sigStackSize = 32768 >= MINSIGSTKSZ ? 32768 : MINSIGSTKSZ;
++    constexpr static std::size_t sigStackSize = 32768;
+ 
+     static SignalDefs signalDefs[] = {
+         { SIGINT,  "SIGINT - Terminal interrupt signal" },

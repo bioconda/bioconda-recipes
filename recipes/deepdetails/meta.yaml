@@ -1,0 +1,69 @@
+{% set name = "deepdetails" %}
+{% set version = "1.0.0rc1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/deepdetails-{{ version }}.tar.gz
+  sha256: b442a84cabd097c71215c71bf8341165077d74fb1c854f259c4f442fb6a293dc
+
+build:
+  entry_points:
+    - deepdetails = deepdetails.cli:deepdetails
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('deepdetails', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python >=3.10
+    - pytorch
+    - numpy
+    - pandas
+    - h5py
+    - pyfaidx
+    - pytorch-lightning
+    - torchmetrics
+    - einops
+    - matplotlib-base
+    - tqdm
+    - biopython
+    - scikit-learn
+    - pybigwig
+    - pybedtools
+    - tensorboard
+    - scipy >=1.11.1
+    - wandb
+    - bedtools
+    - ucsc-bedgraphtobigwig
+
+test:
+  imports:
+    - deepdetails
+  commands:
+    - pip check
+    - deepdetails --help
+  requires:
+    - pip
+
+about:
+  home: "https://details.yulab.org"
+  summary: "Deep-learning-based DEconvolution of Tissue profiles with Accurate Interpretation of Locus-specific Signals (DeepDETAILS)"
+  dev_url: "https://github.com/liyao001/DeepDETAILS"
+  license: GPL-3.0
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-026-03218-w
+  recipe-maintainers:
+    - liyao001
