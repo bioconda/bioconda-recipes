@@ -40,24 +40,28 @@ test:
   commands:
     - plasrisk --help
     - plasrisk --version
-    - python -c "from plasrisk import PlasRiskScorer; s=PlasRiskScorer(); print('OK')"
+    - python -c "from plasrisk import PlasRiskScorer, PIPdbScorer, get_scorer; s=get_scorer('plasrisk'); p=get_scorer('pipdb'); print('OK')"
 
 about:
   home: https://github.com/LLQ95/PlasRisk
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "Ten-dimension data-driven weighted risk assessment for bacterial plasmids"
+  summary: "Multi-model plasmid risk assessment: 10-dim weighted PlasRisk plus original PIPdb ordinal model"
   description: |
-    PlasRisk computes a composite risk score for bacterial plasmids based on
-    ten dimensions: antimicrobial resistance gene burden (S_ARG), virulence
-    factors (S_VF), mobility/conjugation potential (S_MOB), host range
-    (S_HOST), replicon type (S_REP), plasmid size (S_SIZE), biocide/metal
-    resistance (S_BM), geographic spread (S_GEO), habitat breadth (S_HAB),
-    and temporal growth rate (S_GROW). Weights were derived by data-driven
-    consensus (Random Forest MDG, LASSO, grid-search optimization) on
-    792,964 PIPdb plasmid sequence clusters. Accepts FASTA input and uses
-    abricate for annotation when available.
+    PlasRisk provides two scoring models for bacterial plasmid risk assessment.
+    The default PlasRisk model computes a composite score from ten dimensions:
+    antimicrobial resistance gene burden (S_ARG), virulence factors (S_VF),
+    mobility/conjugation potential (S_MOB), host range (S_HOST), replicon type
+    (S_REP), plasmid size (S_SIZE), biocide/metal resistance (S_BM), geographic
+    spread (S_GEO), habitat breadth (S_HAB), and temporal growth rate (S_GROW).
+    Weights were derived by data-driven consensus (Random Forest MDG, LASSO,
+    grid-search optimization) on 792,964 PIPdb plasmid sequence clusters.
+    A 5-dimension lite mode achieves equivalent AUC. The alternative PIPdb
+    model reproduces the original 8-item ordinal scoring system (Zhu et al.,
+    Nucleic Acids Res. 2025). Accepts FASTA input and uses abricate for
+    annotation when available; sequence-derived dimensions fall back to
+    replicon empirical medians when annotation is unavailable.
   doc_url: https://github.com/LLQ95/PlasRisk#readme
   dev_url: https://github.com/LLQ95/PlasRisk
 
@@ -73,3 +77,5 @@ extra:
       abricate-get_db --db card --force
       abricate-get_db --db vfdb --force
       abricate-get_db --db plasmidfinder --force
+      abricate-get_db --db bacmet2 --force
+      abricate-get_db --db isfinder --force
