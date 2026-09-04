@@ -1,0 +1,67 @@
+{% set name = "gravlax" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "3cecbda6a80ebfd4f1a8e9a0719c662b04c37aeb1efbe91a3925a3de8fc789bd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/COMBINE-lab/gravlax/releases/download/v{{ version }}/gravlax-{{ version }}-source.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - export CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER="${CC}"  # [osx and x86_64]
+    - export CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER="${CC}"  # [osx and arm64]
+    - cargo install --locked --offline --no-track --path crates/aie --root "${PREFIX}"
+    - '"${STRIP}" "${PREFIX}/bin/aie"'
+    - mkdir -p "${PREFIX}/share/bash-completion/completions"
+    - mkdir -p "${PREFIX}/share/zsh/site-functions"
+    - mkdir -p "${PREFIX}/share/fish/vendor_completions.d"
+    - '"${PREFIX}/bin/aie" completions bash > "${PREFIX}/share/bash-completion/completions/aie"'
+    - '"${PREFIX}/bin/aie" completions zsh > "${PREFIX}/share/zsh/site-functions/_aie"'
+    - '"${PREFIX}/bin/aie" completions fish > "${PREFIX}/share/fish/vendor_completions.d/aie.fish"'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    # Gravlax's minimum supported Rust version is 1.89.
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - aie --version
+    - aie --help
+    - aie doctor --help
+    - 'aie completions bash > /dev/null'
+    - test -s "${PREFIX}/share/bash-completion/completions/aie"
+    - test -s "${PREFIX}/share/zsh/site-functions/_aie"
+    - test -s "${PREFIX}/share/fish/vendor_completions.d/aie.fish"
+
+about:
+  home: https://github.com/COMBINE-lab/gravlax
+  summary: Annotation-independent molecular-evidence archives for single-cell RNA-seq
+  description: >-
+    Gravlax stores compact molecule-resolved alignment evidence once and replays
+    annotations and indexed biological queries without realignment.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://combine-lab.github.io/gravlax/
+  dev_url: https://github.com/COMBINE-lab/gravlax
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p
