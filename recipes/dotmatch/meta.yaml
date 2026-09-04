@@ -1,9 +1,9 @@
 {% set name = "dotmatch" %}
-{% set version = "0.1.9" %}
-{% set sha256 = "35bda517040de7d1c83482ee4d3f1ef9fa3540dc4165cbf0afb2dd46784bee06" %}
+{% set version = "0.4.1" %}
+{% set sha256 = "f327437939456ced40fc8671ff836676f2b16e890304d75c57822dfde0870a0d" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,10 +11,10 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  skip: True  # [win or py<39]
   run_exports:
-    - {{ pin_subpackage("dotmatch", max_pin="x.x") }}
-  skip: true  # [win or py<39]
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -25,7 +25,6 @@ requirements:
     - python
     - pip
     - setuptools >=77
-    - wheel
     - zlib
   run:
     - python
@@ -33,8 +32,10 @@ requirements:
 
 test:
   commands:
-    - python -c "import dotmatch; assert dotmatch.distance('ACGT', 'AGGT') == 1"
+    - python -c "import assaycode, dotmatch; assert assaycode.engine is dotmatch; assert dotmatch.distance('ACGT', 'AGGT') == 1"
     - python -c "from dotmatch.native import find_native_cli; p=find_native_cli(); assert p.name == 'dotmatch-native' and p.exists()"
+    - assaycode --version | grep '^assaycode {{ version }} (DotMatch engine {{ version }})$'
+    - assaycode --help | grep 'additive assay-level identity'
     - dotmatch --version | grep '^dotmatch {{ version }}$'
     - dotmatch dist ACGT AGGT | grep '^1$'
     - dotmatch leq 1 ACGT AGGT | grep '^true$'
@@ -80,19 +81,23 @@ test:
     - chmod -R a+rwX panel_out
 
 about:
-  home: https://github.com/dnncha/dotmatch
-  license: Apache-2.0
+  home: "https://dnncha.github.io/dotmatch"
+  license: "Apache-2.0"
+  license_family: APACHE
   license_file: LICENSE
-  summary: Deterministic short-DNA known-target assignment
+  summary: "Known-target short-DNA assignment from FASTQ."
   description: |
-    DotMatch is a deterministic known-target short-DNA assignment engine for
-    CRISPR guides, barcodes, primers, panels, and whitelist-style target sets.
-    It is not a genome aligner and does not emit SAM/BAM or CIGAR output.
-  dev_url: https://github.com/dnncha/dotmatch
-  doc_url: https://dotmatch.readthedocs.io/
+    DotMatch assigns fixed FASTQ read windows to known CRISPR guides, barcodes,
+    feature tags, primers, panels, and other finite target lists. It reports
+    unique, ambiguous, unmatched, and invalid reads and writes ordinary TSV,
+    JSON, FASTQ, and HTML outputs. It is not a genome aligner and does not emit
+    SAM/BAM or CIGAR output.
+  dev_url: "https://github.com/dnncha/dotmatch"
+  doc_url: "https://dotmatch.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:
     - osx-arm64
+    - linux-aarch64
   recipe-maintainers:
     - dnncha

@@ -1,0 +1,26 @@
+Let the C++ standard be chosen from the cmake command line.
+
+CFM-ID pins CMAKE_CXX_STANDARD to 11, but RDKit's public headers now require
+C++17 (std::any, std::string_view, std::is_same_v). A plain set() shadows the
+cache variable, so -DCMAKE_CXX_STANDARD=17 has no effect until it is made
+conditional.
+
+This does not raise the default, only lets an explicit choice win, so anyone
+building against older RDKit is unaffected. build.sh passes the 17.
+
+Not reported upstream: Bitbucket Issues are being sunset, so the repository has
+no usable tracker. Remove once upstream accepts the overridable form.
+
+--- a/cfm/CMakeLists.txt
++++ b/cfm/CMakeLists.txt
+@@ -13,7 +13,9 @@
+ #########################################################################*/
+ # We may need higher verison cmake
+ cmake_minimum_required(VERSION 3.7.0)
+-set(CMAKE_CXX_STANDARD 11)
++if(NOT DEFINED CMAKE_CXX_STANDARD)
++    set(CMAKE_CXX_STANDARD 11)
++endif()
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ # Set a default build type if none was specified
