@@ -1,0 +1,75 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: plasrisk
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/plasrisk/plasrisk-{{ version }}.tar.gz
+  sha256: 4a019f2dd57a0a7e11f4f518442083ab4066c92a5074245dbf5ca3afec14c497
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - plasrisk = plasrisk.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('plasrisk', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.8
+    - pandas >=1.3
+    - numpy >=1.20
+    # abricate and blast are recommended but not hard dependencies;
+    # the CLI falls back to sequence-only scoring when abricate is absent.
+    # Install them with: conda install -c bioconda -c conda-forge abricate blast
+
+test:
+  imports:
+    - plasrisk
+    - plasrisk.scoring
+    - plasrisk.annotate
+    - plasrisk.lookup
+  commands:
+    - plasrisk --help
+    - plasrisk --version
+    - python -c "from plasrisk import PlasRiskScorer; s=PlasRiskScorer(); print('OK')"
+
+about:
+  home: https://github.com/LLQ95/PlasRisk
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ten-dimension data-driven weighted risk assessment for bacterial plasmids"
+  description: |
+    PlasRisk computes a composite risk score for bacterial plasmids based on
+    ten dimensions: antimicrobial resistance gene burden (S_ARG), virulence
+    factors (S_VF), mobility/conjugation potential (S_MOB), host range
+    (S_HOST), replicon type (S_REP), plasmid size (S_SIZE), biocide/metal
+    resistance (S_BM), geographic spread (S_GEO), habitat breadth (S_HAB),
+    and temporal growth rate (S_GROW). Weights were derived by data-driven
+    consensus (Random Forest MDG, LASSO, grid-search optimization) on
+    792,964 PIPdb plasmid sequence clusters. Accepts FASTA input and uses
+    abricate for annotation when available.
+  doc_url: https://github.com/LLQ95/PlasRisk#readme
+  dev_url: https://github.com/LLQ95/PlasRisk
+
+extra:
+  recipe-maintainers:
+    - LLQ95
+  identifiers:
+    - doi:10.1093/nar/gkae952
+  notes: |
+    For full annotation capability, install abricate and blast:
+      conda install -c bioconda -c conda-forge abricate blast
+    Then set up databases:
+      abricate-get_db --db card --force
+      abricate-get_db --db vfdb --force
+      abricate-get_db --db plasmidfinder --force
