@@ -1,0 +1,111 @@
+{% set version = '1.7.1' %}
+
+package:
+  name: r-mikropml
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/mikropml_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mikropml/mikropml_{{ version }}.tar.gz
+  sha256: d939dab82719494d1b582bd3b64e0d9d2eafc3930fa4f27011e01a40f119f8d0
+
+build:
+  run_exports:
+    - {{ pin_subpackage("r-mikropml", max_pin="x") }}
+
+  noarch: generic
+
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  # no skip
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: assertthat, doFuture, forcats, foreach, furrr, future, future.apply, ggplot2, knitr, progress, progressr, purrr, rmarkdown, roxygen2, rsample, styler, testthat, tidyr, usethis
+requirements:
+
+  host:
+    - r-base
+    - r-mlmetrics
+    - bioconductor-s4vectors
+    - bioconductor-singlecellexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-treesummarizedexperiment
+    - r-caret
+    - r-dplyr
+    - r-e1071
+    - r-glmnet
+    - r-kernlab
+    - r-randomforest
+    - r-rlang
+    - r-rpart
+    - r-tidyselect
+    - r-xgboost
+
+  run:
+    - r-base
+    - r-mlmetrics
+    - bioconductor-s4vectors
+    - bioconductor-singlecellexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-treesummarizedexperiment
+    - r-caret
+    - r-dplyr
+    - r-e1071
+    - r-glmnet
+    - r-kernlab
+    - r-randomforest
+    - r-rlang
+    - r-rpart
+    - r-tidyselect
+    - r-xgboost
+
+test:
+  commands:
+    - $R -e "library('mikropml')"           # [not win]
+
+about:
+  home: https://www.schlosslab.org/mikropml/, https://github.com/SchlossLab/mikropml
+  license: MIT
+  summary: User-Friendly R Package for Supervised Machine Learning Pipelines
+  description: "An interface to build machine learning models for classification and regression problems.
+    'mikropml' implements the ML pipeline described by Top\xE7uo\u011Flu et al. (2020)
+    <doi:10.1128/mBio.00434-20> with reasonable default options for data preprocessing,
+    hyperparameter tuning, cross-validation, testing, model evaluation, and interpretation
+    steps.  See the website <https://www.schlosslab.org/mikropml/> for more information,
+    documentation, and examples."
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+
+# The original CRAN metadata for this package was:
+
+# Package: mikropml
+# Title: User-Friendly R Package for Supervised Machine Learning Pipelines
+# Version: 1.7.1
+# Authors@R: c( person("Begum", "Topcuoglu", , "topcuoglu.begum@gmail.com", role = "aut", comment = c(ORCID = "0000-0003-3140-537X")), person("Zena", "Lapp", , "zenalapp@umich.edu", role = "aut", comment = c(ORCID = "0000-0003-4674-2176")), person("Kelly", "Sovacool", , "sovacool@umich.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3283-829X")), person("Evan", "Snitkin", role = "aut", comment = c(ORCID = "0000-0001-8409-278X")), person("Jenna", "Wiens", role = "aut", comment = c(ORCID = "0000-0002-1057-7722")), person("Patrick", "Schloss", , "pschloss@umich.edu", role = "aut", comment = c(ORCID = "0000-0002-6935-4275")), person("Nick", "Lesniak", , "nlesniak@umich.edu", role = "ctb", comment = c(ORCID = "0000-0001-9359-5194")), person("Courtney", "Armour", , "armourc@umich.edu", role = "ctb", comment = c(ORCID = "0000-0002-5250-1224")), person("Sarah", "Lucas", , "salucas@umich.edu", role = "ctb", comment = c(ORCID = "0000-0003-1676-5801")), person("Tuomas", "Borman", role = "ctb", comment = c(ORCID = "0000-0002-8563-8884")) )
+# Description: An interface to build machine learning models for classification and regression problems. 'mikropml' implements the ML pipeline described by Topcuoglu et al. (2020) <doi:10.1128/mBio.00434-20> with reasonable default options for data preprocessing, hyperparameter tuning, cross-validation, testing, model evaluation, and interpretation steps.  See the website <https://www.schlosslab.org/mikropml/> for more information, documentation, and examples.
+# License: MIT + file LICENSE
+# URL: https://www.schlosslab.org/mikropml/, https://github.com/SchlossLab/mikropml
+# BugReports: https://github.com/SchlossLab/mikropml/issues
+# Depends: R (>= 4.1.0)
+# Imports: caret, dplyr, e1071, glmnet, kernlab, methods, MLmetrics, randomForest, rlang, rpart, S4Vectors, SingleCellExperiment, stats, SummarizedExperiment, tidyselect, TreeSummarizedExperiment, utils, xgboost
+# Suggests: assertthat, doFuture, forcats, foreach, furrr, future, future.apply, ggplot2, knitr, progress, progressr, purrr, rmarkdown, roxygen2, rsample, styler, testthat, tidyr, usethis
+# VignetteBuilder: knitr
+# biocViews:
+# Config/testthat/edition: 3
+# Encoding: UTF-8
+# LazyData: true
+# Config/roxygen2/version: 8.1.0
+# NeedsCompilation: no
+# Packaged: 2026-08-28 02:49:19 UTC; sovacool
+# Author: Begum Topcuoglu [aut] (ORCID: <https://orcid.org/0000-0003-3140-537X>), Zena Lapp [aut] (ORCID: <https://orcid.org/0000-0003-4674-2176>), Kelly Sovacool [aut, cre] (ORCID: <https://orcid.org/0000-0003-3283-829X>), Evan Snitkin [aut] (ORCID: <https://orcid.org/0000-0001-8409-278X>), Jenna Wiens [aut] (ORCID: <https://orcid.org/0000-0002-1057-7722>), Patrick Schloss [aut] (ORCID: <https://orcid.org/0000-0002-6935-4275>), Nick Lesniak [ctb] (ORCID: <https://orcid.org/0000-0001-9359-5194>), Courtney Armour [ctb] (ORCID: <https://orcid.org/0000-0002-5250-1224>), Sarah Lucas [ctb] (ORCID: <https://orcid.org/0000-0003-1676-5801>), Tuomas Borman [ctb] (ORCID: <https://orcid.org/0000-0002-8563-8884>)
+# Maintainer: Kelly Sovacool <sovacool@umich.edu>
+# Repository: CRAN
+# Date/Publication: 2026-08-28 17:10:09 UTC
