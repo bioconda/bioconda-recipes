@@ -1,0 +1,77 @@
+{% set name = "molnetpack" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 43810265d2a16637b12db32b4ced9d051890032edaa372ddb7a559b8325e7d40
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    # Backend has changed at every release: setuptools -> flit -> hatchling.
+    - hatchling
+  run:
+    - python >=3.10
+    - pytorch
+    - molmass
+    - numpy
+    - pandas
+    - pyteomics
+    - pyyaml
+    - rdkit
+    - matplotlib-base
+    - pillow
+    - platformdirs
+    - requests
+    - tqdm
+    - scikit-learn
+
+test:
+  imports:
+    - molnetpack
+  commands:
+    - python -c "from molnetpack import MolNet; print('molnetpack import OK')"
+    - python -c "import torch; from molnetpack import MolNet; MolNet(torch.device('cpu'), seed=42)"
+
+about:
+  home: https://github.com/JosieHong/3DMolMS
+  license: CC-BY-NC-SA-4.0
+  license_file: LICENSE
+  summary: 3DMolMS - tandem mass spectrum prediction from 3D molecular conformations
+  description: |
+    3DMolMS predicts MS/MS spectra from three-dimensional molecular
+    conformations using a deep neural network, with qTOF and Orbitrap models.
+    It also predicts retention time and collision cross section, and supports
+    feature extraction and model training.
+
+    The PyPI distribution is named molnetpack; the software is 3DMolMS.
+
+    Pretrained checkpoints are downloaded on demand by the pred_* methods.
+    Deployments needing reproducibility or offline operation should pass an
+    explicit checkpoint path instead. Checkpoints are version-specific: 1.4.0
+    retrained the QTOF, Orbitrap, RT and CCS models, and loading refuses any
+    checkpoint whose embedded config does not match.
+
+    NOTE: MolNet.load_data accepts a .pkl input deserialised with pickle.load,
+    which permits arbitrary code execution. Do not pass untrusted .pkl files.
+  doc_url: https://3dmolms.readthedocs.io/
+  dev_url: https://github.com/JosieHong/3DMolMS
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1093/bioinformatics/btad354
