@@ -1,0 +1,106 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: winnow-fdr
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/w/winnow-fdr/winnow_fdr-{{ version }}.tar.gz
+  sha256: 08835b95edefb478ad03ad8bb58968facee15d581e7e93cc8c89b9928ec89d15
+
+build:
+  entry_points:
+    - winnow = winnow.scripts.main:app
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("winnow-fdr", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - setuptools
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - koinapy >=0.0.10
+    - tomli >=2.2.1
+    - typer >=0.15.2
+    - instanovo >=1.1.4
+    - huggingface_hub >=0.35.3
+    - hydra-core >=1.3.2
+    - matchms >=0.31.0
+    - scikit-learn >=1.3.0
+    - matplotlib-base >=3.7.0
+    - pytorch >=2.6,<2.9  # [linux]
+    - pytorch >=2.6,<2.8  # [osx]
+    - safetensors >=0.7.0
+    - polars >=1.39.3
+    - biopython >=1.87
+    - pyahocorasick >=2.3.1
+
+test:
+  imports:
+    - winnow
+  commands:
+    # No `pip check`: matchms and sparsestack declare upper bounds on numba,
+    # pandas, lxml and rdkit on PyPI that their conda packages deliberately drop,
+    # so the solver picks newer versions and `pip check` reports false positives
+    # for those transitive dependencies.
+    - winnow --help
+    # winnow imports matchms lazily, only when reading MGF input, so the
+    # end-to-end run below does not cover it. Check it here instead.
+    - python -c "from matchms.importing import load_from_mgf"
+    # Generating sample dataset on the fly
+    - >-
+      python -c "import numpy as np, pandas as pd, polars as pl;
+      np.random.seed(42);
+      n = 100;
+      ids = ['spectrum_%d' % i for i in range(n)];
+      aa = list('ACDEFGHIKLMNPQRSTVWY');
+      peps = [''.join(np.random.choice(aa, size=np.random.randint(5, 10))) for _ in range(n)];
+      npk = [int(np.random.randint(10, 50)) for _ in range(n)];
+      pl.DataFrame({'spectrum_id': ids, 'precursor_mz': np.random.uniform(400, 1200, n), 'precursor_charge': np.random.choice([2, 3, 4], n).astype(int), 'retention_time': np.random.uniform(10, 60, n), 'sequence': peps, 'mz_array': [np.random.uniform(100, 1000, k).tolist() for k in npk], 'intensity_array': [np.random.uniform(0.1, 1.0, k).tolist() for k in npk]}).write_ipc('spectra.ipc');
+      d = {'spectrum_id': ids, 'predictions': peps, 'predictions_tokenised': [', '.join(p) for p in peps], 'log_probs': np.log(np.random.uniform(0.1, 0.9, n)), 'sequence': peps};
+      [d.update({'predictions_beam_%d' % b: (peps if b == 0 else [''.join(np.random.choice(aa, size=len(q))) for q in peps]), 'predictions_log_probability_beam_%d' % b: np.log(np.random.uniform(0.1, 0.9, n)) - b, 'predictions_token_log_probabilities_beam_%d' % b: [str(list((-0.1,) * len(q))) for q in peps]}) for b in range(3)];
+      pd.DataFrame(d).to_csv('predictions.csv', index=False)"
+    - >-
+      winnow train
+      dataset.spectrum_path_or_directory=spectra.ipc
+      dataset.predictions_path=predictions.csv
+      model_output_dir=models/new_model
+      dataset_output_path=results/calibrated_dataset.csv
+      calibrator.features.retention_time_feature.train_fraction=0.3
+      calibrator.features.retention_time_feature.min_train_points=2
+      calibrator.hidden_dims="[32, 16]"
+      calibrator.n_iter_no_change=100
+      calibrator.max_epochs=100
+    - >-
+      winnow predict
+      calibrator.pretrained_model_name_or_path=models/new_model
+      fdr_control.fdr_threshold=1.0
+      dataset.spectrum_path_or_directory=spectra.ipc
+      dataset.predictions_path=predictions.csv
+    - test -f results/calibrated_dataset.csv
+    # Remove what the run produced. The mulled-build container runs as root with
+    # its working directory bind-mounted from a host temporary directory, so
+    # root-owned output directories left here make bioconda-utils' own cleanup of
+    # that directory fail with EACCES after the test has already passed.
+    - rm -rf models results spectra.ipc predictions.csv
+  requires:
+    - python
+
+about:
+  home: https://github.com/instadeepai/winnow
+  summary: Score calibration and false discovery estimation for de novo peptide sequencing.
+  license: Apache-2.0
+  license_file: LICENSE.md
+
+extra:
+  identifiers:
+    - biotools:winnow
+    - doi:10.48550/arXiv.2509.24952
+  recipe-maintainers:
+    - BioGeek
+    - JemmaLDaniel
