@@ -1,0 +1,49 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: methscope
+  version: {{ version }}
+
+source:
+  # NOTE: GitHub's auto-generated tag tarballs do NOT contain the pinned YAME
+  # submodule. Publish a self-contained release asset that bundles YAME, e.g.:
+  #   git checkout v{{ version }} && git submodule update --init
+  #   git-archive-all --prefix=methscope-cli-{{ version }}/ methscope-cli-{{ version }}.tar.gz
+  #   gh release upload v{{ version }} methscope-cli-{{ version }}.tar.gz
+  #   sha256sum methscope-cli-{{ version }}.tar.gz   # -> paste below
+  url: https://github.com/zhou-lab/methscope-cli/releases/download/v{{ version }}/methscope-cli-{{ version }}.tar.gz
+  sha256: 6ab92bc418682632befbb2058fb1aaca3a8c6047879ef1de1e8de86901959acd
+
+build:
+  number: 0
+  run_exports:
+    # keep ABI-compatible against the libxgboost it was built with
+    - {{ pin_compatible('libxgboost') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - libxgboost
+    - zlib
+    # - ncurses   # uncomment if libyame.a linking pulls in ncurses symbols
+  run:
+    - libxgboost   # usually auto-added via libxgboost's own run_exports
+
+test:
+  commands:
+    - methscope 2>&1 | grep -qi methscope
+
+about:
+  home: https://github.com/zhou-lab/methscope-cli
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Sparse DNA methylome analysis via MRMP encoding (C CLI companion to the MethScope R package)"
+  dev_url: https://github.com/zhou-lab/methscope-cli
+
+extra:
+  recipe-maintainers:
+    - zwdzwd
