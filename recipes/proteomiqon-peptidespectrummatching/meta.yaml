@@ -1,8 +1,9 @@
+{% set name = "proteomiqon-peptidespectrummatching" %}
 {% set version = "0.0.9" %}
 {% set sha256 = "dd8372189a4726c1f69c525b298a8569892000c2349f83b2e9e7e7886a30d44c" %}
 
 package:
-  name: proteomiqon-peptidespectrummatching
+  name: '{{ name }}'
   version: '{{ version }}'
 
 source:
@@ -13,8 +14,7 @@ build:
   noarch: generic
   number: 0
   run_exports:
-    - dotnet-runtime >=10.0, <11.0
-
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build: 
@@ -27,7 +27,11 @@ requirements:
 
 test:
   commands:
-    - proteomiqon-peptidespectrummatching --help
+    - test -x "$PREFIX/bin/proteomiqon-peptidespectrummatching"
+    - test -f "$PREFIX/lib/dotnet/tools/PeptideSpectrumMatching/ProteomIQon.PeptideSpectrumMatching.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-peptidespectrummatching"
+    - grep -q "PeptideSpectrumMatching/ProteomIQon.PeptideSpectrumMatching.dll" "$PREFIX/bin/proteomiqon-peptidespectrummatching"
 
 about:
   home: https://csbiology.github.io/ProteomIQon/
