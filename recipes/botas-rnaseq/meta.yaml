@@ -1,0 +1,58 @@
+{% set version = "0.1.6" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: botas-rnaseq
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/b/botas-rnaseq/botas_rnaseq-{{ version }}.tar.gz
+  sha256: db5356426d058dfda572759639a4ba1bd4049a0d07c53e817c975e57d7baba9b
+
+build:
+  number: 0
+  skip: true  # [py<310]
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('botas-rnaseq', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77
+    - wheel
+
+  run:
+    - python >={{ python_min }}
+    - pysam >=0.22
+    - edlib >=1.3.9
+    - biopython >=1.81
+
+test:
+  imports:
+    - botas
+    - botas.quantify._core_fast
+  commands:
+    - pip check
+    - botas --version
+    - botas --help
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/clabe-wekesa/botas
+  summary: "Bacterial Operon-aware Transcriptome Alignment System"
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/clabe-wekesa/botas
+  dev_url: https://github.com/clabe-wekesa/botas
+
+extra:
+  recipe-maintainers:
+    - clabe-wekesa
