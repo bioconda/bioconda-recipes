@@ -40,7 +40,7 @@ for n in ${PREFIX}/bin/rsem-*; do
 	mv -v "$n" perl-build
     fi
 done
-mv rsem-control-fdr rsem-run-ebseq perl-build
+mv rsem-control-fdr rsem-generate-ngvector rsem-run-ebseq perl-build
 cp -rf ${RECIPE_DIR}/Build.PL perl-build
 cd perl-build
 # now run perl install
