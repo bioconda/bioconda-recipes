@@ -15,7 +15,7 @@ jobs:
   update-build-failure-page:
     name: Update build failure page
     if: ${{ github.repository == 'bioconda/bioconda-recipes' && !contains(github.event.head_commit.message, '[ci skip]') }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         branch: ${{ fromJSON(github.event_name == 'push' && format('["{0}"]', github.ref_name) || '["master","bulk"]') }}
@@ -69,7 +69,7 @@ jobs:
             md="build-failures/build-failures-${branch}.md"
             echo "# Build failures on \`${branch}\`" > $md
             echo "Automatically updated list of build failures that currently block builds from the listed recipes on the \`${branch}\` branch." >> $md
-            bioconda-utils list-build-failures recipes --git-range origin/"$base_ref" HEAD --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/$branch >> $md
+            bioconda-utils list-build-failures recipes --git-range origin/"$base_ref"...HEAD --output-format markdown --link-prefix https://github.com/bioconda/bioconda-recipes/blob/$branch >> $md
           fi
       - name: Upload build failure to wiki
         uses: docker://decathlon/wiki-page-creator-action:latest

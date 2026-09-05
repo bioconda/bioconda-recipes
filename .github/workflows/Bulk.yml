@@ -10,18 +10,25 @@ concurrency:
 
 jobs:
   build-linux:
-    name: Bulk Linux Builds (d${{ matrix.subdag_depth }} w${{ matrix.runner }})
+    name: Bulk ${{ matrix.platform.package_subdir }} Builds (d${{ matrix.subdag_depth }} w${{ matrix.worker }})
     if: "contains(github.event.head_commit.message, '[ci run]')"
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.platform.runner }}
     strategy:
       fail-fast: false
-      max-parallel: 10
+      # Keep the existing aggregate Linux allocation (10 amd64 + 6 arm64),
+      # while allowing either architecture to use available capacity.
+      max-parallel: 16
       matrix:
+        platform:
+          - package_subdir: linux-64
+            runner: ubuntu-24.04
+          - package_subdir: linux-aarch64
+            runner: ubuntu-24.04-arm
         # Build dependency layers needed for the blocked Bioconductor chain.
-        # Each depth is split across worker offsets.
+        # Each depth is split across all three worker offsets. --n-workers must
+        # match this cardinality or some modulo partitions will never be built.
         subdag_depth: [0,1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,15]
-        runner: [0, 1, 2]
-        # runner: [0]
+        worker: [0, 1, 2]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,11 +53,15 @@ jobs:
       - name: Configure conda
         run: bash configure-conda.sh
 
+      - name: Initialize mulled image records
+        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
+
       - name: Build and upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
           INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
           QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
           # Mimic circleci
           OSTYPE: "linux-gnu"
           CI: "true"
@@ -64,11 +75,20 @@ jobs:
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
           bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 5 \
-            --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-            --lint --record-build-failures --skiplist-leafs \
+            --worker-offset ${{ matrix.worker }} --n-workers 3 \
+            --docker --mulled-build-and-test --anaconda-upload --container-upload-target biocontainers \
+            --platform ${{ matrix.platform.package_subdir }} \
+            --image-records-dir /tmp/mulled-images \
+            --lint --record-build-failures --skiplist-leaves \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
           conda clean -y --all
+
+      - name: Archive mulled image records
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mulled-images-${{ matrix.platform.package_subdir }}-d${{ matrix.subdag_depth }}-w${{ matrix.worker }}
+          path: /tmp/mulled-images
 
   build-osx:
     name: Bulk OSX-64 Builds
@@ -127,7 +147,7 @@ jobs:
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 3 \
-            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --lint --anaconda-upload --record-build-failures --skiplist-leaves \
             --exclude bioconda-repodata-patches # --subdag-depth 5
           conda clean -y --all
 
@@ -189,6 +209,14 @@ jobs:
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 1 \
-            --lint --anaconda-upload --record-build-failures --skiplist-leafs \
+            --lint --anaconda-upload --record-build-failures --skiplist-leaves \
             --exclude bioconda-repodata-patches
           conda clean -y --all
+
+  publish-mulled-manifests:
+    if: always()
+    needs: build-linux
+    uses: ./.github/workflows/publish-mulled-manifests.yml
+    with:
+      bioconda_common_ref: bulk
+    secrets: inherit

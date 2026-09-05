@@ -8,10 +8,7 @@ concurrency:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
-      max-parallel: 13
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -35,6 +32,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
+          # common.sh specifies BIOCONDA_UTILS_TAG, so hashing the downloaded
+          # setup scripts already invalidates this cache when that version changes.
           key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
@@ -65,15 +64,12 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF" HEAD
+          bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF"...HEAD
           conda clean -y --all
 
   build-linux:
     name: Linux Tests
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
-      max-parallel: 13
+    runs-on: ubuntu-24.04
     needs: lint
     steps:
       - name: Free space
@@ -119,6 +115,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
+          # common.sh specifies BIOCONDA_UTILS_TAG, so hashing the downloaded
+          # setup scripts already invalidates this cache when that version changes.
           key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
@@ -153,8 +151,8 @@ jobs:
           source common.sh
 
           bioconda-utils build recipes config.yml \
-            --docker --mulled-test \
-            --git-range origin/"$GITHUB_BASE_REF" HEAD
+            --docker --mulled-build-and-test \
+            --git-range origin/"$GITHUB_BASE_REF"...HEAD
 
       - name: Prepare artifacts
         run: |
@@ -194,9 +192,6 @@ jobs:
   build-osx-64:
     name: OSX-64 Tests
     runs-on: macos-15-intel
-    strategy:
-      fail-fast: true
-      max-parallel: 4
     # Limited concurrency for osx, so first make sure linux can pass
     needs: build-linux
     steps:
@@ -233,6 +228,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
+          # common.sh specifies BIOCONDA_UTILS_TAG, so hashing the downloaded
+          # setup scripts already invalidates this cache when that version changes.
           key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
@@ -267,7 +264,7 @@ jobs:
           done
 
           bioconda-utils build recipes config.yml \
-            --git-range origin/"$GITHUB_BASE_REF" HEAD
+            --git-range origin/"$GITHUB_BASE_REF"...HEAD
 
       - name: Prepare artifacts
         run: |
@@ -289,83 +286,92 @@ jobs:
             /tmp/artifacts
           compression-level: 0
 
-  # Disabled due to concurrency limits on GHA for OSX. osx-arm64 builds are on CircleCI.
-  # build_and_test-osx-arm64:
-  #   name: OSX-ARM64 Tests
-  #   runs-on: macOS-14 # M1
-  #   strategy:
-  #     fail-fast: true
-  #     max-parallel: 4
-  #   needs: build-linux
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build-linux-arm64:
+    name: Linux ARM64 Tests
+    runs-on: ubuntu-24.04-arm
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
 
-  #     # bail if there's no osx-arm64 recipes
-  #     - name: Check for Additional Platforms
-  #       id: additional_platforms
-  #       run: |
-  #         result=$(./scripts/check-for-additional-platforms.sh "origin/master...HEAD" "build_and_test" "${GITHUB_JOB}")
-  #         if [[ ${result} != "build" ]]
-  #         then
-  #             echo "No recipes using this platform, skipping rest of job."
-  #             echo "skip_build=true" >> $GITHUB_OUTPUT
-  #         fi
+      - name: Fetch commits through the merge base
+        uses: fulcrumgenomics/fetch-through-merge-base@v1
+        with:
+          base-ref: ${{ env.GITHUB_BASE_REF }}
+          head-ref: ${{ github.sha }}
+          fallback-base-ref: master
+          fallback-fetch-all: true
 
-  #     - name: set path
-  #       run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
 
-  #     - name: Fetch conda install script
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: |
-  #         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
 
-  #     - name: Set up bioconda-utils
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash install-and-set-up-conda.sh
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/mambaforge
+          # common.sh specifies BIOCONDA_UTILS_TAG, so hashing the downloaded
+          # setup scripts already invalidates this cache when that version changes.
+          key: linux-arm64--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
-  #     - name: Configure conda
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash configure-conda.sh
+      - name: Set up bioconda-utils
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: bash install-and-set-up-conda.sh
 
-  #     - name: Build and Test
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       env:
-  #         # Mimic circleci
-  #         OSTYPE: "darwin"
-  #         CI: "true"
-  #       run: |
-  #         set -xe
-  #         eval "$(conda shell.bash hook)"
-  #         conda activate bioconda
-  #         source common.sh
-  #         # Sets up OSX SDK
-  #         run_conda_forge_build_setup
+      - name: Configure conda
+        run: bash configure-conda.sh
 
-  #         if [ -z "$GITHUB_BASE_REF" ] ; then
-  #             export GITHUB_BASE_REF="master"
-  #         fi
-  #         git fetch origin "$GITHUB_BASE_REF"
+      - name: Build and test
+        env:
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
 
-  #         bioconda-utils build recipes config.yml \
-  #           --lint --git-range origin/"$GITHUB_BASE_REF" HEAD
+          # Clean up lingering build artifacts
+          for n in linux-aarch64 noarch; do
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.tar.bz2
+              rm -f /opt/mambaforge/envs/bioconda/conda-bld/$n/*.conda
+          done
 
-  #     - name: Prepare artifacts
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: |
-  #             (
-  #             rm -rf /tmp/artifacts
-  #             mkdir -p /tmp/artifacts/packages
-  #             cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-  #             find -name .cache | xargs rm -rf || true
-  #             for n in index.html channeldata.json osx-arm64 noarch; do
-  #               cp -rv $n /tmp/artifacts/packages || true
-  #             done
-  #             ) || true
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          bioconda-utils build recipes config.yml \
+            --docker --mulled-build-and-test \
+            --platform linux-aarch64 \
+            --git-range origin/"$GITHUB_BASE_REF"...HEAD
 
-  #     - name: Archive packages
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       uses: actions/upload-artifact@v6
-  #       with:
-  #         name: osx-arm64-packages
-  #         path: |
-  #           /tmp/artifacts
+      - name: Prepare artifacts
+        run: |
+          (
+          rm -rf /tmp/artifacts
+          mkdir -p /tmp/artifacts/packages
+          cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
+          find -name .cache | xargs rm -rf || true
+          for n in index.html channeldata.json linux-aarch64 noarch; do
+            cp -rv $n /tmp/artifacts/packages || true
+          done
+          if command -V docker >/dev/null; then
+            mkdir -p /tmp/artifacts/images
+            cd /tmp/artifacts/images
+            docker image ls --format='{{.Repository}}:{{.Tag}}' | \
+              { grep biocontainers || true ; } | \
+              xargs -n1 -P4 bash -c '
+                test -n "${1+x}" || exit 0
+                echo "Start compressing docker image ${1} ..."
+                docker save "${1}" | pigz -1 -c > "${1##*/}.tar.gz"
+                echo "Finished compressing docker image ${1} ."
+                ' --
+            for f in /tmp/artifacts/images/*:* ; do mv -- "$f" "${f//:/---}"; done
+          fi
+          ) || true
+
+      - name: Archive packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: linux-arm64-packages
+          path: /tmp/artifacts
+          compression-level: 0

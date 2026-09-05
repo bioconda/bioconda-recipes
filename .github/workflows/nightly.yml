@@ -7,9 +7,6 @@ jobs:
     name: Nightly OSX-ARM64 Builds
     if: github.repository == 'bioconda/bioconda-recipes'
     runs-on: macOS-14 # M1
-    strategy:
-      fail-fast: false
-      max-parallel: 4
     steps:
       - uses: actions/checkout@v4
 
@@ -48,4 +45,82 @@ jobs:
           # build and push all leftover packages
           bioconda-utils build recipes config.yml \
               --anaconda-upload \
-              --prelint --exclude bioconda-repodata-patches
+              --lint --exclude bioconda-repodata-patches
+
+  nightly-linux:
+    name: Nightly ${{ matrix.package_platform }} Builds
+    if: github.repository == 'bioconda/bioconda-recipes'
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package_platform: linux-64
+            runner: ubuntu-24.04
+          - package_platform: linux-aarch64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set path
+        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
+
+      - name: Fetch conda install script
+        run: |
+          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+
+      - name: Set up bioconda-utils
+        run: bash install-and-set-up-conda.sh
+
+      - name: Configure conda
+        run: bash configure-conda.sh
+
+      - name: Initialize mulled image records
+        run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
+
+      - name: Rebuild and upload bioconda-repodata-patches
+        # This is architecture-independent and must run only once. Assign it to
+        # the amd64 matrix entry to reuse that environment instead of adding a
+        # separate setup job or racing two uploads of the same package.
+        if: matrix.package_platform == 'linux-64'
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          conda build --token "$ANACONDA_TOKEN" --user bioconda --quiet recipes/bioconda-repodata-patches
+
+      - name: Build and push leftover packages
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OSTYPE: "linux-gnu"
+          CI: "true"
+        run: |
+          set -e
+          eval "$(conda shell.bash hook)"
+          conda activate bioconda
+          bioconda-utils build recipes config.yml \
+            --docker --mulled-build-and-test \
+            --platform ${{ matrix.package_platform }} \
+            --anaconda-upload --container-upload-target biocontainers \
+            --image-records-dir /tmp/mulled-images \
+            --lint --exclude bioconda-repodata-patches
+
+      - name: Archive mulled image records
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mulled-images-${{ matrix.package_platform }}-nightly
+          path: /tmp/mulled-images
+
+  publish-mulled-manifests:
+    if: always()
+    needs: nightly-linux
+    uses: ./.github/workflows/publish-mulled-manifests.yml
+    with:
+      bioconda_common_ref: master
+    secrets: inherit
