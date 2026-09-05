@@ -1,0 +1,84 @@
+Add the mm39 (GRCm39) genome to SICER's chromosome tables.
+
+SICER resolves a `--species` argument by looking it up in `species_chroms`
+and `species_chrom_lengths` in `sicer/lib/GenomeData.py`, and rejects
+anything absent from both. Those tables stop at mm10, so mm39 -- UCSC's
+current mouse assembly since 2020 -- cannot be used with this package at
+all.
+
+The patch is data only. It adds `mm39_chroms` (the 22 canonical
+chromosomes, mirroring the mm10 entry directly above it),
+`mm39_chrom_lengths`, and one registry entry each in `species_chroms` and
+`species_chrom_lengths`. No code path is modified and no existing genome
+is touched -- every lookup is keyed by species, so results for hg38, mm10
+and the rest are unchanged.
+
+The chromosome sizes are UCSC's mm39 values, taken from
+https://hgdownload.soe.ucsc.edu/goldenPath/mm39/bigZips/mm39.chrom.sizes
+and re-checked against the UCSC REST API
+(https://api.genome.ucsc.edu/list/chromosomes?genome=mm39): all 22 match
+exactly.
+
+Precedent in this repository: `recipes/sicer/` has carried
+`genome_additions_v1.patch` since it was created -- the same kind of
+addition, to the same file, of the same project's 1.1 release, for mm10,
+rn5 and rn6.
+
+Offered upstream as https://github.com/tmx1228/SICER2.1.0/pull/1, open
+since 2026-06-15 with no maintainer response. This recipe already builds
+from tmx1228/SICER2.1.0, the maintained line of SICER2 (zanglab/SICER2
+has not released since 1.0.3).
+
+Correctness is checked by bioconda's own CI: the `test: commands:` entry
+added to meta.yaml in the same commit asserts that mm39 is registered in
+both tables and that its chr1 length is UCSC's value. Stock 2.1.0 fails
+that assertion, so the test proves the patch is present in every shipped
+artifact.
+
+diff --git a/sicer/lib/GenomeData.py b/sicer/lib/GenomeData.py
+index fd439c6..e26e978 100644
+--- a/sicer/lib/GenomeData.py
++++ b/sicer/lib/GenomeData.py
+@@ -45,6 +45,10 @@ mm10_chroms = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', '
+                'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17',
+                'chr18', 'chr19', 'chrX', 'chrY', 'chrM']
+ 
++mm39_chroms = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9',
++               'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17',
++               'chr18', 'chr19', 'chrX', 'chrY', 'chrM']
++
+ rn4_chroms = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9',
+               'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17',
+               'chr18', 'chr19', 'chr20', 'chrX', 'chrM']
+@@ -101,6 +105,15 @@ mm10_chrom_lengths = {'chr1': 195471971, 'chr2': 182113224, 'chr3': 160039680,
+                       'chr19': 61431566, 'chrX': 171031299, 'chrY': 91744698,
+                       'chrM': 16299}
+ 
++mm39_chrom_lengths = {'chr1': 195154279, 'chr2': 181755017, 'chr3': 159745316,
++                      'chr4': 156860686, 'chr5': 151758149, 'chr6': 149588044,
++                      'chr7': 144995196, 'chr8': 130127694, 'chr9': 124359700,
++                      'chr10': 130530862, 'chr11': 121973369, 'chr12': 120092757,
++                      'chr13': 120883175, 'chr14': 125139656, 'chr15': 104073951,
++                      'chr16': 98008968, 'chr17': 95294699, 'chr18': 90720763,
++                      'chr19': 61420004, 'chrX': 169476592, 'chrY': 91455967,
++                      'chrM': 16299}
++
+ rn4_chrom_lengths = {'chr1': 267910886, 'chr2': 258207540, 'chr3': 171063335,
+                      'chr4': 187126005, 'chr5': 173096209, 'chr6': 147636619,
+                      'chr7': 143002779, 'chr8': 129041809, 'chr9': 113440463,
+@@ -178,6 +191,7 @@ pombe_chrom_lengths = {'chr1': 5580032, 'chr2': 4541604, 'chr3': 2453783,
+ species_chroms = {'mm8': mm8_chroms,
+                   'mm9': mm9_chroms,
+                   'mm10': mm10_chroms,
++                  'mm39': mm39_chroms,
+                   'hg18': hg18_chroms,
+                   'hg19': hg19_chroms,
+                   'hg38': hg38_chroms,
+@@ -192,6 +206,7 @@ species_chroms = {'mm8': mm8_chroms,
+ species_chrom_lengths = {'mm8': mm8_chrom_lengths,
+                          'mm9': mm9_chrom_lengths,
+                          'mm10': mm10_chrom_lengths,
++                         'mm39': mm39_chrom_lengths,
+                          'hg18': hg18_chrom_lengths,
+                          'hg19': hg19_chrom_lengths,
+                          'hg38': hg38_chrom_lengths,
