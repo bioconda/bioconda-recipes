@@ -1,0 +1,51 @@
+{% set name = "fastqoptifilter" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/f/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 49ab6381ab0fda91934c2fbdd0e950a67a988ea7d57094e660311660ba0e540f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - fastqoptifilter = fastq_optifilter:main
+  run_exports:
+    - {{ pin_subpackage('fastqoptifilter', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.11
+    - numpy >=1.26
+    - scipy >=1.17
+    - matplotlib-base >=3.7
+
+test:
+  imports:
+    - fastq_optifilter
+  commands:
+    - fastqoptifilter --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/epifluidlab/FastqOptiFilter
+  dev_url: https://github.com/epifluidlab/FastqOptiFilter
+  license: MIT
+  license_file: LICENSE
+  summary: Quality-aware, FDR-controlled optical and proximity duplicate filtering for paired-end Illumina FASTQ files
+
+extra:
+  recipe-maintainers:
+    - dnaase
