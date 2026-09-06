@@ -1,0 +1,77 @@
+{% set name = "vepyr" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 1afe1824512e211f084e298fc86fa964e9516bcc87086ea02dde4a045237d538
+
+build:
+  number: 0
+  skip: true  # [py < 310]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+    # Cargo.lock pins the bio-functions, bio-formats, noodles and opendal git sources.
+    - git
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+  host:
+    - python
+    - pip
+    - maturin >=1.0,<2.0
+  run:
+    - python
+    - pyarrow >=18.0
+    - polars >=1.37.1
+    - tqdm >=4.60
+
+test:
+  imports:
+    - vepyr
+    - vepyr._core
+  commands:
+    - pip check
+    - python -c "import vepyr; assert vepyr.__version__ == '{{ version }}'; targets = vepyr.supported_vep_targets(); assert targets; assert all(t.get('vepyr_version') == '{{ version }}' for t in targets); assert {t.get('cache_version') for t in targets} == {'115', '116'}; print('compiled VEP targets passed')"
+    # Mulled tests have only runtime dependencies and no test files. Keep this
+    # self-contained and bracket-free: mulled can strip brackets as selectors.
+    # A VCF without contig headers makes the Rust provider scan the records.
+    - python -c "import tempfile; from pathlib import Path; from vepyr._core import vcf_contigs; tmp = tempfile.TemporaryDirectory(); vcf = Path(tmp.name) / 'smoke.vcf'; vcf.write_text('##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n1\t101\t.\tA\tG\t.\tPASS\t.\n2\t202\t.\tC\tT\t.\tPASS\t.\n'); contigs = tuple(sorted(vcf_contigs(str(vcf)))); assert contigs == ('1', '2'), contigs; tmp.cleanup(); print('native VCF scan passed')"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biodatageeks/vepyr
+  license: Apache-2.0
+  license_family: Apache
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: 'Rust-powered Ensembl VEP variant annotation for Python'
+  description: |
+    vepyr (VEP Yielding Performant Results) is a Python interface to a Rust
+    reimplementation of Ensembl's Variant Effect Predictor, built on Apache
+    Arrow and DataFusion. It converts Ensembl VEP caches to Parquet and
+    annotates variants through a streaming engine, returning Polars LazyFrames
+    or annotated VCF files.
+  doc_url: https://biodatageeks.org/vepyr/
+  dev_url: https://github.com/biodatageeks/vepyr
+
+extra:
+  # Matches the Unix platforms exercised by the upstream 0.5.0 wheel builds.
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - mwiewior
