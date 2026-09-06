@@ -10,18 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and push leftover packages
         env:
@@ -35,17 +24,10 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
 
-          source common.sh
-          # Sets up OSX SDK
-          run_conda_forge_build_setup
-
-          # build and push all leftover packages
-          bioconda-utils build recipes config.yml \
-              --anaconda-upload \
-              --lint --exclude bioconda-repodata-patches
+          # SDK setup and build must share one shell: run_conda_forge_build_setup
+          # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --anaconda-upload --lint --exclude bioconda-repodata-patches"
 
   nightly-linux:
     name: Nightly ${{ matrix.package_platform }} Builds
@@ -62,18 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Initialize mulled image records
         run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
@@ -86,9 +57,7 @@ jobs:
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-          conda build --token "$ANACONDA_TOKEN" --user bioconda --quiet recipes/bioconda-repodata-patches
+          pixi run conda build --token "$ANACONDA_TOKEN" --user bioconda --quiet recipes/bioconda-repodata-patches
 
       - name: Build and push leftover packages
         env:
@@ -101,9 +70,7 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-          bioconda-utils build recipes config.yml \
+          pixi run bioconda-utils build recipes config.yml \
             --docker --mulled-build-and-test \
             --platform ${{ matrix.package_platform }} \
             --anaconda-upload --container-upload-target biocontainers \
@@ -121,6 +88,4 @@ jobs:
     if: always() && needs.nightly-linux.result != 'skipped'
     needs: nightly-linux
     uses: ./.github/workflows/publish-mulled-manifests.yml
-    with:
-      bioconda_common_ref: master
     secrets: inherit
