@@ -1,9 +1,8 @@
 name: Setup bioconda-utils via pixi
 description: >-
-  Check out the pinned bioconda/bioconda-utils revision and provision its
-  pixi environment (which ships conda/conda-build). Replaces the old
-  wget-bioconda-common + install-and-set-up-conda.sh bootstrap.
-  The pin is the utils-ref input default below, so a utils bump and its
+  Check out bioconda/bioconda-utils at the pinned revision
+  (utils-ref input) and provision its pixi environment, which ships
+  conda/conda-build for all recipe builds. A utils bump and its
   workflow changes land atomically in one recipes PR.
 
 inputs:
@@ -12,8 +11,11 @@ inputs:
       bioconda-utils git ref (tag, branch, or SHA) to check out and build.
       Bump this default to roll out a new version everywhere at once;
       pass an explicit value to trial unreleased utils from a recipes PR.
+      NOTE: currently a post-v4.5.0 master SHA (not a release tag),
+      because the workflows need the `diagnostics` subcommand which is
+      not in any release yet. Move back to a tag once one exists.
     required: false
-    default: v4.5.0
+    default: f7e6677f2889cd07f8d37bf1f03b1f65e25e8e94
 
 runs:
   using: composite
@@ -25,6 +27,10 @@ runs:
         ref: ${{ inputs.utils-ref }}
         path: bioconda-utils
 
+    - name: Point pixi at the utils manifest
+      shell: bash
+      run: echo "PIXI_PROJECT_MANIFEST=${{ github.workspace }}/bioconda-utils/pixi.toml" >> "$GITHUB_ENV"
+
     - name: Set up pixi
       uses: prefix-dev/setup-pixi@v0
       with:
@@ -34,4 +40,4 @@ runs:
 
     - name: Install bioconda-utils into pixi env
       shell: bash
-      run: pixi run --manifest-path bioconda-utils/pixi.toml -e default install
+      run: pixi run -e default install

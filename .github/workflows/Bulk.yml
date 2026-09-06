@@ -40,18 +40,10 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      # Each branch pins its own bioconda-utils version via the setup
+      # action's utils-ref default, so bulk can run a different version
+      # than master.
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Initialize mulled image records
         run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
@@ -67,21 +59,20 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          px() { pixi run "$@"; }
           echo '============'
-          conda info --all
-          conda config --show-sources
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          px conda info --all
+          px conda config --show-sources
+          px bioconda-utils diagnostics
           echo '============'
-          bioconda-utils build recipes config.yml \
+          px bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.worker }} --n-workers 3 \
             --docker --mulled-build-and-test --anaconda-upload --container-upload-target biocontainers \
             --platform ${{ matrix.platform.package_subdir }} \
             --image-records-dir /tmp/mulled-images \
             --lint --record-build-failures --skiplist-leaves \
             --exclude bioconda-repodata-patches --subdag-depth ${{ matrix.subdag_depth }}
-          conda clean -y --all
+          px conda clean -y --all
 
       - name: Archive mulled image records
         if: always()
@@ -110,18 +101,7 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -133,23 +113,15 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-
-          source common.sh
-          run_conda_forge_build_setup
-
           echo '============'
-          conda info --all
-          conda config --show-sources
-          conda activate bioconda
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          pixi run conda info --all
+          pixi run conda config --show-sources
+          pixi run bioconda-utils diagnostics
           echo '============'
-          bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 3 \
-            --lint --anaconda-upload --record-build-failures --skiplist-leaves \
-            --exclude bioconda-repodata-patches # --subdag-depth 5
-          conda clean -y --all
+          # SDK setup and build must share one shell: run_conda_forge_build_setup
+          # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --worker-offset ${{ matrix.runner }} --n-workers 3 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
+          pixi run conda clean -y --all
 
   build-osx-arm:
     name: Bulk OSX-ARM64 Builds
@@ -171,18 +143,7 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -194,29 +155,18 @@ jobs:
           CI: "true"
         run: |
           set -xe
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
-
-          source common.sh
-          # Sets up OSX SDK
-          run_conda_forge_build_setup
-
           echo '============'
-          conda info --all
-          conda config --show-sources
-          conda activate bioconda
-          python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          pixi run conda info --all
+          pixi run conda config --show-sources
+          pixi run bioconda-utils diagnostics
           echo '============'
-          bioconda-utils build recipes config.yml \
-            --worker-offset ${{ matrix.runner }} --n-workers 1 \
-            --lint --anaconda-upload --record-build-failures --skiplist-leaves \
-            --exclude bioconda-repodata-patches
-          conda clean -y --all
+          # SDK setup and build must share one shell: run_conda_forge_build_setup
+          # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --worker-offset ${{ matrix.runner }} --n-workers 1 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
+          pixi run conda clean -y --all
 
   publish-mulled-manifests:
     if: always() && needs.build-linux.result != 'skipped'
     needs: build-linux
     uses: ./.github/workflows/publish-mulled-manifests.yml
-    with:
-      bioconda_common_ref: bulk
     secrets: inherit
