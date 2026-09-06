@@ -1,0 +1,76 @@
+{% set name = "cphasing-rs" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wangyibin/cphasing-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1ddbd40b72fb8eb9ce2ac5abdc41c369455ea2b422191430a0ae743cebc75ba0
+
+build:
+  number: 0
+  skip: true  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  # These libraries are statically linked by the Rust -sys crates. liblzma is
+  # dynamically linked and therefore intentionally remains a runtime export.
+  ignore_run_exports:
+    - bzip2
+    - libdeflate
+    - libzlib
+  script:
+    # Upstream uses target-cpu=native for local builds, which is unsuitable for
+    # portable Bioconda binaries.
+    - rm -f .cargo/config.toml
+    - export CARGO_INCREMENTAL=0
+    # Full LTO leaves the four-core ARM CI runner silent in the final link long
+    # enough to trigger CircleCI's heartbeat timeout.
+    - export CARGO_PROFILE_RELEASE_LTO=false  # [aarch64]
+    - export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=8  # [aarch64]
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    # The v0.3.0 source archive does not contain Cargo.lock.
+    - cargo install -v --no-track --root "${PREFIX}" --path . --bin cphasing-rs
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - autoconf
+    - automake
+    - cargo-bundle-licenses
+    - clangdev
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - bzip2
+    - libdeflate
+    - xz
+    - zlib
+
+test:
+  commands:
+    - cphasing-rs --help
+    - cphasing-rs --version | grep {{ version }}
+
+about:
+  home: https://github.com/wangyibin/cphasing-rs
+  dev_url: https://github.com/wangyibin/cphasing-rs
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Rust command-line utilities for C-Phasing
+  description: |
+    cphasing-rs provides high-performance command-line utilities used by
+    C-Phasing to phase and scaffold polyploid genomes from Pore-C or Hi-C data.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - wangyibin

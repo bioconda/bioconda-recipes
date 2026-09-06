@@ -1,0 +1,67 @@
+Reject non-positive genome lengths passed to -L.
+
+This is the one change in this recipe that is NOT upstream code. Everything in
+backport-upstream-master.patch is jsh58/Genrich's own committed work; this patch
+is a downstream fix for a defect in the -L implementation that upstream shipped
+and has not addressed.
+
+getLong() parsed the -L argument with strtol() and cast the result straight to
+uint64_t, so a negative argument wrapped instead of being rejected:
+
+    $ Genrich -t in.sam -o out.np -v -L -1
+      Genome length: -1bp
+
+The reported "-1bp" is itself an artefact of printing a uint64_t with %ld; the
+value actually stored and used is 18446744073709551615. It feeds
+  logN = -log10f(genomeLen);
+so the background lambda -- and every q-value derived from it -- is computed
+against a genome some 15 orders of magnitude larger than any real one, with no
+warning and a zero exit status.
+
+Upstream did add a guard, but it cannot fire:
+
+    if (genomeLen < 0)          /* genomeLen is uint64_t: never true */
+      exit(error("", ERRGENLEN));
+
+The comparison is made on the already-converted unsigned value, by which point
+the sign is gone, so the test folds away. That check is left in place here,
+untouched. Validation is instead done at parse time, where the sign survives.
+
+Behaviour changes, each replacing a previously silent wrong answer:
+
+    -L -1                     was: genome length 2^64-1    now: ERRGENLEN
+    -L 0                      was: silently auto-computed  now: ERRGENLEN
+    -L 99999999999999999999   was: saturated to LLONG_MAX  now: ERRGENLEN
+
+Non-numeric input is unaffected: -L abc already raised ERRINT and still does.
+
+Two deliberate details. The empty first argument in error("", ERRGENLEN) is
+required: unlike ERRINT, the ERRGENLEN message carries no leading ": "
+separator, so passing the offending string would run it into the message text.
+And strtoll/LLONG_MAX are used rather than errno/ERANGE because Genrich.c
+already includes <limits.h> but not <errno.h>, keeping this patch free of new
+includes; the LLONG_MAX test rejects a literal 9223372036854775807 along with
+genuine overflow, which is harmless for a genome length.
+
+Not yet offered upstream: jsh58/Genrich has published no release since 2021 and
+has not responded to issues since 2023 (see jsh58/Genrich#102). Happy to drop
+this patch if the maintainers would rather ship upstream's behaviour unchanged.
+diff --git a/Genrich.c b/Genrich.c
+index 576586f..dc560a1 100644
+--- a/Genrich.c
++++ b/Genrich.c
+@@ -127,10 +127,12 @@ int getInt(char* in) {
+  */
+ uint64_t getLong(char* in) {
+   char* endptr;
+-  uint64_t ans = (uint64_t) strtol(in, &endptr, 10);
++  long long ans = strtoll(in, &endptr, 10);
+   if (*endptr != '\0')
+     exit(error(in, ERRINT));
+-  return ans;
++  if (ans <= 0 || ans == LLONG_MAX)
++    exit(error("", ERRGENLEN));
++  return (uint64_t) ans;
+ }
+ 
+ /* char* getLine()

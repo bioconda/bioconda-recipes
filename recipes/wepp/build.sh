@@ -9,15 +9,15 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
+# x86_64 intentionally keeps the conda-forge default (-march=nocona -mtune=haswell).
+# Raising it to x86-64-v3 lets the compiler emit AVX2/FMA/BMI, which SIGILLs on any
+# pre-Haswell host, including the Ivy Bridge Xeons still widespread on HPC clusters.
 case $(uname -m) in
     aarch64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 	;;
 esac
 

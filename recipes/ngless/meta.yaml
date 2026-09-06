@@ -1,7 +1,6 @@
 {% set name = "ngless" %}
-{% set version = "1.5.0" %}
-{% set linux_sha256 = "327295c9a4e4fe8d5b41af403caaf43e414eaa4c9d11dcb312f660f44a24e143" %}
-{% set osx_sha256 = "fe2d43e4964da31ce18b95a447596f43eebaec9c5ae13788f812960fb9bb94e4" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "1f51937d20170273f525253ecced107a084ade4472bffda9d91982a9d10a7c89" %}
 
 
 package:
@@ -9,36 +8,52 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-v{{ version }}-Linux-static-no-deps # [linux]
-    sha256: {{ linux_sha256 }} # [linux]
-  - url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/NGLess-v{{ version }}-MacOSX.zip # [osx]
-    sha256: {{ osx_sha256 }} # [osx]
+  url: https://github.com/ngless-toolkit/ngless/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage('ngless', max_pin='x') }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
   run:
-    - bwa
-    - prodigal
-    - megahit
-    - samtools
-    - minimap2
+    - bwa >=0.7.19
+    - prodigal >=2.6.3
+    - megahit >=1.2.9
+    - samtools >=1.23.1
+    - minimap2 >=2.31
 
 test:
   commands:
     - ngless --version
     - ngless --check-install --verbose
+    # --check-install is a no-op in this release, so check that the wrapper
+    # actually resolves each external tool (exits non-zero if not found)
+    - ngless --print-path bwa
+    - ngless --print-path prodigal
+    - ngless --print-path megahit
+    - ngless --print-path samtools
+    - ngless --print-path minimap2
 
 about:
   home: https://ngless.embl.de
   license: MIT
+  license_family: MIT
+  license_file:
+    - COPYING
+    - THIRDPARTY.yml
   summary: A tool for short-read processing with a focus on metagenomics
+  dev_url: https://github.com/ngless-toolkit/ngless
+  doc_url: https://ngless.embl.de
 
 extra:
   recipe-maintainers:
     - luispedro
   identifiers:
     - "doi:10.1186/s40168-019-0684-8" # Publication
-  skip-lints:
-    - should_be_noarch_generic

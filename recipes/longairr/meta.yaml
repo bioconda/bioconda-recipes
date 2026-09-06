@@ -1,0 +1,100 @@
+{% set name = "longairr" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AGImkeller/LongAIRR/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 10045d1688e6a5d78720863d26ece56e118540451ce686aa503c3b16ff6ad687
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python 3.10.0.*
+    - biopython 1.83.*
+    - blast 2.16.0.*
+    - igblast 1.22.0.*
+    - muscle 3.8.1551.*
+    - nanoget 1.19.3.*
+    - nanoplot 1.44.1.*
+    - numpy 1.24.4.*
+    - pandas 2.0.3.*
+    - presto 0.7.5.*
+    - samtools 1.21.*
+    - scipy 1.10.1.*
+    - seqkit 2.9.0.*
+    - snakemake 7.32.4.*
+    - vsearch 2.30.0.*
+    - pysam 0.22.*
+    - pyyaml 6.0.2.*
+    - pyarrow 17.0.0.*
+    - airr 1.5.1.*
+    - changeo 1.3.3.*
+    - bash
+    - coreutils
+    - curl
+    - gawk
+    - grep
+    - sed
+    - tar
+    - wget
+
+test:
+  commands:
+    - longairr --version
+    - longairr --help
+    - longairr basecall --help
+    - longairr filter --help
+    - longairr demux --help
+    - longairr collapse --help
+    - longairr seqtag --help
+    - longairr airr --help
+    - longairr report --help
+    - longairr-setup --help
+    - test -f "$PREFIX/share/longairr/README.md"
+    - test -f "$PREFIX/share/longairr/docs/images_design/images/longairr_logo_small.png"
+    - test -f "$PREFIX/share/longairr/docs/images_design/images/longairr_profiling_overview.png"
+    - test -f "$PREFIX/share/longairr/longairr_scripts/db_scripts/LICENSE"
+    - test -f "$PREFIX/share/longairr/longairr_example_workflow/snakemake/visium/snakefile_visium_hd"
+    - test -f "$PREFIX/share/longairr/longairr_example_workflow/snakemake/takara/snakefile_takara"
+    - test -f "$PREFIX/share/longairr/longairr_example_workflow/example_inputs/datasets/visium_v1_demo/basecall/demo_airr.fastq"
+
+about:
+  home: https://github.com/AGImkeller/LongAIRR
+  doc_url: https://longairr.readthedocs.io/en/latest/
+  dev_url: https://github.com/AGImkeller/LongAIRR
+  license: Apache-2.0 AND AGPL-3.0-only
+  license_file:
+    - LICENSE
+    - longairr_scripts/db_scripts/LICENSE
+  summary: Long-read adaptive immune receptor repertoire processing and annotation
+  description: |
+    LongAIRR is a modular command-line framework for processing and annotating
+    full-length adaptive immune receptor repertoire sequences from long-read
+    bulk and spatial transcriptomics libraries. It supports Oxford Nanopore
+    Technologies and PacBio HiFi data and produces AIRR-compliant output.
+
+extra:
+  notes: |
+    Set up IgBLAST and IMGT references after installation with, for example:
+
+      longairr-setup --fetch-db TRUE --save-db /path/to/references/ --species human
+
+    Dorado is required only for `longairr basecall` and may be installed with:
+
+      longairr-setup --dorado TRUE
+
+    Copy the bundled example workflows into a writable working directory with:
+
+      cp -r "$CONDA_PREFIX/share/longairr/longairr_example_workflow" ./longairr_example_workflow
+
+    Documentation: https://longairr.readthedocs.io/en/latest/
+  recipe-maintainers:
+    - Jonas-Schuck

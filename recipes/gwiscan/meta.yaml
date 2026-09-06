@@ -1,0 +1,68 @@
+{% set name = "gwiscan" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/beavenmanjengwa/gwiscan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b31a002d0975abf11264a9b0d9643d089c31b681fb90b7527e240d4de5a82cb1
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('gwiscan', max_pin="x") }}
+  entry_points:
+    - gwiscan = gwiscan.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.10
+    - biopython >=1.80
+    - pandas >=1.5
+    - openpyxl >=3.1
+    - requests >=2.28
+    - pyyaml >=6.0
+    - setuptools
+    - hmmer
+    - diamond
+    - seqkit
+    - mafft
+    - clipkit
+    - iqtree
+    - meme
+    - weblogo
+    - r-base
+    - r-ggplot2
+    - r-dplyr
+    - r-tidyr
+
+test:
+  imports:
+    - gwiscan
+  commands:
+    - gwiscan --help
+    - gwiscan --version
+
+about:
+  home: https://github.com/beavenmanjengwa/gwiscan
+  license: MIT
+  license_file: LICENSE
+  summary: GWIscan is a pipeline for the genome-wide identification and in silico characterization of gene families.
+  description: |
+    GWIscan takes a user-defined gene family, searches a proteome by both BLAST-based homology and profile HMM, 
+    confirms candidates by family signature, and provides detailed in silico annotation. It operates in three modes
+    (family, multi-family, and architecture) and runs on a single proteome or across multiple species.
+  dev_url: https://github.com/beavenmanjengwa/gwiscan
+
+extra:
+  recipe-maintainers:
+    - beavenmanjengwa

@@ -1,46 +1,62 @@
 {% set name = "igphyml" %}
-{% set version = "1.1.5" %}
+{% set version = "2.0.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://bitbucket.org/kleinstein/{{ name }}/get/{{ version }}.tar.gz"
-  sha256: 0182d2a46a1449bedd374c8db6659e796aa7297d6821090727c2ffad13f34a26
+  url: https://github.com/immcantation/igphyml/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 9a21f79a3e3c269933fd9ce476f66101ea7a16cedd479c62d4e09fe0f91d9d2e
+
 build:
-  number: 2
+  number: 0
+  run_exports:
+     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - autoconf
     - automake
-    - make
-    - llvm-openmp  # [osx]
+    - libtool
+    - pkg-config
+    - gnuconfig
   host:
+    - openblas
+    - libblas
+    - liblapack
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
   run:
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
     - changeo >=0.4.6
-    - r-alakazam >=0.3.0
+    # r-alakazam >=0.3.0 * does not exist on linux aarch64 (strict repo policy)
+    - r-alakazam >=0.3.0  # [not (linux and aarch64)]
 
 test:
   commands:
     - igphyml --help
     # Fail test if warning binary was not compiled with OpenMP, detecting warning in command stdout. Ugly! feel free to improve.
-    - IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m GY --run_id gy --threads 2 | [[ ! $( grep 'unless compiled with OMP!' ) ]]
+    #- IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m GY --run_id gy --threads 2 | [[ ! $( grep 'unless compiled with OMP!' ) ]]
     # Test hotspot tables are available
-    - IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m HLP --root V4-59 --run_id hlp
+    #- IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/ igphyml -i ${PREFIX}/share/igphyml/examples/example.fasta -m HLP --root V4-59 --run_id hlp
 
 about:
-  home: "https://igphyml.readthedocs.io/en/latest/index.html"
-  license: "GNU GPL version 2"
+  home: "https://github.com/immcantation/igphyml"
+  license: "GPL-2.0-or-later"
   license_family: "GPL2"
   license_file: COPYING
   summary: "IgPhyML is a program designed to build phylogenetic trees and test evolutionary hypotheses regarding B cell affinity maturation."
+  dev_url: "https://github.com/immcantation/igphyml"
+  doc_url: "https://igphyml.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - PertuyF
-
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

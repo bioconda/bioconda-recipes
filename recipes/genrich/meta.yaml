@@ -1,42 +1,51 @@
 {% set version = "0.6.1" %}
 {% set sha256 = "2c70239e1caf33519b9e99142470bb4dd2f4c69e71f68cee33d6d6a1032d0e33" %}
 
-
 package:
   name: genrich
   version: {{ version }}
-
 
 source:
   url: https://github.com/jsh58/Genrich/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
     - Makefile.patch
+    - backport-upstream-master.patch
+    - getlong-reject-nonpositive.patch
 
-
-about:
-  home:
-    https://github.com/jsh58/Genrich
-  license: MIT
-  license_file: LICENSE
-  summary: Detecting sites of genomic enrichment.
-
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('genrich', max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }} 
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
-  run:
-    - zlib
-
-
-build:
-  number: 5
-
 
 test:
   commands:
     - which Genrich
     - Genrich -V 2>&1 | grep 'John M. Gaspar'
+    # -L is only recognised once the backport patch is applied; stock 0.6.1
+    # answers "invalid option -- 'L'" instead.
+    - Genrich -L 1000 2>&1 | grep 'Need input/output files'
+
+about:
+  home: "https://github.com/jsh58/Genrich"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Detecting sites of genomic enrichment."
+  dev_url: "https://github.com/jsh58/Genrich"
+  doc_url: "https://github.com/jsh58/Genrich/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - usegalaxy-eu:genrich
