@@ -2,8 +2,8 @@
 {% set version = "1.3.4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/CellProfiler/centrosome/archive/v{{version}}.zip
@@ -11,18 +11,19 @@ source:
 
 build:
   number: 0
-  script: CFLAGS="$CFLAGS -Wno-error=int-conversion" python -m pip install --no-deps --ignore-installed . -vv
+  script: CFLAGS="$CFLAGS -O3 -Wno-error=int-conversion" {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x.x') }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ stdlib('c') }}
   host:
     - python
     - pip
+    - setuptools
     - cython
     - pytest
     - numpy
@@ -40,10 +41,12 @@ test:
     - centrosome
 
 about:
-  home: https://github.com/CellProfiler/centrosome
-  license: BSD 3
+  home: "https://github.com/CellProfiler/centrosome"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: 'An open source image processing library. Dependency for CellProfiler'
+  summary: 'An open source image processing library. Dependency for CellProfiler.'
+  dev_url: "https://github.com/CellProfiler/centrosome"
 
 extra:
   additional-platforms:
