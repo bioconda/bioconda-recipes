@@ -1,0 +1,63 @@
+{% set name = "gene-tidy" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gene_tidy-{{ version }}.tar.gz
+  sha256: 49a665f004ad3f88c8d912bec8876f082f1c2466b76c26dbfb56ded82cd91591
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - gene-tidy = gene_tidy.cli:app
+  run_exports:
+    - {{ pin_subpackage("gene-tidy", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.10
+    - pandas >=1.5
+    - openpyxl >=3.0
+    - typer >=0.9
+
+test:
+  imports:
+    - gene_tidy
+  commands:
+    - gene-tidy --help
+    - gene-tidy --version
+    - python -c "import gene_tidy; assert gene_tidy.hgnc_version_info()['hgnc_release']"
+
+about:
+  home: https://github.com/MargoSolo/gene-tidy
+  summary: 'No-code cleaning of messy gene/protein identifier tables, fully offline, with explicit ambiguity handling.'
+  description: |
+    gene-tidy cleans messy human gene/protein identifier tables (TXT/CSV/TSV/XLSX)
+    by mapping them to current HGNC approved symbols plus Ensembl, UniProt, Entrez
+    and RefSeq cross-references. It runs fully offline against a bundled static
+    HGNC complete set, recovers Excel date-corrupted gene symbols (SEPT2 -> "2-Sep",
+    MARCH1 -> "1-Mar"), and never guesses silently: one-to-many and uncertain
+    mappings are flagged for manual review rather than resolved, and no input row
+    is ever dropped. Every run records the gene-tidy version and the exact HGNC
+    release used, and emits a paste-ready methods paragraph.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/MargoSolo/gene-tidy#readme
+  dev_url: https://github.com/MargoSolo/gene-tidy
+
+extra:
+  recipe-maintainers:
+    - MargoSolo
+  identifiers:
+    - doi:10.5281/zenodo.22285392
