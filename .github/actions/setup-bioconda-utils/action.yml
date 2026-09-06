@@ -41,3 +41,19 @@ runs:
     - name: Install bioconda-utils into pixi env
       shell: bash
       run: pixi run -e default install
+
+    - name: Configure conda for Bioconda builds
+      shell: bash
+      run: |
+        set -e
+        pixi run conda config --set always_yes yes
+        pixi run conda config --add channels bioconda
+        pixi run conda config --add channels conda-forge
+        pixi run conda config --remove channels defaults || true
+        pixi run conda config --set channel_priority strict
+        pixi run conda config --set conda_build.pkg_format 2
+
+        if [[ ${BIOCONDA_DISABLE_BUILD_PREP:-0} == 0 ]]; then
+          conda_bld="$(pixi run python -c 'from conda_build.config import Config; print(Config().croot, end="")')"
+          pixi run conda config --add channels "file://${conda_bld}"
+        fi
