@@ -9,25 +9,18 @@ export CPLUS_INCLUDE_PATH="${CONDA_PREFIX}/include"
 echo "=== PREFIX ==="
 env |grep PREFIX
 
-echo "Arch: $(uname -s)"
+echo "Host Arch: $(uname -s)"
+echo "Target Arch: ${target_platform}"
 pwd
 
-if [[ "$(uname -s)" == "Linux" ]];
-then
-          which x86_64-conda-linux-gnu-gcc
-          x86_64-conda-linux-gnu-gcc -v
-          x86_64-conda-linux-gnu-g++ -v
-else
-          which clang
-          clang -v
-fi
+which $CC
+$CC -v
+$CXX -v
 which h5c++
 
-if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]];
+if [[ "$(uname -s)" == "Linux" ]] && [[ "x${BUILD_NV_OFFLOAD}" != "xcpu" ]] && [[ "x${target_platform}" != "xlinux-aarch64" ]];
         then
           export BUILD_NV_OFFLOAD=acc
-          # force an older compiler version, since the default has library compatibility issues
-          export NV_URL=https://developer.download.nvidia.com/hpc-sdk/24.7/nvhpc_2024_247_Linux_x86_64_cuda_multi.tar.gz
           # install PGI locally
           ./scripts/install_hpc_sdk.sh </dev/null
           # get the compilers in the path and set NV_CXX and AMD_CXX
