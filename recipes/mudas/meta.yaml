@@ -1,0 +1,60 @@
+{% set name = "mudas" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c20873a9d29598b8da5edce4c9e8ba6b0f221d8db5c41c99ad065488f126a16e
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - mudas = mudas.mudas:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77.0.3
+  run:
+    - python >=3.9
+    - pandas
+    - numpy
+    - scipy
+    - biopython
+    - geoparse
+    - rpy2
+    - qnorm
+    - inmoose
+    - speedtest-cli
+    - psutil
+    - bowtie2
+    - r-base
+    - bioconductor-rsubread
+    - bioconductor-affxparser
+
+test:
+  imports:
+    - mudas
+  commands:
+    - mudas --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/freyrelab/MicroarrayProject
+  summary: A microarray data access system for GEO
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - diego-carc
