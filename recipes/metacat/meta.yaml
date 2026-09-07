@@ -1,0 +1,82 @@
+{% set name = "MetaCAT" %}
+{% set version = "1.0.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Upstream does not ship a buildable sdist (pyproject.toml and the C sources
+  # of the ctypes libraries are not part of the git repository), so the released
+  # wheel is repackaged here.
+  - url: https://github.com/liu-congcong/{{ name }}/releases/download/v{{ version }}/{{ name|lower }}-{{ version }}-py3-none-any.whl
+    sha256: 9735dc47372e626e9e454efd0b069fb80d58ba93d49744b41f64f67e89eb2066
+  - url: https://raw.githubusercontent.com/liu-congcong/{{ name }}/v{{ version }}/LICENSE
+    sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
+
+build:
+  number: 0
+  # The wheel only carries prebuilt ctypes libraries for linux-x86_64 and
+  # darwin-arm64.
+  skip: True  # [not (linux64 or (osx and arm64))]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - fraggenescan
+    - hmmer >=3.1
+    - mash
+    - matplotlib-base >=3.10.0
+    - numpy
+    - scipy >=1.11.0
+    - scikit-learn
+    - statsmodels
+    - threadpoolctl
+
+test:
+  files:
+    - test.fa
+  imports:
+    - MetaCAT
+  commands:
+    - MetaCAT --version
+    - MetaCAT seed --help
+    - mash --version > /dev/null
+    # Exercises the unvendored FragGeneScan and hmmsearch: the three contigs of
+    # test.fa each carry exactly one marker, so the seed file has four lines.
+    - MetaCAT seed -f test.fa -o seed.tsv.gz -t 2
+    - test "$(gzip -dc seed.tsv.gz | wc -l)" -eq 4
+
+about:
+  home: https://github.com/liu-congcong/MetaCAT
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Metagenome Clustering and Association Tool
+  description: |
+    MetaCAT bins metagenome assemblies into microbial genomes and associates
+    the resulting genomes and their variants with host traits. This package
+    provides the core MetaCAT commands; the optional checkm2 and gtdbtk
+    subcommands additionally require those tools (and their databases) to be
+    installed and available on PATH.
+  doc_url: https://github.com/liu-congcong/MetaCAT/tree/main/Documentation
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41564-026-02472-7
+  recipe-maintainers:
+    - wwood
+  skip-lints:
+    # The upstream wheel carries prebuilt ctypes libraries, so the package is
+    # platform specific even though nothing is compiled here.
+    - should_be_noarch_generic
+  notes: |
+    The FragGeneScan, hmmsearch and mash binaries vendored in the upstream
+    wheel have been removed; the conda packages are used instead.
