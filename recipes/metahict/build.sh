@@ -8,6 +8,8 @@ install -m 0644 LICENSE "${PREFIX}/share/metahict/LICENSE"
 install -m 0644 README.md "${PREFIX}/share/metahict/README.md"
 install -m 0644 metahict_manager.py \
   "${PREFIX}/share/metahict/metahict_manager.py"
+install -m 0755 metahict \
+  "${PREFIX}/share/metahict/metahict"
 
 cp -R docs "${PREFIX}/share/metahict/"
 cp -R images "${PREFIX}/share/metahict/"
