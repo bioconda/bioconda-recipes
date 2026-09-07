@@ -20,8 +20,6 @@ if [[ "${ARCH}" == "aarch64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 elif [[ "${ARCH}" == "arm64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-else
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
 if [[ "${OS}" == "Darwin" ]]; then
