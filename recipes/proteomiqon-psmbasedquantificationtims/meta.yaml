@@ -1,8 +1,9 @@
+{% set name = "proteomiqon-psmbasedquantificationtims" %}
 {% set version = "0.0.13" %}
 {% set sha256 = "afb788a825402b264b7a989eb09a323e297779cd6e8bc2eea39d3426bed2d3a3" %}
 
 package:
-  name: proteomiqon-psmbasedquantificationtims
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -13,7 +14,7 @@ build:
   noarch: generic
   number: 0
   run_exports:
-    - dotnet-runtime >=10.0, <11.0
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build: 
@@ -26,6 +27,11 @@ requirements:
 
 test:
   commands:
+    - test -x "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
+    - grep -q "PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
     - proteomiqon-psmbasedquantificationtims --help
 
 about:

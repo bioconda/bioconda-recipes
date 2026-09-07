@@ -1,8 +1,9 @@
+{% set name = "proteomiqon-labeledproteinquantification" %}
 {% set version = "0.0.5" %}
 {% set sha256 = "c266d2b7f964dde71ef7c597e12bfb5ad72cc7202a145753f5f786490a6cb76e" %}
 
 package:
-  name: proteomiqon-labeledproteinquantification
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -13,7 +14,7 @@ build:
   noarch: generic
   number: 0
   run_exports:
-    - dotnet-runtime >=10.0, <11.0
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build: 
@@ -26,7 +27,12 @@ requirements:
 
 test:
   commands:
-    - which proteomiqon-labeledproteinquantification
+    - test -x "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/LabeledProteinQuantification/ProteomIQon.LabeledProteinQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+    - grep -q "LabeledProteinQuantification/ProteomIQon.LabeledProteinQuantification.dll" "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+    - proteomiqon-labeledproteinquantification --help
 
 about:
   home: https://csbiology.github.io/ProteomIQon/
