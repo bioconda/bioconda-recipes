@@ -1,0 +1,25 @@
+This patch hotfixes pointers in cython code
+
+It's generated from this pull request at upstream:
+https://github.com/alimanfoo/pysamstats/pull/192
+
+Background:
+* Recent version of HTSlib have introduced const pointers
+* recent versions of gcc now show error when missing const
+* Note that `bam_pileup1_t* read` only causes warnings so
+  I am leaving it as-is
+
+
+diff --git a/pysamstats/opt.pyx b/pysamstats/opt.pyx
+index 5aa9fc5..33afb31 100644
+--- a/pysamstats/opt.pyx
++++ b/pysamstats/opt.pyx
+@@ -1873,7 +1873,7 @@ def stat_pileup(PileupStat stat,
+                 bint no_del,
+                 bint no_dup):
+     cdef:
+-        bam_pileup1_t** plp
++        const bam_pileup1_t** plp
+         bam_pileup1_t* read
+         bam1_t* b
+         int i, n

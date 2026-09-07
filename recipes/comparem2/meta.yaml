@@ -1,43 +1,62 @@
 {% set name = "comparem2" %}
-{% set version = "2.16.2" %}
-{% set sha256 = "5368e499c223b9967d943b4083e11ee0a9f5ec854cc4c305d2cec61409e1f058" %}
+{% set version = "3.0.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/cmkobel/CompareM2/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: f7644b3a6fdb774584d4f5246e59c43bd31dea3b572f191e3f27267afd5d05df
 
 build:
   number: 0
-  noarch: generic
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - comparem2 = comparem2.cli:main
+    - cm2 = comparem2.cli:main
   run_exports:
-    - {{ pin_subpackage('comparem2', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
   run:
-    - snakemake-minimal <8
-    - pulp <2.8
-    - python <3.12
-    - mamba <2 # Necessary for snakemake to install child environments during development.
-    - pandas
-  
+    - python >=3.11
+    - snakemake-minimal >=9,<10
+    - snakemake-executor-plugin-slurm
+    - snakemake-executor-plugin-cluster-generic
+    - textual
+    # The analysis tools are deployed per rule at run time, not installed here.
+    - conda
 
 test:
+  imports:
+    - comparem2
   commands:
-    - "touch dummy.fa; comparem2 --help"
+    - comparem2 --version
+    - comparem2 --help
+    - cm2 --help
 
 about:
-  home: "https://github.com/cmkobel/comparem2"
-  summary: 'CompareM2 genomes-to-report pipeline'
+  home: https://github.com/cmkobel/CompareM2
+  license: GPL-3.0-or-later
   license_family: GPL3
-  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  dev_url: "https://github.com/cmkobel/comparem2"
-  doc_url: "https://comparem2.readthedocs.io"
+  summary: Rapid microbial genomes-to-report pipeline
+  description: |
+    CompareM2 runs fourteen analysis tools over a set of microbial assemblies
+    and renders one self-contained HTML report: assembly statistics,
+    completeness, taxonomy, annotation, AMR genes, sequence types, ANI, a
+    pangenome, phylogenies and draft metabolic models.
+  doc_url: https://comparem2.readthedocs.io
+  dev_url: https://github.com/cmkobel/CompareM2
 
 extra:
   recipe-maintainers:
     - cmkobel
+  identifiers:
+    - doi:10.1093/bioinformatics/btaf517
