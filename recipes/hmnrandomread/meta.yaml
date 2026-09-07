@@ -1,45 +1,59 @@
 {% set name = "hmnrandomread" %}
-{% set version = "0.10.0" %}
+{% set version = "0.11.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/guillaume-gricourt/HmnRandomRead/archive/{{ version }}.tar.gz 
-  sha256: dc589ef91be1a4c5694aad3e34a4cd0b1818c131b03153e76634f01ed0719854
+  url: https://github.com/guillaume-gricourt/HmnRandomRead/archive/{{ version }}.tar.gz
+  sha256: cf7d8a01c118b3c8f5302917baa8fa4be75bdc3bc418aeb49fabe9ab7d82e39c
 
 build:
-  number: 4
-  skip: true [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - export LIBCLANG_PATH=$BUILD_PREFIX/lib
+    - cargo bundle-licenses --format yaml --output THIRDPARTY.yaml    
+    - cargo install -v --locked --no-track --profile=release --root $PREFIX --path .
 
 requirements:
   build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - clang
+    - libclang
     - make
-    - {{ compiler('cxx') }}
-    - htslib
+    - perl
+    - pkg-config
+    - cargo-bundle-licenses
   host:
-    - htslib
+    - zlib
+    - curl
+    - openssl
   run:
-    - python
-    - pytest
-    - htslib
+    - zlib
+    - curl
+    - openssl
 
 test:
-  source_files:
-    - Makefile
   commands:
-    - which HmnRandomRead
-  requires:
-    - make
+    - HmnRandomRead version
 
 about:
   home: https://github.com/guillaume-gricourt/HmnRandomRead
   summary: A sequence-read simulator program for NGS
   description: A sequence-read simulator program for NGS
   license: MIT
-  license_file: LICENSE
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yaml
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - guillaume-gricourt
