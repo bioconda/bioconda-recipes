@@ -24,6 +24,7 @@ fi
 
 if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
