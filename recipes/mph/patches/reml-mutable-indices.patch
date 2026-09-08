@@ -1,0 +1,19 @@
+--- src/reml.cpp
++++ src/reml.cpp
+@@ -186,11 +186,12 @@
+ 		std::cout<<"Warning: the covariate matrix is not of full rank.\n";
+ 		MatrixXf indep_xmat(xmat.rows(), qr.rank());
+ 		std::vector<std::string> indep_covar_names(qr.rank());
+-		VectorXi indep_indices = qr.colsPermutation().indices().head(qr.rank());
+-		std::sort(indep_indices.data(), indep_indices.data()+indep_indices.size());
++		std::vector<int> indep_indices(qr.rank());
++		for(i=0; i<qr.rank(); ++i) indep_indices[i] = qr.colsPermutation().indices()(i);
++		std::sort(indep_indices.begin(), indep_indices.end());
+ 		for(i=0; i<indep_indices.size(); ++i) {
+-			indep_xmat.col(i) = xmat.col(indep_indices(i));
+-			indep_covar_names[i] = covar_names[indep_indices(i)];
++			indep_xmat.col(i) = xmat.col(indep_indices[i]);
++			indep_covar_names[i] = covar_names[indep_indices[i]];
+ 		}
+ 		
+ 		xmat = indep_xmat;
