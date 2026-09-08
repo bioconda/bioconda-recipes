@@ -3,6 +3,10 @@ set -euxo pipefail
 
 export TRIDENT_SKIP_CONDA_TOOLS=1
 
+if [[ "$(uname)" == "Darwin" ]]; then
+    export DYLD_LIBRARY_PATH="${BUILD_PREFIX}/lib${DYLD_LIBRARY_PATH:+:${DYLD_LIBRARY_PATH}}"
+fi
+
 make -C trident/tools/build_data clean
 make -C trident/tools/build_data -j "${CPU_COUNT}" all \
     CXX="${CXX}" \
