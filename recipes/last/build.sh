@@ -4,6 +4,14 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -pthread -I${PREFIX}/include"
 
+# macOS specific flags to prevent compilation conflicts
+if [[ `uname -s` == "Darwin" ]]; then
+    export MACOSX_DEPLOYMENT_TARGET=11.3
+    export MACOSX_SDK_VERSION=11.3
+    export CFLAGS="${CFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 ARCH=$(uname -m)
 
 case ${ARCH} in

@@ -1,0 +1,120 @@
+diff --git a/src/Makevars b/src/Makevars
+old mode 100755
+new mode 100644
+index 0add8ca..1351bd3
+--- a/src/Makevars
++++ b/src/Makevars
+@@ -1,85 +1,39 @@
+-# Define C++ standard
+-CXX_STD = CXX17
++## This file uses GNU make syntax $(shell ...) so we need to
++## have "SystemRequirements: GNU make" in the DESCRIPTION file.
++## See Rhtslib's vignette for details.
+ 
+-# Define source files excluding submodule
+-CFILES = $(filter-out submodule/%, $(wildcard \
+-	*.c \
+-	**/*.c \
+-	**/*/*.c \
+-))
+-CPPFILES = $(filter-out submodule/%, $(wildcard \
+-	*.cpp \
+-	**/*.cpp \
+-	**/*/*.cpp \
+-))
++CXX_STD = CXX17
+ 
+-# Combine C and C++ files
++## The subdirectory paths which contain C files
++CFILES = $(wildcard \
++    *.c \
++    **/*.c \
++    **/*/*.c \
++)
++
++## The subdirectory paths which contain C++ files
++CPPFILES = $(wildcard \
++    *.cpp \
++    **/*.cpp \
++    **/*/*.cpp \
++)
++
++## Combine the two sets of files
+ FILES = $(CFILES) $(CPPFILES)
++
+ SOURCES = $(FILES)
+ OBJECTS = $(CPPFILES:.cpp=.o) $(CFILES:.c=.o)
+ 
+-# Define Rhtslib flags
+-RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+-	'Rhtslib::pkgconfig("PKG_LIBS")')
+-RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
+-	'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
+-
+-PKG_CPPFLAGS = -pthread $(RHTSLIB_CPPFLAGS)
+-PKG_LIBS = -pthread -lz $(RHTSLIB_LIBS)
+-
+-# Define CFLAGS for minimap2
+-# omit unused-result for suppressing R CMD check warnings
+-MINIMAP2_CFLAGS = $(CFLAGS) -Wno-unused-result
+-
+-# Define architecture
+-UNAME_M := $(shell uname -m)
+-
+-# Define Rust build variables
+-RUSTC := $(shell command -v rustc 2>/dev/null)
+-CARGO := $(shell command -v cargo 2>/dev/null)
+-RUST_VERSION := $(shell rustc --version | sed -E 's/rustc ([0-9]+\.[0-9]+\.[0-9]+).*/\1/' 2>/dev/null)
+-RUST_OK := $(shell [ "$(RUST_VERSION)" != "" ] && \
+-                   [ "$$(printf '%s\n' 1.85.0 $(RUST_VERSION) | sort -V | head -n1)" = "1.85.0" ] && echo "yes" || echo "no")
+-
+-# Targets
+-all: strippedLib ../inst/bin/minimap2 ../inst/bin/oarfish
+-
+ strippedLib: $(SHLIB)
+ 	if test -e "/usr/bin/strip" & test -e "/bin/uname" & [[ `uname` == "Linux" ]] ; then /usr/bin/strip --strip-debug $(SHLIB); fi
+-
+-../inst/bin/minimap2:
+-ifeq ($(UNAME_M),arm64)
+-	@echo "Building for ARM64"
+-	(cd submodule/minimap2 && $(MAKE) -f Makefile CFLAGS="$(MINIMAP2_CFLAGS)" arm_neon=1 aarch64=1 minimap2)
+-else ifeq ($(UNAME_M),aarch64)
+-	@echo "Building for ARM64"
+-	(cd submodule/minimap2 && $(MAKE) -f Makefile CFLAGS="$(MINIMAP2_CFLAGS)" arm_neon=1 aarch64=1 minimap2)
+-else
+-	@echo "Building for x86_64"
+-	(cd submodule/minimap2 && $(MAKE) -f Makefile CFLAGS="$(MINIMAP2_CFLAGS)" minimap2)
+-endif
+-	echo "Installing binary to $(PWD)/../inst/bin"
+-	mkdir -p ../inst/bin
+-	cp submodule/minimap2/minimap2 ../inst/bin/
+-
+-# smuggle oarfish if cargo is available
+-../inst/bin/oarfish:
+-ifeq ($(CARGO),)
+-	@echo "Cargo not found, skipping oarfish installation."
+-else ifeq ($(RUST_OK),no)
+-	@echo "Rust version too old for edition 2024, skipping oarfish installation."
+-else
+-	@echo "Building oarfish with cargo"
+-	mkdir -p ../inst/bin
+-	mkdir cargo_temp
+-	(cargo install oarfish --root cargo_temp --bin oarfish --vers 0.8.0)
+-	cp cargo_temp/bin/oarfish ../inst/bin/
+-	cargo uninstall oarfish --root cargo_temp
+-	rm -rf cargo_temp
+-endif
+-
+ clean:
+ 	rm $(OBJECTS)
+-	cd submodule/minimap2 && $(MAKE) clean
++.phony: strippedLib clean
+ 
+-.PHONY: strippedLib clean
++RHTSLIB_LIBS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
++    'Rhtslib::pkgconfig("PKG_LIBS")')
++RHTSLIB_CPPFLAGS=$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e \
++    'Rhtslib::pkgconfig("PKG_CPPFLAGS")')
++
++PKG_CPPFLAGS = -pthread $(RHTSLIB_CPPFLAGS)
++PKG_LIBS = -pthread -lz $(RHTSLIB_LIBS)

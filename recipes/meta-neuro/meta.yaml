@@ -1,6 +1,6 @@
 {% set name = "meta-neuro" %}
-{% set version = "2.0.1" %}
-{% set sha256 = "dcf5882de1f8cb8ef35242a8f627b79ae1dddc3b570554f94085dcbb10cf5ae4" %}
+{% set version = "2.1.0" %}
+{% set sha256 = "7352199fa7d65873004b55b0978fbff4597ac6f2490c6edce4dafa5292f4aee5" %}
 
 package:
   name: {{ name|lower }}
@@ -11,60 +11,54 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
+  noarch: python
   run_exports:
-    - {{ pin_subpackage('meta-neuro', max_pin="x.x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - cmake
-    - ninja
-
   host:
-    - vtk >=9.4.1,<9.6
-    - libitk-devel >=5.4.0,<5.5.0
-    - eigen >=3.4
-    - libxml2-devel
-    - python
+    - python >=3.11
     - pip
-    - setuptools
-
+    - setuptools >=77.0.3
   run:
-    - vtk >=9.4.1,<9.6
-    - libitk-devel >=5.4.0,<5.5.0
-    - qhull
-    - python
-    - pip
-    - setuptools
+    - python >=3.11
     - numpy
     - tqdm
     - dipy
-    - scipy >=1.15.0
+    - scipy
     - pandas
     - nibabel
     - tslearn
     - pyvista
+    - trx-python
+    - pytables
 
 test:
   imports:
     - meta
+  requires:
+    - pip
   commands:
-    - vtklevelset $PREFIX/share/meta-neuro/example/test.nii.gz test.vtk 0.1
-    - cmrep_vskel -c 3 -p 1.5 -g test.vtk test_skeleton.vtk
+    - pip check
+    - meta --help
+    - density_map --help
+    - shape_metrics --help
+    - volumetric_profile --help
+    - streamlines_profile --help
+    - compute_bundle_similarity --help
+    - apply_transform_image --help
+    - apply_transform_tractogram --help
 
 about:
-  home: https://github.com/USC-LoBeS/meta
-  license: BSD-3-Clause
+  home: https://github.com/bagari/meta
+  license: MIT
   license_file: LICENSE.txt
   summary: 'Medial Tractography Analysis (MeTA)'
   description: |
     MeTA is a workflow implemented to minimize microstructural heterogeneity in diffusion MRI (dMRI) metrics by extracting and parcellating the core volume along the bundle length in the voxel-space directly while effectively preserving bundle shape and efficiently capturing the regional variation within and along white matter (WM) bundles.
-  dev_url: https://github.com/bagari/meta
 
 extra:
-  bulk: true
-  additional-platforms:
-    - osx-arm64
   recipe-maintainers:
     - bagari

@@ -1,0 +1,54 @@
+{% set name = "easy45" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/maidinhvn/easy45/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6108233b57f8d725314fddc7c4ac91abc6004bd40a81ed76ceb7cdd56b81ba72
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir 
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - easy45 = easy45.cli:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools >=64
+  run:
+    - python
+    - biopython >=1.79
+    - minimap2
+    - seqkit
+    - vsearch
+    - itsx
+    - barrnap >=0.9,<1.0
+    - abpoa
+    - infernal
+
+test:
+  imports:
+    - easy45
+  commands:
+    - easy45 --version
+    - easy45 check-deps
+
+about:
+  home: https://github.com/maidinhvn/easy45
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Assembly-free recovery of the 45S nrDNA transcribed unit and ribotype variants from HiFi reads
+  dev_url: https://github.com/maidinhvn/easy45
+
+extra:
+  recipe-maintainers:
+    - maidinhvn

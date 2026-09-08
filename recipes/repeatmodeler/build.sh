@@ -24,6 +24,14 @@ cd ${RM_DIR}
 # prompt 2: confirm path to running perl interpreter
 # prompt 3: Configure for LTR structural search [y] or n?
 # Answering n, because NINJA is not yet in bioconda
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
 CONFIG_OPTIONS=" \
     -cdhit_dir ${PREFIX}/bin \
     -genometools_dir ${PREFIX}/bin \
@@ -35,7 +43,9 @@ CONFIG_OPTIONS=" \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin \
     -ucsctools_dir ${PREFIX}/bin \
-    -repeatafterme_dir ${PREFIX}/bin"
+    -repeatafterme_dir ${PREFIX}/bin \
+    -famdb_dir ${famdb_dir} \
+    -no_prompt"
     
 if [[ "$(uname -s)" == "Linux" ]]; then
     LTR_STRUCTURAL_SEARCH="y"
