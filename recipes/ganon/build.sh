@@ -11,7 +11,6 @@ ${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 cmake -S . \
       -B build_cpp \
       -DCMAKE_BUILD_TYPE=Release \
-      -DVERBOSE_CONFIG=ON \
       -DCONDA=ON \
       -DCMAKE_INSTALL_PREFIX="${PREFIX}"
 

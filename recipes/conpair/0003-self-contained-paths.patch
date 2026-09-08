@@ -1,0 +1,45 @@
+diff --git a/scripts/estimate_tumor_normal_contamination.py b/scripts/estimate_tumor_normal_contamination.py
+index 8fa4473..bd2d118 100755
+--- a/scripts/estimate_tumor_normal_contamination.py
++++ b/scripts/estimate_tumor_normal_contamination.py
+@@ -35,7 +35,7 @@ parser.add_option('-Q', '--min_mapping_quality', help='MIN MAPPING QUALITY [defa
+ if opts.conpair_dir:
+     CONPAIR_DIR = opts.conpair_dir
+ else:
+-    CONPAIR_DIR = os.environ['CONPAIR_DIR']
++    CONPAIR_DIR = os.environ.get('CONPAIR_DIR', os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'share', 'conpair'))
+ 
+ import ContaminationModel
+ import ContaminationMarker
+diff --git a/scripts/run_gatk_pileup_for_sample.py b/scripts/run_gatk_pileup_for_sample.py
+index 20587d9..f31a0ef 100755
+--- a/scripts/run_gatk_pileup_for_sample.py
++++ b/scripts/run_gatk_pileup_for_sample.py
+@@ -44,12 +44,12 @@ if not os.path.exists(opts.bam):
+ if opts.conpair_dir:
+     CONPAIR_DIR = opts.conpair_dir
+ else:
+-    CONPAIR_DIR = os.environ['CONPAIR_DIR']
++    CONPAIR_DIR = os.environ.get('CONPAIR_DIR', os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'share', 'conpair'))
+ 
+ if opts.gatk:
+     GATK = opts.gatk
+ else:
+-    GATK = os.environ['GATK_JAR']
++    GATK = os.environ.get('GATK_JAR', os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'opt', 'gatk-3.8', 'GenomeAnalysisTK.jar'))
+ 
+ if not os.path.exists(GATK):
+     print('ERROR: GATK jar {0} cannot be find.'.format(GATK))
+diff --git a/scripts/verify_concordance.py b/scripts/verify_concordance.py
+index b75f7f9..48e3ec7 100755
+--- a/scripts/verify_concordance.py
++++ b/scripts/verify_concordance.py
+@@ -17,7 +17,7 @@ from collections import defaultdict
+ from ContaminationModel import *
+ from ContaminationMarker import *
+ 
+-CONPAIR_DIR = os.environ['CONPAIR_DIR']
++CONPAIR_DIR = os.environ.get('CONPAIR_DIR', os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'share', 'conpair'))
+ MARKER_FILE = os.path.join(CONPAIR_DIR, 'data', 'markers', 'GRCh37.autosomes.phase3_shapeit2_mvncall_integrated.20130502.SNV.genotype.sselect_v4_MAF_0.4_LD_0.8.txt')
+ 
+ desc = """Program to verify tumor-normal sample concordance"""

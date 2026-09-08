@@ -1,0 +1,95 @@
+{% set version = '0.2.3' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-instantiate
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/instantiate_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/instantiate/instantiate_{{ version }}.tar.gz
+  sha256: dff964c58ca82684cfe0f9fcbe3cee683294329cdc42e83a1ecdf0121b40cdd7
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}sed               # [win]
+    - {{ posix }}grep              # [win]
+    - {{ posix }}autoconf
+    - {{ posix }}automake          # [not win]
+    - {{ posix }}automake-wrapper  # [win]
+    - pkg-config
+    - {{ posix }}make
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-callr
+    - r-fs
+    - r-rlang
+  run:
+    - r-base
+    - r-callr
+    - r-fs
+    - r-rlang
+
+test:
+  commands:
+    - $R -e "library('instantiate')"           # [not win]
+    - "\"%R%\" -e \"library('instantiate')\""  # [win]
+
+about:
+  home: https://wlandau.github.io/instantiate/, https://github.com/wlandau/instantiate
+  license: MIT
+  summary: Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled
+    'CmdStan' models into CRAN-ready statistical modeling R packages. The models compile
+    once during installation, the executables live inside the file systems of their
+    respective packages, and users have the full power and convenience of 'cmdstanr'
+    without any additional compilation after package installation. This approach saves
+    time and helps R package developers migrate from 'rstan' to the more modern 'cmdstanr'.
+    Packages 'rstantools', 'cmdstanr', 'stannis', and 'stanapi' are similar Stan clients
+    with different objectives.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    - LICENSE
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: instantiate
+# Title: Pre-Compiled 'CmdStan' Models in R Packages
+# Description: Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled 'CmdStan' models into CRAN-ready statistical modeling R packages. The models compile once during installation, the executables live inside the file systems of their respective packages, and users have the full power and convenience of 'cmdstanr' without any additional compilation after package installation. This approach saves time and helps R package developers migrate from 'rstan' to the more modern 'cmdstanr'. Packages 'rstantools', 'cmdstanr', 'stannis', and 'stanapi' are similar Stan clients with different objectives.
+# Version: 0.2.3
+# License: MIT + file LICENSE
+# URL: https://wlandau.github.io/instantiate/, https://github.com/wlandau/instantiate
+# BugReports: https://github.com/wlandau/instantiate/issues
+# Authors@R: c( person( given = c("William", "Michael"), family = "Landau", role = c("aut", "cre"), email = "will.landau.oss@gmail.com", comment = c(ORCID = "0000-0003-1878-3253") ), person( family = "Eli Lilly and Company", role = c("cph", "fnd") ))
+# Depends: R (>= 4.0.0)
+# Imports: callr, fs, rlang, utils
+# Suggests: knitr (>= 1.30), markdown (>= 1.1), rmarkdown (>= 2.4), testthat (>= 3.0.0), withr
+# Encoding: UTF-8
+# Language: en-US
+# Config/testthat/edition: 3
+# RoxygenNote: 7.3.2
+# NeedsCompilation: yes
+# Packaged: 2024-10-02 17:24:15 UTC; C240390
+# Author: William Michael Landau [aut, cre] (<https://orcid.org/0000-0003-1878-3253>), Eli Lilly and Company [cph, fnd]
+# Maintainer: William Michael Landau <will.landau.oss@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2024-10-02 18:20:06 UTC

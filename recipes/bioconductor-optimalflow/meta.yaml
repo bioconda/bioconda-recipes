@@ -1,28 +1,26 @@
-{% set version = "1.18.0" %}
+{% set version = "1.22.0" %}
 {% set name = "optimalFlow" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Optimal-transport techniques applied to supervised flow cytometry gating.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: optimalFlow
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1eaa06faa1e497b00679f277c32dee38
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-optimalflow", max_pin="x.x") }}'
-
-extra:
-  container:
-    extended-base: yes
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  noarch: generic
 
 # Suggests: knitr, BiocStyle, rmarkdown, magick
 requirements:
@@ -34,8 +32,8 @@ requirements:
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
   host:
-    - bioconductor-flowmeans >=1.66.0,<1.67.0
-    - bioconductor-optimalflowdata >=1.18.0,<1.19.0
+    - bioconductor-flowmeans >=1.70.0,<1.71.0
+    - bioconductor-optimalflowdata >=1.22.0,<1.23.0
     - r-base
     - r-dbscan
     - r-doparallel
@@ -49,8 +47,8 @@ requirements:
     - r-robustbase
     - r-transport
   run:
-    - bioconductor-flowmeans >=1.66.0,<1.67.0
-    - bioconductor-optimalflowdata >=1.18.0,<1.19.0
+    - bioconductor-flowmeans >=1.70.0,<1.71.0
+    - bioconductor-optimalflowdata >=1.22.0,<1.23.0
     - r-base
     - r-dbscan
     - r-doparallel
@@ -64,15 +62,17 @@ requirements:
     - r-robustbase
     - r-transport
 
-source:
-  md5: 579f1d7205f12db20a358183f5de3a49
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: optimalFlow
+  description: Optimal-transport techniques applied to supervised flow cytometry gating.
+
+extra:
+  container:
+    extended-base: yes
 

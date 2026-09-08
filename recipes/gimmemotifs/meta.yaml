@@ -1,4 +1,4 @@
-{% set version = "0.18.2" %}
+{% set version = "0.18.4" %}
 
 package:
   name: gimmemotifs
@@ -6,14 +6,15 @@ package:
 
 source:
   url: https://github.com/vanheeringen-lab/gimmemotifs/releases/download/{{ version }}/gimmemotifs-{{ version }}.tar.gz
-  sha256: 950a20a736871cf1a35084265cb5f8132171044abeddc0c8a77b34819e5f83ab
+  sha256: 5681f4224e158540b499f815af764f82a75557704779a842f48eb8a2f3407f10
 
 build:
   number: 0
+  skip: True  # [py < 39 or py > 312]
   run_exports:
     - {{ pin_subpackage('gimmemotifs', max_pin="x.x") }}
     - {{ pin_subpackage('gimmemotifs-minimal', max_pin="x.x") }}
-  skip: True  # [py < 39 or py > 312]
+
 requirements:
   host:
     - python
@@ -22,28 +23,32 @@ requirements:
     - python
     - dinamo >=1.0
     - gadem >=1.3.1  # [not arm64]
-    - homer >=4.11  # [not osx]
+    - homer >=4.11
     - meme >=5.5.7
     - prosampler >=1.5
-    - trawler >=2.0   # [not arm64]
-    - weeder >=2.0  # [not osx]
+    - trawler >=2.0
+    - weeder >=2.0
     - xxmotif >=1.6  # [not osx]
     #  - yamda >=0.1.00e9c9d          # bloats environment
+
 test:
   commands:
     - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help
 
 outputs:
   - name: gimmemotifs-minimal
+
     build:
       script:
         - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
         - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
         - python -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -v
       skip: True  # [py < 39 or py > 312]
+
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
       host:
         - python
         - pip
@@ -57,7 +62,7 @@ outputs:
         - configparser
         - diskcache
         - feather-format
-        - genomepy >=0.16.3
+        - genomepy >=0.16.4
         - iteround
         - jinja2
         - logomaker
@@ -70,13 +75,14 @@ outputs:
         - python
         - python-xxhash
         - qnorm  >=0.8.1
-        - scikit-learn >=0.23.2         # https://scikit-learn.org/stable/install.html#installing-the-latest-release
+        - scikit-learn >=0.23.2, <1.7   # v1.7 deprecated n_alphas
         - scipy >=1.5                   # https://docs.scipy.org/doc/scipy/dev/toolchain.html#numpy
         - seaborn-base >=0.10.1
         - statsmodels
         - tqdm >=4.46.1
         - xdg
         - xgboost >=1.0.2
+
     test:
       commands:
         - export LD_PRELOAD="${PREFIX}/lib/libgomp.so.1" && gimme --help

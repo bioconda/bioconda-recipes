@@ -1,22 +1,23 @@
-{% set version = "1.40.0" %}
+{% set version = "1.44.0" %}
 {% set name = "COSNet" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Package that implements the COSNet classification algorithm. The algorithm predicts node labels in partially labeled graphs where few positives are available for the class being predicted.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Cost Sensitive Network for node label prediction on graphs with highly unbalanced labelings
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: c7fd4e60608e702f5ce248bfa224de04
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-cosnet", max_pin="x.x") }}'
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
 # Suggests: bionetdata, PerfMeas, RUnit, BiocGenerics
 requirements:
   build:
@@ -26,16 +27,17 @@ requirements:
     - r-base
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
-source:
-  md5: fefba7ec494488bdddf41fec06e21024
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 test:
   commands:
     - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Cost Sensitive Network for node label prediction on graphs with highly unbalanced labelings
+  description: Package that implements the COSNet classification algorithm. The algorithm predicts node labels in partially labeled graphs where few positives are available for the class being predicted.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

@@ -1,0 +1,55 @@
+{% set name = "mitogeneextractor" %}
+{% set version = "1.9.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cmayer/MitoGeneExtractor/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b0941436c68f049afad7b0a6f8857ce0dc128d22dca886910261b2e41d116569
+
+build:
+  number: 0
+  # Exonerate is not available on Windows, and the tool is only tested on
+  # Linux/macOS by the authors.
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  run:
+    - exonerate 2.4.0
+
+test:
+  commands:
+    - MitoGeneExtractor --help
+    - MitoGeneExtractor-v{{ version }} --help
+    # Just confirm the exonerate run-dependency is on PATH. `exonerate
+    # --version` prints the version but exits non-zero, which would fail the
+    # test under `set -e`.
+    - command -v exonerate
+
+about:
+  home: https://github.com/cmayer/MitoGeneExtractor
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE.txt
+  summary: "Extract mitochondrial (and other) protein-coding genes from NGS libraries via Exonerate alignments."
+  description: |
+    MitoGeneExtractor conveniently extracts mitochondrial protein-coding genes
+    from next-generation sequencing libraries. It aligns nucleotide reads,
+    assemblies or genomes against one or more amino-acid reference sequences
+    using Exonerate and builds a consensus for each reference. Typical uses
+    include recovering barcode/COI and other mitochondrial or plastid
+    protein-coding genes and screening libraries for contamination.
+  dev_url: https://github.com/cmayer/MitoGeneExtractor
+  doc_url: https://github.com/cmayer/MitoGeneExtractor/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - SchistoDan

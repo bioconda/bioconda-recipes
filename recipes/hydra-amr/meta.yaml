@@ -1,0 +1,100 @@
+{% set name = "hydra-amr" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iowa69/hydra/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6dc27d5e8c2c0a5a81b0c319b7666dea9364b3cd47fe1367e96bb267112a8fd2
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - hydra = hydra_amr.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.9
+    - pandas >=1.3
+    - numpy >=1.20
+    - scipy >=1.7
+    - pysam >=0.19
+    - openpyxl >=3.0
+    - blast >=2.12
+    - minimap2 >=2.24
+    - samtools >=1.15
+    - mash >=2.3
+
+test:
+  imports:
+    - hydra_amr
+    - hydra_amr.engines
+    - hydra_amr.typing
+    - hydra_amr.report
+  commands:
+    - hydra --version
+    - hydra --help
+    - hydra run --help
+    - hydra screen --help
+    - hydra db --help
+    - hydra presets
+    - blastn -version
+    - minimap2 --version
+    - samtools --version
+
+about:
+  home: https://github.com/iowa69/hydra
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Unified AMR, virulence, point-mutation, heteroresistance, MLST and lineage typing
+  description: |
+    Hydra screens bacterial assemblies and raw reads for acquired resistance and
+    virulence genes, organism-specific resistance point mutations, multi-locus
+    sequence types and lineage typing schemes, in one pass over one set of
+    databases, replacing a pipeline of four or five single-purpose tools.
+
+    It reports heteroresistance directly from reads: allele fractions are
+    measured at every catalogued mutation position, so a resistance mutation
+    carried by only some copies of a multi-copy locus - the usual situation for
+    the 23S rRNA mutations behind linezolid resistance - is detected even though
+    the assembly consensus is wild type. A FASTQ-only sample is also sequence
+    typed, by mapping reads to the scheme's loci and reading the consensus back
+    against every allele, and each resistance gene it carries is compared with
+    the closest reference so its mutations are reported with the fraction of
+    reads supporting them.
+
+    Acquired genes are screened against NCBI, CARD, ResFinder, ARG-ANNOT,
+    MEGARes, VFDB, PlasmidFinder, EcOH and E. coli VF together, with curated
+    drug-class and gene-family annotation transferred onto every one of them.
+    Results come out as TSV, CSV, JSON, XLSX or a self-contained HTML report
+    with clustered heatmaps, pivoted on samples or genes, showing
+    presence/absence, percent identity, coverage, read depth or allele fraction,
+    plus flat one-row-per-hit layouts that existing downstream scripts can read.
+
+    Reference databases are not redistributed. After installation, `hydra db
+    download` fetches them from their own upstream sources and converts them -
+    the NCBI protein and point-mutation references, NCBI, CARD, ResFinder,
+    PlasmidFinder and VFDB gene catalogues, every PubMLST 7-locus scheme, and the
+    lineage typing loci and species sketches - so a fresh machine needs one
+    command and no other tool. `hydra db import` builds them instead from
+    reference data already present, and `hydra db bundle` packs them for machines
+    with neither a source nor a network. Each database keeps its own licence,
+    which `hydra db info` prints along with its citation.
+
+  doc_url: https://github.com/iowa69/hydra#readme
+  dev_url: https://github.com/iowa69/hydra
+
+extra:
+  recipe-maintainers:
+    - iowa69

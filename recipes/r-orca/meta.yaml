@@ -1,0 +1,75 @@
+{% set version = "1.1-3" %}
+
+package:
+  name: r-orca
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/orca_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/orca/orca_{{ version }}.tar.gz
+  sha256: 0e2eba38a1bb819dcb8c999e3b860027beb48575ac3541a492fde69ccfd693ad
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-orca', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+  run:
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('orca')"
+
+about:
+  home: "https://cran.r-project.org/web/packages/orca/index.html"
+  license: "LGPL-3.0-or-later"
+  summary: Implements orbit counting using a fast combinatorial approach. Counts orbits of nodes
+    and edges from edge matrix or data frame, or a graph object from the graph package.
+  license_family: LGPL
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  doc_url: "https://cran.r-project.org/web/packages/orca/refman/orca.html"
+  dev_url: "https://cran.r-project.org/web/packages/orca/index.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
+# The original CRAN metadata for this package was:
+
+# Package: orca
+# Version: 1.1-3
+# Date: 2024-09-19
+# Title: Computation of Graphlet Orbit Counts in Sparse Graphs
+# Authors@R: c(person("Tomaz", "Hocevar", role = c("aut", "cre"), email = "tomaz.hocevar@fri.uni-lj.si"), person("Janez", "Demsar", role = "aut"))
+# Description: Implements orbit counting using a fast combinatorial approach. Counts orbits of nodes and edges from edge matrix or data frame, or a graph object from the graph package.
+# License: LGPL-3
+# Depends: R (>= 3.1)
+# Enhances: graph
+# NeedsCompilation: yes
+# Collate: orca.R
+# LazyLoad: yes
+# LazyData: yes
+# Packaged: 2024-09-20 06:42:28 UTC; thocevar
+# Author: Tomaz Hocevar [aut, cre], Janez Demsar [aut]
+# Maintainer: Tomaz Hocevar <tomaz.hocevar@fri.uni-lj.si>
+# Repository: CRAN
+# Date/Publication: 2024-09-20 14:00:06 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml

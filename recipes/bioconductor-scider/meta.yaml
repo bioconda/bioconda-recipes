@@ -1,74 +1,98 @@
-{% set version = "1.4.0" %}
+{% set version = "1.8.0" %}
 {% set name = "scider" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: scider is a user-friendly R package providing functions to model the global density of cells in a slide of spatial transcriptomics data. All functions in the package are built based on the SpatialExperiment object, allowing integration into various spatial transcriptomics-related packages from Bioconductor. After modelling density, the package allows for serveral downstream analysis, including colocalization analysis, boundary detection analysis and differential density analysis.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3 + file LICENSE
-  license_file: LICENSE
-  summary: Spatial cell-type inter-correlation by density in R
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: ea2a5273e5bb79ece8de67b393503b05
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-scider", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: edgeR, testthat (>= 3.0.0)
 requirements:
-  host:
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - r-base
-    - r-ggplot2
-    - r-igraph
-    - r-isoband
-    - r-janitor
-    - r-knitr
-    - r-lwgeom
-    - r-pheatmap
-    - r-plotly
-    - r-rlang
-    - r-sf
-    - r-shiny
-    - r-spatstat.explore
-    - r-spatstat.geom
-  run:
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-spatialexperiment >=1.16.0,<1.17.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - r-base
-    - r-ggplot2
-    - r-igraph
-    - r-isoband
-    - r-janitor
-    - r-knitr
-    - r-lwgeom
-    - r-pheatmap
-    - r-plotly
-    - r-rlang
-    - r-sf
-    - r-shiny
-    - r-spatstat.explore
-    - r-spatstat.geom
 
-source:
-  md5: a97bda001a8ffbe4a5491691b675310a
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
+  host:
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dbscan
+    - r-ggplot2
+    - r-hexbin
+    - r-hexdensity
+    - r-igraph
+    - r-irlba
+    - r-isoband
+    - r-janitor
+    - r-knitr
+    - r-lwgeom
+    - r-pheatmap
+    - r-plotly
+    - r-sf
+    - r-shiny
+    - r-spatialpack
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-uwot
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dbscan
+    - r-ggplot2
+    - r-hexbin
+    - r-hexdensity
+    - r-igraph
+    - r-irlba
+    - r-isoband
+    - r-janitor
+    - r-knitr
+    - r-lwgeom
+    - r-pheatmap
+    - r-plotly
+    - r-sf
+    - r-shiny
+    - r-spatialpack
+    - r-spatstat.explore
+    - r-spatstat.geom
+    - r-uwot
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  summary: Spatial cell-type inter-correlation by density in R
+  description: scider is an user-friendly R package providing functions to model the global density of cells in a slide of spatial transcriptomics data. All functions in the package are built based on the SpatialExperiment object, allowing integration into various spatial transcriptomics-related packages from Bioconductor. After modelling density, the package allows for serveral downstream analysis, including colocalization analysis, boundary detection analysis and differential density analysis.
+  license_file: LICENSE
 

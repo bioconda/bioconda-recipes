@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "rforproteomics-1.44.0"
+installBiocDataPackage.sh "rforproteomics-1.48.0"

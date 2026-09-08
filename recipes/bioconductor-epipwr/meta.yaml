@@ -1,0 +1,42 @@
+{% set version = "1.4.0" %}
+{% set name = "EpipwR" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 57560298abd2c92969343ecd21c4f817
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-epipwr", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), sessioninfo
+requirements:
+  host:
+    - bioconductor-epipwr.data >=1.4.0,<1.5.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-ggplot2
+  run:
+    - bioconductor-epipwr.data >=1.4.0,<1.5.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-ggplot2
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Efficient Power Analysis for EWAS with Continuous or Binary Outcomes
+  description: A quasi-simulation based approach to performing power analysis for EWAS (Epigenome-wide association studies) with continuous or binary outcomes. 'EpipwR' relies on empirical EWAS datasets to determine power at specific sample sizes while keeping computational cost low. EpipwR can be run with a variety of standard statistical tests, controlling for either a false discovery rate or a family-wise type I error rate.
+

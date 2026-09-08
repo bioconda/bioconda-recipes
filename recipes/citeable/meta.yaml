@@ -1,0 +1,40 @@
+{% set name = "citeable" %}
+  {% set version = "2026.3.11b1" %}
+
+  package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+  source:
+    url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 185915fb852b58b64ab82a4d90cbc91ef4033650e42e286467d1758c10edfac0
+
+  build:
+    noarch: python
+    number: 0
+    script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+    run_exports:
+      - {{ pin_subpackage(name, max_pin=None) }}
+
+  requirements:
+    host:
+      - python >=3.11
+      - pip
+      - hatchling
+    run:
+      - python >=3.11
+
+  test:
+    imports:
+      - citeable
+
+  about:
+    home: https://github.com/cogent3/citeable
+    license: BSD-3-Clause
+    license_family: BSD
+    license_file: LICENSE
+    summary: Structured BibTeX citations for developers of scientific software packages
+
+  extra:
+    recipe-maintainers:
+      - GavinHuttley

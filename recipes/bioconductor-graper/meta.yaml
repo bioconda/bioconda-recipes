@@ -1,13 +1,18 @@
-{% set version = "1.22.0" %}
+{% set version = "1.26.0" %}
 {% set name = "graper" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: This package enables regression and classification on high-dimensional data with different relative strengths of penalization for different feature groups, such as different assays or omic types. The optimal relative strengths are chosen adaptively. Optimisation is performed using a variational Bayes approach.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Adaptive penalization in high-dimensional regression and classification with external covariates using variational Bayes
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: be760c45fad6b28475b7b1b01a5b3d0e
 
 build:
   number: 0
@@ -15,10 +20,6 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-graper", max_pin="x.x") }}'
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
 
 # Suggests: knitr, rmarkdown, BiocStyle, testthat
 requirements:
@@ -37,6 +38,8 @@ requirements:
     - r-rcpparmadillo
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
     - r-bh
@@ -47,15 +50,14 @@ requirements:
     - r-rcpp
     - r-rcpparmadillo
 
-source:
-  md5: 9359b64d5e98409d31c081cb4a93a086
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Adaptive penalization in high-dimensional regression and classification with external covariates using variational Bayes
+  description: This package enables regression and classification on high-dimensional data with different relative strengths of penalization for different feature groups, such as different assays or omic types. The optimal relative strengths are chosen adaptively. Optimisation is performed using a variational Bayes approach.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

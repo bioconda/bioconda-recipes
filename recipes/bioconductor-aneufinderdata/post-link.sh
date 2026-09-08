@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "aneufinderdata-1.34.0"
+installBiocDataPackage.sh "aneufinderdata-1.38.0"

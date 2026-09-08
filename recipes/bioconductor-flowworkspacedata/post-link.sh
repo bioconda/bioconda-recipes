@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "flowworkspacedata-3.18.0"
+installBiocDataPackage.sh "flowworkspacedata-3.22.0"

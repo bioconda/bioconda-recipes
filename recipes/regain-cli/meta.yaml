@@ -1,6 +1,5 @@
 {% set name = "regain-cli" %}
-{% set version = "1.7.1" %}
-
+{% set version = "1.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -8,11 +7,11 @@ package:
 
 source:
   url: https://github.com/ERBringHorvath/regain_CLI/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 2b45f0f3382313861831005b978826c0404e6defc48d681ef62d0f1609d98544
+  sha256: b77fb924472e6aa1fe09f8798ee52da5eff9ee178c023be1fe42d15ec68fdad9
 
 build:
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
   number: 0
   entry_points:
     - regain = regain.cli:main
@@ -26,12 +25,16 @@ requirements:
     - setuptools
   run:
     - python >=3.10
-    # CLI calls to external tools used by Module 1 / Curate (if applicable):
+
+    # External tools
     - ncbi-amrfinderplus
     - blast
+    - fastani
+    - mash
     - biopython >=1.83
     - pandas
     - tqdm >=4.67
+
     # R runtime + packages used by bnS/bnL/MVA/visualize:
     - r-base >=4.4
     - r-optparse
@@ -59,20 +62,29 @@ requirements:
     - r-bnlearn
     - r-grain
     - bioconductor-graph
-    # (Add any other R deps you `library()` in the scripts.)
 
 test:
   commands:
     - regain -h
     - regain --module-health
     - regain bnS -h
+    - regain bnL -h
     - regain AMR -h
     - regain matrix -h
     - regain MVA -h
+    - regain collapse-features -h
+    - regain matrix-summary -h
+    - regain genome-similarity -h
+    - regain network-analysis -h
+    - regain network -h
+    - fastANI --help
+    - mash --version
+    - blastn -version
+    - amrfinder -h
 
 about:
   home: https://github.com/ERBringHorvath/regain_CLI
-  summary: "Bayesian-network pipeline for ARG/virulence co-occurrence analysis."
+  summary: "Bayesian-network pipeline for resistance/virulence gene co-occurrence analysis."
   license: MIT
   license_file: LICENSE
   description: |
@@ -84,3 +96,4 @@ about:
 extra:
   recipe-maintainers:
     - ERBringHorvath
+

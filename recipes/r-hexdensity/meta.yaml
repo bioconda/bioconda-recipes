@@ -1,0 +1,86 @@
+{% set version = '1.4.10' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-hexdensity
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/hexDensity_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/hexDensity/hexDensity_{{ version }}.tar.gz
+  sha256: 8ae92b0cdf745e70cdbacc4c85a99df5cbf869f7d11bedf5d3e4677040fd5f2b
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ compiler('fortran') }}        # [not win]
+    - {{ compiler('m2w64_fortran') }}  # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-hexbin
+    - r-spatstat.geom
+  run:
+    - r-base
+    - r-hexbin
+    - r-spatstat.geom
+
+test:
+  commands:
+    - $R -e "library('hexDensity')"           # [not win]
+    - "\"%R%\" -e \"library('hexDensity')\""  # [win]
+
+about:
+  home: https://github.com/ChenLaboratory/hexDensity
+  license: GPL-3.0-only
+  summary: Kernel density estimation with hexagonal grid for bivariate data. Hexagonal grid has
+    many beneficial properties like equidistant neighbours and less edge bias, making
+    it better for spatial analyses than the more commonly used rectangular grid. Carr,
+    D. B. et al. (1987) <doi:10.2307/2289444>. Diggle, P. J. (2010) <doi:10.1201/9781420072884>.
+    Hill, B. (2017) <https://blog.bruce-hill.com/meandering-triangles>. Jones, M. C.
+    (1993) <doi:10.1007/BF00147776>.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: hexDensity
+# Type: Package
+# Title: Fast Kernel Density Estimation with Hexagonal Grid
+# Version: 1.4.10
+# Authors@R: c(person(given = "Quoc Hoang", family = "Nguyen", role = c("aut","cre"), email = "nguyen.q@wehi.edu.au", comment = c(ORCID = "0009-0007-2828-7567")), person(given = "Yunshun", family = "Chen", role = c("aut"), email = "yuchen@wehi.edu.au", comment = c(ORCID = "0000-0003-4911-5653")), person(given = "Dan", family = "Carr", role = "ctb", email = "dcarr@voxel.galaxy.gmu.edu"), person(given = c("binning","routine","ported", "by", "Nicholas"), family = "Lewin-Koh", role = "ctb"), person(given = "Martin", family = "Maechler", role = "ctb", email = "maechler@stat.math.ethz.ch"))
+# Maintainer: Quoc Hoang Nguyen <nguyen.q@wehi.edu.au>
+# Description: Kernel density estimation with hexagonal grid for bivariate data. Hexagonal grid has many beneficial properties like equidistant neighbours and less edge bias, making it better for spatial analyses than the more commonly used rectangular grid. Carr, D. B. et al. (1987) <doi:10.2307/2289444>. Diggle, P. J. (2010) <doi:10.1201/9781420072884>. Hill, B. (2017) <https://blog.bruce-hill.com/meandering-triangles>. Jones, M. C. (1993) <doi:10.1007/BF00147776>.
+# URL: https://github.com/ChenLaboratory/hexDensity
+# License: GPL
+# Encoding: UTF-8
+# NeedsCompilation: yes
+# Imports: hexbin, spatstat.geom, grid, grDevices, methods
+# Suggests: ggplot2
+# RoxygenNote: 7.3.2
+# Packaged: 2025-09-28 06:31:53 UTC; nguyen.q
+# Author: Quoc Hoang Nguyen [aut, cre] (ORCID: <https://orcid.org/0009-0007-2828-7567>), Yunshun Chen [aut] (ORCID: <https://orcid.org/0000-0003-4911-5653>), Dan Carr [ctb], binning routine ported by Nicholas Lewin-Koh [ctb], Martin Maechler [ctb]
+# Repository: CRAN
+# Date/Publication: 2025-09-28 07:20:02 UTC

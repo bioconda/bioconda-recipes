@@ -1,13 +1,18 @@
-{% set version = "2.52.0" %}
+{% set version = "2.56.0" %}
 {% set name = "gaga" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Implements the GaGa model for high-throughput data analysis, including differential expression analysis, supervised gene clustering and classification. Additionally, it performs sequential sample size calculations using the GaGa and LNNGV models (the latter from EBarrays package).
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: GaGa hierarchical model for high-throughput data analysis
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: c81756dd021445a937ea601c30c56157
 
 build:
   number: 0
@@ -15,6 +20,38 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-gaga", max_pin="x.x") }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-ebarrays >=2.74.0,<2.75.0
+    - r-base
+    - r-coda
+    - r-mgcv
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-ebarrays >=2.74.0,<2.75.0
+    - r-base
+    - r-coda
+    - r-mgcv
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: GaGa hierarchical model for high-throughput data analysis
+  description: Implements the GaGa model for high-throughput data analysis, including differential expression analysis, supervised gene clustering and classification. Additionally, it performs sequential sample size calculations using the GaGa and LNNGV models (the latter from EBarrays package).
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   additional-platforms:
@@ -26,39 +63,4 @@ extra:
     name: bioconductor-gaga
     path: recipes/bioconductor-gaga
     version: 2.26.0
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - make
-  host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-ebarrays >=2.70.0,<2.71.0
-    - r-base
-    - r-coda
-    - r-mgcv
-    - libblas
-    - liblapack
-  run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-ebarrays >=2.70.0,<2.71.0
-    - r-base
-    - r-coda
-    - r-mgcv
-
-source:
-  md5: 6daf11229cf54709ab828ea07e7a1874
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-
-test:
-  commands:
-    - $R -e "library('{{ name }}')"
 

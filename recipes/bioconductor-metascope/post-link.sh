@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "metascope-1.5.4"
+installBiocDataPackage.sh "metascope-1.10.0"

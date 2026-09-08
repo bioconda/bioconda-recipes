@@ -1,0 +1,48 @@
+{% set name = "bubblotter" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version | replace('-', '.') }}
+
+source:
+  url: https://github.com/codialab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8881e5eba922a8186da698c16bc5da1a5642aa114a7a94a595181b8c8840ce9d 
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy
+    - scipy
+    - matplotlib-base
+    - vg
+    - bandage
+    - bubblegun
+
+test:
+  commands:
+    - bubblotter --version | grep {{ version }}
+
+about:
+  home: https://github.com/codialab/bubblotter
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "bubblotter is a simple tool for plotting structural variant bubbles in a GFA pangenome graph."
+  dev_url: https://github.com/codialab/bubblotter
+
+extra:
+  recipe-maintainers:
+    - heringerp
+

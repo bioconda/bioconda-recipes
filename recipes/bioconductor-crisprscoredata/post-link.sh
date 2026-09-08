@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "crisprscoredata-1.10.0"
+installBiocDataPackage.sh "crisprscoredata-1.14.0"

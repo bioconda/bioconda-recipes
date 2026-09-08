@@ -1,0 +1,52 @@
+{% set name = "respro" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/the-foxlab/ResistanceProfiler/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5237484b95e54ef22f2a0920880e8439a5cc44829825b87f6931e04e38d825ed
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  run_exports:
+    - {{ pin_subpackage('respro', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+  run:
+    - python >=3.11
+    - click >=8.1
+    - typer >=0.12
+    - rich >=13.0
+    - numpy >=1.24
+    - biopython >=1.81
+    - pysam >=0.22
+    - mappy >=2.24
+    - jinja2 >=3.1.5
+    - markupsafe >=2.1
+    - matplotlib-base >=3.7
+    - weasyprint >=62.3
+
+test:
+  commands:
+    - respro --help
+  imports:
+    - respro
+
+about:
+  home: https://github.com/the-foxlab/ResistanceProfiler
+  summary: Pathogen-agnostic framework for genotypic antiviral resistance profiling from variants.
+  license: AGPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - jonas-fuchs

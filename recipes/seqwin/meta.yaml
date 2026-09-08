@@ -1,5 +1,5 @@
 {% set name = "Seqwin" %}
-{% set version = "0.3.1" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,18 +7,21 @@ package:
 
 source:
   url: https://github.com/treangenlab/Seqwin/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: f8b7dd9761331937c63c79846bb902d911b148d5cfb8d673511edaf8b0cff85a
+  sha256: 88ecf60923bd84d4c5cf06e3fcb0fe2f7d3d7f283d86072c25c0f7bf806a1011
 
 build:
   number: 0
   skip: true  # [py < 310]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake >=3.18
     - ninja >=1.10
     - make
@@ -27,11 +30,9 @@ requirements:
     - pip
     - scikit-build-core >=0.12
     - pybind11 >=2.12
-    - zlib
   run:
     - python
     - numpy >=2
-    - numba
     - pandas >=2
     - networkx
     - pydantic >=2
@@ -43,7 +44,7 @@ requirements:
 test:
   imports:
     - seqwin
-    - seqwin.btllib
+    - seqwin.graph
   commands:
     - seqwin --help
 

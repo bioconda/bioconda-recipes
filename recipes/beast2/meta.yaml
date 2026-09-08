@@ -1,42 +1,40 @@
 {% set name = 'beast2' %}
-{% set version = '2.6.3' %}
-{% set hash = 'cd823425140e6987e185ea1bc79a4d52a2fe54c41bcc57a03e0901848abf89a5' %}
+{% set version = '2.7.7' %}
+{% set hash = 'a866f3e5da4ef890a042f01849e32322aa0a8e16e3e1cb2c59f823de2611781a' %}
+{% set folder = 'beast' %}
 
 package:
   name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/CompEvol/beast2/archive/v{{ version }}.zip
+  url: https://github.com/CompEvol/beast2/releases/download/v{{ version }}/BEAST.v{{ version }}.Linux.x86.tgz
   sha256: '{{ hash }}'
+  folder: '{{ folder }}'
+  # The patches adjust the below run scripts to set BEAGLE_LIB to point to the location in conda with beagle libraries
   patches:
-    - build.patch
-    - beast_lib.patch
-    - citation.patch
+    - beast.patch
+    - applauncher.patch
+    - loganalyser.patch
 
 build:
-  number: 2
+  number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
-    - gettext
-    - openjdk
-    - ant
   host:
-    - openjdk 8.0* zulu8*
     - beagle-lib
     - fontconfig
     - font-ttf-ubuntu
-    - fontconfig
     - freetype
     - xorg-libxtst
+
   run:
-    - openjdk 8.0* zulu8*
     - beagle-lib
     - fontconfig
     - font-ttf-ubuntu
-    - fontconfig
     - freetype
     - xorg-libxtst
 
@@ -54,5 +52,6 @@ test:
 about:
   home: http://www.beast2.org
   license: LGPL-2.1-or-later
-  license_file: COPYING
+  license_file: '{{ folder }}/LICENSE.txt'
   summary: "BEAST 2 is a cross-platform program for Bayesian phylogenetic analysis of molecular sequences."
+  dev_url: https://github.com/CompEvol/beast2
