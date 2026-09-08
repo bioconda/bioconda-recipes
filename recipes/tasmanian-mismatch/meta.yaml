@@ -1,5 +1,6 @@
 {% set name = "tasmanian-mismatch" %}
-{% set version = "2.0.2" %}
+{% set version = "2.0.5" %}
+
 
 package:
   name: {{ name }}
@@ -7,18 +8,14 @@ package:
 
 source:
   url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 31f2a3c662af4bcf6b726c1f74e795e4784a7e68bb96b91bdf0e6988f38da328
+  sha256: 5da4b4ad9e866f925d691ba8db146f15186a5e809deb54530a45c8ee50400f2b
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('tasmanian-mismatch', max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  host:
-    - htslib
-    - zlib
-
   build:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
@@ -31,7 +28,9 @@ requirements:
     - make
     - cmake
     - patchelf  # [linux]
-
+  host:
+    - htslib
+    - zlib
   run:
     - python >=3.10
     - bokeh >=3,<4
@@ -63,3 +62,6 @@ about:
 extra:
   recipe-maintainers:
     - aerijman
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

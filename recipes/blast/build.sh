@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -o xtrace
 set -o errexit
 set -o nounset
@@ -171,7 +170,9 @@ export AR="${AR} rcs"
 
 # Run configure script
 cd "$BLAST_SRC_DIR"
-./configure $CONFIGURE_FLAGS >&2
+# use configure.orig, per docs recommendations (last sentence of section)
+# see: https://www.ncbi.nlm.nih.gov/books/NBK569861/#intro_Installation.Source_tarball
+./configure.orig $CONFIGURE_FLAGS >&2
 
 
 # Run GNU Make
@@ -208,7 +209,7 @@ ln -s "$RESULT_PATH/lib" "$LIB_INSTALL_DIR"
 n_workers=${CPU_COUNT:-1}
 if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
 	# double it on CircleCI as resource usage is quite low with 4 workers
-	n_workers=8
+	n_workers=$((n_workers*2))
 fi
 
 cd "$RESULT_PATH/build"
@@ -220,13 +221,12 @@ rm "$LIB_INSTALL_DIR"
 
 # Copy compiled binaries to the Conda $PREFIX
 mkdir -p "$PREFIX/bin"
-chmod +x "$RESULT_PATH/bin/"*
-cp "$RESULT_PATH/bin/"* "$PREFIX/bin/"
+install -v -m 0755 "$RESULT_PATH/bin/"* "$PREFIX/bin"
 # Copy compiled libraries to the Conda $PREFIX
 if [[ "$(uname -s)" == "Linux" ]]; then
 	# Not necessary for osx as that is statically linked
 	mkdir -p "$LIB_INSTALL_DIR"
-	cp "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
+	cp -f "$RESULT_PATH/lib/"* "$LIB_INSTALL_DIR"
 fi
 
 # Patch Perl shebangs

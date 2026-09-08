@@ -1,0 +1,50 @@
+{% set name = "mgnifam" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 68d000112f699b44046632d6ab6c843935f1eab69680743d7b2030af29e033de
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - mgnifam = mgnifam.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.13
+    - numpy >=2.5.1,<3
+    - pyfamsa >=0.7.0,<0.8
+    - pyhmmer >=0.12.1,<0.13
+    - pytrimal >=0.8.5,<0.9
+
+test:
+  imports:
+    - mgnifam
+  commands:
+    - mgnifam --version
+    - mgnifam generate_families --help
+
+about:
+  home: https://github.com/vagkaratzas/mgnifam
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Iterative HMM-based protein family generation over very large sequence databases
+  dev_url: https://github.com/vagkaratzas/mgnifam
+
+extra:
+  recipe-maintainers:
+    - vagkaratzas

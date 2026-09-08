@@ -8,4 +8,4 @@ export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --locked --no-track --verbose --path . --root "${PREFIX}"
+RUST_BACKTRACE=1 cargo install --locked --no-track --verbose --all-features --path . --root "${PREFIX}"

@@ -1,0 +1,14 @@
+--- a/getitd.py
++++ b/getitd.py
+@@ -924,6 +924,11 @@
+         """
+         min_score = get_min_score(self.seq, that.seq, config["MIN_SCORE_INSERTS"])
+         al_score = bio.align.globalds(self.seq, that.seq, config["COST_ALIGNED"], config["COST_GAPOPEN"], config["COST_GAPEXTEND"], one_alignment_only=True, score_only=True, penalize_end_gaps=False)
++        # Bio.pairwise2 returns an empty list (not a float) when one of the
++        # sequences is empty and no alignment can be computed; treat that as
++        # "not similar" instead of crashing on `[] >= min_score`.
++        if isinstance(al_score, list):
++            return False
+         if al_score >= min_score:
+             return True
+         return False

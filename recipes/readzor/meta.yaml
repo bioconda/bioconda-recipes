@@ -1,0 +1,53 @@
+{% set version = "0.1.20" %}
+{% set name = "readzor" %}
+{% set sha256 = "dc20d0eb98dc39a5ef3812645f9ed5c246041cb056af46dcb198011554c048d2" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.org/packages/source/r/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  entry_points:
+    - readzor = readzor.readzor:main
+    - Readzor = readzor.readzor:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=77.0.3
+    - pip
+  run:
+    - python
+    - numpy ==2.5.2
+    - conda-forge::python-isal ==1.8.0
+
+test:
+  imports:
+    - readzor
+  commands:
+    - pip check
+    - readzor --help
+    - Readzor --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/Readzor/
+  summary: A Python3 program for fully automatic trimming and quality control of short read sequences.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - abjanssen
+    

@@ -1,0 +1,61 @@
+{% set name = "scanexitron" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3c8f43ce3ab0bb7170c03d58ade9408e77f7ac744cffd54666ea977bb6b8ac85
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('scanexitron', max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - scanexitron = scanexitron.cli:main
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - pyfaidx >=0.7
+    - numpy >=1.21
+    - htseq >=2.0
+    - typer >=0.12
+    # External bioinformatics tools (install from bioconda):
+    - samtools
+    - bedtools
+    - regtools =0.5.0
+
+test:
+  imports:
+    - scanexitron
+    - scanexitron.core
+    - scanexitron.vcf
+    - scanexitron.cli
+  commands:
+    - scanexitron --version
+    - scanexitron convert --help
+
+about:
+  home: https://github.com/ylab-hi/ScanExitron
+  license: MIT
+  license_file: LICENSE
+  summary: A computational workflow for exitron splicing identification from RNA-Seq data
+  description: |
+    ScanExitron detects exitron splicing events from RNA-Seq BAM/CRAM alignment
+    files. It uses regtools to call and annotate junctions, bedtools to intersect
+    them with CDS annotations, and computes per-exitron PSO/PSI statistics.
+  doc_url: https://github.com/ylab-hi/ScanExitron
+  dev_url: https://github.com/ylab-hi/ScanExitron
+
+extra:
+  recipe-maintainers:
+    - dolittle007

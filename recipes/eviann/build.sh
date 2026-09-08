@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe
 
+export GIT_SSL_NO_VERIFY=1
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"

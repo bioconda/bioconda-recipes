@@ -1,0 +1,54 @@
+{% set version = "1.0.3.3" %}
+{% set name = "spatialqc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/S/SpatialQC/spatialqc-{{ version }}.tar.gz
+  sha256: 9fb4de7a836438546a7d05016c51a9db2a183f30a1c1b8ea2fbd9895e99c9eb6
+
+build:
+  entry_points:
+    - SpatialQC = SpatialQC.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_compatible(name, max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.9
+    - pip
+  run:
+    - python >=3.8,<3.9
+    - scanpy >=1.9.8
+    - joblib >=1.4.2
+    - plotly >=5.22.0
+    - scrublet >=0.2.3
+    - anndata2ri >=1.3.1
+    - cython
+
+test:
+  imports:
+    - SpatialQC
+  commands:
+    - pip check
+    - SpatialQC --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/mgy520/SpatialQC
+  summary: Spatial transcriptome quality control, generate HTML QC report, obtain filtered clean data
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nilchia
+  skip-lints:
+    - cython_must_be_in_host

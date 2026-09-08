@@ -65,16 +65,24 @@ else
   # bwa-mem3 calls shm_open/shm_unlink, which on conda's CentOS-7 sysroot
   # (glibc 2.17) live in librt. Newer Linux glibc (>= 2.34) folds them
   # into libc, so upstream CI on ubuntu-latest doesn't need this.
-  # Use conda-forge's mimalloc and htslib. conda-forge ships only the
-  # shared library form on Linux (no .a), so switch from the upstream
-  # Makefile's `-Wl,--whole-archive libmimalloc.a -Wl,--no-whole-archive`
-  # static linking to dynamic linking. mimalloc's docs note that placing
-  # `-lmimalloc` before `-lc` in link order is sufficient for malloc
-  # interposition via ELF symbol resolution order; the upstream LIBS
-  # variable already places $(MIMALLOC_LDFLAGS) before the implicit -lc.
+  #
+  # mimalloc: build and statically link the bundled ext/mimalloc submodule
+  # (the Makefile's default `-Wl,--whole-archive libmimalloc.a`) rather than
+  # dynamically linking conda-forge's libmimalloc.so. conda-forge's Linux
+  # libmimalloc.so exports only the mi_* API, NOT an overriding malloc/free
+  # (it is built without MI_OVERRIDE symbol interposition). Dynamically
+  # linking it therefore loads mimalloc but leaves every malloc/free on the
+  # system allocator -- `bwa-mem3 version` still prints a mimalloc version
+  # (mi_version() resolves), but the hot alignment path runs on glibc malloc,
+  # costing ~30% wall on multi-threaded WGS. The `-lmimalloc before -lc`
+  # interposition claimed by the old comment here only holds when the .so
+  # exports malloc, which conda-forge's does not. Static whole-archive of the
+  # bundled MI_OVERRIDE=ON libmimalloc.a is the only robust override on Linux,
+  # so we drop the MIMALLOC_LIB/MIMALLOC_LDFLAGS overrides and let the
+  # Makefile default build the vendored allocator. (macOS is unaffected: there
+  # conda's libmimalloc.dylib interposes via dyld __interpose regardless of
+  # symbol export, so the Darwin branch above keeps the conda-forge mimalloc.)
   MAKE_ARGS+=(
-    MIMALLOC_LIB="${PREFIX}/lib/libmimalloc.so"
-    MIMALLOC_LDFLAGS="-L${PREFIX}/lib -lmimalloc -Wl,-rpath,${PREFIX}/lib"
     HTS_LIB="${PREFIX}/lib/libhts.so"
     LIBS_EXTRA="-lrt -L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
   )
