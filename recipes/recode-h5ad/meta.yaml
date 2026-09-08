@@ -1,0 +1,54 @@
+{% set version = "0.1.2" %}
+
+package:
+  name: recode-h5ad
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/r/recode-h5ad/recode_h5ad-{{ version }}.tar.gz
+  sha256: 54c0724f4de2c4610177480ff01d4a5cdcdf41812cb165fdc830295db82c0304
+
+build:
+  entry_points:
+    - recode_h5ad = recode_h5ad.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - anndata >=0.13.0
+    - hdf5plugin >=7.0.0
+    - argparse
+    - numpy
+    - scipy
+    - pathlib
+    - importlib
+    - packaging
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - recode_h5ad
+  commands:
+    - pip check
+    - recode_h5ad --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/GabrielHoffman/recode_h5ad
+  summary: Recode H5AD file changing sparsity format and cell sorting
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - GabrielHoffman
