@@ -20,12 +20,11 @@ if [[ "${ARCH}" == "aarch64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
 elif [[ "${ARCH}" == "arm64" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-else
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
 if [[ "${OS}" == "Darwin" ]]; then
 	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
