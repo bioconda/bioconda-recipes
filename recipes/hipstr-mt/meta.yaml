@@ -1,0 +1,67 @@
+{% set version = "0.6.6" %}
+
+package:
+  name: hipstr-mt
+  version: {{ version }}
+
+source:
+  url: https://github.com/TurakhiaLab/HipSTR-MT/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 45cca0445217662c1c625159048d29f9acabf0a762c3ab713d6cd252a1c9f4a2
+
+build:
+  number: 0
+  # ISA dispatch (src/mathops.cpp's target_clones) is decided at runtime via
+  # cpuid, but the build itself assumes x86_64 (SSE2/AVX intrinsics are used
+  # directly elsewhere) and Linux (/proc/self/status, sched_getaffinity).
+  skip: True  # [not (linux and x86_64)]
+  run_exports:
+    - {{ pin_subpackage('hipstr-mt', max_pin="x.x") }}
+
+requirements:
+  build:
+    # The C compiler is needed for the vendored htslib, cephes, libdeflate and
+    # mimalloc; the C++ one for HipSTR-MT itself.
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+    - cmake >=3.18
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - openssl
+  run:
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - openssl
+
+test:
+  commands:
+    - HipSTR-MT --help
+    - HipSTR-MT --version
+
+about:
+  home: https://github.com/TurakhiaLab/HipSTR-MT
+  license: GPL-2.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "Multi-threaded fork of HipSTR, a haplotype-based STR genotyper for Illumina sequencing data"
+  description: |
+    HipSTR-MT adds thread-level parallelization (--threads), additional
+    vectorization, and memory optimizations to HipSTR, the haplotype-based
+    short tandem repeat (STR) genotyping tool originally developed by
+    Thomas Willems et al. It produces the same genotype calls as upstream
+    HipSTR at any thread count, while running substantially faster on
+    multi-core machines.
+  doc_url: https://github.com/TurakhiaLab/HipSTR-MT/blob/v{{ version }}/README.md
+  dev_url: https://github.com/TurakhiaLab/HipSTR-MT
+
+extra:
+  recipe-maintainers:
+    - JGalil
+  identifiers:
+    - doi:10.5281/zenodo.22650334
