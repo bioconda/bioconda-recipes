@@ -56,7 +56,7 @@ cp libclair3*.so $PREFIX/bin
 # Individual / additional models can be downloaded by users from:
 #   https://www.bio8.cs.hku.hk/clair3/clair3_models_pytorch/
 #   https://www.bio8.cs.hku.hk/clair3/clair3_models_rerio_pytorch/
-CLAIR3_MODELS_URL="${CLAIR3_MODELS_URL-https://www.bio8.cs.hku.hk/clair3/bioconda/clair3_models_v2.0.2.tar.gz}"
+CLAIR3_MODELS_URL="${CLAIR3_MODELS_URL-https://github.com/HKU-BAL/Clair3/releases/download/v2.0.2/clair3_models_v2.0.2.tar.gz}"
 CLAIR3_MODELS_SHA256="${CLAIR3_MODELS_SHA256-27c7ea0777134567861e1f305a368d89a199332a1118a4f70df8bfebdbe1306b}"
 
 mkdir -p "$PREFIX/bin/models"
