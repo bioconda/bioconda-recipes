@@ -1,0 +1,66 @@
+{% set name = "mlvamaps" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/microbemarsh/mlvamaps/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 277e7b518683bbae30dec43216ea935878fe8805ddc26843e0126f9a1240743f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - mlvamaps = mlvamaps.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - minimap2
+    - ncbi-datasets-cli
+    - deacon
+    - numpy >=1.24
+    - parasail-python >=1.3.4
+    - pysam >=0.22
+    - regex >=2024.5.15
+    - sassy >=0.2.2
+    - pyspoars >=0.1.3,<0.2
+
+test:
+  imports:
+    - mlvamaps
+  commands:
+    - python -c "import spoars"
+    - sassy --help
+    - mlvamaps --help
+    - mlvamaps --version
+    - mlvamaps call --help
+    - mlvamaps build-reference --help
+
+about:
+  home: https://github.com/microbemarsh/mlvamaps
+  summary: MLVA/VNTR genotyping from sequencing reads and assemblies
+  description: |
+    mlvamaps converts VNTR sequencing reads and assemblies into
+    interpretable repeat-copy-number calls, sequence-aware VNTR repeat
+    variants, probabilistic MLVA fingerprints, and known-profile matches.
+    Illumina and long-read calling use competitive minimap2 candidate-context
+    mapping with technology-specific evidence extraction. Assembly
+    and reference in-silico PCR
+    extraction uses the Sassy command-line tool with MLVA_finder-compatible
+    pairing and selection semantics.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - microbemarsh
