@@ -1,5 +1,5 @@
-{% set version = "0.6.1" %}
-{% set sha256 = "2c70239e1caf33519b9e99142470bb4dd2f4c69e71f68cee33d6d6a1032d0e33" %}
+{% set version = "0.6.2" %}
+{% set sha256 = "2b5480e5b3163c67bcf49820c476a7f4c05a17c13adba0ea0577b1c2ad1c17bc" %}
 
 package:
   name: genrich
@@ -10,11 +10,10 @@ source:
   sha256: {{ sha256 }}
   patches:
     - Makefile.patch
-    - backport-upstream-master.patch
     - getlong-reject-nonpositive.patch
 
 build:
-  number: 6
+  number: 0
   run_exports:
     - {{ pin_subpackage('genrich', max_pin="x.x") }}
 
@@ -30,8 +29,14 @@ test:
   commands:
     - which Genrich
     - Genrich -V 2>&1 | grep 'John M. Gaspar'
-    # -L is only recognised once the backport patch is applied; stock 0.6.1
-    # answers "invalid option -- 'L'" instead.
+    - Genrich -V 2>&1 | grep '0.6.2'
+    # -L is upstream code as of 0.6.2. The -L 0 check is the regression test
+    # for getlong-reject-nonpositive.patch: without it stock 0.6.2 accepts any
+    # non-positive -L. 0 falls through to the auto-computed genome length,
+    # while a negative value is cast to uint64_t and wraps to 2^64-1, which
+    # collapses the background lambda and inflates every q-value derived from
+    # it -- silently, at exit status 0.
+    - Genrich -L 0 2>&1 | grep 'Genome length must be a positive int'
     - Genrich -L 1000 2>&1 | grep 'Need input/output files'
 
 about:

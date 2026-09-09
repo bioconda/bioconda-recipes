@@ -1,0 +1,77 @@
+{% set name = "hyphaeon" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 97701417a3cde732401da0a7888ee26d20240561c12e6516a8041ee77f27e566
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - hyphaeon = hyphaeon.cli:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    # CPU-only pytorch by default. Bioconda CI is CPU-only and cannot build or
+    # test GPU packages, and the default CUDA wheel is a multi-GB download that
+    # is wasted on machines without a matching NVIDIA driver (see veg/HyphAeon
+    # issue #29). HyphAeon is pure Python noarch — it does not compile anything
+    # and auto-detects CUDA at runtime, so GPU support depends entirely on which
+    # pytorch build is installed, not on this package. To enable GPU, install
+    # conda-forge's GPU pytorch variant in the same environment:
+    #
+    #   conda install -c conda-forge pytorch-gpu
+    #
+    # or create the environment with GPU pytorch first, then install hyphaeon.
+    - pytorch >=2.0.0
+    - biopython >=1.80
+    - numpy >=1.22.0
+    - scipy >=1.9.0
+    - pandas >=1.5.0
+    - psutil >=5.9.0
+    - huggingface_hub >=0.20.0
+    - safetensors >=0.4.0
+    - networkx >=3.0
+
+test:
+  imports:
+    - hyphaeon
+  commands:
+    - hyphaeon --help
+    - hyphaeon meme --help
+    - hyphaeon phenotype --help
+    - hyphaeon epistasis --help
+  # NOTE: no inference test here. Model weights (~9.4 MB) are not bundled in
+  # the sdist; they are downloaded from Hugging Face Hub (datamonkey/hyphaeon)
+  # on first use, which requires network access not available in bioconda CI.
+
+about:
+  home: https://github.com/veg/HyphAeon
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "HyphAeon: A Deep-Time Phylogenetic Foundation Model for Multi-Scale Evolutionary, Structural, and Clinical Genomics"
+  description: |
+    HyphAeon is a phylogenetic foundation model for neural inference of
+    episodic positive selection (MEME), directional phenotype-genotype
+    association (phylowas), and multi-scale epistatic sector mining (ESSM).
+    Model weights are fetched from the Hugging Face Hub on first use.
+  doc_url: https://github.com/veg/HyphAeon#readme
+  dev_url: https://github.com/veg/HyphAeon
+
+extra:
+  recipe-maintainers:
+    - d-callan
