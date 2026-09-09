@@ -1,0 +1,63 @@
+{% set name = "scriptmanager" %}
+{% set version = "0.15" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CEGRcode/scriptmanager/releases/download/v{{ version }}/{{ name }}-v{{ version }}.jar
+  sha256: 7a980a4c009f9ff8a7263abe86af0166a8f4d0c596aca7236d8063ac7eee9c0c
+
+build:
+  number: 0
+  noarch: generic  # .jar files are platform-independent
+
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host: [] # no host or build dependencies needed, just run (below)
+  run:
+    - openjdk >=17   # could work with 11 but Picard needs 17
+
+test:
+  commands:
+    # Verify the wrapper script exists and the .jar is loadable
+    - {{ name }} --help || {{ name }} --version
+    # (whoops, scriptmanager returns a non-zero exit code on --help)
+
+    # check the is .jar present
+    - test -f ${PREFIX}/share/{{ name }}-{{ version }}/{{ name }}-v{{ version }}.jar  # not windows
+
+about:
+  home: https://github.com/CEGRcode/scriptmanager
+  license: MIT
+  license_family: MIT
+  license_url: https://github.com/CEGRcode/scriptmanager/blob/master/LICENSE
+  summary: "genomics toolbox that supports both graphical and command-line execution"
+  description: |
+    ScriptManager was built to be a lightweight and easy to use genomics 
+    analysis tool for novice bioinformaticians. It includes both a 
+    graphical interface for easy navigation of inputs and options while 
+    also supporting a command line interface for automation and integration 
+    with workflow managers like Galaxy. We describe here how a user 
+    unfamiliar with the command line can leverage national supercomputing 
+    resources using a graphical desktop interface like Open OnDemand to 
+    perform their analyses and generate publication quality figures for 
+    their research. Widespread adoption of this tool in the genomics 
+    community would lower technical barriers to accessing supercomputing 
+    resources and allow biochemists to prototype their own workflows that 
+    can be integrated into large scale production pipelines. Source code 
+    and precompiled binaries available at 
+    https://github.com/CEGRcode/scriptmanager.
+  doc_url: https://cegrcode.github.io/scriptmanager-docs
+  dev_url: https://github.com/CEGRcode/scriptmanager
+  doc_source_url: https://github.com/CEGRcode/scriptmanager-docs
+
+extra:
+  recipe-maintainers:
+    - owlang
+  identifiers:
+    - doi:10.1145/3491418.3535161
+    - RRID:SCR_021797

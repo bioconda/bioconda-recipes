@@ -20,17 +20,11 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-pushd api/doxy-sphinx
-doxygen coot-api-dox.cfg
-popd
-
-mkdir -p "${PREFIX}/share/doxy-sphinx"
-cp -r api/doxy-sphinx/* "${PREFIX}/share/doxy-sphinx"
-
 # Boost 1.88.0 still needs `system` component
 sed -i 's|Boost COMPONENTS iostreams|Boost COMPONENTS iostreams system|' CMakeLists.txt
 sed -i 's|Boost::thread Boost::iostreams|Boost::thread Boost::iostreams Boost::system|' CMakeLists.txt
 
+# Propagate RDKit include directories through rdkit_base for downstream targets
 sed -i '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
 set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
 

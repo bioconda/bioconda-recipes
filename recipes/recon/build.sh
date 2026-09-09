@@ -10,6 +10,7 @@ mkdir -p ${PREFIX}/bin
 
 make CC="${CC}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
 make install
+
 install -v -m 0755 ./bin/* "${PREFIX}/bin"
 
 # add read permissions to LICENSE
