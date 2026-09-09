@@ -12,11 +12,12 @@ source:
 build:
   number: 0
   script:
+    - export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"  # [osx]
     - (cd rust && cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml)
     - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
-  skip: true # [py<310]
+  skip: true
 
 requirements:
   build:
