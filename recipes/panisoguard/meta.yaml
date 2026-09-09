@@ -1,0 +1,67 @@
+{% set name = "panisoguard" %}
+{% set version = "0.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jibeomko/PanIsoGuard/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 96cfc1342fc68f6a70693d677973f9d56c32700f90f303be08074982cb07a647
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.20
+    - make
+  host:
+    - htslib >=1.18
+  run:
+    - htslib >=1.18
+
+test:
+  commands:
+    - panisoguard --version
+    - panisoguard --help > /dev/null
+    - panisoguard adjudicate --help > /dev/null
+    - panisoguard combine --help > /dev/null
+    - >-
+      printf '%b'
+      'chr1\ttest\texon\t101\t200\t.\t+\t.\tgene_id "G1"; transcript_id "T1";\nchr1\ttest\texon\t301\t400\t.\t+\t.\tgene_id "G1"; transcript_id "T1";\nchr1\ttest\texon\t501\t600\t.\t+\t.\tgene_id "G1"; transcript_id "T1";\nchr1\ttest\texon\t101\t200\t.\t+\t.\tgene_id "G1"; transcript_id "T2";\nchr1\ttest\texon\t501\t600\t.\t+\t.\tgene_id "G1"; transcript_id "T2";\n'
+      > mini.gtf
+    - panisoguard combine --gtf flair:mini.gtf --out combine_smoke.tsv
+    - test -s combine_smoke.tsv
+
+about:
+  home: https://github.com/jibeomko/PanIsoGuard
+  dev_url: https://github.com/jibeomko/PanIsoGuard
+  doc_url: https://github.com/jibeomko/PanIsoGuard#readme
+  license: MIT AND BSL-1.0
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.txt
+    - thirdparty/cgranges/LICENSE.txt
+    - thirdparty/catch2/LICENSE.txt
+    - thirdparty/tomlplusplus/LICENSE
+  summary: Caller-agnostic adjudication of long-read RNA-seq novel isoforms
+  description: |
+    PanIsoGuard ingests novel isoform calls from long-read RNA-seq callers
+    (FLAIR/IsoQuant/Bambu/...) and/or SQANTI3 output, plus a BAM and optional
+    short-read SJ.tab and personalized haplotype FASTAs, and re-classifies each
+    novel call into a confidence class with a mechanistic attribution and a
+    provenance/circularity flag. Depends only on htslib.
+
+extra:
+  recipe-maintainers:
+    - jibeomko
+  additional-platforms:
+    - osx-arm64
