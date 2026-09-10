@@ -1,0 +1,66 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: bistreroc
+  version: {{ version }}
+
+source:
+  url: https://github.com/whatever60/BistreRoc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 30e994d3577ec7f5c9af70f1e3d71dbb7661a7dfa5cd4b34d79e8b2c1fac79af
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('bistreroc', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.11
+    - numpy >=1.26
+    - r-base >=3.6.3
+    - r-data.table >=1.12.8
+    - r-e1071 >=1.7_3
+
+test:
+  source_files:
+    - pyproject.toml
+    - src
+    - tests
+  requires:
+    - pip
+    - pytest
+  imports:
+    - bistreroc
+  commands:
+    - bistreroc --version
+    - bistreroc --help
+    - bistreroc convert-reference --help
+    - bistreroc build-signature --help
+    - bistreroc deconvolve --help
+    - python -c "from importlib.resources import files; assert files('bistreroc').joinpath('r/estimate_fractions.R').is_file()"
+    - python -c "from importlib.resources import files; assert files('bistreroc').joinpath('r/select_signature_genes.R').is_file()"
+    - Rscript -e "library(data.table); library(e1071)"
+    - pip check
+
+about:
+  home: https://github.com/whatever60/BistreRoc
+  dev_url: https://github.com/whatever60/BistreRoc
+  summary: Sparse-aware signature generation and cell-fraction estimation
+  description: |
+    BistreRoc builds cell-type signature matrices from labeled single-cell
+    counts and estimates cell fractions in bulk expression mixtures. It reads
+    dense, compressed, and sparse inputs without persistent decompressed copies.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - whatever60
