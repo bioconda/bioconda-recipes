@@ -1,8 +1,9 @@
-{% set version = "0.0.9" %}
-{% set sha256 = "8955f74b892b1e14a7dbaef3ebd57cc4f6159ed6677da3a7dcaff7fc35a0437c" %}
+{% set name = "proteomiqon-psmbasedquantification" %}
+{% set version = "0.0.12" %}
+{% set sha256 = "cfec0ce447efda163789fccdf8e9c9c6436eb4ec21849ba26c6ae00af749b3fb" %}
 
 package:
-  name: proteomiqon-psmbasedquantification
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -12,17 +13,25 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build: 
+    - {{ stdlib('c') }}
   host:
     - unzip
   run:
-    - dotnet-runtime =5.0
-    - openssl =1.1
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
 
 test:
   commands:
-    - proteomiqon-psmbasedquantification --help
+    - test -x "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - grep -q "PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll" "$PREFIX/bin/proteomiqon-psmbasedquantification"
 
 about:
   home: https://csbiology.github.io/ProteomIQon/
