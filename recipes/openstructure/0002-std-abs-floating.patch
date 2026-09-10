@@ -1,0 +1,43 @@
+std::abs is not a function template for floating-point types. libc++ 21
+only provides integer overloads as templates, so std::abs<Real>(x) fails
+to compile. Introduced in 68d3844a / 5ab87cdc (2012) while silencing
+conversion warnings. Call std::abs without an explicit template argument.
+
+--- a/modules/geom/src/quat.cc	2026-08-15 16:53:31
++++ b/modules/geom/src/quat.cc	2026-08-15 16:53:31
+@@ -133,9 +133,9 @@
+   //if (vecnormsqr <= numeric_limits<Real>::epsilon())
+   
+   Real components[3] = {
+-    std::abs<Real>(xyz[0]),
+-    std::abs<Real>(xyz[1]),
+-    std::abs<Real>(xyz[2])
++    std::abs(xyz[0]),
++    std::abs(xyz[1]),
++    std::abs(xyz[2])
+   };
+         
+   Real*  where = ::std::min_element(components, components+3);
+--- a/modules/gfx/tests/test_color.cc	2026-08-15 16:53:31
++++ b/modules/gfx/tests/test_color.cc	2026-08-15 16:53:31
+@@ -35,13 +35,13 @@
+ 
+ namespace {
+   bool compare_colors(const Color& c1, const Color& c2, float tol=1e-6) {
+-    return std::abs<float>(c1.GetRed()-c2.GetRed()<tol) &&
+-      std::abs<float>(c1.GetGreen()-c2.GetGreen()<tol) &&
+-      std::abs<float>(c1.GetBlue()-c2.GetBlue()<tol) &&
+-      std::abs<float>(c1.GetAlpha()-c2.GetAlpha()<tol) &&
+-      std::abs<float>(c1.GetHue()-c2.GetHue()<tol) &&
+-      std::abs<float>(c1.GetSat()-c2.GetSat()<tol) &&
+-      std::abs<float>(c1.GetVal()-c2.GetVal()<tol);
++    return std::abs(c1.GetRed()-c2.GetRed()<tol) &&
++      std::abs(c1.GetGreen()-c2.GetGreen()<tol) &&
++      std::abs(c1.GetBlue()-c2.GetBlue()<tol) &&
++      std::abs(c1.GetAlpha()-c2.GetAlpha()<tol) &&
++      std::abs(c1.GetHue()-c2.GetHue()<tol) &&
++      std::abs(c1.GetSat()-c2.GetSat()<tol) &&
++      std::abs(c1.GetVal()-c2.GetVal()<tol);
+   }
+ }
+ 

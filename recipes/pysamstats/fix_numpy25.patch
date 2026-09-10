@@ -1,0 +1,263 @@
+This patch is a hotfix for compatibility between the pysamstats package and
+the current version 2.5 of package Numpy.
+
+It's generated from this pull request at upstream:
+https://github.com/alimanfoo/pysamstats/pull/190
+
+Background:
+* Numpy 2.5 has introduced changes in the dtype syntax for nul-terminated
+  byte strings, and nowadays only accepts specifier `S`
+* Up to version 2.4, Numpy had always also accepted `a` as an alias for `S`
+* pysamstats used `a` in its code, which is now deprecated
+* the upstream PR#190 and this hotfix patch replace the specifier with `S`
+* this doesn't change the behaviour on Numpy 1.x-2.4, it only fixes 
+  crashes with Numpy 2.5 
+
+
+diff --git a/pysamstats/config.py b/pysamstats/config.py
+index 208aef2..237ed49 100644
+--- a/pysamstats/config.py
++++ b/pysamstats/config.py
+@@ -31,14 +31,14 @@ stepper_types = ('nofilter',
+                  'all')
+ 
+ dtype_coverage = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4')
+ ]
+ 
+ dtype_coverage_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+@@ -49,7 +49,7 @@ dtype_coverage_strand = [
+ ]
+ 
+ dtype_coverage_ext = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+@@ -62,7 +62,7 @@ dtype_coverage_ext = [
+ ]
+ 
+ dtype_coverage_ext_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+@@ -91,9 +91,9 @@ dtype_coverage_ext_strand = [
+ ]
+ 
+ dtype_variation = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+-    ('ref', 'a1'),
++    ('ref', 'S1'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+     ('matches', 'i4'),
+@@ -117,9 +117,9 @@ dtype_variation = [
+ ]
+ 
+ dtype_variation_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+-    ('ref', 'a1'),
++    ('ref', 'S1'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+     ('reads_rev', 'i4'),
+@@ -163,7 +163,7 @@ dtype_variation_strand = [
+ ]
+ 
+ dtype_tlen = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_paired', 'i4'),
+@@ -177,7 +177,7 @@ dtype_tlen = [
+ ]
+ 
+ dtype_tlen_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+@@ -209,7 +209,7 @@ dtype_tlen_strand = [
+ ]
+ 
+ dtype_mapq = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+@@ -222,7 +222,7 @@ dtype_mapq = [
+ ]
+ 
+ dtype_mapq_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+@@ -251,7 +251,7 @@ dtype_mapq_strand = [
+ ]
+ 
+ dtype_baseq = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+@@ -260,7 +260,7 @@ dtype_baseq = [
+ ]
+ 
+ dtype_baseq_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+@@ -277,9 +277,9 @@ dtype_baseq_strand = [
+ ]
+ 
+ dtype_baseq_ext = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+-    ('ref', 'a1'),
++    ('ref', 'S1'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+     ('matches', 'i4'),
+@@ -295,9 +295,9 @@ dtype_baseq_ext = [
+ ]
+ 
+ dtype_baseq_ext_strand = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+-    ('ref', 'a1'),
++    ('ref', 'S1'),
+     ('reads_all', 'i4'),
+     ('reads_fwd', 'i4'),
+     ('reads_rev', 'i4'),
+@@ -337,7 +337,7 @@ dtype_baseq_ext_strand = [
+ ]
+ 
+ dtype_coverage_gc = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('gc', 'u1'),
+     ('reads_all', 'i4'),
+@@ -345,7 +345,7 @@ dtype_coverage_gc = [
+ ]
+ 
+ dtype_coverage_binned = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('gc', 'u1'),
+     ('reads_all', 'i4'),
+@@ -353,7 +353,7 @@ dtype_coverage_binned = [
+ ]
+ 
+ dtype_coverage_ext_binned = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('gc', 'u1'),
+     ('reads_all', 'i4'),
+@@ -367,7 +367,7 @@ dtype_coverage_ext_binned = [
+ ]
+ 
+ dtype_mapq_binned = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_mapq0', 'i4'),
+@@ -375,7 +375,7 @@ dtype_mapq_binned = [
+ ]
+ 
+ dtype_alignment_binned = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('bases_all', 'i4'),
+@@ -391,7 +391,7 @@ dtype_alignment_binned = [
+ ]
+ 
+ dtype_tlen_binned = [
+-    ('chrom', 'a12'),
++    ('chrom', 'S12'),
+     ('pos', 'i4'),
+     ('reads_all', 'i4'),
+     ('reads_pp', 'i4'),
+diff --git a/pysamstats/io.py b/pysamstats/io.py
+index 1a275ce..bcfdb12 100644
+--- a/pysamstats/io.py
++++ b/pysamstats/io.py
+@@ -149,7 +149,7 @@ def write_hdf5(stats_type, outfile, alignmentfile, fields=None, progress=None, h
+     # determine dtype
+     default_dtype = dict(default_dtype)
+     max_seqid_len = determine_max_seqid(alignmentfile)
+-    default_dtype["chrom"] = "a{0}".format(max_seqid_len)
++    default_dtype["chrom"] = "S{0}".format(max_seqid_len)
+ 
+     # update if user passed
+     if dtype is not None:
+diff --git a/pysamstats/test/test_io.py b/pysamstats/test/test_io.py
+index f431a55..8878fc9 100644
+--- a/pysamstats/test/test_io.py
++++ b/pysamstats/test/test_io.py
+@@ -31,7 +31,7 @@ def test_write_hdf5_chrom_dtype():
+     contig_label = "AS2_scf7180000696055"
+     bampath = "fixture/longcontignames.bam"
+ 
+-    dtypes = [None, {"chrom": "a20"}, {"chrom": "a20"}]
++    dtypes = [None, {"chrom": "S20"}, {"chrom": "S20"}]
+     alignments = [Samfile(bampath), Samfile(bampath), bampath]
+     results = [len(contig_label), 20, 20]
+     labels = [contig_label, contig_label, contig_label]
+diff --git a/pysamstats/test/test_pileup.py b/pysamstats/test/test_pileup.py
+index aeaf58b..8baf048 100644
+--- a/pysamstats/test/test_pileup.py
++++ b/pysamstats/test/test_pileup.py
+@@ -1078,7 +1078,7 @@ def test_load_cov_long_contig_name():
+     x = pysamstats.load_coverage(bampath, chrom=label)
+     assert len(label) == x.dtype["chrom"].itemsize
+ 
+-    x = pysamstats.load_coverage(Samfile(bampath), chrom=label, dtype={"chrom": "a10"})
++    x = pysamstats.load_coverage(Samfile(bampath), chrom=label, dtype={"chrom": "S10"})
+     assert 10 == x.dtype["chrom"].itemsize
+ 
+ 
+diff --git a/pysamstats/util.py b/pysamstats/util.py
+index 2e4c998..dd32ce0 100644
+--- a/pysamstats/util.py
++++ b/pysamstats/util.py
+@@ -46,7 +46,7 @@ def load_stats(statfun, default_dtype, user_dtype, user_fields, **kwargs):
+ 
+     # check if contig label dtype is appropriate length
+     max_seqid_len = determine_max_seqid(kwargs["alignmentfile"])
+-    dtype["chrom"] = "a{0}".format(max_seqid_len)
++    dtype["chrom"] = "S{0}".format(max_seqid_len)
+ 
+     if user_dtype is not None:
+         dtype.update(dict(user_dtype))

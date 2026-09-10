@@ -1,0 +1,54 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: prokanota
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/prokanota/prokanota-{{ version }}.tar.gz
+  sha256: 4ee728c90ecfb8823fc3ce4f4ba12b223fbb32768e790d8450b56d7f26221a86
+
+build:
+  entry_points:
+    - prokanota = prokanota.__main__:main
+  run_exports:
+    - {{ pin_subpackage("prokanota", max_pin="x") }}
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.11
+    - hatchling >=1.27.0
+    - pip
+  run:
+    - python >=3.11
+    - click >=8.1.3
+    - jsonschema >=4.0.0
+    - pandas >=1.5.0
+    - pyyaml >=6.0
+    - snakemake >=9.0.1
+    - snaketool-utils >=0.0.4
+    - pytest >=8.3.4
+
+test:
+  imports:
+    - prokanota
+  commands:
+    - pip check
+    - prokanota --help
+    - prokanota version
+    - prokanota test-minimal
+  requires:
+    - pip
+
+about:
+  home: https://github.com/richardstoeckl/prokanota
+  license: BSL-1.0
+  license_file: LICENSE
+  summary: A modular, configuration-driven workflow for prokaryotic genome annotation.
+
+extra:
+  recipe-maintainers:
+    - richardstoeckl

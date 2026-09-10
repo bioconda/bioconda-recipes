@@ -1,5 +1,5 @@
 {% set name = "protal" %}
-{% set version = "0.5.1a" %}
+{% set version = "0.6.0a" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,15 @@ package:
 
 source:
   url: https://github.com/4less/protal/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 4e8229793b65f32e6b8cb5149296c72d45156051c9dde0ca39a13370b0b35033
+  sha256: f98800bdf86ce8398c44e9ef6877d14ba212ca0c37e3220bc822a0f5efe50f7e
+  patches:
+    # <bits/stdc++.h> no longer drags in <cassert> on GCC 16, so uses of assert()
+    # inside template bodies fail to compile. Include it explicitly.
+    - cassert-includes.patch
+    # Hand over to the selected binary with exec() so protal's exit status and
+    # argument quoting survive the wrapper; drop the "run the binary with no
+    # arguments to see whether it works" probe.
+    - protal_launcher.patch
 
 build:
   skip: True  # [osx]
@@ -23,6 +31,7 @@ requirements:
     - ninja
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - pkg-config
     - python >=3
     - setuptools
@@ -33,17 +42,22 @@ requirements:
   run:
     - python >=3
     - pigz
+    # simulate_metagenomes execs art_illumina from PATH (--art_path overrides).
+    - art
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
-    - joblib
+    # Imported lazily by qcmsa, only for --plot.
     - matplotlib-base
-    - numpy
-    - pandas
-    - scikit-learn
 
 test:
   commands:
     - protal --help
+    - protal_plain --help
+    - simulate_metagenomes --help
+    - qcmsa --help
+    - protal_map_utils --help
+    - protal_profile_utils --help
+    - test -x "${PREFIX}/bin/protal_avx2"
 
 about:
   home: "https://github.com/4less/protal"
@@ -53,7 +67,7 @@ about:
   license_file: LICENSE
   summary: "Reference-based metagenomic analysis."
   description: |
-    Protal is a computational tool for taxonomic profiling and strain-resolved analyses of bacterial communities from 
+    Protal is a computational tool for taxonomic profiling and strain-resolved analyses of bacterial communities from
     metagenomic shotgun sequencing data (short-reads). Following a reference-based approach, protal uses the same
     120 universal marker genes GTDB uses to build their phylogeny (TIGRFAM, PFAM) and thus integrates well with other
     120 universal marker genes GTDB uses to build their phylogeny (TIGRFAM, PFAM) and thus integrates well with other

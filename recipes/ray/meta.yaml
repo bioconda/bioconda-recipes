@@ -7,33 +7,48 @@ package:
 
 source:
   url: https://downloads.sourceforge.net/project/denovoassembler/Ray-{{ version }}.tar.bz2
-  md5: 82f693c4db60af4328263c9279701009
+  sha256: 3122edcdf97272af3014f959eab9a0f0e5a02c8ffc897d842b06b06ccd748036
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number: 7
-  skip: True  # [osx]
+  number: 8
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
   host:
     - openmpi
+    - openmpi-mpicxx
+    - bzip2
+    - zlib
   run:
     - openmpi
+    - openmpi-mpicxx
 
 test:
   commands:
-    - which Ray # Ray -help requires ssh
+    - which Ray  # Ray -help requires ssh
 
 about:
-  home: 'http://denovoassembler.sourceforge.net/index.html'
-  license: GPL3
-  summary: "Parallel genome assemblies for parallel DNA sequencing"
+  home: "https://denovoassembler.sourceforge.net/index.html"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "gpl-3.0.txt"
+  summary: "Parallel genome assemblies for parallel DNA sequencing."
+  dev_url: "https://github.com/sebhtml/Ray-Releases"
+  doc_url: "https://denovoassembler.sourceforge.net/index.html"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:ray
     - doi:10.1186/gb-2012-13-12-r122

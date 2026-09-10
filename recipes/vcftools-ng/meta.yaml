@@ -1,0 +1,56 @@
+{% set name = "vcftools-ng" %}
+{% set version = "0.14.3" %}
+{% set sha256 = "ef9be38a0f68dc52c5b06c1e719888582d1595bf3972b28d186015eb05b09f13" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/VensinMa/vcftools-ng/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.20,<4
+    - make
+  host:
+    - blis
+    - htslib >=1.24
+    - liblapack
+    - zlib
+  run:
+    - bcftools >=1.24
+    - {{ pin_compatible('blis', max_pin='x') }}
+
+test:
+  commands:
+    - vcftools-ng --version | grep -F "vcftools-ng {{ version }}"
+    - vcftools-ng --help | grep -F "QUICK EXAMPLES:"
+
+about:
+  home: https://github.com/VensinMa/vcftools-ng
+  license: LGPL-3.0-only
+  license_family: LGPL
+  license_file: LICENSE
+  summary: High-performance, output-compatible successor to VCFtools 0.1.17
+  description: |
+    vcftools-ng is an HTSlib-based, multithreaded VCF/BCF filtering,
+    statistics, conversion, and population-genetics tool. It preserves exact
+    VCFtools 0.1.17 scientific output for its documented compatibility surface
+    while adding adaptive input backends, deterministic BGZF output,
+    transactional writes, and reproducible run logs.
+  dev_url: https://github.com/VensinMa/vcftools-ng
+  doc_url: https://github.com/VensinMa/vcftools-ng/blob/v{{ version }}/README.md
+
+extra:
+  recipe-maintainers:
+    - VensinMa

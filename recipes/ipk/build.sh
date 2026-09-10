@@ -34,7 +34,7 @@ cmake -S . -B build \
 	--install-prefix="$PREFIX" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
-	
+
 cmake --build build --target all --target diff-dna --target diff-aa --target dump-dna --target dump-aa -j "${CPU_COUNT}"
 cmake --install build
 

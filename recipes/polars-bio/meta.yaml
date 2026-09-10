@@ -1,0 +1,106 @@
+{% set name = "polars-bio" %}
+{% set version = "0.35.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/polars_bio-{{ version }}.tar.gz
+  sha256: 70febfd08ade96da7495334fc804ab1838b14f8ee79ade9c4aeaa06b1361f6ee
+
+build:
+  number: 0
+  # polars-bio requires Python >=3.11,<3.15 (pyproject.toml).
+  skip: true  # [py < 311]
+  run_exports:
+    # Still 0.x with an evolving API, so pin downstream consumers to the
+    # minor version rather than the major one.
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+    # The crate tree pulls several dependencies straight from git tags, so the
+    # build environment needs a git client.
+    - git
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+  host:
+    - python
+    - pip
+    - maturin >=1.0,<2.0
+  run:
+    - python
+    - polars >=1.37.1
+    - pyarrow >=23.0.1,<25
+    - datafusion >=53.0.0,<54
+    - tqdm >=4.67.0,<5
+    - polars-config-meta >=0.3.0,<1
+
+test:
+  imports:
+    - polars_bio
+  commands:
+    - pip check
+    # Exercise the compiled extension, not just the import.
+    - python -c "import polars_bio as pb; print(pb.__version__)"
+    # Inlined on purpose, and written without square brackets on purpose.
+    #
+    # These commands are re-run inside the mulled biocontainer, which holds only
+    # the package and its run dependencies -- neither `requires` below nor a
+    # `files:` block reaches it, so a shipped script fails with "No such file or
+    # directory" and pytest with "No module named pytest".
+    #
+    # The container command is additionally re-quoted, and the LAST bracket
+    # expression on the line gets eaten in the process (it matches conda-build's
+    # selector shape `[...]` at line end): `row['start_2']` silently became
+    # `row`, turning the assert into a dict == int comparison. Tuples and
+    # get_column().item() keep the line bracket-free so nothing can be stripped.
+    - python -c "import polars as pl, polars_bio as pb; d1 = pl.DataFrame((pl.Series('chrom', ('chr1','chr1','chr2')), pl.Series('start', (100,500,100)), pl.Series('end', (200,600,200)))); d2 = pl.DataFrame((pl.Series('chrom', ('chr1','chr2')), pl.Series('start', (150,900)), pl.Series('end', (250,1000)))); d1.config_meta.set(coordinate_system_zero_based=False); d2.config_meta.set(coordinate_system_zero_based=False); r = pb.overlap(d1, d2, output_type='polars.DataFrame'); assert r.height == 1, r; assert r.get_column('chrom_1').item() == 'chr1', r; assert r.get_column('start_1').item() == 100, r; assert r.get_column('start_2').item() == 150, r; print('overlap smoke test passed')"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/biodatageeks/polars-bio
+  license: Apache-2.0
+  license_family: Apache
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: 'Blazing fast genomic operations on large Python dataframes'
+  description: |
+    polars-bio is a Python library for genomics built on top of Polars,
+    Apache Arrow and Apache DataFusion. It provides a DataFrame API for
+    genomics data and is designed to be fast, memory efficient and easy
+    to use.
+
+    Key features:
+      - Popular genomic interval operations with a DataFrame API
+      - SQL-powered querying of bioinformatics data
+      - Native parallel engine powered by Apache DataFusion
+      - Out-of-core / streaming processing
+      - Reading from cloud storage
+      - Zero-copy data exchange with Apache Arrow
+      - Support for VCF, BAM, CRAM, SAM, FASTQ, FASTA, BED, GFF, GTF and
+        BigWig/BigBed
+  doc_url: https://biodatageeks.org/polars-bio/
+  dev_url: https://github.com/biodatageeks/polars-bio
+
+extra:
+  # osx-arm64 only. Bioconda builds it natively on an Apple Silicon runner, and
+  # polars-bio's own CI already builds macOS aarch64 wheels from this same crate
+  # graph, so the Rust build is known to work there. linux-aarch64 is left out
+  # because nothing upstream exercises ARM Linux yet.
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - mwiewior
+  identifiers:
+    - doi:10.1093/bioinformatics/btaf640

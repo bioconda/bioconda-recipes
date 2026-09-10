@@ -1,7 +1,7 @@
 {# Version: keep in sync with rust/Cargo.toml (single source of truth) #}
 {# Run scripts/check-version-consistency.sh to verify #}
 {% set name = "wasp2" %}
-{% set version = "1.4.0" %}
+{% set version = "1.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -9,13 +9,13 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8d73c53290eb7df01cb297661a7ca968a43cc04d132f278422221d09606c440c
+  sha256: 801a3266f0e81fe6df2fd00a71deac3e58310ee2a6cc45ca3513b596ebe872ef
 
 build:
-  number: 1
+  number: 0
   skip: true  # [win or py < 311 or py > 312]
   run_exports:
-    - {{ pin_subpackage('wasp2', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -27,7 +27,9 @@ requirements:
     - pkg-config
     - cmake
     - make
-    - clangdev
+    # bindgen 0.69 (via rust-htslib 1.0) is incompatible with libclang 22.
+    # Clang 19 is required by the current conda-forge macOS compiler stack.
+    - clangdev >=18,<20
     - python                              # [build_platform != target_platform]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - crossenv                            # [build_platform != target_platform]
@@ -36,7 +38,8 @@ requirements:
     - python
     - pip
     - maturin >=1.6,<2.0
-    - htslib >=1.22
+    # Keep the extension and command-line tools on the same available HTS ABI.
+    #- htslib >=1.23.1,<1.24
     - bzip2
     - xz
     - zlib
@@ -60,6 +63,7 @@ requirements:
     # External tools (bioconda)
     - samtools >=1.10
     - bcftools
+    #- htslib >=1.23.1,<1.24
     - bedtools
 
 test:
@@ -68,14 +72,11 @@ test:
     - mapping
     - analysis
     - wasp2_rust
-  requires:
-    - pip
   commands:
     - wasp2-count --help
     - wasp2-map --help
     - wasp2-analyze --help
     - python -c "import wasp2_rust; print('Rust extension OK')"
-    - pip check
 
 about:
   home: https://github.com/mcvickerlab/WASP2

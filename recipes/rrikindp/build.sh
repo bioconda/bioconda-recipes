@@ -1,33 +1,12 @@
 #!/bin/bash
+set -xe
 
+# the command line tool is not installed by pip and is built separately
+make -C src/rrikindp -j"${CPU_COUNT}" CXXFLAGS="${CXXFLAGS} -O3"
 mkdir -p "${PREFIX}/bin"
+install -m 0755 src/rrikindp/RRIkinDP "${PREFIX}/bin"
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp"
+# the python module, including the pybind11 extension
+CXXFLAGS="${CXXFLAGS} -O3" ${PYTHON} -m pip install . \
+    --no-deps --no-build-isolation --no-cache-dir -vv
 
-case $(uname -m) in
-    aarch64)
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' setup.py
-	;;
-    arm64)
-	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' setup.py
-	;;
-esac
-
-case $(uname -s) in
-    Linux)
-	sed -i.bak "s|, 'omp'||" setup.py ;;
-esac
-
-sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-rm -f *.bak
-
-cd src/rrikindp
-
-make CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" -j"${CPU_COUNT}"
-install -v -m 0755 RRIkinDP "${PREFIX}/bin"
-
-cd ../../
-
-CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv

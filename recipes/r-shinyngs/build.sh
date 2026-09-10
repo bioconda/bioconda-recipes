@@ -4,8 +4,6 @@
 # rsconnect to find the package for shinyapps.io deployment. This normally
 # doesn't work for github packages except those installed via
 # devtools::install_github(), but the DESCRIPTON edits here should mimic that.
-# I'm doing the same for a key dependency, d3heatmap, which is now archived in
-# CRAN (so packrat won't find it from there), but we can pull from github.
 
 ammend_description_for_packrat(){
     description=$1
@@ -29,9 +27,7 @@ NeedsCompilation: no""" >> $description
 }
 
 ammend_description_for_packrat "shinyngs/DESCRIPTION" "shinyngs" "pinin4fjords" "v$PKG_VERSION"
-ammend_description_for_packrat "d3heatmap/DESCRIPTION" "d3heatmap" "cran" "$D3HEATMAP_VERSION"
 
-${R} CMD INSTALL --build d3heatmap ${R_ARGS}
 ${R} CMD INSTALL --build shinyngs ${R_ARGS}
 
 # copy supplementary scripts

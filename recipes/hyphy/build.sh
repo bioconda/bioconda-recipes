@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export LDFLAGS="-lcblas -L${PREFIX}/lib ${LDFLAGS}"
 export CPPFLAGS="${CPPFLAGS} -fPIC -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-variable"
 
