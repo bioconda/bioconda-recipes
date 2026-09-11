@@ -1,0 +1,47 @@
+{% set version = "0.1.0" %}
+{% set name = "myloasm-kmc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bluenote-1577/myloasm-kmc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3f7b052d667cca59f8089c77af9c69da2a49a688cc94bc802786af74ce9b69c1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+
+test:
+  commands:
+    - myloasm-kmc-v1 --help
+
+about:
+  home: "https://github.com/bluenote-1577/myloasm-kmc"
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: "On-disk k-mer counter for myloasm: a KMC fork with per-strand counters and a middle-base quality filter."
+  license_file: 
+    - LICENSE
+    - THIRDPARTY.yml
+  dev_url: "https://github.com/bluenote-1577/myloasm-kmc"
+
+extra:
+  recipe-maintainers:
+    - bluenote-1577
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
