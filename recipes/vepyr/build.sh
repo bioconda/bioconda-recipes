@@ -10,7 +10,6 @@ export CARGO_BUILD_JOBS="${CPU_COUNT}"
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export CARGO_NET_RETRY=5
 
-# Include licenses for the Rust dependencies linked into the extension.
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 "${PYTHON}" -m pip install . -vv --no-deps --no-build-isolation \
