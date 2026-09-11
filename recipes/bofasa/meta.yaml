@@ -14,17 +14,15 @@ build:
   noarch: python
   run_exports:
     - {{ pin_subpackage('bofasa', max_pin="x") }}
-  script: |
-    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-    # Create the DB directory under share/
-    mkdir -p $PREFIX/share/bofasa/db
-    # Install activate/deactivate scripts
-    mkdir -p $PREFIX/etc/conda/activate.d
-    mkdir -p $PREFIX/etc/conda/deactivate.d
-    echo '#!/bin/bash' >  $PREFIX/etc/conda/activate.d/bofasa-activate.sh
-    echo 'export BOFASA_DB_PATH="${CONDA_PREFIX}/share/bofasa/db"' >> $PREFIX/etc/conda/activate.d/bofasa-activate.sh
-    echo '#!/bin/bash' >  $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh
-    echo 'unset BOFASA_DB_PATH' >> $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+    - mkdir -p $PREFIX/share/bofasa/db
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - mkdir -p $PREFIX/etc/conda/deactivate.d
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo 'export BOFASA_DB_PATH=\"${CONDA_PREFIX}/share/bofasa/db\"' >> $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
+    - "echo 'unset BOFASA_DB_PATH' >> $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
 
 requirements:
   host:
