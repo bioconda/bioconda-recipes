@@ -1,0 +1,75 @@
+{% set name = "sativa-epang" %}
+{% set version = "0.9.3.4" %}
+{% set sha256 = "0be51d27c2b230fe8630c1981f96c18d77808332b5c6a06efddace9ec771ac78" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Aaramis/sativa-epang/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # RAxML 8.2.3 is compiled here, from the tarball SATIVA ships, so this is not noarch.
+  # Linux only, as for the `sativa` recipe.
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('sativa-epang', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - python >=3.7
+  host:
+    - python >=3.7
+  run:
+    - python >=3.7
+    - epa-ng >=0.3.8
+
+test:
+  commands:
+    # End to end on the bundled example: reference tree with RAxML, leave-one-out with
+    # EPA-ng, mislabels written. The data ships in the package rather than in the recipe,
+    # because the container test runs with only the package installed. PREFIX is set by
+    # conda-build, CONDA_PREFIX by the container's env-activate.sh.
+    - E="${PREFIX:-${CONDA_PREFIX:-/usr/local}}/share/sativa-epang/example"; sativa-epang -s "$E/test.phy" -t "$E/test.tax" -x bac -n run -T 2
+    - test -s run.mis
+    # the reference as a step of its own, which is what a workflow manager schedules apart
+    - E="${PREFIX:-${CONDA_PREFIX:-/usr/local}}/share/sativa-epang/example"; sativa-epang -s "$E/test.phy" -t "$E/test.tax" -x bac -n ref -T 2 -stage reference
+    - test -s ref.refjson
+    - test -s ref.model
+about:
+  home: https://github.com/Aaramis/sativa-epang
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "SATIVA with EPA-ng as the placement engine"
+  description: |
+    SATIVA (Kozlov et al. 2016) detects taxonomically mislabelled sequences by placing every
+    reference sequence back into a tree built without it. This fork of amkozlov/sativa
+    v0.9.3 replaces the RAxML placement (-f O) with EPA-ng (Barbera et al. 2019) in both the
+    leave-one-out and the final confirmation, and leaves SATIVA's classification and
+    decision logic alone: the EPA-ng edges are mapped back onto SATIVA's own B= numbering by
+    leaf bipartition.
+
+    Against unmodified SATIVA v0.9.3 on ITS alignments: 257 s to 15.4 s at 1600 sequences,
+    1536 s to 87 s at 5402, with 0.98 recall and 0.90 precision at 800 sequences.
+
+    The leave-one-out can also be run in three steps (-stage loo-tasks, loo-place,
+    loo-score), so a workflow manager can prepare the folds, place them elsewhere and pass
+    the results back. The output is identical either way.
+
+    The command is `sativa-epang`; the `sativa` package provides unmodified SATIVA as
+    `sativa.py`, and the two can be installed side by side.
+  doc_url: https://github.com/Aaramis/sativa-epang/blob/epa-ng/CHANGES-epa-ng.md
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gkw396
+    - doi:10.1093/sysbio/syy054
+  recipe-maintainers:
+    - Aaramis
