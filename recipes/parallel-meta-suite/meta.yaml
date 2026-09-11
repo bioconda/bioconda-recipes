@@ -1,36 +1,72 @@
 {% set name = "parallel-meta-suite" %}
-{% set version = "1.0" %}
-
-
+{% set version = "3.7.4" %}
+{% set commit = "2956d7481711f7e734a56cea2244927a94ce35d4" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/qdu-bioinfo/parallel-meta-suite/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 5bd54b2e07e14ea16fe9bb49e5a138edbf233012f561c9199425070f30cdfb7d
+  url: https://github.com/qdu-bioinfo/parallel-meta-suite/archive/{{ commit }}.tar.gz
+  sha256: b88fef6d0a82b3dc095b9df841d124d649ee0ebe59fb16d97bdeace65ca96903
+  patches:
+    - version.patch
 
 build:
-  number: 5
+  number: 0
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+
   host:
+    - libgcc-ng
+    - libstdcxx-ng
+
   run:
-    - r-pheatmap
-    - vsearch
+    - libgomp
+    - libgcc-ng
+    - libstdcxx-ng
     - hmmer
+    - curl
+    - openssl
+    - tar
+    - vsearch
+    - r-base
+    - r-optparse
+    - r-vegan
+    - r-gplots
+    - r-ggplot2
+    - r-igraph
+    - r-reshape
+    - r-pheatmap
+    - r-proc
+    - r-combinat
+    - r-plyr
+    - r-rcolorbrewer
+    - r-permute
+    - r-lattice
+    - r-squash
+    - r-fossil
+    - r-abind
+    - r-randomforest
+    - r-psych
+    - r-ade4
+    - r-reshape2
 
 test:
   commands:
     - PM-pipeline -h
+    - PM-parallel-meta -h
+    - PM-profiler -h
 
 about:
   home: https://github.com/qdu-bioinfo/parallel-meta-suite
-  license: GPL3
-  license_file: LICENSE  
-  summary: "Parallel-META-Suite is an interactive software package for rapid and comprehensive microbiome analysis."
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: Parallel-META Suite for comprehensive microbiome analysis
