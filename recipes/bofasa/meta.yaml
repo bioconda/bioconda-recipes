@@ -21,8 +21,12 @@ build:
     # Install activate/deactivate scripts
     mkdir -p $PREFIX/etc/conda/activate.d
     mkdir -p $PREFIX/etc/conda/deactivate.d
-    cp $RECIPE_DIR/bofasa-activate.sh   $PREFIX/etc/conda/activate.d/bofasa-activate.sh
+    cp $RECIPE_DIR/bofasa-activate.sh $PREFIX/etc/conda/activate.d/bofasa-activate.sh
     cp $RECIPE_DIR/bofasa-deactivate.sh $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh
+    echo '#!/bin/bash' >  $PREFIX/etc/conda/activate.d/bofasa-activate.sh
+    echo 'export BOFASA_DB_PATH="${CONDA_PREFIX}/share/bofasa/db"' >> $PREFIX/etc/conda/activate.d/bofasa-activate.sh
+    echo '#!/bin/bash' >  $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh
+    echo 'unset BOFASA_DB_PATH' >> $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh
 
 requirements:
   host:
@@ -63,6 +67,7 @@ requirements:
 test:
   commands:
     - bofasa -h
+    - echo $BOFASA_DB_PATH
 
 about:
   home: "https://github.com/raufs/bofasa"
