@@ -1,0 +1,71 @@
+{% set version = "0.9.9" %}
+
+package:
+  name: rikin
+  version: {{ version }}
+
+source:
+  url: https://github.com/s-will/rikin/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4064af1a85541073c0cfa0cee1aa175c5d62a0c4e0f9fc6d2339a779066210c5
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('rikin', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gengetopt
+    - make
+  host:
+    - viennarna
+    - locarna
+    - zlib
+    - llvm-openmp  # [osx]
+  run:
+    - viennarna
+    - locarna
+    - llvm-openmp  # [osx]
+    - python >=3.9
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+    - seaborn
+    - octave
+
+test:
+  commands:
+    - rikin_enum --help
+    - rikin_barriers --help
+    - rikin_prune --help
+    - rikin_pipeline.py --help
+    - rikin_plot.py --help
+
+about:
+  home: https://github.com/s-will/rikin
+  license: AGPL-3.0-or-later 
+  license_file: COPYING
+  license_family: AGPL
+  summary: Computation of full RNA-RNA interaction kinetics
+  description: |
+    RNAInterKin (RIKin) solves, for a pair of input RNAs, their full
+    RNA-RNA interaction kinetics process in a detailed
+    RNAup/IntaRNA-inspired interaction model. This calculation is based on
+    the full Turner nearest- neighbor energy model for RNA secondary
+    structures.  The tool handles biologically relevant RNA interaction
+    pairs. For example, the interaction process of the 5'UTR of mRNAs with
+    regulatory RNAs is solved within minutes on a single notebook CPU.
+extra:
+  recipe-maintainers:
+    - s-will
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

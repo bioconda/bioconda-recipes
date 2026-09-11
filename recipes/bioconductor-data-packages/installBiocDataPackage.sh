@@ -5,12 +5,14 @@ set -ex
 SCRIPT_DIR="$( dirname -- "${BASH_SOURCE[0]}" )/../share/bioconductor-data-packages"
 json="${SCRIPT_DIR}/dataURLs.json"
 FN=`yq ".\"$1\".fn" "${json}"`
+FN=`echo $FN | tr -d \"`  # Strip quotes from filename
 ##readarray is bash4, while OSX only has bash 3
 #readarray URLS < <(yq ".\"$1\".urls[]" "${json}")
 while IFS= read -r value; do
   URLS+=($value);
 done < <(yq ".\"$1\".urls[]" "${json}")
 MD5=`yq ".\"$1\".md5" "${json}"`
+MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -18,6 +20,19 @@ MD5=`yq ".\"$1\".md5" "${json}"`
 STAGING=$PREFIX/share/"$1"
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
+
+# Prepare caching of binary package
+CACHE_DIR="${CONDA_PKGS_DIRS:-$HOME/.conda/pkgs}/bioc_data_cache/$1/$MD5"
+mkdir -p $CACHE_DIR
+R_PLATFORM=$(Rscript -e 'cat(R.version$platform)')
+BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.tar.gz"
+CACHED_BINARY_TARBALL="$CACHE_DIR/$BINARY_TARBALL"
+
+# Install CACHED_BINARY_TARBALL if it exists
+if [[ -f "$CACHED_BINARY_TARBALL" ]]; then
+  R CMD INSTALL --library=$PREFIX/lib/R/library $CACHED_BINARY_TARBALL
+  exit 0
+fi
 
 # Set URLs from environment variables or use provided defaults
 BIOCONDUCTOR_URL="${BIOCONDUCTOR_MIRROR:-"https://bioconductor.org"}"
@@ -59,7 +74,15 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 fi
 
-# Install and clean up
-R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
+# Build binary package and delete source package
+R CMD INSTALL --build $TARBALL
 rm $TARBALL
+
+# Install binary package
+R CMD INSTALL --library=$PREFIX/lib/R/library $BINARY_TARBALL
+
+# Cache binary package
+mv $BINARY_TARBALL $CACHED_BINARY_TARBALL
+
+# delete staging
 rmdir $STAGING
