@@ -4,7 +4,6 @@ set -euxo pipefail
 # Use conda's Rust compiler instead of the upstream development toolchain pin.
 rm -f rust-toolchain.toml
 
-# Preserve compiler activation flags; upstream does not set target-cpu flags.
 export CARGO_PROFILE_RELEASE_DEBUG=false
 export CARGO_PROFILE_RELEASE_STRIP=symbols
 export CARGO_BUILD_JOBS="${CPU_COUNT}"
