@@ -15,7 +15,9 @@ case $(uname -m) in
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	# removed: -march=x86-64-v3 required AVX2 and defeated the
+	# -DENABLE_AVX2=OFF -DCOMPILATION_ARCH=OFF passed to bifrost
+	# below via ARCH_OPTS. See bioconda/bioconda-recipes#42633.
 	;;
 esac
 
