@@ -1,0 +1,48 @@
+{% set version = "0.0.11" %}
+
+package:
+  name: koinapy
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/k/koinapy/koinapy-{{ version }}.tar.gz
+  sha256: d8ff3530422f673d070a5205ca1afaa794d102e0ba0fa526e80113d48bf71682
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("koinapy", max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - poetry-core
+    - python >=3.10
+  run:
+    - grpcio >=1.63
+    - packaging >=14.1
+    - pandas
+    - protobuf >=6.30,<7.0
+    - python >=3.10
+    - tqdm
+    # The gRPC extra is not represented in the conda-forge tritonclient package,
+    # so its dependencies are listed explicitly above. 2.68 is the first release
+    # whose gRPC extra wants protobuf >=6.30,<7.0; earlier ones want <5 or <6.
+    - tritonclient >=2.68
+
+test:
+  imports:
+    - koinapy
+
+about:
+  home: https://koina.wilhelmlab.org/
+  summary: Python client for communicating with Koina, a proteomics prediction server.
+  license: Apache-2.0
+  dev_url: https://github.com/wilhelm-lab/koina
+
+extra:
+  recipe-maintainers:
+    - BioGeek
+    - jesseangelis

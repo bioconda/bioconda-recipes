@@ -1,0 +1,49 @@
+{% set name = "spatrio" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ZJUFanLab/SpaTrio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 371901b32f7f7a301100778529e83e515cae7fcc9d0b00a6a59a1fc31391d76e
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage("spatrio", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - scipy >=1.6,<1.8
+    - scikit-learn
+    - scanpy
+    - anndata
+    - pot >=0.8.2,<0.9
+
+test:
+  imports:
+    - spatrio
+
+about:
+  home: https://github.com/ZJUFanLab/SpaTrio
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Spatial mapping of multi-omics data at single-cell resolution using optimal transport
+
+extra:
+  identifiers:
+    - doi:10.1038/s41467-025-61667-4
+  recipe-maintainers:
+    - askmadsen

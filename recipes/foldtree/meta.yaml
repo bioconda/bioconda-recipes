@@ -1,28 +1,32 @@
 {% set name = "foldtree" %}
-{% set version = "1.1.1rc1" %}
+{% set version = "1.1.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url:  https://github.com/DessimozLab/fold_tree/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: c611a29f2e7041b30e784a246d61c07a7582d1e48db2689065939842f48350c4
+  sha256: fe0ce8da00b215265000df2f2eeb647ff2e7911395835188630425417695dda7
 
 build:
-  number: 1
+  number: 0
   noarch: python
-  script: python -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - foldtree = foldtree.foldtree:cli
+    - pyfoldtree = foldtree.pyfoldtree:main
+    - apisearch = foldtree.foldseek_remote_search:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage("foldtree", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.7
     - pip
     - setuptools
   run:
-    - python
+    - python >=3.7
     - click
     - snakemake-minimal <8
     - biopython
@@ -36,20 +40,20 @@ requirements:
     - scipy
     - ujson
 
-
 test:
   commands:
     - foldtree --help
     - foldtree --version
 
 about:
-  home: https://github.com/DessimozLab/fold_tree
+  home: "https://github.com/DessimozLab/fold_tree"
   license: MIT
   license_file: LICENSE
   license_family: MIT
   summary: "Foldtree creates phylogenetic trees from protein structures using Foldseek."
+  dev_url: "https://github.com/DessimozLab/fold_tree"
+  doc_url: "https://github.com/DessimozLab/fold_tree/blob/v{{ version }}/README.md"
+
 extra:
-additional-platforms:
-  - linux-aarch64
-identifiers:
-  - doi:10.1038/s41594-025-01649-8
+  identifiers:
+    - doi:10.1038/s41594-025-01649-8

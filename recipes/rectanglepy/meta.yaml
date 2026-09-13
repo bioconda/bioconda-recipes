@@ -1,0 +1,58 @@
+{% set name = "rectanglepy" %}
+{% set version = "1.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/r/rectanglepy/rectanglepy-{{ version }}.tar.gz
+  sha256: 3dc8b1b8cd16d01f524a14b17c73988423ff5ea527ca3beb5910cff224896371
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage("rectanglepy", max_pin="x.x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.13
+    - pandas >=2.0.0,<3.0.0
+    - pydeseq2 ==0.4.11
+    - scipy ==1.13.0
+    - osqp >=1.0.5
+    - loguru
+    - numpy >=1.0.0,<2.0.0
+    - anndata >=0.8.0,<0.10.9
+    - statsmodels >=0.14.1
+
+test:
+  imports:
+    - rectanglepy
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/ComputationalBiomedicineGroup/Rectangle
+  summary: Single-cell-informed cell-type deconvolution of bulk and spatial transcriptomic data
+  doc_url: https://rectanglepy.readthedocs.io/
+  dev_url: https://github.com/ComputationalBiomedicineGroup/Rectangle
+  license: BSD-3-Clause-HP OR BSD-3-Clause
+  license_file:
+    - LICENSE-Commercial.md
+    - LICENSE
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.07.07.736950
+  recipe-maintainers:
+    - nilchia
