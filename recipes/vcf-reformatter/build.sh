@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
-# Install using cargo
-cargo install --locked --root $PREFIX --path .
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+cargo install --locked --root "$PREFIX" --path .
