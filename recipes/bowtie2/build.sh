@@ -20,10 +20,10 @@ case $(uname -m) in
 	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a|' Makefile
 	;;
     x86_64)
-	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=x86-64-v3|' Makefile
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
 	;;
 esac
-rm -rf *.bak
+rm -f *.bak
 
 LDFLAGS=""
 make WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1 \
