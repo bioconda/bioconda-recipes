@@ -54,7 +54,7 @@ install -v -m 0755 build/wepp "${PREFIX}/bin"
 # Copy WEPP files to $PREFIX/WEPP
 mkdir -p "${PREFIX}/WEPP"
 if [[ -f "${SRC_DIR}/WEPP/CMakeLists.txt" ]]; then
-	cp -rf "${SRC_DIR}/WEPP/src" "${SRC_DIR}/WEPP/config" "${SRC_DIR}/WEPP/workflow" "${SRC_DIR}/WEPP/primers" "${SRC_DIR}/WEPP/LICENSE" "${SRC_DIR}/WEPP/parsimony.proto" "${SRC_DIR}/WEPP/sam.proto" "${PREFIX}/WEPP/WEPP/"
+	cp -rf "${SRC_DIR}/WEPP/src" "${SRC_DIR}/WEPP/config" "${SRC_DIR}/WEPP/workflow" "${SRC_DIR}/WEPP/primers" "${SRC_DIR}/WEPP/LICENSE" "${SRC_DIR}/WEPP/parsimony.proto" "${SRC_DIR}/WEPP/sam.proto" "${PREFIX}/WEPP/"
 else
 	cp -rf "${SRC_DIR}/src" "${SRC_DIR}/config" "${SRC_DIR}/workflow" "${SRC_DIR}/primers" "${SRC_DIR}/LICENSE" "${SRC_DIR}/parsimony.proto" "${SRC_DIR}/sam.proto" "${PREFIX}/WEPP/"
 fi
