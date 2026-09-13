@@ -12,7 +12,7 @@ source:
 
 build:
   noarch: generic
-  number: 0
+  number: 1
   run_exports:
      - {{ pin_subpackage('gatk4-main', max_pin="x") }}
 
@@ -42,6 +42,18 @@ test:
     - gatk DetermineGermlineContigPloidy --help
 
 outputs:
+  - name: gatk4
+    build:
+      noarch: generic
+    requirements:
+      run:
+        - {{ pin_subpackage("gatk4-main", exact=True) }}
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk HaplotypeCaller --help
+        - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-main
     script: build_main.sh
     requirements:
