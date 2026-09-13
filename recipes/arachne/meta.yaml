@@ -1,0 +1,58 @@
+{% set name = "arachne" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pdimens/arachne/releases/download/{{ version }}/arachne.{{ version }}.tar.gz 
+  sha256: 7774fc2c351b613c58d6ef4c2010c3fd593bfe4239986ca442f96f44ea134b4f
+
+build:
+  number: 0
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage('arachne', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
+  host:
+    - zlib
+    - jemalloc
+  run:
+    - samtools >=1.23
+    - bwa >=0.7.19,<0.8
+
+test:
+  commands:
+    - arachne --version
+
+about:
+  home: "https://github.com/pdimens/arachne"
+  summary: "Linked-Read Alignment Tool and successor to Lariat"
+  description: |
+    Arachne is a fork intended to be a revival and continuation of Lariat, the linked-read aware aligner created by 10X Genomics and
+    bundled in their LongRanger pipeline. Arachne does not directly support any specific linked-read FASTQ format. Instead, it expects
+    the 'standard' linked-read data format, which is a consistent future-proof format following the internationally recognized FASTQ
+    and SAM specifications. The package provides a lossless converter that accepts haplotagging, stLFR, and TELLseq FASTQ data to
+    faciliate these conversions.
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - gobwa/bwa/COPYING
+    - library_licenses/
+  dev_url: "https://github.com/pdimens/arachne"
+  doc_url: "https://pdimens.github.io/arachne/"
+
+extra:
+  recipe-maintainers:
+    - pdimens
+  additional-platforms:
+    - linux-aarch64
