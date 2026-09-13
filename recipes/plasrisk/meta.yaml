@@ -1,0 +1,60 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: plasrisk
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/plasrisk/plasrisk-{{ version }}.tar.gz
+  sha256: 0eb290766eeaa850d3d5ad3cf13f4c8d8a7d5d7bdd6621b6ca14de349251eb8e
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - plasrisk = plasrisk.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.8
+    - pandas >=1.3
+    - numpy >=1.20
+
+test:
+  imports:
+    - plasrisk
+    - plasrisk.scoring
+    - plasrisk.annotate
+    - plasrisk.lookup
+  commands:
+    - plasrisk --help
+    - plasrisk --version
+    - python -c "from plasrisk import PlasRiskScorer; s=PlasRiskScorer(); print('PlasRisk OK')"
+
+about:
+  home: https://github.com/LLQ95/PlasRisk
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ten-dimension data-driven weighted risk assessment for bacterial plasmids"
+  description: |
+    PlasRisk computes a composite risk score for bacterial plasmids from FASTA
+    sequences based on ten dimensions: antimicrobial resistance gene burden
+    (S_ARG), virulence factors (S_VF), mobility/conjugation potential (S_MOB),
+    host range (S_HOST), replicon type (S_REP), plasmid size (S_SIZE),
+    biocide/metal resistance (S_BM), geographic spread (S_GEO), habitat breadth
+    (S_HAB), and temporal growth rate (S_GROW). Weights were derived by
+    data-driven consensus (Random Forest MDG, LASSO, grid-search optimization)
+    on 792,964 PIPdb plasmid sequence clusters. Optionally uses abricate for
+    automated ARG/VF/replicon/BMRG annotation.
+  dev_url: https://github.com/LLQ95/PlasRisk
+
+extra:
+  recipe-maintainers:
+    - LLQ95
