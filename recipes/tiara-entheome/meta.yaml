@@ -1,0 +1,77 @@
+{% set name = "tiara-entheome" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iPsychonaut/tiara-entheome/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c551ad41b80159352a003178cfc3138dea0be43e1145443d3f15ae4f76e62632
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - tiara-entheome = tiara_entheome.main:main
+    - tiara-entheome-test = tiara_entheome.test.test:test
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.13
+    - pip
+    - setuptools >=61
+    - wheel
+  run:
+    - python >=3.8,<3.13
+    - pytorch >=1.10,<3
+    - skorch >=0.11
+    - numpy >=1.21
+    - numba >=0.56
+    - tqdm
+    - biopython
+    - joblib
+
+test:
+  imports:
+    - tiara_entheome
+    - tiara_entheome.src.bow
+    - tiara_entheome.src.transformations
+  requires:
+    - pip
+  commands:
+    - pip check
+    - tiara-entheome --help
+    - tiara-entheome-test --help > /dev/null 2>&1 || true
+    # End-to-end classification of the smallest bundled fixture (plastid),
+    # exercising bundled model loading and the PyTorch inference path.
+    - tiara-entheome -i "$(python -c 'import os, tiara_entheome; print(os.path.dirname(tiara_entheome.__file__))')/test/test_data/plast_fr.fasta.gz" -o plast_out.txt -t 1
+    - test -s plast_out.txt
+
+about:
+  home: https://github.com/iPsychonaut/tiara-entheome
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Modernised fork of Tiara, a deep-learning sequence classifier"
+  description: |
+    tiara-entheome is a fork of Tiara (Karlicki et al. 2022) with updated
+    numba, numpy, and pytorch pins for compatibility with the current
+    bioconda toolchain. The model, weights, and classification logic are
+    unchanged from upstream tiara=1.0.3. This package is consumed by the
+    EGAP genome assembly pipeline for kingdom-aware contig decontamination.
+    Cite the original Tiara paper: Karlicki M., Antonowicz S., Karnkowska
+    A. Tiara: deep learning-based classification system for eukaryotic
+    sequences. Bioinformatics 38(2), 344-350 (2022).
+    doi:10.1093/bioinformatics/btab672
+  dev_url: https://github.com/iPsychonaut/tiara-entheome
+  doc_url: https://github.com/iPsychonaut/tiara-entheome
+
+extra:
+  recipe-maintainers:
+    - iPsychonaut
+  identifiers:
+    - doi:10.1093/bioinformatics/btab672
