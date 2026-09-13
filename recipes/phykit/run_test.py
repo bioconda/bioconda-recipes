@@ -32,7 +32,7 @@ with tempfile.TemporaryDirectory() as directory:
     tree = directory / "tree.nwk"
     tree.write_text("((A:1,B:1):1,C:1);\n")
     result = subprocess.run(
-        ["pk_total_tree_length", "-t", str(tree)],
+        ["pk_total_tree_length", str(tree)],
         check=True, capture_output=True, text=True,
     )
     assert float(result.stdout.strip()) == 4.0, result.stdout
