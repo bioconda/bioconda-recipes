@@ -11,7 +11,11 @@ source:
 
 build:
   number: 0
-  skip: true  # [py < 310]
+  # vepyr is built with pyo3's abi3-py310 feature: one build serves every
+  # Python >= 3.10, instead of one ~15 min Rust compile per Python version
+  # (four of them overran the one-hour linux-aarch64 CircleCI job).
+  python_version_independent: true  # [py == 310]
+  skip: true  # [py != 310]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -29,11 +33,12 @@ requirements:
     - git
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
   host:
-    - python
+    - python 3.10.*
+    - python-abi3  # [py == 310]
     - pip
     - maturin >=1.0,<2.0
   run:
-    - python
+    - python >=3.10
     - pyarrow >=18.0
     - polars >=1.37.1
     - tqdm >=4.60
