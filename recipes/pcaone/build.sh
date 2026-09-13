@@ -3,7 +3,7 @@
 mkdir -p ${PREFIX}/bin
 # fix zlib issue
 export CFLAGS="${CFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_LIBCPP_DISABLE_AVAILABILITY"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 make MKLROOT="${PREFIX}" -j"${CPU_COUNT}"

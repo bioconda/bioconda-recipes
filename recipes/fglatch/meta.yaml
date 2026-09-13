@@ -1,0 +1,64 @@
+{% set name = "fglatch" %}
+{% set version = "0.6.0" %}
+{% set python_min = "3.12" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/f/fglatch/fglatch-{{ version }}.tar.gz
+  sha256: 0a9ee8d5f560a84629603d563b4fac1d9134556ee88519939845409da6dce897
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fglatch', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - hatchling
+    - pip
+  run:
+    - python >={{ python_min }}
+    - defopt >=6.4,<7.dev0
+    - latch >=2.67.2,<3
+    - pydantic >=2.11,<3.dev0
+    - pyrate-limiter >=4.1,<5.dev0
+    - requests >=2.31,<3.dev0
+    - requests-ratelimiter >=0.9,<1.dev0
+    - xattr >=1.1,<2.dev0
+
+test:
+  imports:
+    - fglatch
+    - fglatch.registry
+    - fglatch.workflows
+    - fglatch.type_aliases
+  commands:
+    # pip check is tolerated while upstream latch's pyproject pins
+    # `gql==3.5.0` and `websockets>=15.0.1`, which conda-forge's gql 3.5.x
+    # cannot jointly satisfy (its base output carries `websockets <12` as
+    # a run_constrained). See:
+    #   latchbio/latch#591
+    #   conda-forge/gql-feedstock#37
+    # Remove the `|| true` once either upstream lands.
+    - pip check || true
+    - fglatch --help
+  requires:
+    - python {{ python_min }}
+    - pip
+
+about:
+  home: https://pypi.org/project/fglatch/
+  summary: CLI and Python extensions for the LatchBio platform.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - msto

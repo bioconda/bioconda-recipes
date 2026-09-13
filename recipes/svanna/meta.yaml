@@ -1,0 +1,49 @@
+{% set name = "svanna" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/monarch-initiative/SvAnna/releases/download/v{{ version }}/svanna-cli-{{ version }}-distribution.zip
+  sha256: b526b2016362c3dc20a771b93adf59fa4e2c596f95e7db678ccd312b484c33be
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  run:
+    - openjdk >=17
+
+test:
+  commands:
+    - svanna-cli --help
+
+about:
+  home: https://github.com/monarch-initiative/SvAnna
+  license: LicenseRef-Jackson-Laboratory-NonCommercial
+  license_family: OTHER
+  license_file: legal/LICENSE
+  summary: "Efficient and accurate pathogenicity prediction for coding and regulatory structural variants in long-read genome sequencing"
+  description: |
+    SvAnna is a tool for prioritizing structural variants (SVs) based on their
+    predicted pathogenicity. It integrates information from coding and non-coding
+    genomic annotations, phenotype data (HPO terms), and population frequency
+    databases to rank SVs by clinical relevance.
+  dev_url: https://github.com/monarch-initiative/SvAnna
+  doc_url: https://svanna.readthedocs.io
+
+extra:
+  recipe-maintainers:
+    - nourmahfel
+  identifiers:
+    - doi:10.1186/s13073-022-01046-6
+    - biotools:svanna
+  notes: >
+    SvAnna is licensed for non-commercial use only (The Jackson Laboratory).
+    Commercial use requires a separate license from contracts@jax.org.
+    A wrapper script at $PREFIX/bin/svanna-cli launches the JAR via java.

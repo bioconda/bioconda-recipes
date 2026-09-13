@@ -20,17 +20,11 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-pushd api/doxy-sphinx
-doxygen coot-api-dox.cfg
-popd
-
-mkdir -p "${PREFIX}/share/doxy-sphinx"
-cp -r api/doxy-sphinx/* "${PREFIX}/share/doxy-sphinx"
-
-# Boost 1.86.0 still needs `system` component
+# Boost 1.88.0 still needs `system` component
 sed -i 's|Boost COMPONENTS iostreams|Boost COMPONENTS iostreams system|' CMakeLists.txt
 sed -i 's|Boost::thread Boost::iostreams|Boost::thread Boost::iostreams Boost::system|' CMakeLists.txt
 
+# Propagate RDKit include directories through rdkit_base for downstream targets
 sed -i '/find_package(RDKit CONFIG COMPONENTS RDGeneral REQUIRED)/a\
 set_target_properties(RDKit::rdkit_base PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${RDKit_INCLUDE_DIRS}")' CMakeLists.txt
 
@@ -64,6 +58,7 @@ cmake -S . -B build -G Ninja \
   -DCLIPPER-MINIMOL_LIBRARY="${PREFIX}/lib/libclipper-minimol${SHLIB_EXT}" \
   -DCLIPPER-CONTRIB_LIBRARY="${PREFIX}/lib/libclipper-contrib${SHLIB_EXT}" \
   -DCLIPPER-CIF_LIBRARY="${PREFIX}/lib/libclipper-cif${SHLIB_EXT}" \
+  -DOSPRAY_PREFIX=${PREFIX} \
   -DPYTHON_SITE_PACKAGES="${SP_DIR}" \
   -DPython_SITELIB="${SP_DIR}" \
   -DMAKE_COOT_HEADLESS_API_PYI=ON \

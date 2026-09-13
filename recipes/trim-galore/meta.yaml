@@ -1,17 +1,13 @@
 {% set name = "trim-galore" %}
-{% set version = "2.1.0" %}
+{% set version = "2.3.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-linux-x86_64.tar.gz  # [linux and x86_64]
-    sha256: d408c9d30b5302fa4acbda3df10ab810eafad5644e3c9eb6bc62e6ed5df5a4e1  # [linux and x86_64]
-  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-linux-aarch64.tar.gz  # [linux and aarch64]
-    sha256: 4e073581269b92da490641f67ae6cd5417962c033416f25fe355d01e36ed9c8c  # [linux and aarch64]
-  - url: https://github.com/FelixKrueger/TrimGalore/releases/download/v{{ version }}/trim_galore-macos-aarch64.tar.gz  # [osx and arm64]
-    sha256: 3cccb8d3193d3d54525c9ae85be110e2da6634f38deda8c64e98ea4ecca50934  # [osx and arm64]
+  url: https://github.com/FelixKrueger/TrimGalore/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6dd4d99c10a2d1e740d8e49ee870b1f9a7ccb8ee94c0bc5183d2ae507492aab0
 
 build:
   number: 0
@@ -20,11 +16,19 @@ build:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  run: []
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+    - pkg-config
+  host:
+    - zlib
 
 test:
   commands:
-    - which trim_galore   # pre-built binaries may require glibc >=2.39; bioconda CI uses CentOS 7 (glibc 2.17)
+    - which trim_galore
+    - trim_galore --version
 
 about:
   home: https://www.trimgalore.com/
@@ -43,14 +47,6 @@ about:
   license_file: LICENSE
 
 extra:
-  notes: |
-    Linux x86_64, Linux aarch64, and macOS aarch64 (Apple Silicon) prebuilt
-    binaries ship via the GitHub Releases page. Intel Mac users (osx-x86_64)
-    should install via `cargo install trim-galore`, or pull the Docker
-    linux/amd64 image (`docker pull ghcr.io/felixkrueger/trimgalore:latest` on
-    Apple Silicon Docker also works — pulls the linux/arm64 multi-arch variant).
-  skip-lints:
-    - should_be_noarch_generic
   additional-platforms:
     - linux-aarch64
     - osx-arm64
