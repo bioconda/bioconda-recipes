@@ -34,6 +34,7 @@ fi
 # tree lands at $SRC_DIR/WEPP instead of $SRC_DIR. Normalize it.
 if [[ -f "${SRC_DIR}/WEPP/CMakeLists.txt" ]]; then
     cd "${SRC_DIR}/WEPP"
+	cp -f LICENSE "${SRC_DIR}/"
 fi
 
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
