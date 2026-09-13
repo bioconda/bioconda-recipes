@@ -1,10 +1,10 @@
-{% set version = "2.22.0" %}
+{% set version = "2.24.0" %}
 {% set name = "RProtoBufLib" %}
-{% set bioc = "3.22" %}
+{% set bioc = "3.23" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,27 +12,33 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-  md5: d463fc87f6e56e53c1a5ec69865e77a4
+  sha256: dad6a02a99d556bf8dcebda3e9de7c5aff3181671da9adc93c0d7011ae6743d4
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-rprotobuflib", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-rprotobuflib', max_pin="x.x") }}
 
 # Suggests: knitr, rmarkdown
 # SystemRequirements: GNU make
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - autoconf
     - automake
+    - libtool
+    - pkg-config
     - make
+    - gnuconfig
   host:
     - r-base
     - libblas
     - liblapack
+    - protobuf <4  # [arm64]
     - zlib
     - liblzma-devel
   run:
@@ -43,16 +49,18 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: BSD_3_clause
-  summary: C++ headers and static libraries of Protocol buffers
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  summary: "C++ headers and static libraries of Protocol buffers."
   description: This package provides the headers and static library of Protocol buffers for other R packages to compile and link against.
+  dev_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   parent_recipe:
     name: bioconductor-rprotobuflib
     path: recipes/bioconductor-rprotobuflib
     version: 1.2.0
-
