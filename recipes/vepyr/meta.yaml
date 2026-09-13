@@ -1,5 +1,5 @@
 {% set name = "vepyr" %}
-{% set version = "0.6.0" %}
+{% set version = "0.7.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,11 +7,15 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 7a28e6bc6f25d550e46765df0a94a7ca27a4a3d3e77ca778da0940d0c7a7a7ad
+  sha256: 8da7b34b27e9c81ff83018f18d14aa264c839e81099e38c70408203811217f54
 
 build:
   number: 0
-  skip: true  # [py < 310]
+  # vepyr is built with pyo3's abi3-py310 feature: one build serves every
+  # Python >= 3.10, instead of one ~15 min Rust compile per Python version
+  # (four of them overran the one-hour linux-aarch64 CircleCI job).
+  python_version_independent: true
+  skip: true  # [not is_python_min]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -29,11 +33,12 @@ requirements:
     - git
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
   host:
-    - python
+    - python {{ python_min }}
+    - python-abi3
     - pip
     - maturin >=1.0,<2.0
   run:
-    - python
+    - python >={{ python_min }}
     - pyarrow >=18.0
     - polars >=1.37.1
     - tqdm >=4.60
@@ -72,8 +77,9 @@ about:
   dev_url: https://github.com/biodatageeks/vepyr
 
 extra:
-  # Matches the Unix platforms exercised by the upstream 0.6.0 wheel builds.
+  # Matches the Unix platforms exercised by the upstream 0.7.0 wheel builds.
   additional-platforms:
+    - linux-aarch64
     - osx-arm64
   recipe-maintainers:
     - mwiewior
