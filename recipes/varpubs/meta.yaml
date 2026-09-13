@@ -2,7 +2,7 @@
 {% set version = "1.4.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,9 +12,11 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+      - varpubs = varpubs.cli:main
   run_exports:
-      - {{ pin_subpackage(name, max_pin="x.x") }}
+      - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -26,12 +28,12 @@ requirements:
     - sqlmodel >=0.0.24,<0.0.25
     - sqlalchemy >=2.0.39,<3
     - duckdb-engine >=0.15.0,<0.16
-    - duckdb >=1.2.1,<2
+    - python-duckdb >=1.2.1,<2
     - typed-argument-parser >=1.10.1,<2
     - simple-parsing
     - openai >=1.97.0,<2
+    - pubgator >=0.3,<0.4
     - cyvcf2 >=0.31.5
-    - pubgator >=0.2
     - hgvs >=1.5.6,<2
 
 test:
@@ -41,16 +43,15 @@ test:
     - varpubs --help
 
 about:
-  home: https://github.com/koesterlab/varpubs
+  home: "https://github.com/koesterlab/varpubs"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: "Tool for finding PubMed evidence on genetic variants and generating LLM-based summaries"
-  maintainers:
-    - ilmaytas
-    - fxwiegand
-    - johanneskoester
+  summary: "Tool for finding PubMed evidence on genetic variants and generating LLM-based summaries."
+  dev_url: "https://github.com/koesterlab/varpubs"
 
 extra:
   recipe-maintainers:
+    - ilmaytas
     - fxwiegand
     - johanneskoester
