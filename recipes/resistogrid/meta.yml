@@ -1,0 +1,48 @@
+{% set version = "0.1.0.20260807.1" %}                                                                                                                                                                                   
+
+package:                                                                                                                                                                                                                 
+  name: resistogrid                                                                                                                                                                                                      
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/r/resistogrid/resistogrid-{{ version }}.tar.gz
+  sha256: 0a09c38f02b52b896773f812b3bd0ad306347fb94486b5646e0647978738f0ab
+
+build:
+  skip: true  # [py<38]
+  entry_points:
+    - resistogrid = resistogrid.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.8
+    - pandas >=1.5.0
+    - tomli >=2.0.0  # [py<311]
+
+test:
+  imports:
+    - resistogrid
+  commands:
+    - pip check
+    - resistogrid --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://pypi.org/project/resistogrid/
+  summary: Pivot NCBI AMRFinder and AMRFinderPlus long-format TSV outputs into sample-by-gene matrices.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - erinyoung
