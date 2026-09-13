@@ -1,4 +1,4 @@
-{% set version = "4.2" %}
+{% set version = "4.3" %}
 
 package:
   name: bali-phy
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/bredelings/bali-phy/archive/{{ version }}.tar.gz
-  sha256: d4fa2e7dc04587231933cf1c1b70ddd69d67a011235ad5fdf8658fea085b7ece
+  sha256: 02ea2f882ed55cd5cc1d4b15ceb56861c729f20f6302fbd3e65c8c61b848e3c6
 
 build:
   number: 0
@@ -15,9 +15,11 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - meson >=1.1.0
+    - cmake
+    - meson >=1.6
     - ninja
     - pkg-config
     - pandoc
@@ -28,7 +30,15 @@ requirements:
     - fmt >=12
     - glib
     - cairo
+    - freetype
+    - expat
+    - xorg-xorgproto  # [linux]
+    - zlib
     - xxhash
+    - cli11 >=2.6.1
+    - libutf8proc
+    - zstd
+    - zstd-static
   run:
     - gnuplot
     - r-base
@@ -36,16 +46,27 @@ requirements:
     - python >=3
 
 about:
-  home: http://www.bali-phy.org
+  home: https://www.bali-phy.org
   dev_url: https://github.com/bredelings/BAli-Phy/
   license: GPL-2.0-only
   license_family: GPL
+  license_file: COPYING
   summary: Bayesian co-estimation of phylogenies and multiple sequence alignments.
 
 test:
   commands:
     - bali-phy help
-    - bali-phy $PREFIX/share/doc/bali-phy/examples/5S-rRNA/25-muscle.fasta --test
+    # Exercise installed model loading and MCMC; help alone misses missing runtime files/libraries.
+    - bali-phy "$PREFIX/share/doc/bali-phy/examples/5S-rRNA/25-muscle.fasta" --test --seed=12345
+    # Keep container-owned output off the mounted test directory so host cleanup succeeds.
+    - >-
+      (test_dir=$(mktemp -d /tmp/bali-phy-test.XXXXXXXX) &&
+      trap 'rm -rf "$test_dir"' EXIT &&
+      cd "$test_dir" &&
+      bali-phy "$PREFIX/share/doc/bali-phy/examples/5S-rRNA/5d.fasta" --iterations=20 --seed=12345)
+    - bpy-summarize --help
+    - bpy-subsample --help
+    - character-properties --help
 
 extra:
   additional-platforms:
