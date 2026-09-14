@@ -38,9 +38,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     # inject it via nim.cfg. Fixes the "larger updated load commands do not
     # fit" error on fu-sw (and prevents recurrence on other Nim binaries).
     cat >> nim.cfg <<'EOF'
-@if macosx or macos:
-  passL:"-Wl,-headerpad_max_install_names"
-@endif
+passL:"-Wl,-headerpad_max_install_names"
 EOF
 else
 	# Trying to fix build when gcc or g++ are required
