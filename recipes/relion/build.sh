@@ -21,6 +21,15 @@ case "${ARCH}" in
 	#;;
 esac
 
+sed -i.bak -E \
+  -e 's/target_link_libraries\(\$\{_target\} relion_lib/target_link_libraries(${_target} PUBLIC relion_lib/' \
+  -e 's/target_link_libraries\(\$\{_target\} \$\{TIFF_LIBRARIES\}/target_link_libraries(${_target} PUBLIC ${TIFF_LIBRARIES}/' \
+  -e 's/target_link_libraries\(\$\{_target\} sycl OpenCL relion_lib/target_link_libraries(${_target} PUBLIC sycl OpenCL relion_lib/' \
+  -e 's/target_link_libraries\(\$\{_target\} \$\{TBB_LIBRARIES\}/target_link_libraries(${_target} PUBLIC ${TBB_LIBRARIES}/' \
+  -e 's/target_link_libraries\(relion_lib \$\{OpenMP_omp_LIBRARY\}/target_link_libraries(relion_lib PUBLIC ${OpenMP_omp_LIBRARY}/' \
+  src/apps/CMakeLists.txt
+rm -f src/apps/*.bak
+
 CMAKE_ARGS=(
 	-DCMAKE_BUILD_TYPE=Release -DGUI=OFF -DCUDA=OFF -DFETCH_WEIGHTS=OFF
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}"
