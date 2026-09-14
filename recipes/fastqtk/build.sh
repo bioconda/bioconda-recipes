@@ -10,11 +10,13 @@ make clean
 sed -i.bak 's|-march=native||' Makefile
 rm -f *.bak
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
+#if [[ "$(uname -s)" == "Darwin" ]]; then
 	# clang++ is required for OSX build
-	make CC="${CXX}"
-else
-	make CC="${CC}"
-fi
+	#make CC="${CXX}"
+#else
+	#make CC="${CC}"
+#fi
+
+make CC="${CC}" -j"${CPU_COUNT}"
 
 install -v -m 0755 fastqtk "${PREFIX}/bin"
