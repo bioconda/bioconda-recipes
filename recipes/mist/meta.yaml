@@ -1,0 +1,73 @@
+{% set name = "mist" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samgoldman97/mist/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 44f993ea94188557f2bbe5d211a3aca30cd3c1d3035c61ab27631e861c8bd8e1
+  patches:
+    - mist-packaging-and-lightning2.patch
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - pytorch
+    - pytorch-lightning >=2
+    - ray-tune >=2.49.1
+    - rdkit
+    - numpy
+    - pandas
+    - scikit-learn
+    - h5py
+    - matplotlib-base
+    - seaborn
+    - pathos
+    - multiprocess
+    - requests
+    - tqdm
+    - pyyaml
+    - cairosvg
+  run_constrained:
+    # mist_typing also installs a top-level mist package
+    - mist_typing <0a0
+
+test:
+  imports:
+    - mist
+    - mist.utils
+  commands:
+
+about:
+  home: https://github.com/samgoldman97/mist
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  summary: MIST - encoding MS/MS spectra with formula transformers to infer molecular properties
+  description: |
+    MIST (Metabolite Inference with Spectrum Transformers) encodes tandem mass
+    spectra using formula transformers and predicts molecular fingerprints for
+    structure retrieval.
+
+    Model weights are not included and must be installed separately.
+  dev_url: https://github.com/samgoldman97/mist
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1038/s42256-023-00708-3
