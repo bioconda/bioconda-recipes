@@ -1,9 +1,9 @@
 Reject non-positive genome lengths passed to -L.
 
-This is the one change in this recipe that is NOT upstream code. Everything in
-backport-upstream-master.patch is jsh58/Genrich's own committed work; this patch
-is a downstream fix for a defect in the -L implementation that upstream shipped
-and has not addressed.
+Apart from Makefile.patch's build-flag fix, this is the only downstream change
+in this recipe: everything else is upstream code exactly as released in v0.6.2.
+It fixes a defect in the -L implementation that upstream shipped and has not
+addressed.
 
 getLong() parsed the -L argument with strtol() and cast the result straight to
 uint64_t, so a negative argument wrapped instead of being rejected:
@@ -43,9 +43,13 @@ already includes <limits.h> but not <errno.h>, keeping this patch free of new
 includes; the LLONG_MAX test rejects a literal 9223372036854775807 along with
 genuine overflow, which is harmless for a genome length.
 
-Not yet offered upstream: jsh58/Genrich has published no release since 2021 and
-has not responded to issues since 2023 (see jsh58/Genrich#102). Happy to drop
-this patch if the maintainers would rather ship upstream's behaviour unchanged.
+Reported upstream, with the reproduction above, at:
+https://github.com/jsh58/Genrich/issues/102#issuecomment-5513399276
+
+v0.6.2 (released 2026-08-30) tags commit da43989 of 2023-05-08, so the current
+release ships this defect unchanged. Happy to drop this patch as soon as it is
+fixed upstream, or sooner if the maintainers would rather ship upstream's
+behaviour unchanged.
 diff --git a/Genrich.c b/Genrich.c
 index 576586f..dc560a1 100644
 --- a/Genrich.c

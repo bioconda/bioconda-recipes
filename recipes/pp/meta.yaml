@@ -1,29 +1,40 @@
+{% set version = "1.7.0" %}
+
 package:
   name: pp
-  version: "1.6.5"
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/14/e9/f69030681985226849becd36b04e2c0cb99babff23c8342bc4e30ded06b2/pp-1.6.5.tar.gz
-  md5: 9dea3a1b61bead0e1d010ea00cd70703
+  url: https://files.pythonhosted.org/packages/source/p/pp/pp-{{ version }}.tar.gz
+  sha256: 523bec6bdd8fa3c1297b36373ea96762ae378c231e73ad0bb94a89ef2a322452
 
 build:
+  number: 0
   noarch: python
-  number: 2
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  entry_points:
+    - ppserver = pp.cli:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('pp', max_pin="x") }}
 
 requirements:
   host:
-    - python <3
+    - python >=3.10
     - pip
+    - setuptools
   run:
-    - python <3
+    - python >=3.10
 
 test:
   imports:
     - pp
+  commands:
+    - ppserver --help
 
 about:
-  home: http://www.parallelpython.com
-  license: BSD License
-  summary: 'Parallel and distributed programming for Python'
-  license_family: BSD
+  home: "https://www.parallelpython.com"
+  license: "Apache-2.0"
+  license_file: LICENSE
+  summary: "Parallel and distributed programming for Python."
+  license_family: APACHE
+  doc_url: "https://www.parallelpython.com"
