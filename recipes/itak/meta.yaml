@@ -1,0 +1,44 @@
+{% set version = "2.0.5" %}
+
+package:
+  name: itak
+  version: {{ version }}
+
+source:
+  url: https://github.com/kentnf/iTAK/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 916e30535fd26d99fc852a758fdc45739c3e4e7510e5db1c58fe5851af396282
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    weak:
+      - {{ pin_subpackage('itak', max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - biopython >=1.86
+    - requests >=2.31.0
+    - hmmer
+
+test:
+  commands:
+    - itak --help
+    - python -m itak db path --target
+
+about:
+  home: https://github.com/kentnf/iTAK
+  dev_url: https://github.com/kentnf/iTAK
+  doc_url: https://github.com/kentnf/iTAK/wiki
+  license: MIT
+  summary: Plant transcription factor, transcriptional regulator, and protein kinase identifier and classifier
+
+extra:
+  recipe-maintainers:
+    - kentnf
