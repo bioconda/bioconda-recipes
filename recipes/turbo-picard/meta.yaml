@@ -1,0 +1,102 @@
+{% set name = "turbo-picard" %}
+{% set version = "0.1.12" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dnncha/turbo-picard/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 843ed877f805ffade3fb210f03e80edde9e0ea9411c716fd6df5290051f42d1c
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - clangdev
+    - make
+    - pkg-config
+    - python
+  host:
+    - bzip2
+    - curl
+    - libzlib
+    - openssl
+    - xz
+  run:
+    - curl
+    - openssl
+
+test:
+  commands:
+    - turbo-picard --version
+    - turbo-picard AccelerationStatus --help
+    - turbo-picard doctor --help
+    - turbo-picard explain --help
+    - turbo-picard trial --help
+    - turbo-picard MarkDuplicates --help
+    - turbo-picard SortSam --help
+    - turbo-picard CleanSam --help
+    - turbo-picard MergeSamFiles --help
+    - turbo-picard BuildBamIndex --help
+    - turbo-picard SamToFastq --help
+    - turbo-picard AddOrReplaceReadGroups --help
+    - turbo-picard CollectAlignmentSummaryMetrics --help
+    - turbo-picard CollectBaseDistributionByCycle --help
+    - turbo-picard CollectGcBiasMetrics --help
+    - turbo-picard CollectQualityYieldMetrics --help
+    - turbo-picard CollectWgsMetrics --help
+    - turbo-picard QualityScoreDistribution --help
+    - turbo-picard MeanQualityByCycle --help
+    - turbo-picard CollectInsertSizeMetrics --help
+    - turbo-picard CollectMultipleMetrics --help
+    - turbo-picard FixMateInformation --help
+    - turbo-picard IntervalListTools --help
+    - turbo-picard RevertSam --help
+    - turbo-picard SetNmMdAndUqTags --help
+    - turbo-picard ValidateSamFile --help
+    - turbo-picard LiftoverVcf --help
+    - turbo-picard CreateSequenceDictionary --help
+    - turbo-picard FastqToSam --help
+    - turbo-picard NormalizeFasta --help
+    - turbo-picard BedToIntervalList --help
+    - turbo-picard ViewSam --help
+    - turbo-picard ReplaceSamHeader --help
+    - turbo-picard UpdateVcfSequenceDictionary --help
+    - turbo-picard GatherVcfs --help
+    - turbo-picard SortVcf --help
+    - turbo-picard MergeVcfs --help
+
+about:
+  home: https://github.com/dnncha/turbo-picard
+  doc_url: https://turbo-picard.readthedocs.io
+  dev_url: https://github.com/dnncha/turbo-picard
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Picard-compatible Rust toolkit with selected faster commands.
+  description: |
+    turbo-picard provides faster Rust implementations of selected Picard
+    commands while keeping Picard-style KEY=VALUE arguments. This package
+    installs only the non-shadowing turbo-picard command, so it can live beside
+    the existing Bioconda picard package. Install turbo-picard-picard-shim only
+    if you want an optional picard command shim. See CITATION.cff for the
+    software citation; benchmark and validation inputs have separate real-data
+    evidence citations in the documentation.
+
+extra:
+  recipe-maintainers:
+    - dnncha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
