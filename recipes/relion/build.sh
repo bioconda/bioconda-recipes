@@ -16,23 +16,19 @@ case "${ARCH}" in
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
+    #x86_64)
+	#export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	#;;
 esac
 
 CMAKE_ARGS=(
-	-DCMAKE_BUILD_TYPE=Release
-	-DGUI=OFF
-	-DCUDA=OFF
+	-DCMAKE_BUILD_TYPE=Release -DGUI=OFF -DCUDA=OFF -DFETCH_WEIGHTS=OFF
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}"
 	-DCMAKE_CXX_COMPILER="${CXX}"
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}"
 	-DTORCH_HOME_PATH="${PREFIX}/share/.cache/torch"
-	-DFETCH_WEIGHTS=OFF
 	-DPYTHON_EXE_PATH="$(command -v python3)"
-	-Wno-dev -Wno-deprecated
-	--no-warn-unused-cli
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli
 )
 
 if [[ "${OS}" == "Darwin" ]]; then
