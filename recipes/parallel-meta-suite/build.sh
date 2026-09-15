@@ -18,11 +18,9 @@ cp "${RECIPE_DIR}/pm-install.sh" "${PREFIX}/bin/PM-install"
 chmod 755 "${PREFIX}/bin/PM-install"
 
 echo "===== INSTALL EXECUTABLES ====="
-mkdir -p "${PREFIX}/bin"
 cp bin/PM-* "${PREFIX}/bin/"
 chmod 755 "${PREFIX}"/bin/PM-*
 
-# Runtime root used by $ParallelMETA
 ParallelMETA_path="${PREFIX}/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p "${ParallelMETA_path}"
 
@@ -38,7 +36,7 @@ mkdir -p \
 
 cat > "${PREFIX}/etc/conda/activate.d/parallel-meta-suite.sh" <<ACTIVATE
 export _PMS_OLD_PARALLELMETA="\${ParallelMETA-}"
-export ParallelMETA="${ParallelMETA_path}"
+export ParallelMETA="\${CONDA_PREFIX}/${PKG_NAME}-${PKG_VERSION}"
 ACTIVATE
 
 cat > "${PREFIX}/etc/conda/deactivate.d/parallel-meta-suite.sh" <<'DEACTIVATE'
@@ -53,8 +51,3 @@ else
     unset ParallelMETA
 fi
 DEACTIVATE
-
-echo "===== BUILD CONTENT ====="
-find "${PREFIX}/bin" -maxdepth 1 -type f -name 'PM-*' -printf '%f\n' | sort
-
-echo "ParallelMETA=${ParallelMETA_path}"
