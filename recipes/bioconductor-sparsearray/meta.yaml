@@ -1,10 +1,10 @@
-{% set version = "1.10.8" %}
+{% set version = "1.10.10" %}
 {% set name = "SparseArray" %}
 {% set bioc = "3.22" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,18 +12,19 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-  md5: 8dc81480e3e0186a7848fc105c78db8c
+  sha256: 7c516c3e2f9dab11c10c6e75caf2254463c5792b711035ca3cf8475e946b81a5
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-sparsearray", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-sparsearray', max_pin="x.x") }}
 
 # Suggests: HDF5Array, ExperimentHub, testthat, knitr, rmarkdown, BiocStyle
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - make
   host:
@@ -56,13 +57,13 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: High-performance sparse data representation and manipulation in R
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "Artistic-2.0"
+  summary: "High-performance sparse data representation and manipulation in R."
   description: 'The SparseArray package provides array-like containers for efficient in-memory representation of multidimensional sparse data in R (arrays and matrices). The package defines the SparseArray virtual class and two concrete subclasses: COO_SparseArray and SVT_SparseArray. Each subclass uses its own internal representation of the nonzero multidimensional data: the "COO layout" and the "SVT layout", respectively. SVT_SparseArray objects mimic as much as possible the behavior of ordinary matrix and array objects in base R. In particular, they suppport most of the "standard matrix and array API" defined in base R and in the matrixStats package from CRAN.'
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-
