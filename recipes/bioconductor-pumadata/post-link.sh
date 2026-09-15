@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "pumadata-2.42.0"
+installBiocDataPackage.sh "pumadata-2.46.0"

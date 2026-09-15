@@ -1,0 +1,19 @@
+--- a/src/H5FDgds.c
++++ b/src/H5FDgds.c
+@@ -749,7 +749,15 @@
+     cf_descr.type      = CU_FILE_HANDLE_TYPE_OPAQUE_FD;
+     status             = cuFileHandleRegister(&file->cf_handle, &cf_descr);
+     if (status.err != CU_FILE_SUCCESS) {
+-        H5FD_GDS_GOTO_ERROR(H5E_INTERNAL, H5E_SYSTEM, NULL, "unable to register file with cufile driver");
++	    if (status.err == CU_FILE_HANDLE_ALREADY_REGISTERED) {
++		    cuFileHandleDeregister(file->cf_handle);
++		    status = cuFileHandleRegister(&file->cf_handle, &cf_descr);
++		    if (status.err != CU_FILE_SUCCESS) {
++			    H5FD_GDS_GOTO_ERROR(H5E_INTERNAL, H5E_SYSTEM, NULL, "unable to re-register file with cufile driver");
++		    }
++	    } else {
++		    H5FD_GDS_GOTO_ERROR(H5E_INTERNAL, H5E_SYSTEM, NULL, "unable to register file with cufile driver");
++	    }
+     }
+
+     /* DEFAULT io worker params */

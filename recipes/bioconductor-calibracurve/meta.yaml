@@ -1,0 +1,58 @@
+{% set version = "1.0.0" %}
+{% set name = "CalibraCurve" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: b4ca7e1b5caa07aab5596b3781699732
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-calibracurve", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, msqc1, RefManageR, rmarkdown, sessioninfo, testthat, vdiffr
+requirements:
+  host:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-checkmate
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - r-openxlsx
+    - r-scales
+    - r-tidyr
+  run:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-checkmate
+    - r-dplyr
+    - r-ggplot2
+    - r-magrittr
+    - r-openxlsx
+    - r-scales
+    - r-tidyr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD 3-clause License + file LICENSE
+  summary: Calibration curves for targeted proteomics, lipidomics and metabolomics data
+  description: CalibraCurve is a computational tool designed to generate calibration curves for targeted mass spectrometry-based quantitative data. It is applicable to various omics disciplines, including proteomics, lipidomics, and metabolomics. The package also offers functionalities for data and calibration curve visualization and concentration prediction from new datasets based on the established curves.
+  license_file: LICENSE
+

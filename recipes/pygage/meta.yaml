@@ -1,0 +1,52 @@
+{% set name = "pygage" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/raw-lab/pygage/archive/refs/tags/v{{version}}.tar.gz
+  sha256: 9e462fab431f781e2f2609dcb9eb05945923a813b6b95bc2ecb65dcb82a2d851
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('pygage', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8
+    - polars
+    - numpy
+    - scipy
+    - seaborn
+    - pyarrow
+    - requests
+
+test:
+  imports:
+    - pygage
+  commands:
+    - pygage-core.py --help
+
+about:
+  home: "https://github.com/raw-lab/pygage"
+  license: "CC BY-NC 4.0"
+  license_family: "OTHER"
+  license_file: "LICENSE"
+  summary: "Python version of the GAGE (Generally Applicable Gene Set Enrichment) analysis package."
+  doc_url: "https://github.com/raw-lab/pygage/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/raw-lab/pygage"
+
+extra:
+  recipe-maintainers:
+    - decrevi
+    - raw-lab

@@ -4,6 +4,17 @@ set -x -e
 RM_DIR="${PREFIX}/share/RepeatModeler"
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
+
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' util/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' BuildDatabase
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' LTRPipeline
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Refiner
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' RepeatClassifier
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' RepeatModeler
+
+rm -rf *.bak
+rm -rf util/*.bak
+
 cp -rf * ${RM_DIR}
 
 # configure
@@ -13,6 +24,14 @@ cd ${RM_DIR}
 # prompt 2: confirm path to running perl interpreter
 # prompt 3: Configure for LTR structural search [y] or n?
 # Answering n, because NINJA is not yet in bioconda
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
 CONFIG_OPTIONS=" \
     -cdhit_dir ${PREFIX}/bin \
     -genometools_dir ${PREFIX}/bin \
@@ -23,9 +42,12 @@ CONFIG_OPTIONS=" \
     -rmblast_dir ${PREFIX}/bin \
     -rscout_dir ${PREFIX}/bin \
     -trf_dir ${PREFIX}/bin \
-    -ucsctools_dir ${PREFIX}/bin"
+    -ucsctools_dir ${PREFIX}/bin \
+    -repeatafterme_dir ${PREFIX}/bin \
+    -famdb_dir ${famdb_dir} \
+    -no_prompt"
     
-if [[ $(uname) == 'Linux' ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
     LTR_STRUCTURAL_SEARCH="y"
     CONFIG_OPTIONS+=" \
     -ninja_dir ${PREFIX}/bin"
@@ -33,6 +55,9 @@ else
     LTR_STRUCTURAL_SEARCH="n"
     # ninja_dir option not set for osx because package not available in bioconda
 fi
+
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' configure
+rm -rf *.bak
 
 # prompt 1: <PRESS ENTER TO CONTINUE>
 # prompt 2: confirm path to running perl interpreter

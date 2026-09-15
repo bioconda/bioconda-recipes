@@ -1,0 +1,44 @@
+{% set name = "xumi" %}
+{% set version = "1.0.3" %}
+{% set python_min = "3.10" %}
+{% set pysam_min = "0.20" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fravadona/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 9a4d67823d14ab734f5b5d1d522b6a8fcffeeb19b7dd721346ed51e58c8ab1bf
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("xumi", max_pin="x") }}
+
+requirements:
+  host:
+    - python >={{ python_min }}
+    - pip
+    - flit-core >=3.4
+  run:
+    - python >={{ python_min }}
+    - pysam >={{ pysam_min }}
+
+test:
+  imports:
+    - xumi
+  commands:
+    - xumi --help
+
+about:
+  home: https://github.com/fravadona/{{ name }}
+  summary: 'CIGAR-aware extraction of per-read subsequences at specified reference regions from SAM/BAM/CRAM files.'
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - Fravadona

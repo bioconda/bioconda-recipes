@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tcgabiolinksgui.data-1.26.0"
+installBiocDataPackage.sh "tcgabiolinksgui.data-1.30.0"

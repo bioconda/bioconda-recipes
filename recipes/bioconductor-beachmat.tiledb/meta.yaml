@@ -1,0 +1,63 @@
+{% set version = "1.2.0" %}
+{% set name = "beachmat.tiledb" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 039c55f2c690a0cdaed31b7b8475e0b2
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-beachmat.tiledb", max_pin="x.x") }}'
+
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, Matrix
+# SystemRequirements: C++17
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+  host:
+    - bioconductor-assorthead >=1.4.0,<1.5.0
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-tiledbarray >=1.20.0,<1.21.0
+    - r-base
+    - r-rcpp
+    - r-tiledb
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-assorthead >=1.4.0,<1.5.0
+    - bioconductor-beachmat >=2.26.0,<2.27.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-tiledbarray >=1.20.0,<1.21.0
+    - r-base
+    - r-rcpp
+    - r-tiledb
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: beachmat bindings for TileDB-backed matrices
+  description: Extends beachmat to initialize tatami matrices from TileDB-backed arrays. This allows C++ code in downstream packages to directly call the TileDB C/C++ library to access array data, without the need for block processing via DelayedArray. Developers only need to import this package to automatically extend the capabilities of beachmat::initializeCpp to TileDBArray instances.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

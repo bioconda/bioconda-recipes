@@ -1,0 +1,51 @@
+{% set name = "kmindex" %}
+{% set version = "0.6.1" %}
+{% set sha256 = "b67e22594857f2aed1e2b22d67f7c9d5b45d987b5a789843464a55e6ce57a22b" %}
+
+package:
+  name: kmindex
+  version: {{ version }}
+
+source:
+  url: "https://github.com/tlemane/kmindex/releases/download/v{{ version }}/kmindex-v{{ version }}-sources.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }} # [linux]
+    - make
+    - cmake
+    - zlib
+    - bzip2
+    - boost # [linux]
+
+  run:
+    - kmtricks >=1.6.0
+
+test:
+  commands:
+    - kmindex
+
+about:
+  home: https://github.com/tlemane/kmindex
+  summary: "A tool for large-scale k-mer indexing"
+  description: "Given a databank D = {S1,...,Sn}, with each Si being any genomic dataset (genome or raw reads), kmindex allows to compute the percentage of shared k-mers between a query Q and each Si."
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file: LICENSE
+  dev_url: https://github.com/tlemane/kmindex/
+  doc_url: https://tlemane.github.io/kmindex
+
+extra:
+  recipe-maintainers:
+    - tlemane
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

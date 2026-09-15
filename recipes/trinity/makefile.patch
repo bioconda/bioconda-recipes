@@ -5,7 +5,7 @@
  
  no_bamsifter: inchworm_target chrysalis_target
 -	cd trinity-plugins && $(MAKE) no_bamsifter
-+	cd trinity-plugins && ${MAKE} no_bamsifter CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd trinity-plugins && ${MAKE} no_bamsifter CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  
  install:
  	util/support_scripts/trinity_installer.py
@@ -13,21 +13,21 @@
  inchworm_target:
  	@echo Using $(TRINITY_COMPILER) compiler for Inchworm and Chrysalis
 -	cd Inchworm && $(MAKE)
-+	cd Inchworm && ${MAKE} CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd Inchworm && ${MAKE} CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  
  chrysalis_target:
 -	cd Chrysalis && $(MAKE)
-+	cd Chrysalis && ${MAKE} CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd Chrysalis && ${MAKE} CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  
  
  trinity_essentials:
 -	cd trinity-plugins && $(MAKE) trinity_essentials
-+	cd trinity-plugins && ${MAKE} trinity_essentials CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd trinity-plugins && ${MAKE} trinity_essentials CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  
  
  plugins:
 -	cd trinity-plugins && $(MAKE) plugins
-+	cd trinity-plugins && ${MAKE} plugins CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd trinity-plugins && ${MAKE} plugins CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  	sh ./util/support_scripts/plugin_install_tests.sh
  
  test:
@@ -38,7 +38,7 @@
  
  seqtk_target:
 -	cd seqtk-trinity && $(MAKE) CXX=$(CXX) CC=$(CC)
-+	cd seqtk-trinity && ${MAKE} CXX=${CXX} CC=${CC} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}"
++	cd seqtk-trinity && ${MAKE} CXX=${CXX} CC=${CC} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  	mv seqtk-trinity/seqtk-trinity ./BIN/.
  
  parafly_target:
@@ -49,7 +49,7 @@
  
  bamsifter_target:
 -	cd bamsifter && make
-+	cd bamsifter && ${MAKE} CXX=${CXX} CC=${CC} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
++	cd bamsifter && ${MAKE} CXX=${CXX} CC=${CC} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" -j"${CPU_COUNT}"
  
  ##################################
  ### Needed for downstream analyses
@@ -58,7 +58,7 @@
  
  slclust_target:
 -	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) install
-+	cd slclust && ${MAKE} CXX=${CXX} CC=${CC} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" install
++	cd slclust && ${MAKE} CXX=${CXX} CC=${CC} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" install -j"${CPU_COUNT}"
  
  collectl_target:
  	cd COLLECTL && tar xvf ${COLLECTL_CODE}.src.tar.gz && ln -sf ${COLLECTL_CODE} collectl
@@ -92,7 +92,7 @@
 -sift_bam_max_cov: sift_bam_max_cov.cpp htslib/version.h
 -	g++ -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 -L./htslib/build/lib/ -I./htslib/build/include -lhts
 +sift_bam_max_cov: sift_bam_max_cov.cpp
-+	${CXX} -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 ${LDFLAGS} ${CXXFLAGS} -lhts
++	${CXX} -std=c++14 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O3 ${LDFLAGS} ${CXXFLAGS} -lhts
  
  
  htslib/version.h :
@@ -104,8 +104,8 @@
  autoheader
 -autoconf
 -./configure --prefix=`pwd`/build/
-+autoreconf
-+./configure --prefix=`pwd`/build/ CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include ${LDFLAGS}" CFLAGS="${CFLAGS} ${LDFLAGS}"
++autoreconf -if
++./configure --prefix=`pwd`/build/ CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include" CFLAGS="${CFLAGS} ${LDFLAGS}"
  make
  make install
 -

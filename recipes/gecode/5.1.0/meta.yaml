@@ -1,0 +1,54 @@
+{% set name = "gecode" %}
+{% set version = "5.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Gecode/gecode/archive/refs/tags/release-5.1.0.tar.gz
+  sha256: 77863f4638c6b77d24a29bf6aeac370c56cd808fe9aabc1fca96655581f6c83d
+  patches:
+    - 0001-weights.patch
+    - 0002-hw-rounding-macOS.patch  # [osx]
+
+build:
+  number: 3
+  # OSX build fail due to Clang catching a bug:
+  # examples/photo.cpp:103:10: error: reference member 'spec' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - gnuconfig
+  host:
+    - perl
+    - bison
+    - flex
+    - mpfr
+    - gmp
+  run:
+    - mpfr
+    - gmp
+
+test:
+  commands:
+    - fzn-gecode --help >& /dev/null
+    - magic-sequence --help >& /dev/null
+
+about:
+  home: "https://github.com/Gecode/gecode"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Generic constraint development environment."
+  doc_url: "https://www.gecode.dev"
+  dev_url: "https://github.com/Gecode/gecode"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

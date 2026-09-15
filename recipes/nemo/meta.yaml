@@ -1,33 +1,67 @@
-{% set version = "2.3.51" %}
+{% set version = "2.4.2" %}
+{% set commit = "a007bc3d1a9d71b168cbc910a0c7bd0ffe96adf7" %}
 
 package:
   name: nemo
   version: {{ version }}
 
 source:
-  url: https://sourceforge.net/projects/nemo2/files/Nemo/{{ version }}/Nemo-{{ version }}-src.tgz
-  sha256: 62b321033869d4d53db83da90847a43f5512dc51bc66d7cdd121cc6345cdf79d
+  # Immutable, commit-pinned tarball from the public release repository.
+  # (Replaces the SourceForge tarball, whose contents were not stable.)
+  url: https://bitbucket.org/ecoevo/nemo-release/get/{{ commit }}.tar.gz
+  sha256: 8b63a92904d29309116a0071c01335f4e2dc441b477dd204bb7663dc120abb11
 
 build:
-  number: 3
+  number: 0
+  # osx x86_64 fails to link:
+  #   Undefined symbols for architecture x86_64: "vtable for
+  #   TTQuanti_diallelic_bitstring_no_pleio", referenced from
+  #   TProtoQuanti::hatch() in ttquanti.o
+  # A missing vtable usually means the first non-inline virtual member function
+  # has no definition. As of 2.4.2 every virtual member of that class does have
+  # an out-of-line definition, so this skip may no longer be needed; it is kept
+  # because there is no osx x86_64 machine available to verify the link.
+  skip: True  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage('nemo', max_pin="x") }}
 
 requirements:
   build:
     - make
+    - sed          # build.sh patches two Makefile lines
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
+    # GSL is the only library this build actually uses. MPI is never enabled
+    # (build.sh does not set MPI=1, so -DUSE_MPI is never defined), there is no
+    # `#pragma omp` anywhere in src/, and BLAS comes from GSL's own -lgslcblas;
+    # the previous mpich-mpicxx / libgomp / llvm-openmp / openblas entries were
+    # unused and only constrained the solve.
     - gsl
-    - openblas
   run:
     - gsl
-    - openblas
 
 test:
-  commands:
-    - nemo | grep "{{ version }}" 
+  files:
+    - smoke.ini
+  # run_test.sh in this directory is picked up automatically. It runs a short
+  # simulation rather than only checking that the binary prints its version.
 
 about:
-  home: http://nemo2.sourceforge.net
-  summary: Individual-based forward-time genetics simulation software
-  license: GPLv2
+  home: "https://bitbucket.org/ecoevo/nemo-release"
+  summary: "Individual-based forward-time genetics simulation software."
+  license: "GPL-3.0-or-later"
+  license_family: GPL
   license_file: COPYING
+  doc_url: "https://nemo2.sourceforge.io"
+  dev_url: "https://bitbucket.org/ecoevo/nemo-release"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btl415
+  recipe-maintainers:
+    - fredgui
+    - mencian

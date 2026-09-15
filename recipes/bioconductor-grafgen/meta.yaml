@@ -1,0 +1,71 @@
+{% set version = "1.6.0" %}
+{% set name = "GrafGen" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 4a66029a1b18914cbed6b211cebaeecf
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-grafgen", max_pin="x.x") }}'
+
+# Suggests: knitr, rmarkdown, RUnit, BiocManager, BiocGenerics, BiocStyle, devtools
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-plotly
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+    - r-shiny
+    - r-stringr
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-ggplot2
+    - r-ggpubr
+    - r-plotly
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+    - r-shiny
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: Classification of Helicobacter Pylori Genomes
+  description: To classify Helicobacter pylori genomes according to genetic distance from nine reference populations. The nine reference populations are hpgpAfrica, hpgpAfrica-distant, hpgpAfroamerica, hpgpEuroamerica, hpgpMediterranea, hpgpEurope, hpgpEurasia, hpgpAsia, and hpgpAklavik86-like. The vertex populations are Africa, Europe and Asia.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

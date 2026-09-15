@@ -1,0 +1,54 @@
+{% set name = "vardictcpp" %}
+{% set version = "2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MHH-Bioinformatics-Hematology/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c07aac3dc39a9f1a4e86ac28152189c3c49f7cba079e40282c4b630ea2aa5cfc
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.15
+    - make
+  host:
+    - htslib
+
+test:
+  requires:
+    - samtools
+  commands:
+    - vardictcpp --version
+
+about:
+  home: https://github.com/MHH-Bioinformatics-Hematology/vardictcpp
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Memory-lean C++ reimplementation of the VarDict variant caller, byte-identical to VarDictJava"
+  description: |
+    vardictcpp is a from-scratch C++17 reimplementation of VarDict
+    (AstraZeneca-NGS VarDictJava 1.8.3) built on htslib. It reproduces VarDict's
+    SNV, indel and structural-variant calls byte-for-byte across the simple,
+    amplicon, --fisher, structural-variant, paired-somatic and splice-aware
+    modes, while running several times faster and using roughly an order of
+    magnitude less memory. It accepts VarDict's command-line option syntax and
+    emits VarDict's TSV column order, and can also write VCF natively (--vcf),
+    so it is a drop-in replacement in existing pipelines.
+  dev_url: https://github.com/MHH-Bioinformatics-Hematology/vardictcpp
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - joachimwolff

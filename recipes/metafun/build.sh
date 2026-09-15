@@ -2,6 +2,7 @@
 
 # Create necessary directories
 mkdir -p $PREFIX/bin
+
 mkdir -p $PREFIX/share/metafun/{nf_scripts,config,scripts,help}
 mkdir -p $PREFIX/share/metafun/db
 mkdir -p $PREFIX/share/metafun/sif_images
@@ -10,10 +11,12 @@ chmod 777 $PREFIX/share/metafun/sif_images
 
 touch $PREFIX/share/metafun/sif_images/.placeholder  
 
-# copy help files
+
+# copy help files. 
 if [ -d "help" ] && [ "$(ls -A help/* 2>/dev/null)" ]; then
     cp -r help/* $PREFIX/share/metafun/help/
 fi
+
 
 # Copy main executable
 if [ -f "bin/metafun" ]; then
@@ -21,23 +24,23 @@ if [ -f "bin/metafun" ]; then
     chmod +x $PREFIX/bin/metafun
 else
     # Create metafun executable if it doesn't exist
-    cat > $PREFIX/bin/metafun << 'INNEREOF'
+    cat > $PREFIX/bin/metafun << 'EOF'
 #!/bin/bash
 # metafun entry script
 
 nextflow run $PREFIX/share/metafun/nf_scripts/main.nf "$@"
-INNEREOF
+EOF
     chmod +x $PREFIX/bin/metafun
 fi
 
 # Copy Nextflow scripts
 if [ -d "nf_scripts" ] && [ "$(ls -A nf_scripts/*.nf 2>/dev/null)" ]; then
-    cp -r nf_scripts/* $PREFIX/share/metafun/nf_scripts/
+    cp nf_scripts/*.nf $PREFIX/share/metafun/nf_scripts/
 fi
 
 # Copy config files
 if [ -d "config" ] && [ "$(ls -A config/* 2>/dev/null)" ]; then
-    cp -r config/* $PREFIX/share/metafun/config/
+    cp config/* $PREFIX/share/metafun/config/
 fi
 
 # Copy scripts

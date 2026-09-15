@@ -1,49 +1,51 @@
 #!/bin/bash
 
 export LIBRARY_PATH="${PREFIX}/lib"
-export LIBPATH="-L${PREFIX}/lib"
 export CPATH="${PREFIX}/include"
 export C_INCLUDE_PATH="${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -g -I${PREFIX}/include -std=c++14 -Wno-deprecated-declarations -Wno-narrowing -Wno-unused-result"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
+
+find deps -name "louds_tree.hpp" -exec sed -i 's/tree\.m_select1/tree.m_bv_select1/g' {} \;
+find deps -name "louds_tree.hpp" -exec sed -i 's/tree\.m_select0/tree.m_bv_select0/g' {} \;
+
+sed -i 's/__attribute__((__target__("arch=.*")))//g' deps/odgi/src/main.cpp
+
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+find deps -type f \( -name "CMakeLists.txt" -o -name "*.h" -o -name "*.cpp" \) -exec sed -i \
+  -e 's/-msse4.2//g' \
+  -e 's/-march=sandybridge//g' \
+  -e 's/-march=native//g' \
+  -e 's/-funroll-all-loops//g' \
+  -e 's/-pipe//g' \
+  {} \;
+git clone https://github.com/DLTcollab/sse2neon.git
+cp sse2neon/sse2neon.h deps/abPOA
+sed -i '21s/<immintrin.h>/"..\/sse2neon.h"/' deps/abPOA/src/simd_instruction.h
+sed -i '21s/<immintrin.h>/"..\/sse2neon.h"/' deps/abPOA/include/simd_instruction.h
+sed -i 's/    -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,/    (char)-1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,/g' deps/abPOA/src/abpoa_output.c
+	
+fi
+find . -name "CMakeLists.txt" -exec sed -i 's/VERSION [[:digit:]]\.[[:digit:]]\+\(\| FATAL_ERROR\)/VERSION 3.5/g' {} \;
+
+find . -name "*.bak" -delete
+
+
+mkdir -p build
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER="${CXX}" \
+  -DCMAKE_CXX_STANDARD=14 \
+  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DOpenMP_C_FLAGS="-fopenmp" \
+  -DOpenMP_CXX_FLAGS="-fopenmp" \
+  -DOpenMP_omp_LIBRARY="${PREFIX}/lib/libomp.so" \
+  -DSSE4_OPTIMIZATIONS=OFF \
+  -DAVX2_OPTIMIZATIONS=OFF \
+  -Wno-dev
+
+cmake --build build -j "${CPU_COUNT}"
 
 mkdir -p "${PREFIX}/bin"
-
-sed -i.bak -e 's/-msse4.1/-march=sandybridge -Ofast/g' deps/spoa/CMakeLists.txt
-sed -i.bak -e 's/-march=native/-march=sandybridge -Ofast/g' deps/spoa/CMakeLists.txt
-sed -i.bak -e 's/-march=native/-march=sandybridge -Ofast/g' deps/abPOA/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.16 FATAL_ERROR|VERSION 3.5|' CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.2 FATAL_ERROR|VERSION 3.5|' deps/WFA/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/abPOA/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/libbf/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.8.11|VERSION 3.5|' deps/sdsl-lite/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.6|VERSION 3.5|' deps/sautocorr/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.1|VERSION 3.5|' deps/mmmulti/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.2 FATAL_ERROR|VERSION 3.5|' deps/edlib/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.1|VERSION 3.5|' deps/atomicbitvector/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/args/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.8.11|VERSION 3.5|' deps/odgi/deps/sdsl-lite/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.4.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/libdivsufsort/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googletest/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6.4|VERSION 3.5|' deps/odgi/deps/sdsl-lite/external/googletest/googlemock/CMakeLists.txt
-sed -i.bak -e 's|VERSION 2.6 FATAL_ERROR|VERSION 3.5|' deps/odgi/deps/libbf/CMakeLists.txt
-sed -i.bak -e 's|VERSION 3.2|VERSION 3.5|' deps/odgi/deps/args/CMakeLists.txt
-rm -rf deps/spoa/*.bak
-rm -rf deps/abPOA/*.bak
-rm -rf deps/libbf/*.bak
-rm -rf deps/sdsl-lite/*.bak
-rm -rf *.bak
-
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Generic \
-  -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -DEXTRA_FLAGS="-march=sandybridge -Ofast" -Wno-dev
-cmake --build build -j "${CPU_COUNT}"
-install -v -m 0755 bin/* "${PREFIX}/bin"
+install -v -m 755 $SRC_DIR/bin/* "${PREFIX}/bin"

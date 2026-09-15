@@ -1,26 +1,31 @@
-{% set version = "5.0.0" %}
+{% set name = "relion" %}
+{% set version = "5.1.0" %}
 
 package:
-  name: relion
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/3dem/relion/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 5d02d529bfdb396204310b35963f35e5ec40ed9fd10bc88c901119ae7d7739fc
+  url: https://github.com/3dem/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4767804dd8ba2198efd1e1082b4632bc36aeca0ad09d4d2f7de956f84bbbb429
 
 build:
-  number: 0
+  number: 1
+  # /opt/mambaforge/envs/bioconda/conda-bld/relion_1789376189154/work/src/acc/cpu/cpu_kernels/helper.h:656:4:
+  # error: use of undeclared identifier 'sincosf'; did you mean '__sincosf'?
   skip: True  # [osx and x86_64]
   run_exports:
-    - {{ pin_subpackage('relion', max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake >=3.21
     - make
     # python really only used as a build tool; no ${PREFIX}/bin/python needed.
     - python >=3
+    - pkg-config
   host:
     - libtiff
     - fftw
@@ -39,6 +44,7 @@ requirements:
     - libgomp             # [linux]
     - tbb-devel           # [x86_64]
     - pytorch
+    - ghostscript
 
 test:
   commands:
@@ -57,5 +63,8 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - biotools:relion-5
+    - doi:10.1002/2211-5463.13873
   recipe-maintainers:
     - multimeric

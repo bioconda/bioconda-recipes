@@ -2,8 +2,11 @@
 
 mkdir -p ${PREFIX}/bin
 
+sed -i.bak 's|setuptools.find_packages(),|setuptools.find_namespace_packages(where="."),|' setup.py
+rm -rf *.bak
+
 # Install ParaGone
-$PYTHON -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+${PYTHON} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
 
 # Install TAPER:
 git clone https://github.com/chaoszhang/TAPER.git

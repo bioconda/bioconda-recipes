@@ -1,18 +1,15 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
 
-export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -O3 -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 make clean
 
-if [ "$(uname)" == "Darwin" ]; then
-	# clang++ is required for OSX build
-	make CC=${CXX}
-else
-	make CC=${CC}
-fi
+sed -i.bak 's|-march=native||' Makefile
+rm -f *.bak
 
-chmod +x fastqtk
-cp fastqtk ${PREFIX}/bin/fastqtk
+make CC="${CC}" -j"${CPU_COUNT}"
+
+install -v -m 0755 fastqtk "${PREFIX}/bin"

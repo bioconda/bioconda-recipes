@@ -1,0 +1,43 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 25b122a..b3e5b49 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 2.8)
++cmake_minimum_required (VERSION 3.5)
+ 
+ enable_testing()
+ 
+@@ -22,7 +22,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+ SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
+ 
+ ## Set the standard required compile flags
+-set (CMAKE_CXX_FLAGS "-fPIC -O3 -DHAVE_ANSI_TERM -DHAVE_SSTREAM -DHAVE_CONFIG_H -Wall -std=c++11")
++set(CMAKE_CXX_FLAGS "-fPIC -O3 -DHAVE_ANSI_TERM -DHAVE_SSTREAM -DHAVE_CONFIG_H -Wall -std=c++14")
+ set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+ 
+ ##
+@@ -37,11 +37,7 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
+   set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+ endif("${CMAKE_SYSTEM}" MATCHES "Linux")
+ 
+-if(APPLE)
+-  find_package (ZLIB REQUIRED)
+-else()
+-  find_package (ZLIB REQUIRED STATIC)
+-endif()
++find_package(ZLIB REQUIRED)
+ 
+ # Recurse into transrate-tools source directory
+-add_subdirectory ( src )
++add_subdirectory (src)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 47408ad..59df616 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -11,4 +11,4 @@ add_executable(bam-read ${BAMREAD_SRCS} ${BAMREAD_HEADERS})
+ 
+ set_target_properties(bam-read PROPERTIES LINK_SEARCH_START_STATIC 1)
+ set_target_properties(bam-read PROPERTIES LINK_SEARCH_END_STATIC 1)
+-target_link_libraries(bam-read ${LIBRARIES})
++target_link_libraries(bam-read ${GAT_SOURCE_DIR}/bamtools/lib/libbamtools.a ZLIB::ZLIB)

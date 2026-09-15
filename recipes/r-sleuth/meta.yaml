@@ -1,20 +1,24 @@
-{% set version = "0.30.1" %}
+{% set name = "r-sleuth" %}
+{% set version = "0.30.2" %}
 {% set github = "https://github.com/pachterlab/sleuth" %}
 
 package:
-  name: r-sleuth
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: "{{ github }}/archive/v{{ version }}.tar.gz"
-  sha256: 4c8efca5d726471cb71187e8db07097a50f63aadf42f6fa25c59e7eed635f982
+  sha256: 043ce093124cef931090ceb1933111f43e92d324d16a5aa1d97e1597f67b9f91
 
 build:
+  number: 0
   noarch: generic
-  number: 1
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-sleuth', max_pin="x.x") }}
 
 requirements:
   host:
@@ -57,12 +61,13 @@ test:
     - $R -e "library('sleuth')"
 
 about:
-  home: http://pachterlab.github.io/sleuth/
+  home: "https://pachterlab.github.io/sleuth"
   dev_url: "{{ github }}"
-  license: GPLv3
+  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
+  license_family: GPL3
   summary: "Tools for investigating RNA-Seq."
+  doc_url: "https://pachterlab.github.io/sleuth"
 
 extra:
   recipe-maintainers:

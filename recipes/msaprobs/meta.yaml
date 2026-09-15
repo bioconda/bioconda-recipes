@@ -11,14 +11,20 @@ source:
     - Makefile.patch
 
 build:
-  number: 4
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('msaprobs', max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - zlib
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+  host:
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - zlib
+  run:
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
 
@@ -27,12 +33,17 @@ test:
     - msaprobs -version 2>&1 | grep {{ version }}
 
 about:
-  home: http://msaprobs.sourceforge.net/homepage.htm
-  license: GPL3
+  home: "https://msaprobs.sourceforge.net/homepage.htm#latest"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   author: Yongchao Liu
   summary: "MSAProbs is a well-established state-of-the-art multiple sequence alignment algorithm for protein sequences."
+  doc_url: "https://msaprobs.sourceforge.net/homepage.htm#latest"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
+    - biotools:msaprobs
     - doi:10.1093/bioinformatics/btq338
-

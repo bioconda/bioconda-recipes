@@ -1,27 +1,23 @@
 #!/bin/bash
+set -euxo pipefail
 
-#if [ "$(uname)" == "Darwin" ]; then
-HOME=/tmp cpanm --installdeps .
-#else
-#    cpanm --installdeps .
-#fi
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
 
+mkdir -p "${PREFIX}/bin"
 
-# If it has Build.PL use that, otherwise use Makefile.PL
-if [ -f Build.PL ]; then
-    perl Build.PL
-    perl ./Build
-    perl ./Build test
-    # Make sure this goes in site
-    perl ./Build install --installdirs site
-elif [ -f Makefile.PL ]; then
-    # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
-    make
-    make test
-    make install
-else
-    echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
-    exit 1
-fi
-chmod u+w $PREFIX/bin/n50
+# Patch
+sed -i.bak 's/^CC = gcc$/CC ?= gcc/' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+
+# CPPFLAGS is PERFECT for include directories in C programs
+sed -i.bak 's/$(CC) $(CFLAGS)/$(CC) $(CPPFLAGS) $(CFLAGS)/g' Makefile
+rm -rf *.bak
+
+make CC="${CC}" -j"${CPU_COUNT}"
+
+./bin/n50 --version
+
+# Install the binaries
+install -v -m 0755 bin/* "${PREFIX}/bin"

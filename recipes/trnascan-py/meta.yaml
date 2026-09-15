@@ -1,0 +1,54 @@
+{% set name = "trnascan-py" %}
+{% set version = "0.1.0" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Rome-1/trnascan-py/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 65ff223b430815f22c87357cc9bd40e3f4021a1e36e85fe9ad73f5b263420897
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - trnascan-py = trnascan_py.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - trnascan-se >=2.0   # provides the tRNAscan-SE covariance models and pulls in Infernal
+    - infernal >=1.1      # cmsearch (also a dependency of trnascan-se; listed explicitly)
+
+test:
+  imports:
+    - trnascan_py
+  commands:
+    - trnascan-py --version
+    - trnascan-py version
+    - cmsearch -h > /dev/null
+
+about:
+  home: https://github.com/Rome-1/trnascan-py
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Fast Python interface for tRNA gene detection (drives Infernal / tRNAscan-SE 2.0)
+  description: |
+    A command-line tool and library that drives Infernal covariance-model search
+    with the tRNAscan-SE 2.0 models for tRNA gene detection, validated
+    differentially against reference tRNAscan-SE 2.0 and faster on larger genomes.
+  dev_url: https://github.com/Rome-1/trnascan-py
+
+extra:
+  recipe-maintainers:
+    - Rome-1

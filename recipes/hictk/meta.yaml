@@ -1,6 +1,6 @@
 {% set name = "hictk" %}
-{% set version = "2.1.1" %}
-{% set sha256 = "0a00eb9cc599fa80f4d6edafd4f0bc4db75863e7d11337775fc3f2547aa7c829" %}
+{% set version = "2.2.0" %}
+{% set sha256 = "989b6e84b967309d9822ee3274abf98daba66d3d6e6ae8c9abffcede07b24761" %}
 
 package:
   name: {{ name|lower }}
@@ -19,24 +19,28 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake >=3.25
-    - conan >=2
+    - ccache        # required to suppress warnings raised by CMake
+    - clang-tools   # required for LTO
+    - cmake >=3.29  # required for -DCMAKE_LINKER_TYPE
+    - conan >=2.21
+    - curl >=7.71   # required for --retry-all-errors
     - make
     - catch2 >=3.8
-    - cli11 >=2.5
-    - eigen >=3.4
+    - cli11 >=2.6
     - fast_float >=8
-    - fmt >=11
-    - highfive >=2.10
+    - fmt >=12
+    - highfive >=3
+    - libboost-devel >=1.89  # required for the hash2 library (header-only)
     - libopentelemetry-cpp-headers >=1
-    - nlohmann_json >=3.11
-    - spdlog >=1.15
+    - lld         # required for LTO
+    - llvm-tools  # required for LTO
+    - nlohmann_json >=3.12
+    - spdlog >=1.16
     - tomlplusplus >=3.3
 
   host:
     - hdf5 >=1.12
     - libarchive >=3
-    - libarrow >=16
     - libdeflate >=1
     - libopentelemetry-cpp >=1
     - zstd >=1.5
@@ -44,7 +48,6 @@ requirements:
   run:
     - hdf5 >=1.12
     - libarchive >=3
-    - libarrow >=16
     - libdeflate >=1
     - libopentelemetry-cpp >=1
     - zstd >=1.5
@@ -61,7 +64,7 @@ test:
   requires:
     - python >=3.11,<3.14
     - pip
-    - curl
+    - curl >=7.71  # required for --retry-all-errors
     - perl-digest-sha1
     - zstd
   source_files:

@@ -3,42 +3,49 @@
 {% set sha256 = "e078854c92d6683d984c8010023e8e0ae2c83fd01d75350d29874b0fa00cef0f" %}
 
 package:
-  name: {{name}}
-  version: {{ version }} 
-
-build:
-  number: 5
-  run_exports:
-    - {{ pin_subpackage(name, max_pin = "x") }}
-  skip: True  # [osx]
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/GATB/minia/releases/download/v{{version}}/minia-v{{version}}-Source.tar.gz
-  sha256: {{ sha256 }}
+  git_url: https://github.com/GATB/minia.git
+  git_rev: 7b7239c
+  sha256: unused
+
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
+    - ninja
+    - pkg-config
   host:
-    - zlib
-  run:
     - zlib
 
 test:
   commands:
-    - minia -help
+    - minia -v 2>&1 | grep "{{ version }}"  # [linux]
+    - test -x ${PREFIX}/bin/minia  # [osx]
 
 about:
-  home: https://github.com/GATB/minia
-  license: file
+  home: "https://github.com/GATB/minia"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: LICENSE
-  summary: Minia is a short-read assembler based on a de Bruijn graph, capable of assembling a human genome on a desktop computer in a day.
+  summary: "Minia is a short-read assembler based on a de Bruijn graph, capable of assembling a human genome on a desktop computer in a day."
+  dev_url: "https://github.com/GATB/minia"
+  doc_url: "https://gatb.inria.fr/software/minia"
 
 extra:
   additional-platforms:
     - linux-aarch64
-
+    - osx-arm64
   identifiers:
     - biotools:minia
+    - usegalaxy-eu:minia
+    - doi:10.1186/1748-7188-8-22
+  skip-lints:
+    - uses_vcs_url

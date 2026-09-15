@@ -1,0 +1,61 @@
+{% set name = "rastqc-nanopore" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Huang-lab/RastQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8f1417836958637602e17e1c17ced3e4a05bcbe7d013dd6cc34ed0dc341136d1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+    - pkg-config
+  host:
+    # hdf5-rs 0.8 (the version pinned in upstream Cargo.toml) supports HDF5
+    # 1.8/1.10/1.12 only and panics with "Invalid H5_VERSION" on 1.14+.
+    - hdf5 >=1.10,<1.13
+    - libarrow
+  run:
+    - hdf5 >=1.10,<1.13
+    - libarrow
+
+test:
+  commands:
+    - rastqc-nanopore --version
+    - rastqc-nanopore --help
+    - rastqc-nanopore --long-read --help
+
+about:
+  home: https://github.com/Huang-lab/RastQC
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast Rust-based QC for Oxford Nanopore sequencing data (Fast5 + POD5)
+  description: |
+    rastqc-nanopore is the long-read variant of RastQC. It adds Fast5 (HDF5)
+    and POD5 (Arrow) readers for Oxford Nanopore data, plus 3 long-read
+    modules (N50, quality-stratified length, homopolymer content) on top of
+    the 12 standard FastQC modules. The binary is installed as
+    `rastqc-nanopore` so this package can coexist with the core `rastqc`
+    package in the same environment.
+  dev_url: https://github.com/Huang-lab/RastQC
+  doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Huang-lab

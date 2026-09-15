@@ -8,23 +8,9 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
                     -DNATIVE=OFF \
                     -DCONDA_BUILD=ON \
                     -DWITH_MODULES=ON \
-                    -DWITH_HOWDE=ON \
-                    -DKMER_LIST="${KMER_SIZE_LIST}" \
-                    -DWITH_SOCKS=ON
-
-cmake --build ./build
-
-cp ./bin/kmtricks $PREFIX/bin
-cp ./bin/kmtricks-socks $PREFIX/bin
-
-# Compile kmtricks with plugin support
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-                    -DNATIVE=OFF \
-                    -DWITH_PLUGIN=ON \
-                    -DCONDA_BUILD=ON \
-                    -DWITH_MODULES=ON \
                     -DKMER_LIST="${KMER_SIZE_LIST}"
 
-cmake --build ./build
+cmake --build ./build -j 8
 
-cp ./bin/kmtricks $PREFIX/bin/kmtricksp
+cp ./bin/kmtricks $PREFIX/bin
+

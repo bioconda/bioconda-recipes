@@ -1,0 +1,23 @@
+Adapt to RDKit's ROMol::operator[] returning a raw Bond*.
+
+RDKit 2017_09_3 returned a smart-pointer wrapper, so .get() was needed to reach
+the Bond. Current RDKit returns RDKit::Bond* directly and .get() no longer
+compiles. This is the only occurrence of the pattern in the CFM sources.
+
+Applied on top of make-cxx-standard-overridable.patch; both are needed to build
+against a modern RDKit.
+
+Not reported upstream: Bitbucket Issues are being sunset, so the repository has
+no usable tracker. Remove once upstream supports current RDKit itself.
+
+--- a/cfm/cfm-code/MILP.cpp
++++ b/cfm/cfm-code/MILP.cpp
+@@ -273,7 +273,7 @@
+ 
+             for ( ; cbond_beg != cbond_end; ++ cbond_beg ){
+             //for (; it != ip.second; ++it) {
+-                RDKit::Bond *cbond = (*mol)[*cbond_beg].get();
++                RDKit::Bond *cbond = (*mol)[*cbond_beg];
+                 int cbond_broken;
+                 cbond->getProp("Broken", cbond_broken);
+                 if(cbond_broken)

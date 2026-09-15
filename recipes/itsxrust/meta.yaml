@@ -1,0 +1,42 @@
+{% set name = "itsxrust" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ayobi/ITSxRust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 26dfcbd977668ab6d4982079a336ac17cefd05f41b2b7ca571a0d43aefacbb98
+
+build:
+  number: 0
+  run_exports:
+    - itsxrust >=0.3.0,<0.4.0a0
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  host:
+    - openssl
+  run:
+    - hmmer
+
+test:
+  commands:
+    - itsxrust --help
+    - itsxrust extract --help
+    - test -f "$PREFIX/share/itsxrust/hmm/F.hmm"
+
+about:
+  home: https://github.com/ayobi/ITSxRust
+  license: MIT
+  license_file: LICENSE
+  summary: "HMMER-based ITS subregion extraction for long-read fungal metabarcoding."
+
+extra:
+  recipe-maintainers:
+    - ayobi
+

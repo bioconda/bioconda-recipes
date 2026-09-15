@@ -5,10 +5,11 @@ import difflib
 import json
 import os
 import urllib
+from collections import defaultdict
 
-from gen_patch_json import _gen_new_index, _gen_patch_instructions, SUBDIRS
+from gen_patch_json import _gen_new_index_per_key, _gen_patch_instructions_per_key, SUBDIRS
 
-from conda_build.index import _apply_instructions
+from conda_index.index import _apply_instructions
 
 CACHE_DIR = os.environ.get(
     "CACHE_DIR",
@@ -17,15 +18,15 @@ CACHE_DIR = os.environ.get(
 BASE_URL = "https://conda.anaconda.org/bioconda"
 
 
-def show_record_diffs(subdir, ref_repodata, new_repodata):
-    for name, ref_pkg in ref_repodata["packages"].items():
-        new_pkg = new_repodata["packages"][name]
+def show_record_diffs_per_key(packages_key, subdir, ref_repodata, new_repodata):
+    for name, ref_pkg in ref_repodata[packages_key].items():
+        new_pkg = new_repodata[packages_key][name]
         # license_family gets added for new packages, ignore it in the diff
         ref_pkg.pop("license_family", None)
         new_pkg.pop("license_family", None)
         if ref_pkg == new_pkg:
             continue
-        print(f"{subdir}::{name}")
+        print(f'new_repodata["{packages_key}"] diff for {subdir}::{name} entry')
         ref_lines = json.dumps(ref_pkg, indent=2).splitlines()
         new_lines = json.dumps(new_pkg, indent=2).splitlines()
         for ln in difflib.unified_diff(ref_lines, new_lines, n=0, lineterm=''):
@@ -39,10 +40,20 @@ def do_subdir(subdir, raw_repodata_path, ref_repodata_path):
         raw_repodata = json.load(fh)
     with bz2.open(ref_repodata_path) as fh:
         ref_repodata = json.load(fh)
-    new_index = _gen_new_index(raw_repodata, subdir)
-    instructions = _gen_patch_instructions(raw_repodata['packages'], new_index, subdir)
+    # basic structure of the patch instructions file
+    instructions = {
+        "patch_instructions_version": 1,
+        "packages": defaultdict(dict),
+        "packages.conda": defaultdict(dict),
+        "revoke": [],
+        "remove": [],
+    }
+    for packages_key in ["packages", "packages.conda"]:
+        new_index = _gen_new_index_per_key(raw_repodata, packages_key, subdir)
+        instructions[packages_key] = _gen_patch_instructions_per_key(raw_repodata[packages_key], new_index, subdir)
     new_repodata = _apply_instructions(subdir, raw_repodata, instructions)
-    show_record_diffs(subdir, ref_repodata, new_repodata)
+    for packages_key in ["packages", "packages.conda"]:
+        show_record_diffs_per_key(packages_key, subdir, ref_repodata, new_repodata)
 
 
 def download_subdir(subdir, raw_repodata_path, ref_repodata_path):

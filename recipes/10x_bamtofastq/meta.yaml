@@ -1,36 +1,49 @@
+{% set name = "10x_bamtofastq" %}
 {% set version = "1.4.1" %}
 
 package:
-  name: 10x_bamtofastq
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 3
 
 source:
   url: https://github.com/10XGenomics/bamtofastq/archive/refs/tags/v{{ version }}.tar.gz
   sha256: cebf968b0eff8911df65102e2be5884e6cd7312f1cb0aba6718bfc2d9407d543
+  patches:
+    - 0001-master.patch
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - rust >=1.60.0
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - pkg-config
     - make
     - cmake
-  host:
-  run:
+    - clangdev
+    - llvmlite
 
 test:
   commands:
     - bamtofastq --help
 
 about:
-  home: https://github.com/10XGenomics/bamtofastq
+  home: "https://github.com/10XGenomics/bamtofastq"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: |
-    Tool for converting 10x BAMs produced by Cell Ranger, Space Ranger, Cell Ranger ATAC, Cell Ranger DNA, 
-    and Long Ranger back to FASTQ files that can be used as inputs to re-run analysis
+  summary: "Tool for converting 10x BAMs produced by Cell Ranger, Space Ranger, Cell Ranger ATAC, Cell Ranger DNA, and Long Ranger back to FASTQ files that can be used as inputs to re-run analysis."
+  dev_url: "https://github.com/10XGenomics/bamtofastq"
+  doc_url: "https://github.com/10XGenomics/bamtofastq/blob/v{{ version }}/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - usegalaxy-eu:10x_bamtofastq

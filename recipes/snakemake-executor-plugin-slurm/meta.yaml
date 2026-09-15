@@ -1,44 +1,47 @@
 {% set name = "snakemake-executor-plugin-slurm" %}
-{% set version = "1.2.11" %}
+{% set version = "2.8.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_slurm-{{ version }}.tar.gz
-  sha256: f562776e2465b31ba24bb56a16b3eb897a844fff3090092c47d48204391533e0
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_executor_plugin_slurm-{{ version }}.tar.gz
+  sha256: 97d931284b1452b6a7afd2f1b6d2002c278ce7a5e8f6a982dc77688817d30399
 
 build:
+  number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
-  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.11,<4.0
-    - poetry-core
+    - hatchling
     - pip
   run:
     - python >=3.11.0,<4.0.0
-    - snakemake-interface-common >=1.13.0,<2.0.0
-    - snakemake-interface-executor-plugins >=9.1.1,<10.0.0
-    - snakemake-executor-plugin-slurm-jobstep >=0.3.0,<0.4.0
+    - snakemake-interface-common >=1.23.0,<2.0.0
+    - snakemake-interface-executor-plugins >=9.4.0,<10.0.0
+    - snakemake-executor-plugin-slurm-jobstep >=0.6.0,<1
     - throttler >=1.2.2,<2.0.0
+    - pandas >=2.3.3,<4
+    - numpy >=2.4.5,<3.0
+    - pyyaml >=6.0.3,<7
 
 test:
   imports:
     - snakemake_executor_plugin_slurm
 
 about:
-  home: https://github.com/snakemake/snakemake-executor-plugin-slurm
+  home: "https://github.com/snakemake/snakemake-executor-plugin-slurm"
   summary: "A Snakemake executor plugin for submitting jobs to a SLURM cluster."
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  dev_url: https://github.com/snakemake/snakemake-executor-plugin-slurm
+  dev_url: "https://github.com/snakemake/snakemake-executor-plugin-slurm"
 
 extra:
   recipe-maintainers:

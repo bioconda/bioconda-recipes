@@ -15,8 +15,7 @@ then
 fi
 
 # Handle a PASTA bug.
-ln -sf $PREFIX/bin/hmmalign $PREFIX/bin/hmmeralign
-ln -sf $PREFIX/bin/hmmbuild $PREFIX/bin/hmmerbuild
+cp -fv $SRC_DIR/resources/scripts/hmmeralign $PREFIX/bin/hmmeralign
 
 # copy files for tests to shared conda directory
 mkdir -p $PREFIX/share/pasta/data/

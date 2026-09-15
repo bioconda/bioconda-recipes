@@ -1,14 +1,9 @@
-{% set version = "0.8.2" %}
-{% set sha256 = "88b8c3bdbaeebad7063889b3beb3124f2599489cee155038f1dcb7fb151af7f5" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "a786ee22e9744b421561bfa4dbac9f3149abca05edd5d48797566c25feea9bdc" %}
 
 package:
   name: snp-dists
   version: {{ version }}
-
-build:
-  number: 5
-  run_exports:
-      - {{ pin_subpackage('snp-dists', max_pin="x.x") }}
 
 source:
   url: https://github.com/tseemann/snp-dists/archive/v{{ version }}.tar.gz
@@ -16,16 +11,22 @@ source:
   patches:
    - 0001-Makefile-append-CFLAGS-LIBS.patch
 
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('snp-dists', max_pin="x.x") }}
+
 requirements:
   build:
     - {{ compiler('c') }}
     - make
+  host:
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
-  host:
     - zlib
   run:
-    - zlib
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -33,11 +34,14 @@ test:
     - snp-dists -v | grep -F '{{ version }}'
 
 about:
-  home: https://github.com/tseemann/snp-dists
-  license: GPL3
+  home: "https://github.com/tseemann/snp-dists"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Convert a FASTA alignment to SNP distance matrix
+  summary: "Convert a FASTA alignment to SNP distance matrix."
+  dev_url: "https://github.com/tseemann/snp-dists"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

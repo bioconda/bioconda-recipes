@@ -1,0 +1,1482 @@
+diff --git a/cluster.hpp b/cluster.hpp
+index 77ca42e..c1211f9 100644
+--- a/cluster.hpp
++++ b/cluster.hpp
+@@ -10,15 +10,16 @@
+ struct cseq_t {
+     int seq_id;
+     bool rev;
++    int gene_id = -1;
+ 
+     template <class B>
+     void serialize(B& buf) const {
+-        buf << seq_id << rev;
++        buf << seq_id << rev << gene_id;
+     }
+ 
+     template <class B>
+     void parse(B& buf) {
+-        buf >> seq_id >> rev;
++        buf >> seq_id >> rev >> gene_id;
+     }
+ };
+ 
+diff --git a/correct.cpp b/correct.cpp
+index 5cddbb7..2251081 100644
+--- a/correct.cpp
++++ b/correct.cpp
+@@ -17,6 +17,18 @@ void print_vector(const std::vector<char> &v) {
+     std::cout << std::endl;
+ }
+ 
++std::vector<std::string> splitString(std::string str, char delimiter) {
++    std::vector<std::string> internal;
++    std::stringstream ss(str); // Turn the string into a stream.
++    std::string tok;
++
++    while(getline(ss, tok, delimiter)) {
++        internal.push_back(tok);
++    }
++
++    return internal;
++}
++
+ void fix_msa_ends(read_set_t &reads, msa_t &aln) {
+     for (int i = 0; i < aln.size(); ++i) {
+         bool reversed = false;
+@@ -296,7 +308,7 @@ corrected_pack_t correct_read_pack(const read_set_t &reads, const msa_t &aln, do
+     return corrected_pack_t{-1, consensus, corrected_reads, uncorrected_reads};
+ }
+ 
+-correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &reads, double min_occ, double gap_occ, double err_ratio, int split, int min_reads, int n_threads, bool verbose) {
++correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &reads, double min_occ, double gap_occ, double err_ratio, int split, int min_reads, int n_threads, bool verbose, std::vector<std::string> labels) {
+     std::queue<pack_to_correct_t> pending_clusters;
+     int corrected = 0;
+     int total_reads = 0;
+@@ -305,11 +317,19 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+     read_set_t uncorrected_read_set;
+     read_set_t corrected_read_set;
+     read_set_t consensus_set;
++    
++    bool gene_mode;
++    if(clusters[0].main_seq.gene_id == -1){
++        gene_mode = true;
++    } else {
++        gene_mode = false;
++    }
+ 
+     for (auto &tc: clusters) {           
+         // int n_files = (tc.seqs.size() + split - 1) / split; // ceil(tc.seqs.size / split)
+         // Avoid out of bound
+         int n_files = (tc.seqs.size() - 1) / split + 1;
++        int gid = tc.main_seq.gene_id; 
+ 
+         // Split clusters
+         for (int nf = 0; nf < n_files; nf++) {
+@@ -325,21 +345,28 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+                     std::reverse(reads[ts.seq_id].quality.begin(), reads[ts.seq_id].quality.end()); 
+                 }
+ 
++                if(gid == -1) {
++                    reads[ts.seq_id].header = reads[ts.seq_id].header + ",gene_cluster_" + std::to_string(cid);  
++                }
++                else {
++                    reads[ts.seq_id].header = reads[ts.seq_id].header + ",gene_cluster_" + std::to_string(gid) + ",transcript_cluster_" + std::to_string(cid);
++                }
++                
+                 creads[i] = reads[ts.seq_id];
+-                i++;
+-                total_reads++;
++                ++i;
++                ++total_reads;
+             }
+ 
+             if (creads.size() > min_reads) {
+                 pending_clusters.push(pack_to_correct_t{cid, creads});
+             } else {
+                 for (int i = 0; i < creads.size(); ++i) {
+-                    corrected++;
++                    ++corrected;
+                     uncorrected_read_set.push_back(creads[i]);
+                 }
+             }
+         }
+-        cid++;
++        ++cid;
+     }
+ 
+     std::mutex mu;
+@@ -348,8 +375,7 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+ 
+     int nf = 0;
+     for (int t = 0; t < n_threads; ++t) {
+-        tasks.emplace_back(std::async(std::launch::async, [&nf, t, &consensi, &corrected_read_set, &uncorrected_read_set, &consensus_set, &pending_clusters, &mu, &corrected, &total_reads, gap_occ, min_occ, n_threads, &verbose] {
+-            // TODO: check this loop
++        tasks.emplace_back(std::async(std::launch::async, [&nf, t, &consensi, &corrected_read_set, &uncorrected_read_set, &consensus_set, &pending_clusters, &mu, &corrected, &total_reads, gap_occ, min_occ, n_threads, &verbose, &labels] {
+             while (true) {
+                 pack_to_correct_t pack;
+                 int a;
+@@ -375,39 +401,11 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+                     graph->add_alignment(alignment, creads[j].seq);
+                 }
+                 
+-                // int i = 0;
+                 std::vector<std::string> msa;
+                 graph->generate_multiple_sequence_alignment(msa);
+                 
+                 fix_msa_ends(creads, msa);
+-                ////// SAVE MSA
+-                // i = 0;
+-
+-                // std::ofstream f;
+-                // f.open("corr_aln.aln");
+-
+-                // for (const auto& it: msa) {
+-                //     f << creads[i].header << std::endl;
+-                //     f << it << std::endl;
+-                //     i++;
+-                // }
+-
+-                // f.close();
+-                ////// SAVE MSA
+-
+-                // std::ofstream f;
+-                // f.open("aln_" + std::to_string(a) + ".aln");
+ 
+-                // for (const auto& it: msa) {
+-                //     f << creads[i].header << std::endl;
+-                //     f << it << std::endl;
+-                //     i++;
+-                // }
+-
+-                // f.close();
+-                
+-                // TODO: Check the last parameter should be 1 or n_threads
+-                // TODO: check the following correct_read_pack function
+                 auto corrected_reads_pack = correct_read_pack(creads, msa, min_occ, gap_occ, 30.0, 1);
+                 // auto corrected_reads_pack = correct_read_pack(creads, msa, min_occ, gap_occ, 30.0, n_threads);
+                 auto corrected_reads = corrected_reads_pack.reads;
+@@ -437,36 +435,10 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+                 msa = std::vector<std::string>();
+                 graph->generate_multiple_sequence_alignment(msa);
+                 fix_msa_ends(corrected_reads, msa);
+-                // for (int j = 0; j < msa.size(); ++j) {
+-                //     std::cout << msa[j].size() << std::endl;
+-                // }
+-                // std::cout << "---------" << std::endl;
+-
+-                //////// SAVE CORRECTED MSA
+-                // i = 0;
+ 
+-                // std::ofstream f;
+-                // f.open("corr_aln_" + std::to_string(a) + ".aln");
+-
+-                // for (const auto& it: msa) {
+-                //     f << corrected_reads[i].header << std::endl;
+-                //     f << it << std::endl;
+-                //     i++;
+-                // }
+-
+-                // f.close();
+-                //////// SAVE CORRECTED MSA
+-
+-                //auto consensus = graph->generate_consensus();
+-                // for (int j = 0; j < msa.size(); ++j) {
+-                //     std::cout << int(msa[j][0]) << std::endl;
+-                // }
+-
+-                // std::cout << "-------" << std::endl;
+-                // for (int j = 0; j < msa.size(); ++j) {
+-                //     std::cout << msa[j].size() << std::endl;
+-                // }
+-                auto cv = generate_consensus_vector(corrected_reads, msa, n_threads);
++                // TODO: check and compare to use 1 or n_threads
++                auto cv = generate_consensus_vector(corrected_reads, msa, 1);
++                // auto cv = generate_consensus_vector(corrected_reads, msa, n_threads);
+                 // print_vector(cv.consensus_nt);
+                 cv.consensus_nt.erase(std::remove(cv.consensus_nt.begin(), cv.consensus_nt.end(), '-'), cv.consensus_nt.end());
+                 // print_vector(cv.consensus_nt);
+@@ -475,8 +447,26 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+                 {
+                     std::lock_guard<std::mutex> lock(mu);
+                     
+-                    // save in consensus header the number of reads of this cluster
+-                    consensi[pack.original_cluster_id].push_back(read_t{std::to_string(creads.size()), consensus, "+", std::string(consensus.size(), 'K')});
++                    // save in consensus header the gene cluster id (if applicable)
++                    // the number of reads of this cluster
++                    // add file labels & labels counts to consensi header
++                    std::vector<std::string> labelset;     
++                    std::string gid;        
++                    for(auto r: creads){
++                        int index = r.header.find_first_of(",");
++                        int i = r.header.substr(index + 1).find_first_of(",");
++                        std::string label = r.header.substr(index + 1, i);
++                        labelset.push_back(label);
++                        // index = r.header.find_last_of("_");
++                        index = r.header.find("gene_cluster");
++                        gid = std::to_string(std::stoi(r.header.substr(index + 13)));
++                    }
++
++                    std::string label_result;
++                    for(auto label: labels){
++                        label_result = label_result + " " + label + ":" + std::to_string(count(labelset.begin(), labelset.end(), label));
++                    }
++                    consensi[pack.original_cluster_id].push_back(read_t{gid + "," + std::to_string(creads.size()) + "," + label_result, consensus, "+", std::string(consensus.size(), 'K')});
+ 
+                     // // sort corrected cluster
+                     // std::stable_sort(corrected_reads.begin(), corrected_reads.end(), [](read_t a, read_t b) {
+@@ -498,9 +488,32 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+     cid = 0;
+     for (auto& it: consensi) {
+         int total_reads = 0;
++        std::vector<int> label_counts(labels.size());
++        std::string labels_result="";
++        int gid;
+ 
+         for (const auto& rit: it) {
+-            total_reads += std::stoi(rit.header);
++            auto num = splitString(rit.header, ',');
++            gid = std::stoi(num[0]);
++            total_reads += std::stoi(num[1]);
++
++            int index, i = 0;
++            for(auto label: labels){
++                if(rit.header.find(label) != std::string::npos){
++                    index = rit.header.find(label);
++                    std::string sub = rit.header.substr(index + 1);
++                    index = sub.find_first_of(":");
++                    // std::cout << label << "  " << sub.substr(index + 1) << "  " << std::stoi(sub.substr(index + 1)) << std::endl;
++                    label_counts[i] += std::stoi(sub.substr(index + 1));
++                }
++                ++i;
++            }
++        }
++
++        int  i = 0;
++        for(auto label: labels){
++            labels_result += label + ":" + std::to_string(label_counts[i]) + ",";
++            ++i;
+         }
+ 
+         if (it.size() > 1) {
+@@ -519,26 +532,22 @@ correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &re
+             graph->generate_multiple_sequence_alignment(msa);
+             fix_msa_ends(it, msa);
+ 
+-            // int i = 0;
+-            // std::ofstream f;
+-            // f.open("cons.aln");
+-
+-            // for (const auto& mit: msa) {
+-            //     f << it[i].header << std::endl;
+-            //     f << mit << std::endl;
+-            //     i++;
+-            // }
+-
+-            // f.close();
+-
+             auto cv = generate_consensus_vector(it, msa, n_threads);
+             cv.consensus_nt.erase(std::remove(cv.consensus_nt.begin(), cv.consensus_nt.end(), '-'), cv.consensus_nt.end());
+             std::string consensus(cv.consensus_nt.begin(), cv.consensus_nt.end());
+-
+-            consensus_set.push_back(read_t{"@cluster_" + std::to_string(cid) + " reads=" + std::to_string(total_reads), consensus, "+", std::string(consensus.size(), 'K')});
++            
++            if(!gene_mode){
++                consensus_set.push_back(read_t{"@transcript_cluster_" + std::to_string(cid) + " gene_cluster_" + std::to_string(gid) + " reads=" + std::to_string(total_reads) + " labels=" + labels_result, consensus, "+", std::string(consensus.size(), 'K')});
++            } else {
++                consensus_set.push_back(read_t{"@gene_cluster_" + std::to_string(cid) + " reads=" + std::to_string(total_reads) + " labels=" + labels_result, consensus, "+", std::string(consensus.size(), 'K')});
++            }
+         } else {
+             if (it.size() > 0) {
+-                consensus_set.push_back(read_t{"@cluster_" + std::to_string(cid) + " reads=" + std::to_string(total_reads), it[0].seq, "+", it[0].quality});
++                if(!gene_mode){
++                    consensus_set.push_back(read_t{"@transcript_cluster_" + std::to_string(cid) + " gene_cluster_" + std::to_string(gid)+ " reads=" + std::to_string(total_reads) + " labels=" + labels_result, it[0].seq, "+", it[0].quality});
++                }else {
++                    consensus_set.push_back(read_t{"@gene_cluster_" + std::to_string(cid) + " reads=" + std::to_string(total_reads) + " labels=" + labels_result, it[0].seq, "+", it[0].quality});
++                }
+             }
+         }
+ 
+diff --git a/correct.hpp b/correct.hpp
+index 233c7ec..a42e689 100644
+--- a/correct.hpp
++++ b/correct.hpp
+@@ -41,7 +41,8 @@ struct consensus_vector_t {
+ 
+ consensus_vector_t generate_consensus_vector(const read_set_t &reads, const msa_t &aln, int n_threads);
+ corrected_pack_t correct_read_pack(const read_set_t &reads, const msa_t &aln, double min_occ, double gap_occ, double err_ratio, int n_threads);
+-correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &reads, double min_occ, double gap_occ, double err_ratio, int split, int min_reads, int n_threads, bool verbose);
++correction_results_t correct_reads(const cluster_set_t &clusters, read_set_t &reads, double min_occ, double gap_occ, double err_ratio, int split, int min_reads, int n_threads, bool verbose, std::vector<std::string> labels);
+ void fix_msa_ends(read_set_t &reads, msa_t &aln);
++std::vector<std::string> splitString(std::string str, char delimiter);
+ 
+ #endif
+\ No newline at end of file
+diff --git a/fasta.cpp b/fasta.cpp
+index 08168cb..47e7734 100644
+--- a/fasta.cpp
++++ b/fasta.cpp
+@@ -30,23 +30,22 @@ std::string unzip_file(std::string filename, int index){
+     return filename;
+ }
+ 
+-// Clustering step read_fasta_file function
+-read_set_t read_fasta_file(std::string file, bool raw, int lower_len, int upper_len) {
++read_set_t read_fasta_file(std::string file, std::string sample_id) {
+     read_set_t result;
+ 
+     std::ifstream infile(file);
+     std::string line;
+     std::string header;
+-    std::string seq;            // No qt, ann is used for storing readID
++    std::string seq;
++    std::string qt = "";
+     bool isLinux = true;
+-    int readID = 0;
+ 
+     std::getline(infile, line);
+     if(char (line[line.size() - 1]) == '\r'){
+         isLinux = false;
+-        header = line.substr(0, line.size() - 1);
++        header = line.substr(0, line.size() - 1) + sample_id;
+     } else {
+-        header = line;
++        header = line + sample_id;
+     }
+ 
+     if(isLinux){
+@@ -55,19 +54,17 @@ read_set_t read_fasta_file(std::string file, bool raw, int lower_len, int upper_
+ 
+             if (line[0] == '>') {
+                 if (!header.empty()) {
++                    for(int i = 0; i < seq.size(); i++){
++                        qt += '~';
++                    }
+                     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-                    if(raw){
+-                        read_t r{header, seq, std::to_string(readID), ""};
+-                        result.push_back(r);
+-                    } else if( seq.length() >= lower_len && seq.length() <= upper_len){
+-                        read_t r{header, seq, std::to_string(readID), ""};
+-                        result.push_back(r);
+-                    } 
+-                    ++readID;
++                    read_t r{header, seq, "+", qt};
++                    result.push_back(r);
++                    qt = "";
+                 }
+ 
+                 seq = "";
+-                header = line;
++                header = line + sample_id;
+             } else {
+                 seq += line;
+             }
+@@ -79,18 +76,17 @@ read_set_t read_fasta_file(std::string file, bool raw, int lower_len, int upper_
+             if (line[0] == '>') {
+                 if (!header.empty()) {
+                     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-                    if(raw){
+-                        read_t r{header, seq, std::to_string(readID), ""};
+-                        result.push_back(r);
+-                    } else if( seq.length() >= lower_len && seq.length() <= upper_len){
+-                        read_t r{header, seq, std::to_string(readID), ""};
+-                        result.push_back(r);
+-                    } 
+-                    ++readID;
++                    for(int i = 0; i < seq.size(); i++){
++                        qt += '~';
++                    }
++                    std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
++                    read_t r{header, seq, "+", qt};
++                    result.push_back(r);
++                    qt = "";
+                 }
+ 
+                 seq = "";
+-                header = line.substr(0, line.size() - 1);
++                header = line.substr(0, line.size() - 1) + sample_id;
+             } else {
+                 seq += line.substr(0, line.size() - 1);
+             }
+@@ -98,35 +94,32 @@ read_set_t read_fasta_file(std::string file, bool raw, int lower_len, int upper_
+     }
+ 
+     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-    if(raw){
+-        read_t r{header, seq, std::to_string(readID), ""};
+-        result.push_back(r);
+-    } else if( seq.length() >= lower_len && seq.length() <= upper_len){
+-        read_t r{header, seq, std::to_string(readID), ""};
+-        result.push_back(r);
+-    } 
+-    ++readID;
+-    
++    for(int i = 0; i < seq.size(); i++){
++        qt += '~';
++    }
++    read_t r{header, seq, "+", qt};
++    result.push_back(r);
++
+     return result;
+ }
+ 
+-read_set_t read_fasta_file(std::string file) {
++read_set_t read_fasta_file(std::string file, std::string sample_id, int index, bool raw, int lower_len, int upper_len) {
+     read_set_t result;
+ 
+     std::ifstream infile(file);
+     std::string line;
+     std::string header;
+     std::string seq;
+-    std::string qt = "";
++    // std::string qt = "";
+     bool isLinux = true;
++    int nCount = 0;
+ 
+-    // Setting the FASTA format quality value to the maximum value '~' for correction and polish step
+     std::getline(infile, line);
+     if(char (line[line.size() - 1]) == '\r'){
+         isLinux = false;
+-        header = line.substr(0, line.size() - 1);
++        header = line.substr(0, line.size() - 1) + sample_id;
+     } else {
+-        header = line;
++        header = line + sample_id;
+     }
+ 
+     if(isLinux){
+@@ -136,16 +129,25 @@ read_set_t read_fasta_file(std::string file) {
+             if (line[0] == '>') {
+                 if (!header.empty()) {
+                     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-                    for(int i = 0; i < seq.size(); i++){
+-                        qt += '~';
+-                    }
+-                    read_t r{header, seq, "+", qt};
+-                    result.push_back(r);
+-                    qt = "";
++                    if(raw){
++                        if(seq.find('N') != std::string::npos){
++                            ++nCount;
++                        } else{
++                            read_t r{header, seq, std::to_string(index), ""};
++                            result.push_back(r);
++                        }
++                    } else if( seq.length() >= lower_len && seq.length() <= upper_len){
++                        if(seq.find('N') != std::string::npos){
++                            ++nCount;
++                        } else{
++                            read_t r{header, seq, std::to_string(index), ""};
++                            result.push_back(r);
++                        }
++                    } 
+                 }
+-
++                ++index;
+                 seq = "";
+-                header = line;
++                header = line + sample_id;
+             } else {
+                 seq += line;
+             }
+@@ -157,16 +159,27 @@ read_set_t read_fasta_file(std::string file) {
+             if (line[0] == '>') {
+                 if (!header.empty()) {
+                     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-                    for(int i = 0; i < seq.size(); i++){
+-                        qt += '~';
+-                    }
+-                    read_t r{header, seq, "+", qt};
+-                    result.push_back(r);
+-                    qt = "";
++                    // Setting fasta file reads quality score value to "~" for error correction
++                    if(raw){
++                        if(seq.find('N') != std::string::npos){
++                            ++nCount;
++                        } else{
++                            read_t r{header, seq, std::to_string(index), ""};
++                            result.push_back(r);
++                        }
++                    } else if( seq.length() >= lower_len && seq.length() <= upper_len){
++                        if(seq.find('N') != std::string::npos){
++                            ++nCount;
++                        } else{
++                            read_t r{header, seq, std::to_string(index), ""};
++                            result.push_back(r);
++                        }
++                    } 
++                    ++index;
+                 }
+ 
+                 seq = "";
+-                header = line.substr(0, line.size() - 1);
++                header = line.substr(0, line.size() - 1) + sample_id;
+             } else {
+                 seq += line.substr(0, line.size() - 1);
+             }
+@@ -174,97 +187,185 @@ read_set_t read_fasta_file(std::string file) {
+     }
+ 
+     std::transform(seq.begin(), seq.end(),seq.begin(), ::toupper);
+-    for(int i = 0; i < seq.size(); i++){
+-        qt += '~';
++    if ((!header.empty() && raw)|| (!header.empty() && seq.length() >= lower_len && seq.length() <= upper_len)) {
++        if(seq.find('N') != std::string::npos){
++            ++nCount;
++        } else {
++            read_t r{header, seq, std::to_string(index), ""};
++            result.push_back(r);
++        }        
+     }
+-    read_t r{header, seq, "+", qt};
+-    result.push_back(r);
+-    qt = "";
+-    
++    result.back().quality = std::to_string(++index);
++
++    if(nCount != 0){
++        std::cerr << "\n" << nCount << "  reads contains N are skipped!" << std::endl;
++    }
++
+     return result;
+ }
+ 
+-// Clustering step read_fastq_file function
+-read_set_t read_fastq_file(std::string file, bool raw, int lower_len, int upper_len) {
++read_set_t read_fastq_file(std::string file, std::string sample_id) {
+     read_set_t result;
+ 
+     std::ifstream infile(file);
+     std::string line;
+     std::string header;
+     std::string seq;
+-    std::string ann;                // ann is used to save readID in clustering step
+-    // std::string qt;              // Not storing qt to save memory space
++    std::string ann;
++    std::string qt;
+     int lineID = 0;
+-    int readID = 0;
+     bool isLinux = true;
+ 
+     std::getline(infile, line);
+     if(line[line.size() - 1] == '\r'){
+         isLinux = false;
+-        header = line.substr(0, line.size() - 1);
++        header = line.substr(0, line.size() - 1) + sample_id;
++        lineID++;
++    } else {
++        header = line + sample_id;
++        lineID++;
++    }
++
++    if(isLinux){
++        while (std::getline(infile, line)) {
++            if (lineID == 0) {
++                header = line + sample_id;
++                ++lineID;
++            } else if (lineID == 1) {
++                seq = line;
++                ++lineID;
++            } else if (lineID == 2) {
++                ann = line;
++                ++lineID;
++            } else if (lineID == 3) {
++                qt = line;
++                lineID = 0;
++
++                read_t r{header, seq, ann, qt};
++                result.push_back(r);
++            }
++        }
++    } else {
++        while (std::getline(infile, line)) {
++            if (lineID == 0) {
++                header = line.substr(0, line.size() - 1) + sample_id;
++                ++lineID;
++            } else if (lineID == 1) {
++                seq = line.substr(0, line.size() - 1);
++                ++lineID;
++            } else if (lineID == 2) {
++                ann = line.substr(0, line.size() - 1);
++                ++lineID;
++            } else if (lineID == 3) {
++                qt = line.substr(0, line.size() - 1);
++                lineID = 0;
++
++                read_t r{header, seq, ann, qt};
++                result.push_back(r);
++            }
++        }
++    }
++
++    return result;
++}
++
++read_set_t read_fastq_file(std::string file, std::string sample_id, int index, bool raw, int lower_len, int upper_len) {
++    read_set_t result;
++
++    std::ifstream infile(file);
++    std::string line;
++    std::string header;
++    std::string seq;
++    std::string ann;
++    // std::string qt;
++    int lineID = 0;
++    bool isLinux = true;
++    int nCount = 0;
++
++    std::getline(infile, line);
++    if(line[line.size() - 1] == '\r'){
++        isLinux = false;
++        header = line.substr(0, line.size() - 1) + sample_id;
+         ++lineID;
+     } else {
+-        header = line;
++        header = line + sample_id;
+         ++lineID;
+     }
+ 
+     if(isLinux){
+         while (std::getline(infile, line)) {
+             if (lineID == 0) {
+-                header = line;
++                header = line + sample_id;
+                 ++lineID;
+             } else if (lineID == 1) {
+                 seq = line;
+                 ++lineID;
+             } else if (lineID == 2) {
+-                ann = std::to_string(readID);
+-                ++readID;
++                // ann = line;
++                ann = std::to_string(index++);
+                 ++lineID;
+             } else if (lineID == 3) {
+-                // qt = "";
++                // qt = line;
+                 lineID = 0;
+ 
++                // empty quality score value to minimise memory usage for clustering
+                 if(raw){
+-                    // read_t r{header, seq, ann, qt};
+-                    read_t r{header, seq, ann, ""};
+-                    result.push_back(r);
++                    if(seq.find('N') != std::string::npos){
++                        ++nCount;
++                    } else{
++                        read_t r{header, seq, ann, ""};
++                        result.push_back(r);
++                    }
+                 } else if( seq.length() >= lower_len && seq.length() <= upper_len){
+-                    // read_t r{header, seq, ann, qt};
+-                    read_t r{header, seq, ann, ""};
+-                    result.push_back(r);
+-                }  else {
+-                    // std::cout << header << " " << seq.length() << std::endl;
++                    if(seq.find('N') != std::string::npos){
++                        ++nCount;
++                    } else {
++                        read_t r{header, seq, ann, ""};
++                        result.push_back(r);
++                    }
+                 }
+             }
+         }
+     } else {
+         while (std::getline(infile, line)) {
+             if (lineID == 0) {
+-                header = line.substr(0, line.size() - 1);
++                header = line.substr(0, line.size() - 1) + sample_id;
+                 ++lineID;
+             } else if (lineID == 1) {
+                 seq = line.substr(0, line.size() - 1);
+                 ++lineID;
+             } else if (lineID == 2) {
+-                ann = std::to_string(readID);
+-                ++readID;
++                // ann = line.substr(0, line.size() - 1);
++                ann = std::to_string(index++);
+                 ++lineID;
+             } else if (lineID == 3) {
+-                // qt = "";
++                // qt = line.substr(0, line.size() - 1);
+                 lineID = 0;
+ 
+-                if(raw){
+-                    // read_t r{header, seq, ann, qt};
+-                    read_t r{header, seq, ann, ""};
+-                    result.push_back(r);
++                if(raw){ 
++                    if(seq.find('N') != std::string::npos){
++                        ++nCount;
++                    } else {              
++                        read_t r{header, seq, ann, ""};
++                        result.push_back(r);
++                    }
+                 } else if( seq.length() >= lower_len && seq.length() <= upper_len){
+-                    // read_t r{header, seq, ann, qt};
+-                    read_t r{header, seq, ann, ""};
+-                    result.push_back(r);
++                    if(seq.find('N') != std::string::npos){
++                        ++nCount;
++                    } else{
++                        read_t r{header, seq, ann, ""};
++                        result.push_back(r);
++                    }
+                 }
+             }
+         }
+     }
++    result.back().quality = std::to_string(index);
++
++    if(nCount != 0){
++        std::cerr << "\n" << nCount << "  reads contains N are skipped!" << std::endl;
++    }
++
+     return result;
+ }
+ 
+@@ -343,6 +444,17 @@ void write_fastq_file(const read_set_t &reads, std::string file) {
+     f.close();
+ }
+ 
++void write_polish_summary(const std::vector<std::string> &results, std::string file){
++   std::ofstream f;
++    f.open(file);
++    
++    for(auto &r: results){
++        f << r << std::endl;
++    }
++
++    f.close();
++}
++
+ bool _comp_read_set_desc(read_t a, read_t b) {
+     return a.seq.size() > b.seq.size();
+ }
+diff --git a/fasta.hpp b/fasta.hpp
+index 463ea85..fd2571a 100644
+--- a/fasta.hpp
++++ b/fasta.hpp
+@@ -14,11 +14,13 @@ struct read_t {
+ typedef std::vector<read_t> read_set_t;
+ 
+ std::string unzip_file(std::string filename, int index);
+-read_set_t read_fasta_file(std::string file, bool raw, int lower_len, int upper_len);
+-read_set_t read_fastq_file(std::string file, bool raw, int lower_len, int upper_len);
+-read_set_t read_fasta_file(std::string file);
++read_set_t read_fasta_file(std::string file, std::string sample_id, int index, bool raw, int lower_len, int upper_len);
++read_set_t read_fastq_file(std::string file, std::string sample_id, int index, bool raw, int lower_len, int upper_len);
++read_set_t read_fasta_file(std::string file, std::string sample_id);
++read_set_t read_fastq_file(std::string file, std::string sample_id);
+ read_set_t read_fastq_file(std::string file);
+ void write_fastq_file(const read_set_t &reads, std::string file);
+ void sort_read_set(read_set_t &rs);
++void write_polish_summary(const std::vector<std::string> &results, std::string file);
+ 
+ #endif
+\ No newline at end of file
+diff --git a/kmer.cpp b/kmer.cpp
+index f1ab896..54915ed 100644
+--- a/kmer.cpp
++++ b/kmer.cpp
+@@ -41,50 +41,6 @@ read_kmers_t extract_kmers_from_read(std::string read, int kmer_size, bool both_
+     return read_kmers_t{read_kmers, rev_read_kmers, read_bv_kmers, rev_read_bv_kmers};
+ }
+ 
+-read_kmers_t extract_minimizers_from_read(std::string read, int kmer_size, int window_size, bool both_strands) {
+-    std::string rev_read = reverse_complement(read);
+-
+-    std::vector<kmer_t> read_kmers = std::vector<kmer_t>();
+-    std::vector<kmer_t> rev_read_kmers = std::vector<kmer_t>();
+-
+-    kmer_bv_t read_bv_kmers;
+-    kmer_bv_t rev_read_bv_kmers;
+-
+-    for (int p = 0; p < read.length() - kmer_size - window_size; ++p) {
+-        auto all_windows = read.substr(p, kmer_size+window_size-1);
+-        auto all_windows_rev = rev_read.substr(p, kmer_size+window_size-1);
+-
+-        int32_t min_kmer = -1;
+-        int32_t rev_min_kmer = -1;
+-
+-        int32_t pos = 0;
+-        int32_t pos_rev = 0;
+-
+-        for (int w = 0; w < window_size; ++w) {
+-            auto hash = hash_kmer(all_windows.substr(w, kmer_size));
+-            if (min_kmer == -1 || hash < min_kmer) {
+-                min_kmer = hash;
+-                pos = w;
+-            }
+-
+-            if (both_strands) {
+-                auto rev_hash = hash_kmer(all_windows_rev.substr(w, kmer_size));
+-                if (rev_min_kmer == -1 || rev_hash < rev_min_kmer) {
+-                    rev_min_kmer = rev_hash;
+-                    pos_rev = w;
+-                }
+-            }
+-        }
+-
+-        if (read_kmers.size() == 0 || read_kmers[read_kmers.size()-1].second != p+pos) read_kmers.push_back(kmer_t(min_kmer, p+pos));
+-        if (both_strands && (rev_read_kmers.size() == 0 || rev_read_kmers[rev_read_kmers.size()-1].second != p+pos_rev)) rev_read_kmers.push_back(kmer_t(rev_min_kmer, p+pos_rev));
+-    }
+-
+-    std::sort(read_kmers.begin(), read_kmers.end());
+-    if (both_strands) std::sort(rev_read_kmers.begin(), rev_read_kmers.end());
+-    return read_kmers_t{read_kmers, rev_read_kmers, read_bv_kmers, rev_read_bv_kmers};
+-}
+-
+ // k1 and k2 are sorted by pair first (kmer hash)
+ std::vector<kmer_match_t> get_common_kmers(const std::vector<kmer_t> &k1, const std::vector<kmer_t> &k2) {
+     int p1 = k1.size() - 1;
+diff --git a/kmer.hpp b/kmer.hpp
+index d9d6464..8deac33 100644
+--- a/kmer.hpp
++++ b/kmer.hpp
+@@ -40,7 +40,6 @@ inline uint32_t hash_kmer(std::string km) {
+ }
+ 
+ read_kmers_t extract_kmers_from_read(std::string read, int kmer_size, bool both_strands);
+-read_kmers_t extract_minimizers_from_read(std::string read, int kmer_size, int window_size, bool both_strands);
+ std::vector<kmer_match_t> get_common_kmers(const std::vector<kmer_t> &k1, const std::vector<kmer_t> &k2);
+ 
+ #endif
+\ No newline at end of file
+diff --git a/main.cpp b/main.cpp
+index 3fb9257..0dcd166 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -6,7 +6,6 @@
+ #include "hps/src/hps.h"
+ #include "spoa/spoa.hpp"
+ 
+-#include <iostream>
+ #include <future>
+ #include <fstream>
+ #include <stdio.h>
+@@ -14,6 +13,116 @@
+ #include <queue>
+ #include <unistd.h>
+ 
++read_set_t read_multiple_inputs_cluster(std::vector<std::string> input_files, std::vector<std::string> label_files, bool raw, int lower_len, int upper_len) {
++        
++        read_set_t reads;
++
++        bool no_labels = label_files.size() == 0;
++
++        if (input_files.size() != label_files.size() && !no_labels) {
++            throw "\nError: Number of input files and number of label files do not match\n";
++        }
++
++        int sample_number = 0;
++        int reads_num = 0;
++
++        for (std::string i : input_files) {
++            if(access(i.c_str(), F_OK )){
++                throw "\nError: Input file not found! \n";
++            } else {
++
++                std::string sample_label = no_labels ? "" : "," + label_files[sample_number];
++                std::string filename = i;
++                int index = filename.find_last_of(".");
++                std::string extension = filename.substr(index + 1);
++
++                if (!extension.compare("gz")){
++                    filename = unzip_file(filename, index);
++                    index = filename.find_last_of(".");
++                    extension = filename.substr(index + 1);
++                }
++
++                if (!extension.compare("fq") || !extension.compare("fastq")){
++                    auto file_reads = read_fastq_file(filename, sample_label, reads_num, raw, lower_len, upper_len);
++                    reads_num = std::stoi(file_reads.back().quality);
++                    reads.insert(std::end(reads), std::begin(file_reads), std::end(file_reads));
++
++                } else if (!extension.compare("fasta") || !extension.compare("fa")){
++                    // auto file_reads = read_fasta_file(filename, sample_label, raw, lower_len, upper_len);
++                    auto file_reads = read_fasta_file(filename, sample_label, reads_num, raw, lower_len, upper_len);
++                    reads_num = std::stoi(file_reads.back().quality);
++                    reads.insert(std::end(reads), std::begin(file_reads), std::end(file_reads));
++                } else {
++                    throw "\nError: Input file format incorrect! Please use fasta/fastq file. \n";
++                }
++
++                ++sample_number;
++            }
++        }
++
++        return reads;
++}
++
++read_set_t read_multiple_inputs(std::vector<std::string> input_files, std::vector<std::string> label_files) {
++        
++        read_set_t reads;
++
++        bool no_labels = label_files.size() == 0;
++
++        if (input_files.size() != label_files.size() && !no_labels) {
++            throw "\nError: Number of input files and number of label files do not match\n";
++        }
++
++        int sample_number = 0;
++
++        for (std::string i : input_files) {
++            if(access(i.c_str(), F_OK )){
++                throw "\nError: Input file not found! \n";
++            } else {
++
++                std::string sample_label = no_labels ? "" : "," + label_files[sample_number];
++                std::string filename = i;
++                int index = filename.find_last_of(".");
++                std::string extension = filename.substr(index + 1);
++
++                if (!extension.compare("gz")){
++                    filename = unzip_file(filename, index);
++                    index = filename.find_last_of(".");
++                    extension = filename.substr(index + 1);
++                }
++
++                if (!extension.compare("fq") || !extension.compare("fastq")){
++                    // auto file_reads = read_fastq_file(filename, sample_label, raw, lower_len, upper_len);
++                    auto file_reads = read_fastq_file(filename, sample_label);
++                    reads.insert(std::end(reads), std::begin(file_reads), std::end(file_reads));
++
++                } else if (!extension.compare("fasta") || !extension.compare("fa")){
++                    // auto file_reads = read_fasta_file(filename, sample_label, raw, lower_len, upper_len);
++                    auto file_reads = read_fasta_file(filename, sample_label);
++                    reads.insert(std::end(reads), std::begin(file_reads), std::end(file_reads));
++                } else {
++                    throw "\nError: Input file format incorrect! Please use fasta/fastq file. \n";
++                }
++
++                ++sample_number;
++            }
++        }
++
++        return reads;
++}
++
++// std::vector<std::string> splitString(std::string str, char delimiter) {
++//     std::vector<std::string> internal;
++//     std::stringstream ss(str); // Turn the string into a stream.
++//     std::string tok;
++
++//     while(getline(ss, tok, delimiter)) {
++//         internal.push_back(tok);
++//     }
++
++//     return internal;
++// }
++
+ int main(int argc, char *argv[]) {
+     if (argc < 2) {
+         std::cout << "Run with mode: ./rattle <cluster|cluster_summary|extract_clusters|correct|polish>" << std::endl;
+@@ -27,6 +136,8 @@ int main(int argc, char *argv[]) {
+             "shows this help message", 0},
+             { "input", {"-i", "--input"},
+             "input fasta/fastq file (required)", 1},
++            { "label", {"-l", "--label"},
++            "labels for the files in order of entry", 1},
+             { "output", {"-o", "--output"},
+             "output folder (default: .)", 1},
+             { "threads", {"-t", "--threads"},
+@@ -114,41 +225,39 @@ int main(int argc, char *argv[]) {
+             return EXIT_FAILURE;
+         }
+ 
++        if(args["output"] && access(args["output"], F_OK )){
++            std::cerr << "\nOutput folder doesn't exit. Please create it first. \n";
++            return EXIT_FAILURE;
++        }
++
+         bool is_rna = args["rna"];
++
+         std::cerr << "RNA mode: " << std::boolalpha << is_rna << std::endl;
+ 
+-        std::cerr << "Reading fasta file... ";
++        std::cerr << "Reading fasta file... " << std::endl;
++
+         read_set_t reads;
+-        if(access(args["input"], F_OK )){
+-            std::cerr << "\nError: Input file not found! \n";
+-            return EXIT_FAILURE;
+-        } else {
+-            std::string filename = args["input"];
+-            int index = filename.find_last_of(".");
+-            std::string extension = filename.substr(index + 1);
+-
+-            if (!extension.compare("gz")){
+-                filename = unzip_file(filename, index);
+-                index = filename.find_last_of(".");
+-                extension = filename.substr(index + 1);
+-            }
+ 
+-            if (!extension.compare("fq") || !extension.compare("fastq")){
+-                reads = read_fastq_file(filename, raw, lower_len, upper_len);
+-            } else if (!extension.compare("fasta") || !extension.compare("fa")){
+-                reads = read_fasta_file(filename, raw, lower_len, upper_len);
+-            } else {
+-                std::cerr << "\nError: Input file format incorrect! Please use fasta/fastq file. \n";
+-                return EXIT_FAILURE;
+-            }
++        std::vector<std::string> files = splitString(args["input"].as<std::string>(""), ',');
++        std::vector<std::string> labels = splitString(args["label"].as<std::string>(""), ',');;
++
++        try {
++           reads = read_multiple_inputs_cluster(files, labels, raw, lower_len, upper_len);
++        }
++        catch (const char* c) {
++            std::cerr << c;
++            return EXIT_FAILURE;
+         }
+ 
++        std::cout << "Reads: " << reads.size() << std::endl;
++
+         sort_read_set(reads);
++
+         std::cerr << "Done" << std::endl;
+ 
+         auto gene_clusters = cluster_reads(reads, kmer_size, t_s, t_v, bv_threshold, bv_min_threshold, bv_falloff, min_reads_cluster, false, repr_percentile, is_rna, verbose, n_threads);
+         std::ofstream out_file(args["output"].as<std::string>(".") + "/clusters.out", std::ofstream::binary);
+-        
++
+         std::cerr << "Gene clustering done" << std::endl;
+         std::cerr << gene_clusters.size() << " gene clusters found" << std::endl;
+ 
+@@ -156,12 +265,10 @@ int main(int argc, char *argv[]) {
+             // translate seq_id to original read id
+             for (auto &c : gene_clusters) {
+                 int readID = std::stoi(reads[c.main_seq.seq_id].ann);
+-                // std::cout << readID << " " << c.main_seq.seq_id << std::endl;
+                 c.main_seq.seq_id = readID;
+                 
+                 for (auto &cs : c.seqs) {
+                     readID = std::stoi(reads[cs.seq_id].ann);
+-                    // std::cout << readID << " " << cs.seq_id << std::endl;
+                     cs.seq_id = readID;
+                 }
+             }    
+@@ -190,27 +297,17 @@ int main(int argc, char *argv[]) {
+             }
+ 
+             // cluster gene reads & save new iso clusters
+-            auto iso_clusters_tmp = cluster_reads(gene_reads, iso_kmer_size, iso_t_s, iso_t_v, bv_threshold, bv_min_threshold, bv_falloff, min_reads_cluster, false, repr_percentile, is_rna, false, n_threads);
+-            // for (auto &ic : iso_clusters_tmp) {
+-            //     cluster_t iso_cluster;
+-            //     iso_cluster.main_seq = cseq_t{c.seqs[ic.main_seq.seq_id].seq_id, ic.main_seq.rev};
+-
+-            //     for (auto &ics : ic.seqs) {
+-            //         iso_cluster.seqs.push_back(cseq_t{c.seqs[ics.seq_id].seq_id, ics.rev});
+-            //     }
+-
+-            //     iso_clusters.push_back(iso_cluster);
+-            // }
++            auto iso_clusters_tmp = cluster_reads(gene_reads, iso_kmer_size, iso_t_s, iso_t_v, bv_threshold, bv_min_threshold, bv_falloff, min_reads_cluster, false, repr_percentile, is_rna, verbose, n_threads);
+ 
+             for (auto &ic : iso_clusters_tmp) {
+                 cluster_t iso_cluster;
+                 // translate seq_id to original read id
+                 int readID = std::stoi(reads[c.seqs[ic.main_seq.seq_id].seq_id].ann);
+-                iso_cluster.main_seq = cseq_t{readID, ic.main_seq.rev};
++                iso_cluster.main_seq = cseq_t{readID, ic.main_seq.rev, i};
+ 
+                 for (auto &ics : ic.seqs) {
+                     readID = std::stoi(reads[c.seqs[ics.seq_id].seq_id].ann);
+-                    iso_cluster.seqs.push_back(cseq_t{readID, ics.rev});
++                    iso_cluster.seqs.push_back(cseq_t{readID, ics.rev, i});
+                 }
+ 
+                 iso_clusters.push_back(iso_cluster);
+@@ -220,8 +317,8 @@ int main(int argc, char *argv[]) {
+             if (verbose) print_progress(i, gene_clusters.size());
+         }
+ 
+-        // std::cerr << "Isoform clustering done" << std::endl;
+-        // std::cerr << iso_clusters.size() << " isoform clusters found" << std::endl;
++        std::cerr << "Isoform clustering done" << std::endl;
++        std::cerr << iso_clusters.size() << " isoform clusters found" << std::endl;
+         hps::to_stream(iso_clusters, out_file);
+         out_file.close();
+         return EXIT_SUCCESS;
+@@ -231,6 +328,8 @@ int main(int argc, char *argv[]) {
+             "shows this help message", 0},
+             { "input", {"-i", "--input"},
+             "input fasta/fastq file (required)", 1},
++            { "label", {"-l", "--label"},
++            "labels for the files in order of entry", 1},
+             { "clusters", {"-c", "--clusters"},
+             "clusters file (required)", 1},
+             { "output", {"-o", "--output"},
+@@ -275,24 +374,22 @@ int main(int argc, char *argv[]) {
+         }
+ 
+         std::cerr << "Reading fasta file... ";
++
++        bool verbose = args["verbose"];
++
+         read_set_t reads;
+-        if(access(args["input"], F_OK )){
+-            std::cerr << "\nError: Input file not found! \n";
++
++        std::vector<std::string> files = splitString(args["input"].as<std::string>(""), ',');
++        std::vector<std::string> labels = splitString(args["label"].as<std::string>(""), ',');
++
++        try {
++           reads = read_multiple_inputs(files, labels);
++        }
++        catch (const char* c) {
++            std::cerr << c;
+             return EXIT_FAILURE;
+-        } else {
+-            std::string filename = args["input"];
+-            int i = filename.find_last_of(".");
+-            std::string extension = filename.substr(i + 1);
+-            if (!extension.compare("fq") || !extension.compare("fastq")){
+-                reads = read_fastq_file(args["input"]);
+-            } else if (!extension.compare("fasta") || !extension.compare("fa")){
+-                reads = read_fasta_file(args["input"]);
+-            } else {
+-                std::cerr << "\nError: Input file format incorrect! Please use fasta/fastq file. \n";
+-                return EXIT_FAILURE;
+-            }
+         }
+-
++           
+         // sort_read_set(reads);
+         std::cerr << "Done" << std::endl;
+ 
+@@ -303,9 +400,9 @@ int main(int argc, char *argv[]) {
+         double min_occ = args["min-occ"].as<double>(0.3);
+         double gap_occ = args["gap-occ"].as<double>(0.3);
+         int min_reads = args["min-reads"].as<int>(5);
+-        bool verbose = args["verbose"];
+ 
+-        correction_results_t correction = correct_reads(clusters, reads, min_occ, gap_occ, 30.0, split, min_reads, n_threads, verbose);
++
++        correction_results_t correction = correct_reads(clusters, reads, min_occ, gap_occ, 30.0, split, min_reads, n_threads, verbose, labels);
+         write_fastq_file(correction.corrected, args["output"].as<std::string>(".") + "/corrected.fq");
+         write_fastq_file(correction.uncorrected, args["output"].as<std::string>(".") + "/uncorrected.fq");
+         write_fastq_file(correction.consensi, args["output"].as<std::string>(".") + "/consensi.fq");
+@@ -319,8 +416,10 @@ int main(int argc, char *argv[]) {
+             "shows this help message", 0},
+             { "input", {"-i", "--input"},
+             "input fasta/fastq file (required)", 1},
++            { "label", {"-l", "--label"},
++            "labels for the files in order of entry", 1},
+             { "clusters", {"-c", "--clusters"},
+-            "clusters file (required)", 1},        
++            "clusters file (required)", 1},       
+         }};
+ 
+         argagg::parser_results args;
+@@ -351,21 +450,16 @@ int main(int argc, char *argv[]) {
+         std::cerr << "Reading fasta file... ";
+         
+         read_set_t reads;
+-        if(access(args["input"], F_OK )){
+-            std::cerr << "\nError: Input file not found! \n";
++
++        std::vector<std::string> files = splitString(args["input"].as<std::string>(""), ',');
++        std::vector<std::string> labels = splitString(args["label"].as<std::string>(""), ',');
++
++        try {
++           reads = read_multiple_inputs(files, labels);
++        }
++        catch (const char* c) {
++            std::cerr << c;
+             return EXIT_FAILURE;
+-        } else {
+-            std::string filename = args["input"];
+-            int i = filename.find_last_of(".");
+-            std::string extension = filename.substr(i + 1);
+-            if (!extension.compare("fq") || !extension.compare("fastq")){
+-                reads = read_fastq_file(args["input"]);
+-            } else if (!extension.compare("fasta") || !extension.compare("fa")){
+-                reads = read_fasta_file(args["input"]);
+-            } else {
+-                std::cerr << "\nError: Input file format incorrect! Please use fasta/fastq file. \n";
+-                return EXIT_FAILURE;
+-            }
+         }
+ 
+         // sort_read_set(reads);
+@@ -376,10 +470,15 @@ int main(int argc, char *argv[]) {
+ 
+         int cid = 0;
+         for (auto c : clusters) {
+-            for (auto seq : c.seqs) {
+-                std::cout << reads[seq.seq_id].header << "," << cid << std::endl;
++            if(c.main_seq.gene_id == -1){
++                for (auto seq : c.seqs) {
++                    std::cout << reads[seq.seq_id].header << ",gene_cluster_" << cid << std::endl;
++                }
++            } else{
++                for (auto seq : c.seqs) {
++                    std::cout << reads[seq.seq_id].header << ",gene_cluster_" << seq.gene_id << ",transcript_cluster_" << cid  << std::endl;
++                }
+             }
+-
+             ++cid;
+         }
+     } else if (!strcmp(mode, "extract_clusters")) {
+@@ -388,6 +487,8 @@ int main(int argc, char *argv[]) {
+             "shows this help message", 0},
+             { "input", {"-i", "--input"},
+             "input fasta/fastq file (required)", 1},
++            { "label", {"-l", "--label"},
++            "labels for the files in order of entry", 1},
+             { "clusters", {"-c", "--clusters"},
+             "clusters file (required)", 1},
+             { "output", {"-o", "--output-folder"},
+@@ -423,17 +524,24 @@ int main(int argc, char *argv[]) {
+             return EXIT_FAILURE;
+         }
+ 
+-        std::cerr << "Reading fasta file... ";
+-        if(access(args["input"], F_OK )){
+-            std::cerr << "\nError: Input file not found! \n";
++        if(args["output"] && access(args["output"], F_OK )){
++            std::cerr << "\nOutput folder doesn't exit. Please create it first. \n";
+             return EXIT_FAILURE;
+         }
+-
++        
++        std::cerr << "Reading fasta file... ";
++    
+         read_set_t reads;
+-        if (args["fastq"]) {
+-            reads = read_fastq_file(args["input"]);
+-        } else {
+-            reads = read_fasta_file(args["input"]);
++
++        std::vector<std::string> files = splitString(args["input"].as<std::string>(""), ',');
++        std::vector<std::string> labels = splitString(args["label"].as<std::string>(""), ',');
++
++        try {
++           reads = read_multiple_inputs(files, labels);
++        }
++        catch (const char* c) {
++            std::cerr << c;
++            return EXIT_FAILURE;
+         }
+ 
+         // sort_read_set(reads);
+@@ -464,18 +572,35 @@ int main(int argc, char *argv[]) {
+                 std::ofstream cfile;
+                 cfile.open(ss_fn.str());
+                 
+-                for (auto seq : c.seqs) {
+-                    // std::cout << reads[seq.seq_id].header << "," << cid << std::endl;
+-                    cfile << reads[seq.seq_id].header << "\n";
+-                    if (seq.rev) {
+-                        cfile << reverse_complement(reads[seq.seq_id].seq) << "\n";
+-                    } else {
+-                        cfile << reads[seq.seq_id].seq << "\n";
++                if(c.main_seq.gene_id == -1){
++                    for (auto seq : c.seqs) {
++                        // std::cout << reads[seq.seq_id].header << "," << cid << std::endl;
++                        cfile << reads[seq.seq_id].header << "\n";
++                        if (seq.rev) {
++                            cfile << reverse_complement(reads[seq.seq_id].seq) << "\n";
++                        } else {
++                            cfile << reads[seq.seq_id].seq << "\n";
++                        }
++
++                        if (args["fastq"]) {
++                            cfile << reads[seq.seq_id].ann << "\n";
++                            cfile << reads[seq.seq_id].quality << "\n";
++                        }
+                     }
+-
+-                    if (args["fastq"]) {
+-                        cfile << reads[seq.seq_id].ann << "\n";
+-                        cfile << reads[seq.seq_id].quality << "\n";
++                } else {
++                    for (auto seq : c.seqs) {
++                        // std::cout << reads[seq.seq_id].header << "," << cid << std::endl;
++                        cfile << reads[seq.seq_id].header << "," << seq.gene_id << "\n";
++                        if (seq.rev) {
++                            cfile << reverse_complement(reads[seq.seq_id].seq) << "\n";
++                        } else {
++                            cfile << reads[seq.seq_id].seq << "\n";
++                        }
++
++                        if (args["fastq"]) {
++                            cfile << reads[seq.seq_id].ann << "\n";
++                            cfile << reads[seq.seq_id].quality << "\n";
++                        }
+                     }
+                 }
+                 
+@@ -492,12 +617,16 @@ int main(int argc, char *argv[]) {
+             "input RATTLE consensi fasta/fastq file (required)", 1},
+             { "output", {"-o", "--output-folder"},
+             "output folder for fastx files (default: .)", 1},
++            { "label", {"-l", "--label"},
++            "labels for the files in order of entry", 1},
+             { "threads", {"-t", "--threads"},
+             "number of threads to use (default: 1)", 1},
+             { "rna", {"--rna"},
+             "use this mode if data is direct RNA (disables checking both strands)", 0},
+             { "verbose", {"--verbose"},
+             "use this flag if need to print the progress", 0},
++            {"summary", {"--summary"},
++            "use this flag to print a summary of transcript/gene clusters used to genearte the transcriptome", 0}
+         }};
+ 
+         argagg::parser_results args;
+@@ -533,29 +662,106 @@ int main(int argc, char *argv[]) {
+         int n_threads = args["threads"].as<int>(1);
+         bool is_rna = args["rna"];
+         bool verbose = args["verbose"];
++        bool summary = args["summary"];
++        std::vector<std::string> labels = splitString(args["label"].as<std::string>(""), ',');
+ 
+         std::cerr << "Clustering consensus sequences..." << std::endl;
+         auto clusters = cluster_reads(reads, 6, 0.5, 25, 0.4, 0.4, 0.05, 0, false, 0.15, is_rna, verbose, n_threads);
+-        auto correction = correct_reads(clusters, reads, 0.3, 0.3, 30.0, 200, 0, n_threads, verbose);
++        auto correction = correct_reads(clusters, reads, 0.3, 0.3, 30.0, 200, 0, n_threads, verbose, {});
++
++        int cid = 0; // gene cluster id for gene mode, transcript cluster id for isoform mode
++        // <cluster_step_id, polish_step_id>
++        std::map<int, int> geneMap; // a map to record the correspondence of cluster and polish step gene cluster id
++        int gid = -1;  // -1 for label the gene mode
++
++        std::vector<std::string> summary_results;
+ 
+-        int cid = 0;
+         for (auto &r: correction.consensi) {
+             int total_reads = 0;
+             auto creads = clusters[cid].seqs;
++            std::vector<int> label_counts(labels.size());
+ 
+             for (auto &s: creads) {
+-                auto info = split(reads[s.seq_id].header, '=');
++                auto info = splitString(reads[s.seq_id].header, '=');
+                 int rcount = std::stoi(info[1]);
+                 total_reads += rcount;
++                // reads[s.seq_id].header contains the information that we need
++                // std::cout << reads[s.seq_id].header << std::endl;
++                int i = 0;
++                for(auto label: labels){
++                    if(reads[s.seq_id].header.find(label) != std::string::npos){
++                        int index = reads[s.seq_id].header.find(label);
++                        std::string sub = reads[s.seq_id].header.substr(index + 1);
++                        index = sub.find_first_of(":");
++                        // std::cout << label << "  " << sub.substr(index + 1) << "  " << std::stoi(sub.substr(index + 1)) << std::endl;
++                        label_counts[i] += std::stoi(sub.substr(index + 1));
++                    }
++                    ++i;
++                }
++
++                auto info_c = splitString(reads[s.seq_id].header, '_');
++                if(reads[s.seq_id].header.find("transcript_cluster") != std::string::npos){
++                    // auto info = splitString(reads[s.seq_id].header, '_');
++                    int id = std::stoi(info_c[4]);
++                    // std::cout << reads[s.seq_id].header << " " << id << std::endl;
++                    if(geneMap.find(id) == geneMap.end()){
++                        if(gid == -1){
++                            gid = id;
++                        }
++                        geneMap.insert(std::pair<int, int> (id, gid));
++                    } else {
++                        gid = geneMap.find(id)->second;
++                    }
++
++                    if(summary){
++                        std::string result = "transcript_cluster_" + std::to_string(std::stoi(info_c[2])) + ", gene_cluster_" + std::to_string(id) + ", new_cluster_" + std::to_string(cid);
++                        summary_results.push_back(result);
++                    }
++                } else {
++                    if(summary){
++                    std::string result = "gene_cluster_" + std::to_string(std::stoi(info_c[2])) + ", new_cluster_" + std::to_string(cid);
++                    summary_results.push_back(result);
++                    }
++                }
+             }
+ 
+-            r.header += " total_reads=" + std::to_string(total_reads);
+-            cid++;
++            // int index = r.header.find("labels");
++            auto info = splitString(r.header, '=');
++            int rcount = std::stoi(info[1]);
++            // std::cout << r.header << " " << r.header.find("gene_cluster") << std::endl;
++        
++            // if(r.header.find("gene_cluster") != std::string::npos){
++                // info = splitString(r.header, '_');
++                // int id = std::stoi(info[3]);
++                // if(geneMap.find(id) == geneMap.end()){
++                //     if(gid == -1){
++                //         gid = id;
++                //     }
++                //     geneMap.insert(std::pair<int, int> (id, gid));
++                // } else {
++                //     gid = geneMap.find(id)->second;
++                // }
++            if(gid != -1){
++                r.header = "@transcript_cluster_" + std::to_string(cid) + " gene_cluster_" + std::to_string(gid) + " generated_from_transcript_clusters=" + std::to_string(rcount) + " total_reads=" + std::to_string(total_reads) + " labels=";
++            } else{
++                r.header = "@cluster_" + std::to_string(cid) + " generated_from_consensi_clusters=" + std::to_string(rcount) + " total_reads=" + std::to_string(total_reads) + " labels=";
++            }
++            int i = 0;
++            for(auto label: labels){
++                r.header += label + ":" + std::to_string(label_counts[i]) + ",";
++                ++i;
++            }
++            ++cid;
++            gid = -1;
+         }
+ 
++        if(summary){
++            write_polish_summary(summary_results, args["output"].as<std::string>(".") + "/polish_summary.tsv");
++        }
+         write_fastq_file(correction.consensi, args["output"].as<std::string>(".") + "/transcriptome.fq");
++        std::cerr << "Done" << std::endl;
+     } else {
+         std::cerr << "Unknown mode. More info" << std::endl;
+     }
+     
+-}
+\ No newline at end of file
++}
+diff --git a/misc/cluster_benchmark.py b/misc/cluster_benchmark.py
+index 708b547..f2163d3 100644
+--- a/misc/cluster_benchmark.py
++++ b/misc/cluster_benchmark.py
+@@ -33,13 +33,15 @@ with open('./toyset/cluster_benchmark/input/ref.fa', 'r') as f:
+             tsp[l[0][1:]] = l[3][5:]
+ 
+ labels_true_t = []
+-labels_pred =[]
++labels_pred_t =[]
++labels_pred_g =[]
+ labels_true_g = []
+ for line in csv_reader:
+     labels_true_t.append(line[1])
+-    labels_pred.append(line[2])
++    labels_pred_g.append(line[2])
++    labels_pred_t.append(line[3])
+     labels_true_g.append(tsp[line[1]])
+-print("homogeneity score with transcriptome is: {:.2f}%".format(metrics.homogeneity_score(labels_true_t, labels_pred) * 100))
+-print("completeness score with transcriptome is: {:.2f}%".format(metrics.completeness_score(labels_true_t, labels_pred) * 100))
+-print("homogeneity score with gene is: {:.2f}%".format(metrics.homogeneity_score(labels_true_g, labels_pred) * 100))
+-print("completeness score with gene is: {:.2f}%".format(metrics.completeness_score(labels_true_g, labels_pred) * 100))
+\ No newline at end of file
++print("homogeneity score with transcriptome is: {:.2f}%".format(metrics.homogeneity_score(labels_true_t, labels_pred_t) * 100))
++print("completeness score with transcriptome is: {:.2f}%".format(metrics.completeness_score(labels_true_t, labels_pred_t) * 100))
++print("homogeneity score with gene is: {:.2f}%".format(metrics.homogeneity_score(labels_true_g, labels_pred_g) * 100))
++print("completeness score with gene is: {:.2f}%".format(metrics.completeness_score(labels_true_g, labels_pred_g) * 100))
+\ No newline at end of file
+diff --git a/rattle_snakefile b/rattle_snakefile
+index c0464b8..70fd78c 100644
+--- a/rattle_snakefile
++++ b/rattle_snakefile
+@@ -24,4 +24,4 @@ rule rattle_polish:
+         output:
+                 "toyset/rna/snakemake_output/transcriptome.fq"
+         shell:
+-                 """./rattle polish -i {input} -o toyset/rna/snakemake_output -t24 --rna """
++                 """./rattle polish -i {input} -o toyset/rna/snakemake_output -t 24 --rna """

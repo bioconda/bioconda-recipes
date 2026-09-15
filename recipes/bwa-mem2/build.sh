@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-export CXXFLAGS="${CXXFLAGS} -std=c++14"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
 if [ "$(uname)" = "Darwin" -a "$(uname -m)" = "x86_64" ]; then
     sed -i.bak "s#extern errno_t memset_s#//xxx extern errno_t memset_s#g" ext/safestringlib/include/safe_mem_lib.h
@@ -30,4 +30,4 @@ case "$(uname -m)" in
 esac
 
 mkdir -p $PREFIX/bin
-cp bwa-mem2* $PREFIX/bin
+install -v -m 0755 bwa-mem2* $PREFIX/bin
