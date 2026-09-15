@@ -1,0 +1,68 @@
+{% set name = "archaeahq-update" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Pedrolleao/archaeahq-update/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 73e3cf26ce0abe0f7fcac951c549de693c8c410c95c38735909cd96a44160882
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - archaeahq-update = archaeahq_update.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - rich >=13
+    - requests >=2.25
+    - tqdm >=4.60
+    # external tools driven by the pipeline
+    - checkm2 >=1.1
+    - ncbi-datasets-cli >=18
+    - skani >=0.3
+    - barrnap >=1.10
+    - aragorn
+
+test:
+  imports:
+    - archaeahq_update
+    - archaeahq_update.cli
+  commands:
+    - archaeahq-update --help
+    - archaeahq-update --version
+    - archaeahq-update release --help
+
+about:
+  home: https://vee-lab.eu/archaeahq
+  summary: Keep ArchaeaHQ, the curated reference database of archaeal genomes, up to date with NCBI
+  description: |
+    ArchaeaHQ is a quality-controlled, systematically curated reference database of archaeal
+    genomes (21,644 genomes in v1.0, doi:10.6084/m9.figshare.32266599). archaeahq-update finds
+    the archaeal assemblies deposited at NCBI after the current database version, evaluates them
+    with the rules of the original build (CheckM2 quality gate, skani redundancy, environment
+    classification, rRNA/tRNA counts), writes recommendation tables and builds the next database
+    version from the accepted genomes. It also downloads v1.0 from figshare for a first setup.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/Pedrolleao/archaeahq-update
+  doc_url: https://github.com/Pedrolleao/archaeahq-update#readme
+
+extra:
+  recipe-maintainers:
+    - Pedrolleao
+  identifiers:
+    - doi:10.6084/m9.figshare.32266599
