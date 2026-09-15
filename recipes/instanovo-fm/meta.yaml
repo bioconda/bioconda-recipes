@@ -20,16 +20,16 @@ build:
 
 requirements:
   host:
-    # Upstream supports >=3.10,<3.14, but the dependency closure does not reach
-    # that far: instanovo requires matchms, which requires sparsestack, and
-    # conda-forge's sparsestack is built for `python >=3.10,<3.13`. Without this
-    # cap the test environment resolves to the newest allowed interpreter, 3.13,
-    # and the whole solve fails.
-    - python >=3.10,<3.13
+    # Upstream supports >=3.10,<3.14. The floor is 3.11 rather than 3.10 because
+    # instanovo requires matchms, which requires sparsestack, and conda-forge's
+    # sparsestack is built for `python >=3.11,<3.15` - it raised its own floor
+    # when it took a scipy >=1.15.3 dependency, for which conda-forge has no
+    # py310 build.
+    - python >=3.11,<3.14
     - hatchling
     - pip
   run:
-    - python >=3.10,<3.13
+    - python >=3.11,<3.14
     # Pinned exactly upstream: the foundation-model code uses instanovo's
     # constants, utils.residues and SpectrumDataFrame internals, which are not
     # API-stable across releases.
