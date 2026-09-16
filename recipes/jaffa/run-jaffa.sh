@@ -19,7 +19,7 @@ trap "rm -rf $TMPDIR" EXIT
 cp -a $PACKAGE_HOME/* $TMPDIR
 
 # generate tools.groovy
-COMMANDS="bpipe velveth velvetg oases trimmomatic samtools bowtie2 blat dedupe.sh reformat.sh R"
+COMMANDS="bpipe velveth velvetg oases trimmomatic samtools bowtie2 blat dedupe.sh reformat.sh R minimap2"
 for command in $COMMANDS; do
     echo "${command%.sh}=\"$(which $command)\"" >>$TMPDIR/tools.groovy
 done
