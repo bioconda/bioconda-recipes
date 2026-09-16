@@ -13,7 +13,7 @@ cp -aR * $PACKAGE_HOME
 
 # Create wrappers
 SOURCE_FILE=$RECIPE_DIR/run-jaffa.sh
-for suffix in direct assembly hybrid; do
+for suffix in direct assembly hybrid jaffal; do
     DEST_FILE=$PACKAGE_HOME/jaffa-$suffix
 
     echo "#!/bin/bash" > $DEST_FILE
