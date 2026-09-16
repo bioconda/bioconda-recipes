@@ -17,7 +17,7 @@ build:
   number: 0
   noarch: python
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -26,13 +26,17 @@ requirements:
   run:
     - python >={{ python_min }}
     - numpy
-    - pandas >=1.1.1
+    # pandas >=3 makes np.split/np.array_split on a DataFrame return plain
+    # ndarrays, which breaks prediction batching (snvs/predict.py).
+    - pandas >=1.1.1,<3
     - joblib >=0.16.0
     - pysam >=0.16.0.1
     # Bundled models were saved with Keras 2; TF >=2.16 switches tf.keras to Keras 3,
     # which cannot load them.
     - tensorflow-cpu >=2.13,<2.16
     - pybedtools >=0.8.1
+    # predict.py shells out to `bedtools sort` when writing the final VCF.
+    - bedtools
 
 test:
   requires:
@@ -40,6 +44,8 @@ test:
   commands:
     - varnet-predict --help
     - varnet-filter --help
+    # predict.py shells out to this when writing the final VCF
+    - bedtools --version
 
 about:
   home: https://github.com/skandlab/VarNet
