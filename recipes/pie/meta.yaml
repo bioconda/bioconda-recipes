@@ -1,0 +1,59 @@
+{% set name = "pie" %}
+{% set version = "0.11.2" %}
+{% set sha256 = "d0a2a5e506b760f9eb9ee410ab179eb057d4aee78e1f438959ba4d018d6879e4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/JMencius/pie/releases/download/{{ version }}/pie-{{ version }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: true  # [py<38]
+  run_exports:
+    - "{{ pin_subpackage(name, max_pin='x.x') }}"
+  entry_points:
+    - pie = pie.pie:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
+    - python
+    - pip
+    - setuptools >=61
+    - wheel
+  run:
+    - python
+    - click >=8.1.8
+    - cyvcf2 >=0.31.3
+    - sortedcontainers >=2.4.0
+    - pyfastx >=2.2.0
+    - python-lmdb ==1.8.1  # [py<39]
+    - python-lmdb >=2.0.0  # [py>=39]
+    - numpy
+    - numba >=0.58.1
+
+test:
+  imports:
+    - pie
+    - pie.module.lib
+  commands:
+    - pie --version
+    - python -c "from pie.module.evaluation import c_hamming_distance, hamming_comparison; assert c_hamming_distance('ACGT', 'AGGT') == 1; assert hamming_comparison('ACGT', 'AGGT') == [0, 1, 0, 0]"
+
+about:
+  home: https://github.com/JMencius/pie
+  dev_url: https://github.com/JMencius/pie
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Phasing all-in-one evaluator
+
+extra:
+  recipe-maintainers:
+    - JMencius
