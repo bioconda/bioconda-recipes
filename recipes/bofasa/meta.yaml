@@ -1,0 +1,76 @@
+{% set name = "bofasa" %}
+{% set version = "1.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/raufs/bofasa/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 925c61071b86f10af0ea28d073c96ace3e1d4f32ece8c2192eae4bdc0715a21f
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('bofasa', max_pin="x") }}
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+    - mkdir -p $PREFIX/share/bofasa/db
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - mkdir -p $PREFIX/etc/conda/deactivate.d
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo 'export BOFASA_DB_PATH=\"${CONDA_PREFIX}/share/bofasa/db\"' >> $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
+    - "echo 'unset BOFASA_DB_PATH' >> $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - genomad
+    - setuptools
+    - biopython
+    - pip
+    - orthofinder =2.5.5
+    - diamond
+    - scipy
+    - slclust
+    - ete3
+    - prodigal
+    - pyrodigal
+    - scipy
+    - pyhmmer =0.11.1
+    - genomad 
+    - curl
+    - rich-argparse
+    - tqdm
+    - plotly
+    - slclust
+    - pandas
+    - xlsxwriter
+    - hmmer
+    - trimal
+    - muscle =5.1
+    - hmmer
+    - xgboost 
+    - fasttree
+    - legacy-cgi
+    
+test:
+  commands:
+    - bofasa -h
+    - test -f "$PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+
+about:
+  home: "https://github.com/raufs/bofasa"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  summary: "bofasa: bacterial orthology finding and syntenic analysis"
+  
+extra:
+  recipe-maintainers:
+    - raufs
