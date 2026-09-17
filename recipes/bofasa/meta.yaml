@@ -1,5 +1,5 @@
 {% set name = "bofasa" %}
-{% set version = "1.2.0" %}
+{% set version = "1.2.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/raufs/bofasa/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 3441a4cc1c7acb908cacb465c9f9fe74f3bba9d5742a3664200fe6dfb07c721c
+    sha256: 925c61071b86f10af0ea28d073c96ace3e1d4f32ece8c2192eae4bdc0715a21f
 
 build:
   number: 0
@@ -15,7 +15,14 @@ build:
   run_exports:
     - {{ pin_subpackage('bofasa', max_pin="x") }}
   script:
-    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+    - mkdir -p $PREFIX/share/bofasa/db
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - mkdir -p $PREFIX/etc/conda/deactivate.d
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo 'export BOFASA_DB_PATH=\"${CONDA_PREFIX}/share/bofasa/db\"' >> $PREFIX/etc/conda/activate.d/bofasa-activate.sh"
+    - "echo '#!/bin/bash' > $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
+    - "echo 'unset BOFASA_DB_PATH' >> $PREFIX/etc/conda/deactivate.d/bofasa-deactivate.sh"
 
 requirements:
   host:
@@ -51,9 +58,12 @@ requirements:
     - hmmer
     - xgboost 
     - fasttree
+    - legacy-cgi
+    
 test:
   commands:
     - bofasa -h
+    - test -f "$PREFIX/etc/conda/activate.d/bofasa-activate.sh"
 
 about:
   home: "https://github.com/raufs/bofasa"
