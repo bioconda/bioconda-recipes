@@ -1,5 +1,5 @@
 {% set name = "beegees" %}
-{% set version = "3.0.4" %}
+{% set version = "3.0.6" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 812ebbe35489a4ba8127341cc92de8557ab09d03069df505e279a7f3a03ea8fd
+  sha256: 28ef1d5eab6a51c1ccd509e8038bba0e85d999ee8226b30e960fb3259e9d2a61
 
 build:
   noarch: python
@@ -24,8 +24,8 @@ requirements:
   run:
     - python >=3.11
     - snakemake >=9.9
-    - snakemake-executor-plugin-slurm >=1.6
-    - snakemake-executor-plugin-slurm-jobstep >=0.3
+    - snakemake-executor-plugin-slurm >=1.6.1
+    - snakemake-executor-plugin-slurm-jobstep >=0.3.0
     - pyyaml
     - pandas >=2.2.3
     - numpy >=1.26.4
@@ -33,15 +33,28 @@ requirements:
     - fastp >=0.23.4
     - blast >=2.17.0
     - hmmer >=3.4
+    # Open across the 0.6.x/2.x boundary: v2 is a drop-in Rust rewrite covering
+    # every flag the workflow uses (--cores, --dont_gzip, --output_dir,
+    # --basename), and 0.6.x still solves on osx-64 where the v2 recipe is
+    # skipped.
     - trim-galore >=0.6.10
+    # Required by trim-galore 0.6.x for --cores; unused by 2.x, which bundles
+    # its own compression.
     - pigz >=2.8
     - bwa >=0.7.19
+    # samtools flagstat, for the mapping summary in 04_reference_filter.py.
+    - samtools >=1.20
+    # reformat.sh, for the optional read downsampling rules.
+    - bbmap >=40.02
     - multiqc >=1.35
-    - snakemake-executor-plugin-slurm >=1.6.1
-    - snakemake-executor-plugin-slurm-jobstep >=0.3.0
     - mitogeneextractor >=1.9.6
     - r-base >=4.4
     - r-tidyverse >=2.0.0
+    # library(yaml) in multiqc_plots.R; previously only a transitive
+    # tidyverse -> knitr dependency.
+    - r-yaml
+    # download_taxdump fetches the NCBI taxdump.
+    - wget
     - gene-fetch >=1.0.21
 
 test:
