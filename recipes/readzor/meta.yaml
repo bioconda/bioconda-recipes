@@ -1,20 +1,21 @@
-{% set version = "0.1.0" %}
+{% set version = "0.1.30" %}
+{% set name = "readzor" %}
+{% set sha256 = "f9a46b42d8ccc26ba211d77809f44d9f47552838d9870fa834308cd42f011212" %}
 
 package:
-  name: readzor
-  version: {{ version }}
+  name: '{{ name }}'
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.org/packages/source/r/readzor/readzor-{{ version }}.tar.gz
-  sha256: 154ef92397de318f49cb4cfc884fb623c6319484d3110ec0fce5e196110e0fa4
+  url: https://pypi.org/packages/source/r/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  entry_points:
-    - readzor = readzor.readzor:main
-    - Readzor = readzor.readzor:main
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
@@ -24,7 +25,8 @@ requirements:
   run:
     - python
     - numpy ==2.5.2
-    - isal ==1.8.0
+    - python-isal ==1.8.0
+    - fuzzysearch ==0.8.1
 
 test:
   imports:
