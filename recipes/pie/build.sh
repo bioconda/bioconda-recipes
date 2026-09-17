@@ -7,4 +7,12 @@ set -euo pipefail
 # and target platform.
 rm -f pie/pie/module/lib/hamming.so
 
+# Some macOS runners resolve clang through Conda's package-cache symlink.  In
+# that case clang's @rpath may not include the active build environment, even
+# though its matching libclang-cpp dylib is installed there.  Keep this
+# version-independent and limited to the macOS build host.
+if [[ "${OSTYPE:-}" == darwin* ]]; then
+    export DYLD_LIBRARY_PATH="${BUILD_PREFIX}/lib${DYLD_LIBRARY_PATH:+:${DYLD_LIBRARY_PATH}}"
+fi
+
 "${PYTHON}" -m pip install . --no-deps --no-build-isolation -vv
