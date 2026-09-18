@@ -14,13 +14,9 @@ fi
 echo "Parallel-META Suite ${VERSION} database installer"
 echo "ParallelMETA=${ParallelMETA}"
 
-if [ -f "${ParallelMETA}/databases/db.config" ] && \
-   [ -d "${ParallelMETA}/models" ] && \
-   [ -d "${ParallelMETA}/html" ] && \
-   [ -d "${ParallelMETA}/PMS-config" ] && \
-   [ -d "${ParallelMETA}/example" ]; then
-    echo "Parallel-META Suite runtime resources already exist:"
-    echo "${ParallelMETA}"
+if [ -f "${ParallelMETA}/databases/db.config" ]; then
+    echo "Parallel-META Suite database already exists:"
+    echo "${ParallelMETA}/databases"
     echo "Nothing to do."
     exit 0
 fi
@@ -98,12 +94,8 @@ mkdir -p "${ParallelMETA}"
 tar -xzf "${ARCHIVE}" \
     -C "${ParallelMETA}" \
     --strip-components=1 \
-    parallel-meta-suite/databases \
-    parallel-meta-suite/models \
-    parallel-meta-suite/html \
-    parallel-meta-suite/PMS-config \
-    parallel-meta-suite/example
+    parallel-meta-suite/databases
 
 echo
-echo "Runtime resource installation complete:"
+echo "Database installation complete:"
 du -sh "${ParallelMETA}/databases"

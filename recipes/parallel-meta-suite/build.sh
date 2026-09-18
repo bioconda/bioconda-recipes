@@ -25,7 +25,7 @@ ParallelMETA_path="${PREFIX}/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p "${ParallelMETA_path}"
 
 echo "===== INSTALL PMS RESOURCES ====="
-cp -a Rscript "${ParallelMETA_path}/"
+cp -a Rscript models html PMS-config example "${ParallelMETA_path}/"
 
 chmod +x "${ParallelMETA_path}"/Rscript/PM_*.R 2>/dev/null || true
 
