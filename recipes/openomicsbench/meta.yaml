@@ -1,0 +1,44 @@
+{% set name = "openomicsbench" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/23/e4/fbef69ce1389771851d5c4ef72b9c0d3073fc6d2171178053b7baa470bd8/openomicsbench-1.0.3.tar.gz
+  sha256: 6e8a9b5a67ff5be3e01e345a6ba42313d2a300c26e53f3e5405771b1ab344289
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - pip
+    - python >=3.11
+    - setuptools >=68
+  run:
+    - python >=3.11
+    - pydantic >=2.13,<3
+    - numpy >=2.3,<3
+
+test:
+  imports:
+    - omicsbench
+  commands:
+    - omicsbench --help
+
+about:
+  home: https://github.com/vxxqv/openomicsbench
+  summary: Curated bulk RNA-seq benchmarks with traceable data and deterministic validation
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: https://github.com/vxxqv/openomicsbench
+
+extra:
+  recipe-maintainers:
+    - vxxqv
