@@ -1,0 +1,45 @@
+{% set name = "timsrust_pyo3" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jspaezp/timsrust_pyo3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7e98005a3a9b3071fc1c851a618d005ad41e9818e31faa9e03efb4d4981a7810
+
+build:
+  number: 0
+  skip: True # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+  host:
+    - maturin >=1.3,<2.0
+    - python
+  run:
+    - python
+
+test:
+  imports:
+    - timsrust_pyo3
+
+about:
+  home: https://github.com/jspaezp/timsrust_pyo3
+  license: Apache-2.0
+  summary: Python bindings to the TimsRust reader
+  description: |
+    timsrust_pyo3 provides Python bindings to TimsRust, a high-performance Rust ecosystem for reading and preprocessing Bruker timsTOF mass spectrometry data.
+    TimsRust provides type-safe, composable abstractions for working with liquid chromatography coupled to trapped ion mobility spectrometry (LC-TIMS-TOF) data in multiple formats.
+
+extra:
+  recipe-maintainers:
+    - reid-wagner
+  skip-lints:
+    - should_be_noarch_generic
