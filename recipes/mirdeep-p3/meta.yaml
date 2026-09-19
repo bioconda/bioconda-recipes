@@ -2,11 +2,24 @@
 # Source recipe: conda.recipe/ in the mirdeep-p3 repo
 package:
   name: mirdeep-p3
-  version: "3.1.5a"
+  version: "3.1.6c"
 
 source:
-  url: https://github.com/YangXZ-lab/mirdeep-p3/archive/refs/tags/v3.1.5a.tar.gz
-  sha256: 55feff5ca9d46475dc30a0c3485268dcf9feeb7cad3e2d416a1ad7398e61b430
+  # Upstream source tree.
+  - url: https://github.com/YangXZ-lab/mirdeep-p3/archive/refs/tags/v3.1.6c.tar.gz
+    sha256: bcac254ca85883a1bffd91ec1843d42db19d59f0b1a4430f968e475bc882bfaf
+
+  # Pre-built bowtie/BLAST search databases (~592 MB unpacked).
+  # mirdeep-p3 resolves these as <project_root>/data/index/{rfam_index,mature_index}
+  # with no CLI flag or environment variable to relocate them, so they have to
+  # ship inside the package -- without them `identification` stops at the ncRNA
+  # alignment step.  data/index is .gitignore'd upstream and therefore absent from
+  # the source tarball above, which is why it is a separate source.
+  # Pinned to the release recorded in the upstream data-index.env; the Docker
+  # image and the "full" conda build use this exact same asset.
+  - url: https://github.com/YangXZ-lab/mirdeep-p3/releases/download/mirdeep-p3-v3.1.4c-full/data-index.tar.gz
+    sha256: 21747be2bbe55ceffdc895c046589759c797ee161329b00fc2f095a86eb6bf8d
+    folder: data-index
 
 build:
   number: 0
@@ -86,6 +99,10 @@ test:
     - mirdeep-p3 --version
     - mirdeep-p3 -h
     - mirdeep-p3 identification -h
+    # The bundled databases are what make the package usable; assert they exist
+    # instead of only smoke-testing the CLI.
+    - test -s "$PREFIX/share/mirdeep-p3/data/index/rfam_index.1.ebwt"
+    - test -s "$PREFIX/share/mirdeep-p3/data/index/mature_index.1.ebwt"
 
 about:
   home: https://github.com/YangXZ-lab/mirdeep-p3
