@@ -6,7 +6,7 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CFLAGS="${CFLAGS} -O3"
 
 # use newer config.guess and config.sub that support osx-arm64
-cp -f ${RECIPE_DIR}/config.* ./am-aux/
+cp -f ${BUILD_PREFIX}/share/gnuconfig/config.* autotools/
 
 # build version with MPI & Beagle
 ./configure --prefix="$PREFIX" \
