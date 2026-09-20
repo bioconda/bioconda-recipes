@@ -3,7 +3,7 @@
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ `uname -s` == "Darwin" ]]; then
   export CFLAGS="${CFLAGS} -O3 -Wno-int-conversion -Wno-implicit-function-declaration"
 fi
 
