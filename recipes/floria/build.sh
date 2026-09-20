@@ -10,10 +10,10 @@ fi
 
 case $(uname -m) in
     aarch64)
-	export CONFIG_ARGS="--features=neon --no-default-features"
+	export CONFIG_ARGS="--features=neon"
 	;;
     arm64)
-	export CONFIG_ARGS="--features=neon --no-default-features"
+	export CONFIG_ARGS="--features=neon"
 	;;
     x86_64)
 	export CONFIG_ARGS=""
