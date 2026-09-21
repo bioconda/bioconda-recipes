@@ -2,7 +2,8 @@
 set -e -x -o pipefail
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-c++11-narrowing"
+export CXXFLAGS="${CXXFLAGS} -O3 -Wno-c++11-narrowing"
 
 make CC="$CXX" CXX="$CXX" -j"${CPU_COUNT}"
 
