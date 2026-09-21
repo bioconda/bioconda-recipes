@@ -109,7 +109,10 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('{{ name }}')"
+    # MetaProViz imports OmnipathR, which creates an `omnipathr-log` directory
+    # in the working directory when its namespace is loaded. That breaks cleanup
+    # of the container test's temporary directory, so disable the logfile here.
+    - $R -e "options(omnipathr.logfile = 'none'); library('{{ name }}')"
 
 about:
   home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
