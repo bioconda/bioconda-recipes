@@ -11,13 +11,9 @@ sed -i.bak 's|ar rcs|$(AR) rcs|' c/kentsrc/Makefile
 #sed -i.bak 's|cp RAMExtend $(INSTDIR)/bin|install -v -m 0755 RAMExtend $(INSTDIR)|' c/Makefile
 sed -i.bak 's|-Iminunit -I.|-Iminunit -I. -Wno-format|' c/Makefile
 
-sed -i.bak 's|0.1.0|0.2.0|' Makefile
-sed -i.bak "s|/usr/local/RepeatAfterMe-$(VERSION)|$(PREFIX)/bin|" Makefile
+sed -i.bak "s|0.1.0|${PKG_VERSION}|" Makefile
+sed -i.bak "s|/usr/local/RepeatAfterMe-${PKG_VERSION}|${PREFIX}/bin|" Makefile
 rm -f *.bak
-
-#make CC="${CC}" -j"${CPU_COUNT}"
-
-#make install
 
 cargo install --path ram-cli --root "${PREFIX}" --locked --no-track --verbose
 # ram-cli's [[bin]] is "ram-extend", so this yields ${PREFIX}/bin/ram-extend
