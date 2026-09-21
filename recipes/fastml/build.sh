@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e -x -o pipefail
 
-make CC=$CXX CXX=$CXX -j${CPU_COUNT}
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-FASTDAT=$PREFIX/share/fastml
+make CC="$CXX" CXX="$CXX" -j"${CPU_COUNT}"
+
+FASTDAT="$PREFIX/share/fastml"
 mkdir -p $FASTDAT/programs/fastml $FASTDAT/programs/indelCoder \
          $FASTDAT/programs/gainLoss $FASTDAT/www $PREFIX/bin
 
@@ -16,8 +19,8 @@ cp programs/gainLoss/gainLoss     $FASTDAT/programs/gainLoss/
 
 # Perl wrapper chain + bundled perl modules, keeping the layout:
 # FastML_Wrapper.pl does "use lib $Bin/../bioSequence_scripts_and_constants/"
-cp -r www/fastml $FASTDAT/www/
-cp -r www/bioSequence_scripts_and_constants $FASTDAT/www/
+cp -rf www/fastml $FASTDAT/www/
+cp -rf www/bioSequence_scripts_and_constants $FASTDAT/www/
 
 # CLI entry points
 ln -sf $FASTDAT/programs/fastml/fastml         $PREFIX/bin/fastml
