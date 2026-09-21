@@ -1,8 +1,9 @@
-{% set version = "0.0.2" %}
-{% set sha256 = "64cfd914a7be8527e60abf2cc1faf73eb61a1f7f47f4afdaeb4b6f5c3511058e" %}
+{% set name = "proteomiqon-alignmentbasedquantification" %}
+{% set version = "0.0.4" %}
+{% set sha256 = "8787adfdff3521d41c5287342147cb131c12156bd83ce6228a996c8a9309ad11" %}
 
 package:
-  name: proteomiqon-alignmentbasedquantification
+  name: '{{ name }}'
   version: '{{ version }}'
 
 source:
@@ -12,17 +13,26 @@ source:
 build:
   noarch: generic
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 
 requirements:
+  build: 
+    - {{ stdlib('c') }}
   host:
     - unzip
   run:
-    - dotnet-runtime =5.0
-    - openssl =1.1
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
 
 test:
   commands:
-    - proteomiqon-alignmentbasedquantification --help
+    - test -x "$PREFIX/bin/proteomiqon-alignmentbasedquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/AlignmentBasedQuantification/ProteomIQon.AlignmentBasedQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-alignmentbasedquantification"
+    - grep -q "AlignmentBasedQuantification/ProteomIQon.AlignmentBasedQuantification.dll" "$PREFIX/bin/proteomiqon-alignmentbasedquantification"
 
 about:
   home: https://csbiology.github.io/ProteomIQon/

@@ -1,5 +1,5 @@
 {% set name = "b2btools" %}
-{% set version = "3.0.8" %}
+{% set version = "3.0.9" %}
 
 package:
   name: {{ name }}
@@ -7,14 +7,14 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 2b10e9ef3d64878b1f86ff44f42bf46a7d241767dadee691872db8e18d825ec1
+  sha256: afc574a6396ce3d02c3b3a425cd3a60aa23633a60784f7cbf024708ebd34bb6f
 
 build:
   number: 0
   noarch: python
   entry_points:
     - b2bTools = b2bTools.__main__:main
-    - b2btools = b2bTools.__main__:main
+    - shiftcrypt = b2bTools.nmr.shiftCrypt.__main__:main
   script:
     - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
   run_exports:
@@ -22,42 +22,47 @@ build:
 
 requirements:
   host:
-    - python >=3.9,<3.13
+    - python >=3.9,<3.15
     - pip
     - setuptools
     - wheel
   run:
-    - python >=3.9
-    - biopython >=1.81
+    - python >=3.9,<3.15
+    - biopython >=1.79
     - matplotlib-base >=3.5
-    - numpy >=1.24,<1.25
-    - pandas >=1.1,<2
+    - numpy >=1.24
+    - pandas >=1.1
     - requests >=2,<3
     - scikit-learn >=1.0.2
-    - scipy >=1.10.1
+    - scipy >=1.10
     - hmmer >=3.4
     - t-coffee
-    - urllib3 >=1.26
-    - pytorch >=2.2.0
+    - pytorch-cpu >=1.13
 
 test:
   imports:
     - b2bTools
     - b2bTools.wrapper_source
+    - b2bTools.general.parsers
+    - b2bTools.nmr.shiftCrypt
   commands:
     - b2bTools --version
-    - b2btools --version
+    - b2bTools --help
+    - shiftcrypt --version
+    - shiftcrypt --help
 
 about:
   home: "https://bio2byte.be"
   license: "GPL-3.0-or-later"
   license_family: GPL3
+  license_url: "https://www.gnu.org/licenses/gpl-3.0.html"
   license_file: LICENSE.md
   summary: "The bio2Byte software suite to predict protein biophysical properties."
   description: |
     This package provides you with structural predictions for protein sequences made by the Bio2Byte group which researches the relation between protein sequence and biophysical behavior.
 
     List of available predictors:
+
     1. DynaMine: Fast predictor of protein backbone dynamics using only sequence information as input. The version here also predicts side-chain dynamics and secondary structure predictors using the same principle.
     2. DisoMine: Predicts protein disorder with recurrent neural networks not directly from the amino acid sequence, but instead from more generic predictions of key biophysical properties, here protein dynamics, secondary structure, and early folding.
     3. EfoldMine: Predicts from the primary amino acid sequence of a protein, which amino acids are likely involved in early folding events.
