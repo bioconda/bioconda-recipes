@@ -8,15 +8,15 @@ export CXXFLAGS="${CXXFLAGS} -O3 -Wno-c++11-narrowing"
 make CC="$CXX" CXX="$CXX" -j"${CPU_COUNT}"
 
 FASTDAT="$PREFIX/share/fastml"
-mkdir -p $FASTDAT/programs/fastml $FASTDAT/programs/indelCoder \
-         $FASTDAT/programs/gainLoss $FASTDAT/www $PREFIX/bin
+mkdir -p "$FASTDAT/programs/fastml" "$FASTDAT/programs/indelCoder" \
+         "$FASTDAT/programs/gainLoss" "$FASTDAT/www" "$PREFIX/bin"
 
 # Compiled binaries, keeping the source-relative layout:
 # FastML_Wrapper.pl and IndelReconstruction_Wrapper.pl resolve
 # $Bin/../../programs/<tool>/<tool>
-cp programs/fastml/fastml         $FASTDAT/programs/fastml/
-cp programs/indelCoder/indelCoder $FASTDAT/programs/indelCoder/
-cp programs/gainLoss/gainLoss     $FASTDAT/programs/gainLoss/
+install -v -m 0755 programs/fastml/fastml         "$FASTDAT/programs/fastml"
+install -v -m 0755 programs/indelCoder/indelCoder "$FASTDAT/programs/indelCoder"
+install -v -m 0755 programs/gainLoss/gainLoss     "$FASTDAT/programs/gainLoss"
 
 # Perl wrapper chain + bundled perl modules, keeping the layout:
 # FastML_Wrapper.pl does "use lib $Bin/../bioSequence_scripts_and_constants/"
