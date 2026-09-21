@@ -11,11 +11,6 @@ source:
 
 build:
   number: 0
-  # The outputs each carry their own run_exports below. This duplicate is here
-  # only because the deployed linter's missing_run_exports check reads the top
-  # level build section exclusively; it builds no package of its own.
-  run_exports:
-    - {{ pin_subpackage('rastqc', max_pin='x.x') }}
 
 # `rastqc` and `rastqc-nanopore` are the same program built from the same tag
 # with different cargo features, so they are always released together. They are
@@ -115,6 +110,14 @@ about:
   doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
 
 extra:
+  # Each output declares its own run_exports, which is what CEP 0014 asks for
+  # and what bioconda-utils checks from v5.0.0 on. The deployed linter reads
+  # build/run_exports from the top-level section exclusively, and a top-level
+  # copy is rejected by the newer check
+  # (unnecessary_run_exports_in_main_build_section_with_multiple_outputs), so
+  # the two cannot both be satisfied. Drop this skip once CI is on v5.0.0.
+  skip-lints:
+    - missing_run_exports
   additional-platforms:
     - linux-aarch64
     - osx-arm64
