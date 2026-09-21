@@ -12,7 +12,7 @@ source:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - qpcrpredict = qpcrpredict.cli:main
   run_exports:
@@ -29,12 +29,10 @@ requirements:
     - numpy
     - pandas
     - scipy
-    # the packaged model is a scikit-learn pickle; pickles load reliably within one minor version
+    # the packaged model is a scikit-learn pickle of this minor version
     - scikit-learn >=1.9,<1.10
     - joblib
     - pyarrow
-    # All model families and the spreadsheet readers are installed with the package, so that no
-    # further installation step is needed. tabpfn is pinned to the major version that was tested.
     - lightgbm
     - catboost
     - pytorch
@@ -47,11 +45,10 @@ test:
     - qpcrpredict
   commands:
     - qpcrpredict --version
-    - qpcrpredict predict --help
-    - qpcrpredict train --help
-    # lists the packaged assay configurations and loads the packaged model
-    - qpcrpredict assay
-    - qpcrpredict info
+    - qpcrpredict predict --help > /dev/null
+    - qpcrpredict train --help > /dev/null
+    - qpcrpredict assay > /dev/null
+    - qpcrpredict info > /dev/null
 
 about:
   home: "https://github.com/MHH-Bioinformatics-Hematology/qpcrpredict"
