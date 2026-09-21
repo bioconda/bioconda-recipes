@@ -1,0 +1,53 @@
+{% set name = "isocall" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/isocall/releases/download/{{ version }}/isocall-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz
+    sha256: 561bf2543b887f8a0dc5efff6fc61072a6d668d62f77258ead29148de5e7bc56
+    folder: binary
+  - url: https://github.com/PacificBiosciences/isocall/archive/refs/tags/{{ version }}.tar.gz
+    sha256: f2f000ef0327df9f20e443d501449a8253f8d27ed6ef69fb3be68cb7d10e9539
+    folder: source
+
+build:
+  number: 0
+  skip: True  # [osx or win]
+  binary_relocation: False
+
+requirements:
+  run:
+    - libgcc-ng  # [linux]
+
+test:
+  commands:
+    - isocall --help
+    - isocall --version
+
+about:
+  home: https://github.com/PacificBiosciences/isocall
+  license: Proprietary
+  license_family: Other
+  license_file: source/LICENSE.md
+  summary: Joint-call RNA isoforms across many PacBio IsoSeq samples
+  description: |
+    Isocall is a tool for joint-calling RNA isoforms across many PacBio
+    IsoSeq samples. It replaces certain clustering and collapsing steps
+    in the standard Iso-Seq analysis workflow. The tool operates through
+    four sequential steps: prepare known isoforms from reference annotations,
+    generate individual transcriptome profiles per sample, merge profiles
+    together, and call known and novel isoforms.
+  dev_url: https://github.com/PacificBiosciences/isocall
+  doc_url: https://github.com/PacificBiosciences/isocall
+
+extra:
+  recipe-maintainers:
+    - JTL-lab
+  identifiers:
+    - biotools:isocall
+  skip-lints:
+    - should_be_noarch_generic  # Info: pre-compiled x86_64 Linux binary available only
+    - missing_run_exports       # Info: standalone CLI tool

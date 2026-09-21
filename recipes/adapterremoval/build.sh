@@ -12,3 +12,5 @@ rm -f *.bak
 make -j"${CPU_COUNT}"
 
 make install PREFIX="${PREFIX}"
+
+ln -s ${PREFIX}/bin/adapterremoval3 ${PREFIX}/bin/adapterremoval
