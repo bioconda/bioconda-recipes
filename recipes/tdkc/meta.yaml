@@ -1,0 +1,56 @@
+{% set name = "tdkc" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "c27dd2a5f49774327df163d06583e0e78b2d4bd781511e80925c36817cafa4d3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/543090lee/TDKC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - pkg-config
+  host:
+    - openssl >=3,<4
+  run:
+    - blast
+
+test:
+  commands:
+    - tdkc --version
+    - tdkc --help
+    - dustmasker -version
+
+about:
+  home: https://github.com/543090lee/TDKC
+  dev_url: https://github.com/543090lee/TDKC
+  doc_url: https://github.com/543090lee/TDKC#readme
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Ultrafast and memory-efficient target pathogen sequence classifier
+  description: |
+    TDKC (Target Distilled K-mer Classifier) is a metagenomic sequence
+    classifier designed for fast, memory-efficient target pathogen
+    diagnostics.
+
+extra:
+  recipe-maintainers:
+    - 543090lee
+    - wgobrien
