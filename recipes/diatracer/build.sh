@@ -10,8 +10,8 @@ ln -s "$TARGET/diatracer.py" "$PREFIX/bin/diatracer"
 chmod 0755 "${PREFIX}/bin/diatracer"
 
 # Move and link jar.
-mkdir -p "$TARGET/diaTracer-$PKG_VERSION"
+mkdir -p "$TARGET/diatracer-$PKG_VERSION"
 unzip "download.php?token=0000000&download=${PKG_VERSION}%24zip"
-mv "diatracer-$PKG_VERSION/diatracer-$PKG_VERSION.jar" "$TARGET/diatracer-$PKG_VERSION"
+mv "diatracer-$PKG_VERSION/diaTracer-$PKG_VERSION.jar" "$TARGET/diatracer-$PKG_VERSION"
 cd "$TARGET"
 ln -s "diatracer-$PKG_VERSION/diaTracer-$PKG_VERSION.jar" "diaTracer.jar"
