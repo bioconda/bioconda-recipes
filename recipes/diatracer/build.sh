@@ -12,6 +12,6 @@ chmod 0755 "${PREFIX}/bin/diatracer"
 # Move and link jar.
 mkdir -p "$TARGET/diaTracer-$PKG_VERSION"
 unzip "download.php?token=0000000&download=${PKG_VERSION}%24zip"
-mv "diaTracer-$PKG_VERSION/diaTracer-$PKG_VERSION.jar" "$TARGET/diaTracer-$PKG_VERSION"
+mv "diatracer-$PKG_VERSION/diatracer-$PKG_VERSION.jar" "$TARGET/diatracer-$PKG_VERSION"
 cd "$TARGET"
-ln -s "diaTracer-$PKG_VERSION/diaTracer-$PKG_VERSION.jar" "diaTracer.jar"
+ln -s "diatracer-$PKG_VERSION/diaTracer-$PKG_VERSION.jar" "diaTracer.jar"
