@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # GCC 14 flags a CHECK(false) fall-through in abseil's log macros as -Werror=return-type.
-sed -i '/^  -Werror /d' CMakeLists.txt
+sed -i.bak '/^  -Werror /d' CMakeLists.txt && rm CMakeLists.txt.bak
 
 mkdir -p build
 cd build
