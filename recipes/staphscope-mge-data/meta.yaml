@@ -1,0 +1,39 @@
+{% set name = "staphscope-mge-data" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Attach a tarball containing a top-level `mge_module/` directory
+  # (includes mobileOG-db/beatrix-1-6_v1_all/)
+  url: https://github.com/bbeckley-hub/staphscope-typing-tool/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
+  
+  sha256: edc64c1ee0aa6921fd0401abf63a71f2e6cf3ccdc1a7359171e53de34e2b79a0
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+test:
+  commands:
+    - test -f $PREFIX/share/staphscope/modules/mge_module/MGEFinder.py
+    - test -f $PREFIX/share/staphscope/modules/mge_module/mobileOG-db/beatrix-1-6_v1_all/mobileOG-db-beatrix-1.6.dmnd
+    - test -f $PREFIX/share/staphscope/modules/mge_module/mobileOG-db/beatrix-1-6_v1_all/mobileOG-db-beatrix-1.6-All.csv
+
+about:
+  home: https://github.com/bbeckley-hub/staphscope-typing-tool
+  license: MIT
+  summary: 'MobileOG-db and MGEFinder for StaphScope'
+  description: |
+    Bundles mobileOG-db (Beatrix-1.6 release) with the MGEFinder script
+    used by StaphScope for mobile genetic element profiling of S. aureus
+    genomes. Includes the DIAMOND database, the mobileOG annotation CSV,
+    and the reference protein FASTA.
+
+extra:
+  recipe-maintainers:
+    - bbeckley-hub

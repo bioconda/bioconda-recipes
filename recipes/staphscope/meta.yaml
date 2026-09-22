@@ -1,5 +1,5 @@
 {% set name = "staphscope" %}
-{% set version = "1.3.2" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,15 @@ package:
 
 source:
   url: https://github.com/bbeckley-hub/staphscope-typing-tool/archive/v{{ version }}.tar.gz
-  sha256: 3e86c3e2f46834d4f68a84bfffa5385716641861265b0cfc5229268a7433d5f7
+  
+  sha256: ce1a4aac4df720157167a34b6799176bc3c3e6fc962cb856e31265da47cf0ccc
 
 build:
   noarch: python
   number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - staphscope = staphscope.staphscope:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -23,23 +26,37 @@ requirements:
     - setuptools
   run:
     - python >=3.8
+
+    # Core Python packages
     - pandas >=1.5.0
     - biopython >=1.80
     - psutil >=5.9.0
     - requests >=2.28.0
     - tqdm >=4.64.0
     - click >=8.0.0
+
+    # HTML parsing
     - beautifulsoup4 >=4.11.0
     - lxml >=4.9.0
+
+    # Visualization
     - matplotlib-base >=3.5.0
     - seaborn >=0.12.0
     - scipy >=1.10.1
     - plotly >=5.10.0
+
+    # Bioinformatics tools
     - abricate >=1.2.0
+    - mlstdb >=1.3.0
     - perl
     - agrvate >=1.0.1
     - any2fasta
     - blast >=2.13.0
+    - fastani >=1.3.0                 # species confirmation
+    - diamond >=2.1.10                # MGE protein alignment
+    - prodigal >=2.6.3                # MGE ORF calling
+
+    # Perl modules (mlst + abricate)
     - perl-moo
     - perl-list-moreutils
     - perl-json
@@ -48,11 +65,16 @@ requirements:
     - perl-data-dumper
     - perl-getopt-long
     - perl-file-which
+
+    # Internal data packages 
     - staphscope-sccmec-data =={{ version }}
+    - staphscope-mge-data =={{ version }}
 
 test:
   commands:
     - staphscope --help
+    - test -f $PREFIX/share/staphscope/modules/sccmec_module_cge/run_sccmec_batch.sh
+    - test -f $PREFIX/share/staphscope/modules/mge_module/MGEFinder.py
 
 about:
   home: https://github.com/bbeckley-hub/staphscope-typing-tool
@@ -61,9 +83,10 @@ about:
   summary: 'Advanced Staphylococcus aureus Typing & Lineage Analysis Platform'
   description: |
     StaphScope is a comprehensive bioinformatics tool for Staphylococcus aureus
-    genomic analysis including MLST typing, spa typing, SCCmec analysis,
-    antimicrobial resistance detection, virulence factors, plasmid profiling,
-    and lineage prediction from whole genome sequencing data.
+    genomic analysis including MLST typing, spa typing, SCCmec analysis (CGE and
+    RPet callers), capsule typing, agr typing, antimicrobial resistance detection,
+    virulence factors, plasmid profiling, mobile genetic element profiling, and
+    lineage prediction from whole genome sequencing data.
   doc_url: https://github.com/bbeckley-hub/staphscope-typing-tool
   dev_url: https://github.com/bbeckley-hub/staphscope-typing-tool
 
