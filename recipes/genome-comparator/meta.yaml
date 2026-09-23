@@ -1,0 +1,73 @@
+# Bioconda recipe. The sha256 is that of the GitHub tarball for tag v{{ version }}
+# (curl -sL <url> | sha256sum). To publish, copy this folder to
+# bioconda-recipes/recipes/genome-comparator and open a pull request. For a new release: tag it,
+# bump `version`, recompute the sha256 and reset `number` to 0.
+{% set name = "genome-comparator" %}
+{% set version = "0.4.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/genome_comparator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 92e32f5624343e681687f2b7ea402ada6b4d2d5f20b9230f907dd54e2bde70e2
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - genome-comparator = genome_comparator.cli:main
+    - mash-phylo = genome_comparator.cli:mash_phylo_main
+    - dendrogram-from-matrix = genome_comparator.cli:dendrogram_main
+    - tree-collapser = genome_comparator.cli:collapse_main
+    - tree-renamer = genome_comparator.cli:rename_main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - mash >=2.3
+    - numpy >=1.24
+    - pandas >=2.0
+    - scipy >=1.10
+    - scikit-bio >=0.7
+    - plotly >=5.15
+    - openpyxl >=3.1
+
+test:
+  imports:
+    - genome_comparator
+  commands:
+    - genome-comparator --version
+    - genome-comparator --help
+    - mash-phylo --version
+    - dendrogram-from-matrix --help
+    - tree-collapser --help
+    - tree-renamer --help
+    - mash --version
+
+about:
+  home: https://github.com/duceppemo/genome_comparator
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast genome comparison with Mash, from assemblies or reads, with trees, bootstrap support and PCoA
+  description: |
+    genome_comparator compares genomes from assemblies (fasta) or raw reads (fastq) with Mash, and produces a
+    distance matrix, UPGMA, neighbour joining and minimum evolution trees with optional bootstrap support,
+    and an interactive PCoA plot.
+  dev_url: https://github.com/duceppemo/genome_comparator
+  doc_url: https://github.com/duceppemo/genome_comparator/wiki
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.22920856
+  recipe-maintainers:
+    - duceppemo
