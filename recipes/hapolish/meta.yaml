@@ -1,0 +1,56 @@
+{% set name = "hapolish" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  # bioconda-recipes expects a source tarball URL + sha256 pinned to a
+  # tagged GitHub release, e.g.:
+  url: https://github.com/xuxocast/hapolish/archive/refs/tags/v0.1.0.tar.gz
+  sha256: c1f3cc27158f3e43e73e11b45a9673a56fa62d7b6dc4c4f06f42e6e02f1523c7
+  path: ..
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  entry_points:
+    - hapolish = hapolish.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.10
+    - polars >=0.20
+    - pyfaidx >=0.7
+    - minimap2 >=2.24
+    - winnowmap >=2.03
+    - meryl >=1.3
+
+test:
+  commands:
+    - hapolish --version
+    - hapolish --help
+    - hapolish run --help
+    - hapolish align --help
+    - hapolish censat --help
+    - hapolish assign --help
+    - hapolish polish --help
+
+about:
+  home: https://github.com/xuxocast/hapolish
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Chromosome assignment and CenSat-boundary estimation for diploid T2T assemblies aligned to CHM13, with optional coverage-maximizing haplotype polishing.
+  doc_url: https://github.com/xuxocast/hapolish/blob/main/README.md
+  dev_url: https://github.com/xuxocast/hapolish
+
