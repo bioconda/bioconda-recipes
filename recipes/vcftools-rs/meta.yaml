@@ -1,0 +1,46 @@
+{% set name = "vcftools-rs" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/realwalju/vcftools-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 842e7bf8681ff9777510e454b8b95d631c6450199af3554a74819c01eb702e29
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}   # libdeflate is built from source by libdeflater
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - vcftools-rs --version
+    - vcftools-rs --help
+
+about:
+  home: https://github.com/realwalju/vcftools-rs
+  dev_url: https://github.com/realwalju/vcftools-rs
+  license: LGPL-3.0-only
+  license_family: LGPL
+  license_file:
+    - COPYING.LESSER
+    - COPYING
+    - THIRDPARTY.yml
+  summary: Unofficial, byte-identical, parallel reimplementation of VCFtools population-genetics statistics.
+  description: |
+    vcftools-rs computes allele frequencies, heterozygosity, Hardy-Weinberg
+    tests, missingness, nucleotide diversity, Tajima's D and Weir & Cockerham
+    Fst from VCF files, with output byte-identical to VCFtools 0.1.17 and
+    the same command-line options, using all CPU cores.
+
+extra:
+  recipe-maintainers:
+    - realwalju
