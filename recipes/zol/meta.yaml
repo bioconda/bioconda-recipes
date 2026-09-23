@@ -9,14 +9,29 @@ source:
   - url: https://github.com/Kalan-Lab/zol/archive/refs/tags/v{{ version }}.tar.gz
     sha256: f09d575f2386f109a5cbb30eda478f5cf27b8b8fbc74f727c2ac353ea0d0ea68
     folder: zol_folder
-  - url: https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz
-    sha256: d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b
-    folder: gravis_fork_folder
-
+    
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('zol', max_pin="x") }}
+  script:
+    - set -euxo pipefail
+    - mkdir -p ${PREFIX}/bin
+    - cd "${SRC_DIR}/zol_folder"
+    - "{{ PYTHON }} -m pip install 'gravis @ https://github.com/raufs/gravis/archive/refs/tags/v0.1.1.tar.gz#sha256=d8a8b09a23522ab746eea740adc05f22cb6a1d5190c1b64ee4f304e62b37268b' --no-deps --no-build-isolation -vv"
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+    - export LDFLAGS=
+    - "${CXX} -std=c++14 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/runRBH src/zol/orthologs/runRBH.cpp"
+    - "${CXX} -std=c++14 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/splitDiamondResults src/zol/orthologs/splitDiamondResults.cpp"
+    - "${CXX} -std=c++14 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/splitDiamondResultsForFai src/zol/splitDiamondResultsForFai.cpp"
+    - chmod +x "${PREFIX}/bin/runRBH" "${PREFIX}/bin/splitDiamondResults" "${PREFIX}/bin/splitDiamondResultsForFai"
+    - export ZOL_DATA_PATH="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db"
+    - export ZOL_EXEC_PATH="${PREFIX}/bin"
+    - mkdir -p "${ZOL_DATA_PATH}"
+    - printf '%s\n' 'Default conda space for downloading annotation databases.' > "${ZOL_DATA_PATH}/README.txt"
+    - mkdir -p "${PREFIX}/etc/conda/activate.d" "${PREFIX}/etc/conda/deactivate.d"
+    - printf 'export ZOL_DATA_PATH=%s\nexport ZOL_EXEC_PATH=%s\n' "$ZOL_DATA_PATH" "$ZOL_EXEC_PATH" > "${PREFIX}/etc/conda/activate.d/zol.sh"
+    - printf 'unset ZOL_DATA_PATH\nunset ZOL_EXEC_PATH\n' > "${PREFIX}/etc/conda/deactivate.d/zol.sh"
 
 requirements:
   build:
@@ -73,6 +88,8 @@ requirements:
     - peptides
 
 test:
+  imports:
+    - gravis
   commands:
     - zol -h
 
