@@ -1,0 +1,47 @@
+{% set name = "shellinford" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c19f125a9d22d9676dbec64c0490ddd2d95d2449363052ddc2f4a588a52b04b3
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - shellinford
+
+about:
+  home: https://github.com/ikegami-yukino/shellinford-python
+  summary: Wavelet Matrix/Tree succinct data structure for full text search
+  description: |
+    Python binding for the shellinford C++ library, providing an FM-index
+    built on a wavelet matrix/tree succinct data structure for full text
+    search.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: https://github.com/ikegami-yukino/shellinford-python
+
+extra:
+  recipe-maintainers:
+    - jonasscheid

@@ -1,0 +1,25 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -34,7 +34,7 @@ dependencies = [
+     "pandas>=2.0.3",
+     "pysam>=0.23.3",
+     "matplotlib>=3.7.5",
+-    "PuLP>=3.0.0",
++    "PuLP>=2.8.0",
+     "CNVkit>=0.9.10",
+     "gurobipy",
+ ]
+--- a/bfbarchitect/BFBSolver.py
++++ b/bfbarchitect/BFBSolver.py
+@@ -1,4 +1,4 @@
+-from pulp import LpMinimize, LpProblem, LpStatus, lpSum, LpVariable, PULP_CBC_CMD
++from pulp import COIN_CMD, LpMinimize, LpProblem, LpStatus, lpSum, LpVariable, PULP_CBC_CMD
+ import logging
+ import sys
+ import time as _time
+@@ -163,3 +163,4 @@ def reconstruct_BFB_cbc(C, L, R, start, max_time=900, max_threads=8):
+     # Solve the problem
+-    status = model.solve(PULP_CBC_CMD(timeLimit=max_time, threads=max_threads, msg=0, options=["RandomS 42"]))
++    solver_class = PULP_CBC_CMD if PULP_CBC_CMD().available() else COIN_CMD
++    status = model.solve(solver_class(timeLimit=max_time, threads=max_threads, msg=0, options=["RandomS 42"]))
+     # print(f'Objective: {model.objective.value()}')

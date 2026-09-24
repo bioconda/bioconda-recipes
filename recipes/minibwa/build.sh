@@ -2,12 +2,8 @@
 
 set -xe
 
-mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include"
+mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include" "${PREFIX}/man/man1"
 
-# CC drives the Makefile's OpenMP auto-detection. The override-makefile.patch
-# lets the Makefile append its OpenMP/GPL/SSE4.2 flags on top of conda's
-# CFLAGS/CPPFLAGS rather than having them clobbered by the command line.
-# LIBS is left untouched so the Makefile keeps -lpthread -lz -lm.
 make \
     CC="${CC}" \
     CFLAGS="${CFLAGS}" \
@@ -19,3 +15,4 @@ make \
 install -m 0755 minibwa "${PREFIX}/bin"
 install -m 0644 libminibwa.a "${PREFIX}/lib"
 install -m 0644 minibwa.h "${PREFIX}/include"
+install -m 0644 minibwa.1 "${PREFIX}/man/man1"
