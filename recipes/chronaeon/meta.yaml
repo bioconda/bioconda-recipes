@@ -1,0 +1,63 @@
+{% set name = "chronaeon" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fa8af00ca4415960997b648af70f65846872ddbe17c7cdf05e3b48af63c38c15
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chronaeon = chronaeon.cli:main
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - hyphaeon-core >=0.1.0
+    - biopython >=1.80
+    - numpy >=1.22.0
+    - scipy >=1.9.0
+    - pandas >=1.5.0
+    - scikit-learn >=1.0
+    - matplotlib-base >=3.5
+    - tn93 >=1.0.16
+    - networkx >=3.0
+
+test:
+  imports:
+    - chronaeon
+  commands:
+    - chronaeon --version
+    - chronaeon --help
+    - chronaeon date --help
+    - chronaeon autoclock --help
+
+about:
+  home: https://github.com/veg/HyphAeon
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ChronAeon: Ultra-Fast Molecular Clock Dating, Phylodynamics, and Genomic Surveillance"
+  description: |
+    ChronAeon is the "Radar" component of the Aeon package family — rapidly
+    screens genomes, detects emerging clades, and infers origin dates using
+    molecular clock dating, phylodynamics, phylogeography, and multi-clock
+    community deconvolution.
+  doc_url: https://github.com/veg/HyphAeon#readme
+  dev_url: https://github.com/veg/HyphAeon
+
+extra:
+  recipe-maintainers:
+    - d-callan
