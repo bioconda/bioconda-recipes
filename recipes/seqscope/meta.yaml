@@ -1,0 +1,57 @@
+{% set name = "seqscope" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/SimonHTausch/seqscope/-/archive/v{{ version }}/seqscope-v{{ version }}.tar.gz
+  sha256: fb8f3167f3cf33060ef878588a55839a308f81124510e71ffa5d03aa605f5c49
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m build --wheel --no-isolation
+    - {{ PYTHON }} -m installer --no-compile-bytecode --prefix {{ PREFIX }} dist/seqscope-{{ version }}-py3-none-any.whl
+  entry_points:
+    - seqscope = seqscope.cli:main
+    - seqscope-demo = seqscope.cli:demo_main
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=77.0.3
+    - python-build
+    - python-installer
+    - wheel
+  run:
+    - python >=3.11
+    - numpy >=1.26,<3
+    - scipy >=1.12,<2
+    - pysam >=0.22,<0.25
+    - plotly >=5.24,<7
+
+test:
+  imports:
+    - seqscope.cli
+    - seqscope.bam
+    - seqscope.report
+  commands:
+    - seqscope --version
+    - seqscope --help
+    - seqscope-demo --help
+
+about:
+  home: https://gitlab.com/SimonHTausch/seqscope
+  dev_url: https://gitlab.com/SimonHTausch/seqscope
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: K-mer discovery and reference coverage sequencing-effort scenarios
+
+extra:
+  recipe-maintainers:
+    - simonhtausch
