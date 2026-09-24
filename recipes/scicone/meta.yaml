@@ -1,0 +1,79 @@
+{% set name = "scicone" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cbg-ethz/SCICoNE/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b98b819a1b7b7b5052f85e434e4adcb8c5f56f44e9f4b8f0342b2d50e4aacd9f
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.16
+    - make
+  host:
+    - python
+    - pip
+    - setuptools
+    - libboost-headers >=1.47
+    - nlopt
+    - llvm-openmp  # [osx]
+  run:
+    - python
+    - nlopt
+    - numpy
+    - scipy
+    - pandas
+    - matplotlib-base
+    - seaborn
+    - h5py
+    - python-graphviz
+    - graphviz
+    - phenograph
+    - pybiomart
+
+test:
+  imports:
+    - scicone
+  commands:
+    # A miniature end-to-end run: simulate a counts matrix, then segment it.
+    - scicone-simulation --n_cells=20 --n_bins=200 --n_regions=5 --n_nodes=3 --n_reads=10000 --postfix=condatest --seed=42
+    - scicone-breakpoint_detection --d_matrix_file=3nodes_5regions_10000reads_condatest_d_mat.csv --n_bins=200 --n_cells=20 --window_size=10 --threshold=3.0 --postfix=condatest
+    - test -s condatest_segmented_region_sizes.txt
+    # scicone-inference takes no --help; it reports the first missing required
+    # argument instead, which is enough to show that it loads and runs.
+    - scicone-inference 2>&1 | grep -q "region sizes file is not provided"
+    - test -x ${PREFIX}/bin/scicone-score
+    # The Python package must find the executables it just got installed with.
+    - python -c "from scicone import SCICoNE; SCICoNE()"
+
+about:
+  home: https://github.com/cbg-ethz/SCICoNE
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Single-cell copy number calling and event history reconstruction
+  description: |
+    SCICoNE is a statistical model and MCMC algorithm tailored to single-cell
+    copy number profiling from shallow whole-genome DNA sequencing data. It
+    reconstructs the history of copy number events in the tumour and uses these
+    evolutionary relationships to identify the copy number profiles of the
+    individual cells. This package provides the command line executables
+    (prefixed with `scicone-`) and the `scicone` Python interface to them.
+  dev_url: https://github.com/cbg-ethz/SCICoNE
+  doc_url: https://github.com/cbg-ethz/SCICoNE/blob/master/docs/tutorial.md
+
+extra:
+  recipe-maintainers:
+    - pedrofale

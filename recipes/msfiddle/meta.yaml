@@ -1,0 +1,74 @@
+{% set name = "msfiddle" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e3a35d14a534795066468a1f5688b25e177a9ca171fc3a28ab3fb236b67c7ca0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - msfiddle = msfiddle.main:main
+    - msfiddle-download-models = msfiddle.download:download_models_cli
+    - msfiddle-checkpoint-paths = msfiddle.download:print_checkpoint_paths_cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy >=1.20.0,<2.0a0
+    - pandas >=2.0.0
+    - tqdm >=4.60.0
+    - pyyaml >=6.0
+    - scikit-learn >=1.0.0
+    - scipy >=1.8.0
+    - pyarrow >=10.0.0
+    - rdkit >=2022.03.5
+    - molmass
+    - pyteomics
+    - pytorch
+
+test:
+  imports:
+    - msfiddle
+  commands:
+    - msfiddle --help
+    - msfiddle-download-models --help
+    - msfiddle-checkpoint-paths --help
+    - python -c "import msfiddle, pathlib; p = pathlib.Path(msfiddle.__file__).parent; assert (p / 'config').is_dir(); assert list((p / 'demo').glob('*.mgf')), 'demo MGF fixtures missing'"
+
+about:
+  home: https://github.com/JosieHong/msfiddle
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: FIDDLE - chemical formula prediction from tandem mass spectra by deep learning
+  description: |
+    FIDDLE (Formula IDentification by Deep LEarning) predicts molecular formulas
+    from tandem mass spectra using Orbitrap and Q-TOF models. It can optionally
+    incorporate native BUDDY/msbuddy and SIRIUS formula results as external
+    candidates for comparison or rescoring. Formula prediction is not structural
+    identification.
+
+    Pre-trained checkpoints are not bundled. They must be installed ahead of
+    time; do not invoke msfiddle-download-models from inside a compute job.
+  doc_url: https://github.com/JosieHong/msfiddle
+  dev_url: https://github.com/JosieHong/msfiddle
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1038/s41467-025-66060-9

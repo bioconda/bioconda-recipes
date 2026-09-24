@@ -1,69 +1,64 @@
 #!/bin/bash
+set -euo pipefail
 
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3"
-
-mkdir -p "${PREFIX}/bin"
-# The release tarball is a git archive and does not ship the (gitignored) bin/
-# output directory, so create it before building.
-mkdir -p bin/
-
-
-ARCH=$(uname -m)
-
-case "$ARCH" in
-    aarch64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
-	;;
-    arm64)
-	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
-esac
-
-# The Makefile hard-codes "-march=native"; replace it with portable,
-# architecture-specific flags so the build is reproducible on CI.
-case "$ARCH" in
-    aarch64)
-	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=armv8-a -Wno-narrowing|' Makefile
-	;;
-    arm64)
-	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=armv8.4-a -Wno-narrowing|' Makefile
-	;;
-    x86_64)
-	sed -i.bak 's|-march=native|-O3 -std=c++14 -march=x86-64-v3 -Wno-narrowing|' Makefile
-	;;
-esac
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    
-	case "$ARCH" in
-        arm64|aarch64)
-            # Apple Silicon (M1, M2, M3, etc.) -> ARM architecture
-            C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" MAC_ARM=1 -j"${CPU_COUNT}"
-            ;;
-        x86_64|i386)
-            # Legacy Intel architecture (or generic x86 container build)
-            C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" MAC_x86=1 -j"${CPU_COUNT}"
-            ;;
-        *)
-            # Fallback or error handling for unexpected architectures
-            echo "Warning: Unknown macOS architecture detected ($ARCH). Using ARM fallback."
-            C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" MAC_ARM=1 -j"${CPU_COUNT}"
-            ;;
-    esac
-else
-	C_OPTS="${CPPFLAGS} ${CXXFLAGS}" make GSL_PATH="$PREFIX/" CC="$CXX" SHELL="/bin/bash" -j"${CPU_COUNT}"
+# The package version is taken from NEMO_VERSION at render time; src/version.h
+# is the actual source of truth and decides the binary's name. If a tag was cut
+# without bumping version.h (or vice versa) they disagree, and the package would
+# ship a binary whose name does not match its version. Fail here instead.
+src_version="$(./getVersion.sh)"
+if [ "${src_version}" != "${PKG_VERSION}" ]; then
+    echo "ERROR: src/version.h says ${src_version}, package version is ${PKG_VERSION}." >&2
+    echo "       Bump src/version.h and re-tag, or fix the tag." >&2
+    exit 1
 fi
 
-mkdir -p "${PREFIX}/bin"
-# `make` builds a single version-stamped binary into bin/. On macOS the
-# MAC_ARM / MAC_x86 flags suffix its name (e.g. nemo<ver>-macARM); the
-# Makefile's `install` target recomputes BIN_NAME *without* those flags and
-# looks for the unsuffixed name, which fails on osx-arm64. Install the binary
-# that was actually produced, under the canonical command name (nemo<version>).
+# `bin/` is gitignored, so a fresh checkout does not carry it.
+mkdir -p bin/
+
+ARCH="$(uname -m)"
+
+case "$ARCH" in
+    aarch64) MARCH="-march=armv8-a"    ;;
+    arm64)   MARCH="-march=armv8.4-a"  ;;
+    x86_64)  MARCH="-march=x86-64-v3"  ;;
+    *)       MARCH=""                  ;;
+esac
+
+# The Makefile hard-codes `C_OPTS=-fPIC -march=native`, which no CI builder can
+# use, so rewrite that line in place.
+#
+# Note this is the only way to get conda's flags into the build. The obvious
+# `C_OPTS="$CPPFLAGS $CXXFLAGS" make ...` is an *environment* assignment, and
+# environment variables lose to a makefile's own `C_OPTS=` line -- so it is
+# silently a no-op and conda's hardening/include flags never reach the compiler.
+# (`make C_OPTS=...`, the argument form, would win, but it also overrides the
+# `C_OPTS += -DHAS_GSL` the GSL block appends, and the build then fails outright
+# in Uniform.h.) Patching the line keeps the `+=` accumulations intact.
+sed -i.bak \
+    "s|^C_OPTS=-fPIC -march=native\$|C_OPTS=-fPIC ${MARCH} -std=c++14 -Wno-narrowing ${CXXFLAGS} ${CPPFLAGS}|" \
+    Makefile
+
+# Give the linker conda's flags (rpath into $PREFIX/lib above all). The MAC_ARM
+# and MAC_x86 blocks reset LD_OPTS outright, so patch those lines too.
+sed -i.bak "s|^LD_OPTS=-lstdc++\$|LD_OPTS=-lstdc++ ${LDFLAGS}|" Makefile
+sed -i.bak "s|^\( *LD_OPTS=-lstdc++ -L\$(GSL_PATH)lib .*\)\$|\1 ${LDFLAGS}|" Makefile
+
+MAKE_ARGS=(GSL_PATH="${PREFIX}/" CC="${CXX}" SHELL="/bin/bash")
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    case "$ARCH" in
+        arm64|aarch64) MAKE_ARGS+=(MAC_ARM=1) ;;
+        *)             MAKE_ARGS+=(MAC_x86=1) ;;
+    esac
+fi
+
+make "${MAKE_ARGS[@]}" -j"${CPU_COUNT}"
+
+# `make` emits a single version-stamped binary into bin/, and on macOS the
+# MAC_ARM / MAC_x86 flags suffix its name (nemo<ver>-macARM). The Makefile's
+# own `install` target recomputes BIN_NAME *without* those flags and so looks
+# for a name that was never produced. Install whatever was actually built,
+# under the canonical command name.
 built="$(ls -1 bin/nemo* | head -n1)"
+mkdir -p "${PREFIX}/bin"
 cp "${built}" "${PREFIX}/bin/nemo${PKG_VERSION}"
