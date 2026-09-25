@@ -1,0 +1,41 @@
+{% set version = "1.2.1" %}
+
+package:
+  name: s4pred
+  version: {{ version }}
+
+source:
+  url: https://github.com/psipred/s4pred/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e15ef09b993b3664de1003427762570d52b1f7b79f3259a979b6f9f4c526bb05
+
+build:
+  number: 1
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('s4pred', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - wget
+  run:
+    - python >=3.7
+    - pytorch =2.6.0
+    - biopython >=1.78
+test:
+  commands:
+    - echo '>1QYS_1|Chain A|TOP7|Computationally Designed Sequence\n' > test.fasta
+    - echo 'MGDIQVQVNIDDNGKNFDYTYTVTTESELQKVLNELMDYIKKQGAKRVRISITARTKKEAEKFAAILIKVFAELGYNDINVTFDGDTVTVEGQL' >> test.fasta
+    - run_model -t horiz --save-files ./test.fasta
+
+about:
+  home: https://github.com/psipred/s4pred
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Accurate prediction of a protein's secondary structure from its amino acid sequence"
+  dev_url: https://github.com/psipred/s4pred
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab491

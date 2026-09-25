@@ -1,0 +1,61 @@
+{% set name = "taxutils" %}
+{% set version = "1.1.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5bba7863ecfbe6434299d34c2053aec6c083c8d9bce35ef28872d538bc6c6707
+
+build:
+  number: 0
+  script:
+    - export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"  # [osx]
+    - (cd rust && cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml)
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: true # [py<310]
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - setuptools >=68
+    - setuptools-rust >=1.9
+    - wheel
+  run:
+    - python
+    - numpy
+    - pandas
+
+test:
+  imports:
+    - taxutils
+  commands:
+    - taxutils --help
+    - python -c "from taxutils import backend_info; assert backend_info().get('selected') == 'rust'"
+
+about:
+  home: https://github.com/SwabSeq/taxutils
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Utilities for working with NCBI taxonomic data."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - "wgobrien"
+  authors:
+    - "William O'Brien"

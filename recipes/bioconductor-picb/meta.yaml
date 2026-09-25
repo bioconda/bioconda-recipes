@@ -1,0 +1,63 @@
+{% set version = "1.2.0" %}
+{% set name = "PICB" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 953db5a8a3497e13275a59057f0f75e9
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-picb", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: GenomeInfoDb, knitr, rtracklayer, testthat, BiocStyle, prettydoc, BSgenome, BSgenome.Dmelanogaster.UCSC.dm6, BiocManager, rmarkdown, ggplot2
+requirements:
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-openxlsx
+    - r-seqinr
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-openxlsx
+    - r-seqinr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CC0
+  summary: piRNA Cluster Builder
+  description: piRNAs (short for PIWI-interacting RNAs) and their PIWI protein partners play a key role in fertility and maintaining genome integrity by restricting mobile genetic elements (transposons) in germ cells. piRNAs originate from genomic regions known as piRNA clusters. The piRNA Cluster Builder (PICB) is a versatile toolkit designed to identify genomic regions with a high density of piRNAs. It constructs piRNA clusters through a stepwise integration of unique and multimapping piRNAs and offers wide-ranging parameter settings, supported by an optimization function that allows users to test different parameter combinations to tailor the analysis to their specific piRNA system. The output includes extensive metadata columns, enabling researchers to rank clusters and extract cluster characteristics.
+

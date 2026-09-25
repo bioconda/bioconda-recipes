@@ -1,9 +1,9 @@
 {% set name = "matam" %}
-{% set version = "1.6.1" %}
+{% set version = "1.6.2" %}
 {% set sha256 = "unused" %}
 
 package:
-  name: matam
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -14,30 +14,31 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('matam', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-    - cmake
+    - cmake <4
     - autoconf
     - automake
-
+    - libtool
+    - pkg-config
   host:
     - zlib
-
-  run:
-    - coreutils # Centos6 (otherwise sort --parallel is unrecognized)
-    - wget
     - bzip2
-    - zlib
+  run:
+    - coreutils  # Centos6 (otherwise sort --parallel is unrecognized)
+    - wget
     - python >=3
     - numpy
     - samtools
-    - sga
-    - sortmerna =2.1b
+    - sga  # [x86_64]
+    - sortmerna # [x86_64]
     - vsearch
     - rdptools
     - krona
@@ -46,16 +47,19 @@ test:
   commands:
     - matam_assembly.py --help
     - index_default_ssu_rrna_db.py --help
-    - matam_db_preprocessing.py --help
     - matam_compare_samples.py --help
 
 about:
-  home: https://github.com/bonsai-team/matam
-  license: AGPL-3.0
+  home: "https://github.com/bonsai-team/matam"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: LICENSE
-  summary: MATAM is a software dedicated to the fast and accurate targeted assembly of short reads.
+  summary: "MATAM is a software dedicated to the fast and accurate targeted assembly of short reads."
+  dev_url: "https://github.com/bonsai-team/matam"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - doi:10.1093/bioinformatics/btx644
   skip-lints:

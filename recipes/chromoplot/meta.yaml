@@ -1,0 +1,59 @@
+{% set name = "chromoplot" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fe2225ec4c3ee80db2f4a6af5cd9acc259dc9217c4dc1cdd4e9fcd4cb68b9d8c
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chromoplot = chromoplot.cli.main:cli
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('chromoplot', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - matplotlib-base >=3.5
+    - numpy >=1.21
+    - pandas >=1.3
+    - pyyaml >=6.0
+    - click >=8.0
+
+test:
+  imports:
+    - chromoplot
+    - chromoplot.core
+    - chromoplot.tracks
+    - chromoplot.io
+  commands:
+    - chromoplot --help
+
+about:
+  home: https://github.com/aseetharam/chromoplot
+  summary: "Publication-quality genome and chromosome visualization toolkit"
+  description: |
+    Chromoplot is a Python library for creating publication-quality genome 
+    visualizations. It provides a track-based system for plotting genomic 
+    features, haplotypes, gene models, alignments, coverage, and synteny.
+    Designed as a companion to haplophaser for polyploid genome analysis.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/aseetharam/chromoplot#readme
+  dev_url: https://github.com/aseetharam/chromoplot
+
+extra:
+  recipe-maintainers:
+    - aseetharam

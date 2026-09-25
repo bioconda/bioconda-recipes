@@ -1,0 +1,153 @@
+diff --git a/AddXS.cpp b/AddXS.cpp
+index 14888b0..5f06137 100644
+--- a/AddXS.cpp
++++ b/AddXS.cpp
+@@ -13,7 +13,7 @@ char usage[] =
+ char samLine[65537] ;
+ char seq[65537] ;
+ 
+-char nucToNum[26] = { 0, -1, 1, -1, -1, -1, 2,
++signed char nucToNum[26] = { 0, -1, 1, -1, -1, -1, 2,
+ 			-1, -1, -1, -1, -1, -1, 0, // Regard 'N' as 'A' 
+ 			-1, -1, -1, -1, -1, 3,
+ 			-1, -1, -1, -1, -1, -1 } ;
+diff --git a/FindJunction.cpp b/FindJunction.cpp
+index f1c589b..663470e 100644
+--- a/FindJunction.cpp
++++ b/FindJunction.cpp
+@@ -12,7 +12,7 @@
+ 
+ #include "sam.h"
+ 
+-#define LINE_SIZE 4097
++#define LINE_SIZE 8193
+ #define QUEUE_SIZE 10001
+ #define HASH_MAX 1000003
+ 
+@@ -46,7 +46,7 @@ struct _junction
+ char line[LINE_SIZE] ;
+ char col[11][LINE_SIZE] ; // The option fields is not needed.
+ char strand ; // Extract XS field
+-char noncanonStrandInfo ;
++signed char noncanonStrandInfo ;
+ //bool secondary ;
+ int NH ;
+ int editDistance ;
+@@ -490,7 +490,7 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 	int num ;
+ 	int newJuncCnt = 0 ; // The # of junctions in the read, and the # of new junctions among them.
+ 	
+-	struct _cigarSeg cigarSeg[1000] ; // A segment of the cigar.
++	struct _cigarSeg cigarSeg[2000] ; // A segment of the cigar.
+ 	int ccnt = 0 ; // cigarSeg cnt
+ 
+ 	j = 0 ;
+@@ -523,6 +523,8 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 		}
+ 		else
+ 		{
++			/*
++			 * REMOVED: Unused variables
+ 			int softStart = -1 ;
+ 			int softEnd = 0 ;
+ 			if ( cigarSeg[0].type == 'S' )
+@@ -530,6 +532,7 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 			if ( cigarSeg[ ccnt - 1 ].type == 'S' )
+ 				softEnd = cigarSeg[ ccnt - 1 ].len ;
+ 			int readLen = strlen( col[9] ) ;
++			*/
+ 			int count[5] = { 0, 0, 0, 0, 0 } ;
+ 
+ 			int pos = 0 ;
+@@ -538,12 +541,12 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 				switch ( cigarSeg[i].type )
+ 				{
+ 					case 'S':
+-						pos += cigarSeg[i].len ;
++						pos += cigarSeg[i].len ; break ;
+ 					case 'M':
+ 					case 'I':
+ 						{
+ 							for ( j = 0 ; j < cigarSeg[i].len ; ++j )
+-								++count[ nucToNum[  col[9][pos + j] - 'A' ] ] ;
++								++count[ (unsigned char) nucToNum[  col[9][pos + j] - 'A' ] ] ;
+ 							pos += j ;
+ 						} break ;
+ 					case 'N':
+@@ -556,8 +559,9 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 									max = count[j] ;
+ 								sum += count[j] ;
+ 							}
+-							if ( max > 0.8 * sum )
++							if ( max > 0.8 * sum ) {
+ 								validRead = false ;
++							}
+ 							count[0] = count[1] = count[2] = count[3] = count[4] = 0 ;
+ 						} break ;
+ 					case 'H':
+@@ -571,8 +575,9 @@ bool CompareJunctions( int startLocation, char *cigar )
+ 			int sum = 0 ;
+ 			for ( j = 0 ; j < 5 ; ++j )
+ 			{
+-				if ( count[j] > max )
++				if ( count[j] > max ) {
+ 					max = count[j] ;
++				}
+ 				sum += count[j] ;
+ 			}
+ 			if ( max > 0.8 * sum )
+@@ -965,11 +970,11 @@ int main( int argc, char *argv[] )
+ 				break ;
+ 			if ( line[0] == '\0' || line[0] == '@' )
+ 				continue ;
+-			sscanf( line, "%s%s%s%s%s%s%s%s%s%s%s", col, col + 1, col + 2, col + 3, col + 4, 
+-					col + 5, col + 6, col + 7, col + 8, col + 9,  col + 10 ) ;
++			sscanf( line, "%s%s%s%s%s%s%s%s%s%s%s", col[0], col[1], col[2], col[3], col[4], 
++					col[5], col[6], col[7], col[8], col[9],  col[10] ) ;
+ 					
+ 			flag = atoi( col[1] ) ;
+-			if ( p = strstr( line, "NH" ) )
++			if ( (p = strstr( line, "NH" )) )
+ 			{
+ 				int k = 0 ;
+ 				p += 5 ;
+diff --git a/Vote.cpp b/Vote.cpp
+index eb234a2..0a533a8 100644
+--- a/Vote.cpp
++++ b/Vote.cpp
+@@ -72,7 +72,7 @@ int CompDouble( const void *p1, const void *p2 )
+ 
+ int main( int argc, char *argv[] )
+ {
+-	int i, j, k ;
++	int i, j, k = 0 ;
+ 	double minAvgDepth = 1.0 ;
+ 	double fraction = 1.0 ;
+ 	int minSampleCnt = 3 ;
+diff --git a/alignments.hpp b/alignments.hpp
+index 855d026..7dfe694 100644
+--- a/alignments.hpp
++++ b/alignments.hpp
+@@ -484,6 +484,7 @@ public:
+ 		}
+ 		if ( gcCnt >= threshold * b->core.l_qseq )
+ 			return true ;
++		return false;
+ 	}
+ 
+ 	void GetGeneralInfo( bool stopEarly = false )
+diff --git a/blocks.hpp b/blocks.hpp
+index 6a91099..7269ca3 100644
+--- a/blocks.hpp
++++ b/blocks.hpp
+@@ -378,6 +378,10 @@ class Blocks
+ 
+ 				for ( i = 0 ; i < segCnt ; ++i )
+ 				{
++					// skip bizzare segment that pops up in minimap alignments
++					if ( segments[i].a >= segments[i].b ) {
++						break;
++					}
+ 					//if ( i == 0 )
+ 					//	printf( "hi %d %s %d %d\n", i, alignments.GetReadId(), segments[i].a, segments[i].b ) ;
+ 					for ( j = tag ; j < (int)exonBlocks.size() ; ++j )

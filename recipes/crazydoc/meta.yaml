@@ -1,0 +1,54 @@
+{% set name = "crazydoc" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Edinburgh-Genome-Foundry/crazydoc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e970c24b249868ae0fbd9ca02ea50d85b22e3126d2fee5702a1a79591e136c54
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports: 
+    - {{ pin_subpackage('crazydoc', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools
+    - pip
+  run:
+    - python >={{ python_min }}
+    - biopython
+    - python-docx
+    - dna_features_viewer
+
+test:
+  source_files: 
+    - tests/
+  imports:
+    - crazydoc
+  requires:
+    - python {{ python_min }}
+    - matplotlib-base 
+    - pytest
+    - pytest-cov
+    - pytest-mock
+  commands:
+    - if command -v pytest >/dev/null 2>&1; then pytest tests/; else echo "pytest not available, skipping tests."; fi
+
+about:
+  home: https://github.com/Edinburgh-Genome-Foundry/crazydoc
+  summary: "Read genetic sequences from stylized docx files"
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
+    - tduigou
+    - breakthewall

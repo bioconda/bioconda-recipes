@@ -1,0 +1,143 @@
+diff --git a/kent/src/inc/common.mk b/kent/src/inc/common.mk
+index 11447d2..82d3815 100644
+--- a/kent/src/inc/common.mk
++++ b/kent/src/inc/common.mk
+@@ -1,7 +1,7 @@
+ # if CC is undefined, set it to gcc
+-CC?=gcc
++CC?=$(CC)
+ # allow the somewhat more modern C syntax, e.g. 'for (int i=5; i<10, i++)'
+-CFLAGS += -std=c99
++CFLAGS += -std=c11
+ 
+ # This is required to get the cgiLoader.mk compile target to work.  for some
+ # reason, make's %.o: %.c overrides the rule below, cause the compiles to fail
+@@ -11,7 +11,7 @@ CFLAGS += -std=c99
+ GNUMAKEFLAGS += -r
+ 
+ # add additional library paths
+-L += ${LDFLAGS}
++L += ${LDFLAGS} -L${PREFIX}/lib -L../lib
+ 
+ # to build on sundance: CC=gcc -mcpu=v9 -m64
+ ifeq (${COPT},)
+@@ -28,7 +28,7 @@ ifneq (,$(findstring -,$(MACHTYPE)))
+ endif
+ 
+ HG_DEFS=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_GNU_SOURCE -DMACHTYPE_${MACHTYPE}
+-HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/htslib
++HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/htslib -I$(PREFIX)/include
+ 
+ # to check for Mac OSX Darwin specifics:
+ UNAME_S := $(shell uname -s)
+@@ -40,7 +40,7 @@ HOSTNAME = $(shell uname -n)
+ # Semi-static builds, normally done in Docker
+ #
+ # use make SEMI_STATIC=yes to enable
+-#  
++#
+ # These use static libraries except for -ldl, -lm, and -lc
+ # which must be dynamic.
+ #
+@@ -63,8 +63,8 @@ else
+ endif
+ 
+ ifeq (${ZLIB},)
+-  ifneq ($(wildcard /lib64/libz.a),)
+-    ZLIB=/lib64/libz.a
++  ifneq ($(wildcard $(PREFIX)/lib/libz.a),)
++    ZLIB=$(PREFIX)/lib/libz.a
+   else
+     ZLIB=-lz
+   endif
+@@ -72,23 +72,23 @@ endif
+ 
+ # for Darwin (Mac OSX), use static libs when they can be found
+ ifeq ($(UNAME_S),Darwin)
+-  ifneq ($(wildcard /opt/local/include/openssl/ssl.h),)
+-    HG_INC += -I/opt/local/include
++  ifneq ($(wildcard $(PREFIX)/include/openssl/ssl.h),)
++    HG_INC += -I$(PREFIX)/include
+   endif
+   # on M1, the directory changed
+   ifneq ($(wildcard /opt/homebrew/include/openssl/ssl.h),)
+     HG_INC += -I/opt/homebrew/include
+     L += -L/opt/homebrew/lib/
+   endif
+-  ifneq ($(wildcard /opt/local/lib/libz.a),)
+-    ZLIB = /opt/local/lib/libz.a
++  ifneq ($(wildcard $(PREFIX)/lib/libz.a),)
++    ZLIB = $(PREFIX)/lib/libz.a
+   endif
+   ifneq ($(wildcard /opt/local/lib/libpng.a),)
+     PNGLIB = /opt/local/lib/libpng.a
+   endif
+   ifeq (${BZ2LIB},)
+-    ifneq ($(wildcard /opt/local/lib/libbz2.a),)
+-      BZ2LIB=/opt/local/lib/libbz2.a
++    ifneq ($(wildcard $(PREFIX)/lib/libbz2.a),)
++      BZ2LIB=$(PREFIX)/lib/libbz2.a
+     endif
+   endif
+   ifneq ($(wildcard /opt/local/lib/libfreetype.a),)
+@@ -115,14 +115,14 @@ ifeq ($(UNAME_S),Darwin)
+       CRYPTOLIB = /opt/local/libexec/openssl3/lib/libcrypto.a
+     endif
+   endif
+-  ifneq ($(wildcard /opt/local/lib/libiconv.a),)
+-    ICONVLIB = /opt/local/lib/libiconv.a
++  ifneq ($(wildcard $(PREFIX)/lib/libiconv.a),)
++    ICONVLIB = $(PREFIX)/lib/libiconv.a
+   endif
+-  ifneq ($(wildcard /usr/local/Cellar/mariadb/11.6.2/lib/libmariadbclient.a),)
+-      MYSQLLIBS = /usr/local/Cellar/mariadb/11.6.2/lib/libmariadbclient.a
++  ifneq ($(wildcard $(PREFIX)/lib/mariadb/libmariadbclient.a),)
++      MYSQLLIBS = $(PREFIX)/lib/mariadb/libmariadbclient.a
+   else
+-    ifneq ($(wildcard /opt/homebrew/lib/libmysqlclient.a),)
+-      MYSQLLIBS = /opt/homebrew/lib/libmysqlclient.a
++    ifneq ($(wildcard $(PREFIX)/lib/libmysqlclient.a),)
++      MYSQLLIBS = $(PREFIX)/lib/libmysqlclient.a
+     endif
+   endif
+ endif
+@@ -194,7 +194,7 @@ ifneq (${CONDA_BUILD},1)
+ endif
+ 
+ ifeq (${PTHREADLIB},)
+-  PTHREADLIB=-lpthread
++  PTHREADLIB=-pthread -liconv
+ endif
+ 
+ ifneq ($(UNAME_S),Darwin)
+@@ -284,8 +284,8 @@ ifneq ($(MAKECMDGOALS),clean)
+   endif
+ 
+   ifeq (${MYSQLINC},)
+-    ifneq ($(wildcard /usr/local/mysql/include/mysql.h),)
+-	  MYSQLINC=/usr/local/mysql/include
++    ifneq ($(wildcard $(PREFIX)/include/mysql.h),)
++	  MYSQLINC=$(PREFIX)/include
+     endif
+   endif
+   ifeq (${MYSQLINC},)
+@@ -309,8 +309,8 @@ ifneq ($(MAKECMDGOALS),clean)
+     endif
+   endif
+   ifeq (${MYSQLLIBS},)
+-    ifneq ($(wildcard /usr/lib64/libmysqlclient.a),)
+-      MYSQLLIBS = /usr/lib64/libmysqlclient.a
++    ifneq ($(wildcard $(PREFIX)/lib/mariadb/libmysqlclient.a),)
++      MYSQLLIBS = $(PREFIX)/lib/mariadb/libmysqlclient.a
+     endif
+   endif
+     # last resort, hoping the compiler can find it in standard locations
+@@ -334,7 +334,7 @@ endif
+ 
+ ifeq (${BZ2LIB},)
+   ifneq ($(wildcard /lib64/libbz2.a),)
+-    BZ2LIB=/lib64/libbz2.a
++    BZ2LIB=$(PREFIX)/lib/libbz2.a
+    else
+     BZ2LIB=-lbz2
+    endif

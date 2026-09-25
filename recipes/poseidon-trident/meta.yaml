@@ -1,4 +1,5 @@
-{% set version = "1.6.2.1" %}
+{% set version = "2.2.2.1" %}
+
 package:
   name: poseidon-trident
   version: {{ version }}
@@ -7,30 +8,27 @@ package:
 # https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
 source:
   - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-conda-linux # [linux]
-    md5: e0eeea8a65ccf23523ffabd2498b7929 # [linux]
+    sha256: ac7816c4f150f4e0a0dd070177e7e50a6be1e41452e754b0dc211685ba187e12 # [linux]
   - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS-X64 # [osx and x86_64]
-    md5: 2c75b5ede2f30af454d8bca20379d9ef # [osx and x86_64]
+    sha256: 25c4687d6663c24f5939a62c8e30fb26738a5bb64e24e71f25063284b7533f9f # [osx and x86_64]
   - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/trident-macOS-ARM64 # [osx and arm64]
-    md5: 68a5dc39e652f9e48edb8ae117d4ab1a # [osx and arm64]
+    sha256: 92d32977a978f016066215f28db316bbab7c643309aa9f5df396bf63a87f5008 # [osx and arm64]
 
 build:
-  number: 0 
-  script:
-    - "mkdir -p $PREFIX/bin"
-    - "mv trident* $PREFIX/bin/trident"
-    - "chmod u+x $PREFIX/bin/trident"
+  number: 0
   run_exports:
-    - {{ pin_subpackage("poseidon-trident", max_pin=None) }}
+    - {{ pin_subpackage('poseidon-trident', max_pin=None) }}
 
 requirements:
   build:
     # Precompiled binaries still link against libgcc
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
     - gmp
   run:
-    - zlib
+    - ca-certificates
     - gmp
 
 test:
@@ -38,10 +36,14 @@ test:
      - trident --version
 
 about:
-  home: https://www.poseidon-adna.org/#/
+  home: "https://www.poseidon-adna.org/#"
   license: MIT
+  license_family: MIT
   summary: "A tool (trident) to work with modular genotype databases formatted using Poseidon."
 
 extra:
   additional-platforms:
+    - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.7554/eLife.98317.1

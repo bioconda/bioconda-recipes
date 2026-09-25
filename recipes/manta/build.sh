@@ -15,4 +15,6 @@ make PREFIX="${PREFIX}" CXX="${CXX}" VERBOSE=1 \
   INCLUDE_DIRS="$PREFIX/include" \
   LIBRARY_DIRS="$PREFIX/lib" -j"${CPU_COUNT}"
 make install
-    
+
+ln -s $PREFIX/libexec/convertInversion.py $PREFIX/bin
+ln -s $PREFIX/libexec/denovo_scoring.py $PREFIX/bin

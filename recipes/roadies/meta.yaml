@@ -1,70 +1,109 @@
-{% set version = "0.1.4" %}
+{% set name = "roadies" %}
+{% set version = "0.2.0" %}
+{% set libpll_version = "0.3.2" %}
 
 package:
-  name: roadies
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/TurakhiaLab/ROADIES/archive/v{{ version }}.tar.gz
-  sha256: e3b4b89f247824c4b61e790f094320624bde47e295e2158a9ad83c05dfa83d54
+  - url: https://github.com/TurakhiaLab/ROADIES/archive/v{{ version }}.tar.gz
+    sha256: 0dd739a609e6225e27bab11f2458b4522d17d2ab5b9ee3fa7ae5d72011167d99
+  - url: https://github.com/xflouris/libpll/archive/{{ libpll_version }}.tar.gz
+    sha256: 45107d59d87be921c522478bb3688beee60dc79154e0b4a183af01122c597132
+    folder: libpll-src
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage("roadies", max_pin=None) }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  # win still unsupported: build.sh is bash-only and libpll's autotools build
+  # needs a POSIX toolchain neither of which conda-build provides on win.
+  # Also, bioconda-recipes' CI has no Windows build job at all.
+  skip: True  # [win]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    # Only for MLIPPER (genuinely GPU-only, no CPU fallback in its own
+    # Makefile). TWILIGHT is CPU/GPU-capable and built on every platform
+    # regardless (see build.sh) - placement mode needs it either way. No
+    # osx CUDA reqs here at all, since there's no CUDA toolchain for macOS.
+    - cuda-nvcc  # [linux]
+    - cuda-cudart-dev  # [linux]
+    - cuda-version >=12.2,<13  # [linux]
     - cmake
     - make
+    - autoconf  # libpll's build system
+    - automake
+    - libtool
+    - pkg-config
+    - flex
+    - bison
+    - git
+  host:
+    - python ==3.11
+    - pip
+    - boost-cpp
+    - zlib
     - wget
     - unzip
     - openjdk >=1.7
-
-  host:
-    - python ==3.9
-    - pip
-    - libboost-devel
-    - zlib
+    - perl >=5.22
+    - perl-bioperl >=1.7.2
+    - perl-module-build
+    - liblapack
+    - libblas
+    - tbb-devel
   run:
-    - python ==3.9
+    - python ==3.11
     - biopython
     - numpy
-    - libboost-devel
-    - pip
+    - boost-cpp
     - matplotlib-base
-    - seaborn
+    - seaborn-base
     - ete3
     - pyyaml
     - raxml-ng
-    - snakemake
+    - snakemake-minimal
     - pasta >=1.9.0
-    - mashtree
-    - treeswift >=1.1.28 
+    - treeswift >=1.1.28
     - fasttree >=2.1.11
     - alive-progress
+    - perl >=5.22
+    - perl-bioperl >=1.7.2
+    - mash >=2
+    - quicktree
+    - mashtree ==1.4.6
+    - lastz >=1.04.52
+    - aster >=1.19
+    - epa-ng
+    - gappa
+    - tbb
+    - cuda-cudart >=12.2,<13  # [linux]
 
 test:
   commands:
     - python $PREFIX/ROADIES/run_roadies.py --help
+    - mashtree --help
+    - test -x $PREFIX/ROADIES/TWILIGHT/bin/twilight
+    - test -x $PREFIX/ROADIES/MLIPPER/MLIPPER  # [linux]
 
 about:
   home: "https://github.com/TurakhiaLab/ROADIES"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  doc_url: "https://turakhia.ucsd.edu/ROADIES/"
-  summary: "Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)"
+  doc_url: "https://turakhia.ucsd.edu/ROADIES"
+  dev_url: "https://github.com/TurakhiaLab/ROADIES"
+  summary: "Reference-free, orthology-free, discordance-aware species tree estimation from raw genome assemblies."
   description: |
-    ROADIES is an end-to-end pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime.
+    ROADIES is an end-to-end pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. ROADIES_XP extends this with GPU-accelerated alignment/tree-building and a placement mode for growing or updating an existing species tree with new genomes.
 
 extra:
   recipe-maintainers:
     - ang037
   identifiers:
     - doi:10.1101/2024.05.27.596098
-  edam:
-    topic: Phylogenetics
-    operation: Species tree estimation
-  

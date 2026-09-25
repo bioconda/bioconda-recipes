@@ -45,10 +45,6 @@ Everyone has access to the following BiocondaBot commands, which can be given in
 
 <table>
   <tr>
-    <td><code>@BiocondaBot please update</code></td>
-    <td>Merge the master branch into a PR.</td>
-  </tr>
-  <tr>
     <td><code>@BiocondaBot please add label</code></td>
     <td>Add the <code>please review & merge</code> label.</td>
   </tr>

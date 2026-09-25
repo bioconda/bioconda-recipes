@@ -1,0 +1,63 @@
+{% set version = "1.0.0" %}
+{% set name = "Ibex" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: f70ec7ee9f3d3b4afe69a172fd281891
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ibex", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: basilisk.utils, BiocStyle, bluster, dplyr, ggplot2, kableExtra, knitr, markdown, mumosa, patchwork, Peptides, rmarkdown, scater, spelling, testthat (>= 3.0.0), utils, viridis
+# SystemRequirements: Python (via basilisk)
+requirements:
+  host:
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-immapex >=1.4.0,<1.5.0
+    - bioconductor-screpertoire >=2.6.0,<2.7.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-matrix
+    - r-reticulate >=1.43.0
+    - r-rlang
+    - r-seuratobject
+    - r-tensorflow
+  run:
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-immapex >=1.4.0,<1.5.0
+    - bioconductor-screpertoire >=2.6.0,<2.7.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-matrix
+    - r-reticulate >=1.43.0
+    - r-rlang
+    - r-seuratobject
+    - r-tensorflow
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Methods for BCR single-cell embedding
+  description: Implementation of the Ibex algorithm for single-cell embedding based on BCR sequences. The package includes a standalone function to encode BCR sequence information by amino acid properties or sequence order using tensorflow-based autoencoder. In addition, the package interacts with SingleCellExperiment or Seurat data objects.
+  license_file: LICENSE
+

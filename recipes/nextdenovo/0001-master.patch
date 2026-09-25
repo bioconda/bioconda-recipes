@@ -1,0 +1,75 @@
+diff --git a/lib/Makefile b/lib/Makefile
+index ef1d703..08aa688 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -1,18 +1,19 @@
+-CC=gcc
+-CFLAGS = -std=c99 -O3 -Wall -Wno-unused-function
++CC?=$(CC)
++INCLUDES = -I$(PREFIX)/include
++CFLAGS = -std=c11 -O3 -Wall -Wno-unused-function -Wno-implicit-function-declaration -Wno-format -Wno-unused-but-set-variable -L$(PREFIX)/lib
+ FPIC = -fPIC -shared
+-HTSDIR = ./htslib/
++HTSDIR = ./htslib
+ LIB_OBJECT = nextcorrect.so ovlseq.so ctg_cns.so ckit.so
+-CTG_CNS_CFLAGS = -D_SVID_SOURCE -DLGS_CORRECT -I $(HTSDIR) -lcurl -lcrypto -lm -lpthread -lz $(HTSLIB_CFLAGS)
++CTG_CNS_CFLAGS = -D_SVID_SOURCE -DLGS_CORRECT -I $(HTSDIR) -L$(PREFIX)/lib -lcurl -lcrypto -lm -pthread -lz -ldeflate $(HTSLIB_CFLAGS)
+ 
+ all: $(LIB_OBJECT)
+ 
+ $(HTSDIR)/libhts.a:
+-	cd  $(HTSDIR) && ./configure --disable-bz2 --disable-lzma
++	cd $(HTSDIR) && autoreconf -if && ./configure --disable-bz2 --disable-lzma CC=$CC
+ 	@+make -C $(HTSDIR) CPPFLAGS+=-fPIC $(INCLUDES)
+ 
+ nextcorrect.so: align.c dag.c nextcorrect.c
+-	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ 
++	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^
+ 
+ ovlseq.so: ovlseq.c bseq.c ovl.c index.c
+ 	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ -lz
+@@ -21,7 +22,7 @@ nextcorrect: align.c dag.c nextcorrect.c
+ 	$(CC) $(CFLAGS) -o $@ $^
+ 
+ ctg_cns.so: bseq.c align.c bsort.c dag.c ctg_cns.c $(HTSDIR)/libhts.a
+-	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ $(CTG_CNS_CFLAGS) 
++	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ $(CTG_CNS_CFLAGS)
+ 
+ ckit.so: kit.c bseq.c
+ 	$(CC) $(CFLAGS) $(FPIC) $(INCLUDES) -o $@ $^ -lz
+diff --git a/util/Makefile b/util/Makefile
+index 917f932..6ce004a 100644
+--- a/util/Makefile
++++ b/util/Makefile
+@@ -1,6 +1,6 @@
+-CC = gcc
+-CFLAGS = -Wall -O3 -Wno-unused-function 
+-INCLUDES =
++CC ?= $(CC)
++CFLAGS = -Wall -O3 -Wno-unused-function -Wno-implicit-function-declaration -Wno-format -Wno-unused-but-set-variable -L$(PREFIX)/lib
++INCLUDES = -I$(PREFIX)/include
+ PROGS = seq_dump ovl_sort seq_stat ovl_cvt seq_bit bam_sort nextgraph
+ HTSDIR = ../lib/htslib/
+ NEXTGRPHDIR = ./ng
+@@ -15,7 +15,7 @@ seq_dump: seq_dump.c ../lib/bseq.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ -lz
+ 
+ ovl_sort: ovl_sort.c thpool.c ../lib/ovl.c
+-	$(CC) $(CFLAGS) -std=c99 -pthread $(INCLUDES) -o $@ $^
++	$(CC) $(CFLAGS) -std=c11 -pthread $(INCLUDES) -o $@ $^
+ 
+ ovl_cvt: ovl_cvt.c ../lib/ovl.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^
+@@ -24,10 +24,10 @@ seq_bit: seq_bit.c ../lib/bseq.c
+ 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ -lz
+ 
+ seq_stat: seq_stat.c
+-	$(CC) $(CFLAGS) -std=c99 $(INCLUDES) -o $@ $^ -lz
++	$(CC) $(CFLAGS) -std=c11 $(INCLUDES) -o $@ $^ -lz
+ 
+ bam_sort: bam_sort.c ../lib/bsort.c $(HTSDIR)/libhts.a
+-	$(CC) $(CFLAGS) -o $@ $^ -I $(HTSDIR) $(INCLUDES) -lpthread -lcurl -lm -lz -lcrypto
++	$(CC) $(CFLAGS) -o $@ $^ -I $(HTSDIR) $(INCLUDES) -pthread -lcurl -lm -lz -lcrypto -ldeflate
+ 
+ # align: realign.c ../lib/ovl.c ../lib/bseq.c ../lib/align.c
+ # 	$(CC) $(CFLAGS) -Wno-unused-function -o $@ $^ -lz

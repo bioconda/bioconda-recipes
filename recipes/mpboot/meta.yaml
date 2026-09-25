@@ -1,0 +1,48 @@
+{% set name = "mpboot" %}
+{% set version = "1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/diepthihoang/mpboot/archive/v{{ version }}.tar.gz
+  sha256: c7b40521b5c03770c85da86c928440cf77ebea656091bc805197b40e43114f2f
+  patches:
+    - patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mpboot', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib >=1.3.1
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - mpboot --help
+
+about:
+  home: "https://github.com/diepthihoang/mpboot"
+  license: "GPL-2.0-only"
+  license_family: GPL2
+  license_file: "License.txt"
+  summary: "Fast phylogenetic maximum parsimony tree inference and bootstrap approximation."
+  doc_url: "http://www.cibiv.at/software/mpboot"
+  dev_url: "https://github.com/diepthihoang/mpboot"
+
+extra:
+  identifiers:
+    - doi:10.1186/s12862-018-1131-3

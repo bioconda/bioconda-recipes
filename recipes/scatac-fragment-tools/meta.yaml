@@ -1,0 +1,54 @@
+{% set name = "scatac-fragment-tools" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scatac_fragment_tools-{{ version }}.tar.gz
+  sha256: a3cc59d03118dabc2fd6b60fc7b54aa76a6a19b3581afeaf94c319f85418add6
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  run_exports: {{ pin_compatible("scatac-fragment-tools", max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - clangdev
+  host:
+    - python
+    - pip
+    - maturin >=1,<2
+  run:
+    - python >=3.8
+    - numpy <2
+    - pybigwig
+    - pybigtools >=0.2.0
+    - polars >=1.0.0
+    - pyarrow
+    - numba
+    - rich-argparse
+    - joblib
+
+test:
+  imports:
+    - scatac_fragment_tools
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/aertslab/scatac_fragment_tools/
+  summary: 'Tools for working with scATAC-seq fragment files.'
+  license: MIT
+  doc_url: https://aertslab.github.io/scatac_fragment_tools/
+
+extra:
+  recipe-maintainers:
+    - nilchia

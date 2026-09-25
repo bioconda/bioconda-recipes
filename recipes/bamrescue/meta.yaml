@@ -1,0 +1,43 @@
+{% set version = "0.3.0" %}
+
+package:
+  name: bamrescue
+  version: {{ version }}
+
+source:
+  url: https://github.com/Arkanosis/bamrescue/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: dbb843986840d6ca1060a9c596b0210ae4da9c26ede011de47192398c124db69
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('bamrescue', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - bamrescue --version
+    - bamrescue --help
+
+about:
+  home: "https://github.com/Arkanosis/bamrescue"
+  license: ISC
+  license_file: LICENSE
+  summary: "Utility to check BAM files for corruption and repair by skipping corrupted BGZF blocks."
+  description: |
+    bamrescue is a command-line tool that inspects Binary Alignment/Map (BAM) files for corruption.
+    It leverages the BGZF structure (concatenated gzip blocks) to skip over corrupted sections using CRC32 checksums,
+    rescuing as much valid data as possible.
+  doc_url: "https://github.com/Arkanosis/bamrescue"
+  dev_url: "https://github.com/Arkanosis/bamrescue"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - raivivek

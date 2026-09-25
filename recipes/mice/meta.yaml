@@ -1,0 +1,38 @@
+{% set name = "mice" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gi-bielefeld/mice/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1c2088d74fd234fa28bd1110545d27ee454de4f2aecaf3b0ac4d8288d198675d
+
+build:
+  number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --no-track --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - mice --help
+
+about:
+  home: https://github.com/gi-bielefeld/mice
+  summary: "Markers Inferred by Compacting Elements (mice). Synteny blocks from pangenomes."
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - lucaparmigiani
+    - leobkmer

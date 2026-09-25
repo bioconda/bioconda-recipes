@@ -1,0 +1,94 @@
+{% set name = "imfusion" %}
+{% set version = "0.3.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/NKI-CCB/imfusion/archive/{{ version }}.tar.gz
+  sha256: 957747b0c2cb91c18860991e809be84595d9fc3ed88d575b474344fdbe95bd56
+
+build:
+  number: 1
+  noarch: python
+  entry_points:
+    - imfusion = imfusion.main.dispatch:main
+    - imfusion-build = imfusion.main.build:main
+    - imfusion-insertions = imfusion.main.insertions:main
+    - imfusion-ctg = imfusion.main.ctg:main
+    - imfusion-expression = imfusion.main.expression:main
+    - imfusion-merge = imfusion.main.merge:main
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - setuptools
+    # Python dependencies.
+    - python <3.10
+    - pip
+    - future
+    - pandas
+    - numexpr
+    - pysam >=0.9.1
+    - toolz
+    - scipy
+    - pyfaidx
+    - intervaltree
+    - pathlib2
+    - typing
+    - htslib
+    - htseq
+    - matplotlib-base
+    - seaborn-base
+  run:
+    # Python dependencies.
+    - python <3.10
+    - intervaltree
+    - future
+    - pandas
+    - numexpr
+    - pysam
+    - toolz
+    - scipy
+    - seaborn-base
+    - pyfaidx
+    - intervaltree
+    - pathlib2
+    - typing
+    - htslib
+    - htseq
+    - matplotlib-base
+
+    # External dependencies.
+    - star
+    - subread
+    - stringtie
+    - tophat >=2.1.0
+    - bowtie
+
+test:
+  imports:
+    - imfusion
+  commands:
+    - imfusion-build -h
+    - imfusion-insertions -h
+    - imfusion-expression -h
+    - imfusion-merge -h
+    - imfusion-ctg -h
+    - STAR --version
+    - featureCounts -v
+
+about:
+  home: "https://github.com/NKI-CCB/imfusion"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "IM-Fusion - Tool for identifying transposon insertions and their effects from RNA-sequencing data"
+  dev_url: "https://github.com/NKI-CCB/imfusion"
+  doc_url: "https://nki-ccb.github.io/imfusion"

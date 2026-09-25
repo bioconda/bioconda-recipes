@@ -1,0 +1,58 @@
+{% set name = "genescanner" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Sheppard-Lab/GeneScanner/archive/refs/tags/v1.0.1.tar.gz
+  sha256: f4e64b51ec220667904ce84408b8b7630f345f87d2a023d2157995de5b5f393f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage('genescanner', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - biopython >=1.81
+    - numpy >=1.23
+    - pandas >=1.5
+    - xlsxwriter >=3.0
+    - matplotlib-base >=3.10
+    - seaborn >=0.13
+    - openpyxl
+  run_constrained:
+    - mafft >=7.525
+    - snp-sites >=2.4.0
+
+test:
+  imports:
+    - GeneScanner
+  commands:
+    - GeneScanner --help
+    - GeneScanner-viewer --help
+
+about:
+  home: https://github.com/Sheppard-Lab/GeneScanner
+  summary: Mutation analysis on nucleotide/protein alignments with Excel reports
+  description: >-
+    GeneScanner is a high-throughput mutation analysis tool for aligned
+    nucleotide/protein FASTA data that generates mutation summaries and
+    multi-sheet Excel reports.
+  license: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/Sheppard-Lab/GeneScanner
+  doc_url: https://github.com/jeju2486/GeneScanner/wiki/GeneScanner
+
+extra:
+  recipe-maintainers:
+    - jeju2486

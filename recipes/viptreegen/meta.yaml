@@ -1,0 +1,59 @@
+{% set name = "viptreegen" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yosuken/ViPTreeGen/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: aa5ef4aa6c3a12281dec4386153abc969878bb71f0aba589cd959cb4da578b25
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: |
+    mkdir -p $PREFIX/share/{{ name }} $PREFIX/bin
+    cp -r ViPTreeGen ViPTreeGen.rake script $PREFIX/share/{{ name }}/
+    chmod +x $PREFIX/share/{{ name }}/ViPTreeGen
+    cat > $PREFIX/bin/ViPTreeGen <<'EOF'
+    #!/bin/bash
+    DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../share/{{ name }} && pwd)"
+    exec "$DIR/ViPTreeGen" "$@"
+    EOF
+    chmod +x $PREFIX/bin/ViPTreeGen
+
+requirements:
+  run:
+    - blast >=2.9
+    - ruby >=2.0
+    - r-base >=3.0
+    - r-ape
+    - r-phangorn
+    - parallel
+
+test:
+  commands:
+    - ViPTreeGen --help 2>&1 | grep -q "ViPTreeGen ver"
+
+about:
+  home: https://github.com/yosuken/ViPTreeGen
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Viral proteomic tree generation from viral genomic sequences
+  description: |
+    ViPTreeGen is a tool for automated generation of viral "proteomic tree"
+    by computing genome-wide sequence similarities based on tBLASTx results.
+    A proteomic tree is a dendrogram that reveals global genomic similarity
+    relationships between tens, hundreds, or thousands of viruses.
+    ViPTreeGen has been developed as a part of the ViPTree server project
+    (http://www.genome.jp/viptree).
+  doc_url: https://github.com/yosuken/ViPTreeGen
+  dev_url: https://github.com/yosuken/ViPTreeGen
+
+extra:
+  recipe-maintainers:
+    - yosuken

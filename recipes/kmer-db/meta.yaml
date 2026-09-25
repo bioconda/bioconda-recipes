@@ -1,39 +1,39 @@
-{% set version = "2.2.5" %}
+{% set name = "kmer-db" %}
+{% set version = "2.3.1" %}
 
 {% set system = "x64_linux" %}       # [linux and x86_64]
 {% set system = "x64_mac" %}         # [osx and x86_64]
 {% set system = "arm64_linux" %}     # [linux and aarch64]
 {% set system = "arm64_mac" %}       # [osx and arm64]
 
-{% set sha256 = "e7606071b4a10957e0fbbcb58f3cc4cf8ac783ede14088efaec442cff3bf79fe" %}  # [linux and x86_64]
-{% set sha256 = "d6311cbfc6dfa1d6d4615e54c3957f9c1021d78e3c3eef850cb2ee3635c0205e" %}  # [osx and x86_64]
-{% set sha256 = "fda433b494b473a7a98af379e5e2ce5611177c28ac664155a0dd8404e0146a81" %}  # [linux and aarch64]
-{% set sha256 = "a3499160358517bf334f2b6ed333fcb4fd49115305a7733090b0f146021bb780" %}  # [osx and arm64]
-
+{% set sha256 = "334ec41f6b37496adc20661bb78ed92fa266b834b18bad4e19cbf42596d71e22" %}  # [linux and x86_64]
+{% set sha256 = "9c94521bd77f28efc472e62407cd55eac76a906a5c2844576be2c4ed87a15369" %}  # [osx and x86_64]
+{% set sha256 = "7502e6bdfbc67f702c7efb969da3d68634215398d57fc94dc39e8941d36d7846" %}  # [linux and aarch64]
+{% set sha256 = "5458b889f33c1dd2fd350d4e4d89c79dc351ecc4cfc0cb9bc87edaca2f1acfec" %}  # [osx and arm64]
 
 package:
   name: kmer-db
   version: {{ version }}
 
-build:
-  number: 0
-  run_exports:
-  - {{ pin_subpackage('kmer-db', max_pin='x') }}
-  script: |
-    mkdir -p "${PREFIX}/bin"
-    cp -v kmer-db "${PREFIX}/bin/" || { echo "Error: Failed to copy kmer-db binary"; exit 1; }
-
-
 source:
   url: https://github.com/refresh-bio/kmer-db/releases/download/v{{ version }}/kmer-db-v{{ version }}-{{ system }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 0
+  script:
+    - mkdir -p "${PREFIX}/bin"
+    - install -v -m 0755 kmer-db "${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage('kmer-db', max_pin="x") }}
+
 about:
-  home: https://github.com/refresh-bio/kmer-db
+  home: "https://github.com/refresh-bio/kmer-db"
   summary: "Kmer-db is a fast and memory-efficient tool for estimating evolutionary distances."
-  license: GPL-3
-  license_family: GPL
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: "https://github.com/refresh-bio/kmer-db"
 
 test:
   commands:
@@ -47,4 +47,3 @@ extra:
   skip-lints:
     - should_be_noarch_generic
     - should_not_be_noarch_source
-

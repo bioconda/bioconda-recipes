@@ -2,34 +2,50 @@
 
 package:
   name: chips
-  version: "{{ version }}"
+  version: {{ version }}
 
 source:
   url: https://github.com/gymreklab/chips/releases/download/v{{ version }}/chips-{{ version }}-Source.tar.gz
   sha256: 66577a898cb07986aab27124d748e146cb4c79a01694ce2e073ae45f2ff37ce0
+  patches:
+    - 0001-gcc-13.patch
 
 build:
-  number: 8
+  number: 9
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('chips', max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - pkg-config
   host:
     - htslib
     - zlib
   run:
     - htslib
-    - zlib
 
 test:
   commands:
     - chips --version
 
 about:
-  home: https://github.com/gymreklab/chips
-  license: GNU General Public License v3.0
-  summary: ChIPs is a tool for simulating ChIP-sequencing experiments.
+  home: "https://github.com/gymreklab/chips"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "ChIPs is a tool for simulating ChIP-sequencing experiments."
+  dev_url: "https://github.com/gymreklab/chips"
+  doc_url: "https://github.com/gymreklab/chips/blob/v{{ version }}/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s12859-021-04097-5

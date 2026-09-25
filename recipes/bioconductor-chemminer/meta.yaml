@@ -1,12 +1,18 @@
-{% set version = "3.58.0" %}
+{% set version = "3.62.0" %}
 {% set name = "ChemmineR" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: ChemmineR is a cheminformatics package for analyzing drug-like small molecule data in R. Its latest version contains functions for efficient processing of large numbers of molecules, physicochemical/structural property predictions, structural similarity searching, classification and clustering of compound libraries with a wide spectrum of algorithms. In addition, it offers visualization functions for compound clustering results and chemical structures.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: Cheminformatics Toolkit for R
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: da6b2fbc405dd0942024076a14b22627
 
 build:
   number: 0
@@ -15,29 +21,17 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-chemminer", max_pin="x.x") }}'
 
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:chemminer
-  parent_recipe:
-    name: bioconductor-chemminer
-    path: recipes/bioconductor-chemminer
-    version: 3.32.1
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: RSQLite, scatterplot3d, gplots, fmcsR, snow, RPostgreSQL, BiocStyle, knitr, knitcitations, knitrBootstrap, ChemmineDrugs, png,rmarkdown, BiocManager,bibtex,codetools
 # SystemRequirements: GNU make
 requirements:
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
   host:
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
     - r-base
     - r-base64enc
     - r-bh
@@ -55,8 +49,11 @@ requirements:
     - r-stringi
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
+
   run:
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
     - r-base
     - r-base64enc
     - r-bh
@@ -73,15 +70,23 @@ requirements:
     - r-rsvg
     - r-stringi
 
-source:
-  md5: 292f291e6708988f5f104a88e50d5260
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Cheminformatics Toolkit for R
+  description: ChemmineR is a cheminformatics package for analyzing drug-like small molecule data in R. Its latest version contains functions for efficient processing of large numbers of molecules, physicochemical/structural property predictions, structural similarity searching, classification and clustering of compound libraries with a wide spectrum of algorithms. In addition, it offers visualization functions for compound clustering results and chemical structures.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:chemminer
+  parent_recipe:
+    name: bioconductor-chemminer
+    path: recipes/bioconductor-chemminer
+    version: 3.32.1
 

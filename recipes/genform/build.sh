@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p "$PREFIX/bin"
+
 ${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} ./src/*.cpp -o genform
-mkdir -p "$PREFIX"/bin/
-mv genform "$PREFIX"/bin/
+
+install -v -m 0755 genform "$PREFIX/bin"

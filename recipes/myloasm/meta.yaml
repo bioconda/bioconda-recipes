@@ -1,0 +1,49 @@
+{% set version = "0.7.0" %}
+{% set name = "myloasm" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bluenote-1577/myloasm/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 34e5fc05afd9988fc80e76f35065b237c4959a0e9b6a8ccffb5411c8d4dc463c
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("rust") }}
+    - cargo-bundle-licenses
+    - make
+    - cmake >=3.5
+    - pkg-config
+    - zlib
+  host:
+    - zlib
+
+test:
+  commands:
+    - myloasm --help
+
+about:
+  home: "https://github.com/bluenote-1577/myloasm"
+  license: MIT
+  license_family: MIT
+  summary: "myloasm - high-resolution metagenome assembly for (noisy) long reads."
+  license_file: LICENSE
+  dev_url: "https://github.com/bluenote-1577/myloasm"
+  doc_url: "https://myloasm-docs.github.io"
+
+extra:
+  recipe-maintainers:
+    - bluenote-1577
+  additional-platforms:
+    #- linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

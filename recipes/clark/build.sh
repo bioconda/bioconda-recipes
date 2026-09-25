@@ -4,11 +4,13 @@ mkdir -p $PREFIX/bin
 
 sed -i.bak "s|g++|$CXX|g" install.sh
 sed -i.bak "s|cpp |$CXX |g" install.sh
+
+chmod +x ./install.sh
 ./install.sh
 
 mv install.sh install.sh.old
 
-mv exe/* $PREFIX/bin
+install -v -m 0755 exe/* $PREFIX/bin
 
 mkdir -p $PREFIX/opt/clark
 mv *.sh $PREFIX/opt/clark

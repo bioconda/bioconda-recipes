@@ -1,21 +1,26 @@
+{% set name = "perl-sereal-decoder" %}
+{% set version = "5.009" %}
+
 package:
-  name: perl-sereal-decoder
-  version: "4.025"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Decoder-4.025.tar.gz
-  sha256: 8e0e3b9a9af1a778b7de21506fa30797fb1b520dcd002f3f29e6dcb52446dea5
+  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Decoder-{{ version }}.tar.gz
+  sha256: ac98d146ae6dfb61898046c238ba788b9bb1108ff2c3830499a09d995b5d9a49
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
   host:
     - perl
-    - perl-file-path
     - perl-test-warn
     - perl-test-simple
     - perl-extutils-makemaker
@@ -23,18 +28,25 @@ requirements:
     - perl-scalar-list-utils
     - perl-pathtools
     - perl-extutils-parsexs
-
+    - perl-devel-checklib >=1.16
+    - perl-xsloader
   run:
     - perl
+    - perl-xsloader
 
 test:
   imports:
-    - Sereal::Decoder
-    - Sereal::Decoder::Constants
+    - Sereal::Decoder  # [osx]
+    - Sereal::Decoder::Constants  # [osx]
     - Sereal::Performance
 
 about:
-  home: http://metacpan.org/pod/Sereal::Decoder
-  license: perl_5
-  summary: 'Fast, compact, powerful binary deserialization'
+  home: "https://metacpan.org/pod/Sereal::Decoder"
+  license: "perl_5"
+  summary: 'Fast, compact, powerful binary deserialization.'
+  doc_url: "https://metacpan.org/pod/Sereal::Decoder"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

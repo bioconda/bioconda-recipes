@@ -1,0 +1,66 @@
+{% set name = "amalgkit" %}
+{% set version = "0.16.60" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kfuku52/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e35915049d5da8e460068211702959186ff154fda08cfe2e5c8afdf7c77d8d18
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage("amalgkit", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77.0.3
+    - wheel
+
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.81
+    - defusedxml >=0.7.1
+    - matplotlib-base >=3.7.5
+    - numpy >=1.24.4
+    - pandas >=2.0.3
+    - scikit-learn >=1.3.2
+    - scipy >=1.10.1
+    - statsmodels >=0.14
+    - seqkit
+    - sra-tools >=3
+    - fastp
+    - kallisto
+
+test:
+  commands:
+    - amalgkit --version
+    - amalgkit --help
+    - amalgkit help finalize
+    - amalgkit dataset --list
+  imports:
+    - amalgkit
+
+about:
+  home: "https://github.com/kfuku52/amalgkit"
+  license: "MIT"
+  license_file: LICENSE
+  summary: "Tools for transcriptome amalgamation"
+
+extra:
+  notes: |
+    Optional runtime dependencies:
+      - inmoose: required for `amalgkit finalize --batch_effect_alg combatseq`
+      - oarfish: required for `amalgkit quant --quant_backend oarfish`
+      - mmseqs2: required for `amalgkit getfastq --rrna_filter yes` or `--contam_filter yes`
+      - busco: required for `amalgkit busco --tool busco`
+      - compleasm: required for `amalgkit busco --tool compleasm`, or selected `--tool auto`
+  recipe-maintainers:
+    - kfuku52

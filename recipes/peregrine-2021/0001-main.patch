@@ -1,0 +1,155 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 7fb6ef3..4bbd41e 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -23,7 +23,8 @@ threadpool = "1.8.1"
+ num_cpus = "1.13.0"
+ log = { version = "^0.4.5", features = ["std"] }
+ simple_logger = "2.1.0"
+-sysinfo = "0.15.3"
++sysinfo = "0.23.5"
++libmimalloc-sys = "0.1.22"
+ mimalloc = { version = "0.1.17", default-features = false }
+ rayon = "1.5.0"
+ intervaltree = "0.2.6"
+diff --git a/src/bin/pg_asm.rs b/src/bin/pg_asm.rs
+index 5cbfb62..09d8861 100644
+--- a/src/bin/pg_asm.rs
++++ b/src/bin/pg_asm.rs
+@@ -80,7 +80,7 @@ fn get_ovlps(
+     let ovlp_out = format!("{}/{}-ovlp", &work_dir, &prefix);
+     log_resource("BGN: overlapping", rdata);
+     let system = sysinfo::System::new_all();
+-    let free_mem = system.get_total_memory() - system.get_used_memory();
++    let free_mem = system.total_memory() - system.used_memory();
+     if (free_mem as f64) < ((nbase >> 10) as f64 * 1.5) {
+         log::warn!("free memory is less than 1.5 x (total number of bases)");
+         log::warn!(
+@@ -253,10 +253,10 @@ LICENSE: http://creativecommons.org/licenses/by-nc-sa/4.0/")
+         physical_cpus
+     );
+     let system = sysinfo::System::new_all();
+-    log::info!("sys: total memory: {} KB", system.get_total_memory());
+-    log::info!("sys: used memory: {} KB", system.get_used_memory());
+-    log::info!("sys: total swap: {} KB", system.get_total_swap());
+-    log::info!("sys: used swap: {} KB", system.get_used_swap());
++    log::info!("sys: total memory: {} KB", system.total_memory());
++    log::info!("sys: used memory: {} KB", system.used_memory());
++    log::info!("sys: total swap: {} KB", system.total_swap());
++    log::info!("sys: used swap: {} KB", system.used_swap());
+ 
+     if !Path::new(&work_dir).exists() {
+         create_dir_all(&work_dir)?;
+@@ -296,15 +296,7 @@ LICENSE: http://creativecommons.org/licenses/by-nc-sa/4.0/")
+         layout::layout2ctg(&seqdb, &seqidx, &layout_file, &output_file_prefix)?;
+         let _res = unsafe { getrusage(RUSAGE_SELF, &mut rdata) };
+         log_resource("END: layout2ctg", &mut rdata);
+-        if no_resolve {
+-            log::info!("ignore dup resolution");
+-        } else {
+-            let resolve_prefix = format!("{}/asm_sep", &work_dir);
+-            log_resource("BEN: resolve_ht", &mut rdata);
+-            let output_file = format!("{}_p.fa", output_file_prefix);
+-            resolve_ht(&output_file, &resolve_prefix, wsize, ksize, rfactor)?;
+-            log_resource("END: resolve_ht", &mut rdata);
+-        }
++
+     } else {
+         // error correction
+         let seqdb = cat_path(&work_dir, &format!("{}.seqdb", &prefix));
+@@ -393,24 +385,23 @@ LICENSE: http://creativecommons.org/licenses/by-nc-sa/4.0/")
+         layout::layout2ctg(&seqdb, &seqidx, &layout_file, &output_file_prefix)?;
+         let _res = unsafe { getrusage(RUSAGE_SELF, &mut rdata) };
+         log_resource("END: layout2ctg", &mut rdata);
++    }
++    if no_resolve {
++        log::info!("ignore dup resolution");
++    } else {
++        let ref_file = format!("{}/asm_ctgs_m.fa", &work_dir);
++        let tgt_file = format!("{}/asm_ctgs_e0.fa", &work_dir);
++        let out_file = format!("{}/asm_ctgs_e.fa", &work_dir);
+ 
+-        if no_resolve {
+-            log::info!("ignore dup resolution");
+-        } else {
+-            let ref_file = format!("{}/asm_ctgs_m.fa", &work_dir);
+-            let tgt_file = format!("{}/asm_ctgs_e0.fa", &work_dir);
+-            let out_file = format!("{}/asm_ctgs_e.fa", &work_dir);
+-
+-            log_resource("BEN: dedup_a_ctgs", &mut rdata);
+-            dedup_target_seqs(&ref_file, &tgt_file, &out_file, wsize, ksize, rfactor)?;
+-            log_resource("END: dedup_a_ctgs", &mut rdata);
++        log_resource("BEN: dedup_a_ctgs", &mut rdata);
++        dedup_target_seqs(&ref_file, &tgt_file, &out_file, wsize, ksize, rfactor)?;
++        log_resource("END: dedup_a_ctgs", &mut rdata);
+ 
+-            let resolve_prefix = format!("{}/asm_ctgs_m", &work_dir);
++        let resolve_prefix = format!("{}/asm_ctgs_m", &work_dir);
+ 
+-            log_resource("BEN: resolve_ht", &mut rdata);
+-            resolve_ht(&ref_file, &resolve_prefix, wsize, ksize, rfactor)?;
+-            log_resource("END: resolve_ht", &mut rdata);
+-        }
++        log_resource("BEN: resolve_ht", &mut rdata);
++        resolve_ht(&ref_file, &resolve_prefix, wsize, ksize, rfactor)?;
++        log_resource("END: resolve_ht", &mut rdata);
+     }
+     let (_, ut, st) = log_resource("END: pg_asm", &mut rdata);
+     log::info!("pg_asm run end");
+diff --git a/src/bin/pg_build_idx.rs b/src/bin/pg_build_idx.rs
+index 30fdb28..0c2d868 100644
+--- a/src/bin/pg_build_idx.rs
++++ b/src/bin/pg_build_idx.rs
+@@ -58,9 +58,9 @@ LICENSE: http://creativecommons.org/licenses/by-nc-sa/4.0/")
+         .parse::<u32>()
+         .unwrap();
+     let nchunks = matches.value_of("NCHUNKS").unwrap().parse::<u32>().unwrap();
+-    let wsize = matches.value_of("w").unwrap().parse::<u32>().unwrap();
+-    let ksize = matches.value_of("k").unwrap().parse::<u32>().unwrap();
+-    let rfactor = matches.value_of("r").unwrap().parse::<u32>().unwrap();
++    let wsize = matches.value_of("w").unwrap_or("80").parse::<u32>().unwrap();
++    let ksize = matches.value_of("k").unwrap_or("56").parse::<u32>().unwrap();
++    let rfactor = matches.value_of("r").unwrap_or("6").parse::<u32>().unwrap();
+ 
+     let parameters = Parameters {
+         nchunks: nchunks,
+diff --git a/src/bin/utils/build_idx.rs b/src/bin/utils/build_idx.rs
+index d05f65b..0def78e 100644
+--- a/src/bin/utils/build_idx.rs
++++ b/src/bin/utils/build_idx.rs
+@@ -40,7 +40,7 @@ fn index_chunk(
+ ) -> Result<(), io::Error> {
+     // Create index for a chunk from the read database
+ 
+-    let filename = format!("{}-{:02}-of-{:02}.dat", prefix, chunk, total_chunk);
++    let filename = format!("{}-{:03}-of-{:03}.dat", prefix, chunk, total_chunk);
+     let mut out_f = BufWriter::new(File::create(filename).unwrap());
+ 
+     let mut wrt = Vec::<u8>::with_capacity(1 << 16);
+diff --git a/src/bin/utils/ovlp.rs b/src/bin/utils/ovlp.rs
+index a0fe40a..6b743b2 100644
+--- a/src/bin/utils/ovlp.rs
++++ b/src/bin/utils/ovlp.rs
+@@ -11,11 +11,13 @@
+ //
+ // using the SHIMMER index to find and verify overalaps
+ //
++#[cfg(target_os = "linux")]
+ use super::getrusage;
+ use super::shmmrutils::*;
+ use super::Parameters;
+ #[cfg(target_os = "linux")]
+ use super::RUSAGE_THREAD;
++#[cfg(target_os = "linux")]
+ use core::mem::MaybeUninit;
+ use glob::glob;
+ use memmap::{Mmap, MmapOptions};
+@@ -759,7 +761,7 @@ pub fn ovlp(
+     out_prefix: &String,
+     parameters: &Parameters,
+ ) -> Result<(), io::Error> {
+-    let filename = format!("{}-??-of-??.dat", shmmr_index_file_prefix);
++    let filename = format!("{}-???-of-???.dat", shmmr_index_file_prefix);
+     //let filename = "/wd/resolve_overlap_test/asm_ext_k56/1-index/shmr-L2-??-of-20.dat";
+     let mut smp_index = FxHashMap::<u128, Vec<u64>>::default();
+     smp_index.reserve(65536);

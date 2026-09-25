@@ -1,13 +1,18 @@
-{% set version = "1.0.0" %}
+{% set version = "1.4.0" %}
 {% set name = "BioGA" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Genetic algorithm are a class of optimization algorithms inspired by the process of natural selection and genetics. This package allows users to analyze and optimize high throughput genomic data using genetic algorithms.  The functions provided are implemented in C++ for improved speed and efficiency, with an easy-to-use interface for use within R.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: MIT + file LICENSE
-  license_file: LICENSE
-  summary: Bioinformatics Genetic Algorithm (BioGA)
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: e7659a070844422d82736ad55acd2bd0
 
 build:
   number: 0
@@ -16,10 +21,6 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-bioga", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 requirements:
   build:
@@ -27,9 +28,9 @@ requirements:
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-biocstyle >=2.34.0,<2.35.0
-    - bioconductor-biocviews >=1.74.0,<1.75.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-biocviews >=1.78.0,<1.79.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-animation
     - r-base
     - r-ggplot2
@@ -38,10 +39,12 @@ requirements:
     - r-sessioninfo
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biocstyle >=2.34.0,<2.35.0
-    - bioconductor-biocviews >=1.74.0,<1.75.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-biocviews >=1.78.0,<1.79.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-animation
     - r-base
     - r-ggplot2
@@ -49,15 +52,14 @@ requirements:
     - r-rlang
     - r-sessioninfo
 
-source:
-  md5: 3b1aaf87addc00db6a311f84704987be
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Bioinformatics Genetic Algorithm (BioGA)
+  description: Genetic algorithm are a class of optimization algorithms inspired by the process of natural selection and genetics. This package allows users to analyze and optimize high throughput genomic data using genetic algorithms.  The functions provided are implemented in C++ for improved speed and efficiency, with an easy-to-use interface for use within R.
+  license_file: LICENSE
 

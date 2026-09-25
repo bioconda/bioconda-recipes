@@ -1,0 +1,66 @@
+{% set name = "panqc" %}
+{% set version = "0.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/panqc-{{ version }}.tar.gz
+  sha256: 9fb6821301e124f252fc0fc3682e3f75f4bea649817157164ddaca8850b21b51
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - panqc=panqc.__init__:main
+
+requirements:
+  host:
+    - python
+    - pip
+    - hatchling
+  run:
+    - python
+    - pandas
+    - mmh3
+    - screed
+    - mappy ==2.26
+    - networkx
+    - tqdm
+    - colored
+    - importlib-metadata # [py<38]
+
+test:
+  imports:
+    - panqc
+  commands:
+    - panqc --help
+    - panqc nrc --help
+    - panqc utils --help
+
+about:
+  home: https://github.com/maxgmarin/panqc
+  summary: >
+    A toolkit for quality control & adjustment of nucleotide redundancy
+    in bacterial pan-genome analyses
+  description: |
+    panqc is a pan-genome quality control toolkit that evaluates and corrects
+    for nucleotide redundancy in pan-genome analyses. The panqc Nucleotide
+    Redundancy Correction (NRC) pipeline adjusts for redundancy at the DNA
+    level within pan-genome estimates by comparing genes classified as absent
+    at the amino acid level against their corresponding assemblies at the
+    nucleotide level and by clustering genes using k-mer based nucleotide
+    similarity metrics.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/maxgmarin/panqc
+  dev_url: https://github.com/maxgmarin/panqc
+
+extra:
+  recipe-maintainers:
+    - SaimMomin12

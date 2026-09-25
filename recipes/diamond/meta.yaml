@@ -1,28 +1,36 @@
-{% set version = "2.1.10" %}
-{% set sha256 = "c6ede5df30d9d496af314e740964c35a0e358458d9c8d9b8dd517d69828d9981" %}
+{% set name = "diamond" %}
+{% set version = "2.2.8" %}
+{% set sha256 = "a9cc37bd955fa7ed25447278a0b4f97e7036a9abd64f60e6565a56c28219c54c" %}
 
 package:
-  name: diamond
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
+- url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 0
+  skip: True  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage('diamond', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
   host:
     - zlib
     - zstd-static
+    - sqlite
+  run:
 
 test:
   commands:

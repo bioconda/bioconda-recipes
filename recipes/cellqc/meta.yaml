@@ -1,5 +1,5 @@
 {% set name = "cellqc" %}
-{% set version = "0.0.8" %}
+{% set version = "0.3.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,46 +7,64 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: b65d4ffa9fa164b633171af88be64f461617e9f9209128910dd5c4235d6afc45
+  sha256: 1e1e69c08fb5a6065a6278b68c7e63b1ac5750e7a96fbb592ad074f5d01b1204
 
 build:
   number: 0
-  entry_points:
-    - cellqc=cellqc.cellqc:main
+  noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
-  script: "{{ PYTHON }} -m pip install . -vv"
-  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
 
 requirements:
   host:
-    - click
     - pip
-    - pygraphviz
-    - python
-    - snakemake
+    - python {{ python_min }}
+    - setuptools >=77
   run:
+    - python >={{ python_min }}
+    # Kept in step with envs/cellqc.yaml upstream.
+    # --- workflow / CLI ---
     - click
-    - pygraphviz
-    - python
-    - snakemake
-    - bioconductor-dropletutils
-    - r-seurat
-    - r-seuratobject
-    - r-dplyr
-    - r-ggplot2
-    - r-soupx >=1.6.2
-    - r-harmony
-    - r-remotes
-    - r-scpred
-    - scanpy >=1.9.1
+    - snakemake-minimal >=8
+    - jinja2
+    - pandas
+    - pyyaml
+    # --- python analysis stack ---
     - numpy
-    - anndata =0.7.8
-    - graphviz
+    - scipy
+    - h5py
+    - matplotlib-base
+    - scanpy
+    - anndata
+    - pysam
+    # --- PDF slide report ---
+    - tectonic
+    # --- R analysis stack ---
+    - r-base >=4.4
+    - r-seurat >=5
+    - r-seuratobject >=5
+    - r-matrix
+    - r-soupx >=1.6.2  # 1.6.2 is the last release; upstream is dormant
+    - r-ggplot2
+    - bioconductor-dropletutils
+    - bioconductor-singlecellexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-zellkonverter
+    - bioconductor-scdblfinder
+    - bioconductor-celda
+    # --- DoubletFinder install step and its dependencies ---
+    # TODO: submit an r-doubletfinder recipe so this becomes a real dependency.
+    - r-remotes
+    - r-rocr
+    - r-fields
+    - r-kernsmooth
 
 test:
   imports:
     - cellqc
+    - cellqc.qcutil
+    - cellqc.reportdata
   commands:
     - cellqc --help
 
@@ -55,7 +73,23 @@ about:
   license: MIT
   license_family: MIT
   license_file: "LICENSE"
-  summary: "Cellqc standardizes the qualiy control of single-cell RNA-Seq (scRNA) data to render clean feature count matrices."
+  summary: "Cellqc standardizes the quality control of single-cell RNA-Seq (scRNA) data to render clean feature count matrices."
+  description: |
+    A Snakemake pipeline for quality control of single-cell RNA-Seq data. From
+    Cell Ranger output it runs ambient RNA correction (SoupX or DecontX),
+    filtering on UMI count, detected genes and mitochondrial percentage,
+    doublet detection (DoubletFinder and/or scDblFinder), and a nuclear-fraction
+    statistic from the Cell Ranger BAM. Per sample it writes a cleaned .h5ad
+    with its .obs and .var as TSVs, plus a cohort metrics.csv, an HTML report
+    and a PDF slide deck.
+
+    DoubletFinder is GitHub-only and cannot be a conda dependency. Either
+    install it after this package:
+
+        Rscript -e "remotes::install_github('chris-mcginnis-ucsf/DoubletFinder', upgrade=FALSE)"
+
+    or set doublet.run: [scdblfinder] and doublet.decider: scdblfinder in the
+    config, which needs nothing beyond this package.
 
 extra:
   recipe-maintainers:

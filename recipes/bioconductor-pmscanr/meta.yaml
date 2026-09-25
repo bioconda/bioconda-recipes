@@ -1,0 +1,73 @@
+{% set version = "1.0.1" %}
+{% set name = "PMScanR" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 53c3bf3c4a852faa3562db0580039e71
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-pmscanr", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, seqLogo, rmarkdown, testthat (>= 3.0.0)
+# SystemRequirements: Perl
+requirements:
+  host:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - r-base
+    - r-bslib
+    - r-dplyr >=1.1.0
+    - r-ggplot2
+    - r-ggseqlogo
+    - r-magrittr
+    - r-plotly
+    - r-reshape2
+    - r-rlang
+    - r-seqinr
+    - r-shiny
+    - r-shinyfiles
+    - r-stringr
+    - perl >=5.6.0
+  run:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - r-base
+    - r-bslib
+    - r-dplyr >=1.1.0
+    - r-ggplot2
+    - r-ggseqlogo
+    - r-magrittr
+    - r-plotly
+    - r-reshape2
+    - r-rlang
+    - r-seqinr
+    - r-shiny
+    - r-shinyfiles
+    - r-stringr
+    - perl >=5.6.0
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Protein motifs analysis and visualisation
+  description: Provides tools for large-scale protein motif analysis and visualization in R. PMScanR facilitates the identification of motifs using external tools like PROSITE's ps_scan (handling necessary file downloads and execution) and enables downstream analysis of results. Key features include parsing scan outputs, converting formats (e.g., to GFF-like structures), generating motif occurrence matrices, and creating informative visualizations such as heatmaps, sequence logos (via seqLogo/ggseqlogo). The package also offers an optional Shiny-based graphical user interface for interactive analysis, aiming to streamline the process of exploring motif patterns across multiple protein sequences.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

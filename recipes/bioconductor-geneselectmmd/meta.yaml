@@ -1,13 +1,18 @@
-{% set version = "2.50.0" %}
+{% set version = "2.54.0" %}
 {% set name = "GeneSelectMMD" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Gene selection based on a mixture of marginal distributions.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Gene selection based on the marginal distributions of gene profiles that characterized by a mixture of three-component multivariate distributions
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: fdf42c68f1aff4b11d195cd46cdb43ff
 
 build:
   number: 0
@@ -16,17 +21,6 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-geneselectmmd", max_pin="x.x") }}'
 
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:geneselectmmd
-    - usegalaxy-eu:geneselectmmd
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: ALL
 requirements:
   build:
@@ -34,27 +28,35 @@ requirements:
     - {{ compiler('fortran') }}
     - make
   host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-limma >=3.66.0,<3.67.0
     - r-base
     - r-mass
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-limma >=3.62.0,<3.63.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-limma >=3.66.0,<3.67.0
     - r-base
     - r-mass
-
-source:
-  md5: 92000e264119ad74cd9a7fcccbe73706
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Gene selection based on the marginal distributions of gene profiles that characterized by a mixture of three-component multivariate distributions
+  description: Gene selection based on a mixture of marginal distributions.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:geneselectmmd
+    - usegalaxy-eu:geneselectmmd
 

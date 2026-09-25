@@ -1,39 +1,41 @@
 {% set name = "biocommons.seqrepo" %}
-{% set version = "0.6.9" %}
+{% set version = "0.6.11" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/biocommons.seqrepo-{{ version }}.tar.gz
-  sha256: b08d616c6ab5c4bc8e1ef5e09e94c5c274c6da41f75a435323eddc716c9b5575
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/biocommons_seqrepo-{{ version }}.tar.gz
+  sha256: b5d5e0faab4f0702cecfca898f38bfe85a519bfa1a2e680317f40c434857c98e
 
 build:
   number: 0
   noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - seqrepo = biocommons.seqrepo.cli:main
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage('biocommons.seqrepo', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.9
+    - python >=3.10
     - pytest-runner
     - setuptools-scm
   run:
+    - python >=3.10
     - bioutils >0.4
     - coloredlogs
     - ipython
     - pysam
-    - python >=3.9
     - requests
     - requests-html
-    - six
     - tqdm
+    - typing-extensions
     - yoyo-migrations
 
 test:
@@ -41,16 +43,19 @@ test:
     - biocommons
     - biocommons.seqrepo
   commands:
-    #- pip check #requests-html 0.10.0 requires bs4, which is not installed
     - seqrepo --help
 
 about:
-  home: https://github.com/biocommons/biocommons.seqrepo
-  license: Apache-2.0
+  home: "https://github.com/biocommons/biocommons.seqrepo"
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
-  summary: Python package for writing and reading a local collection of biological sequences.
+  summary: "Python package for writing and reading a local collection of biological sequences."
+  dev_url: "https://github.com/biocommons/biocommons.seqrepo"
+  doc_url: "https://github.com/biocommons/biocommons.seqrepo/blob/{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - ok-gitr
+  identifiers:
+    - doi:10.1371/journal.pone.0239883

@@ -1,33 +1,41 @@
+{% set name = "edena" %}
 {% set version = "3.131028" %}
-{% set md5 = "e2e9797446043bfb522099a5774b8d7a" %}
 
 package:
-  name: edena
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: http://www.genomic.ch/edena/EdenaV{{ version }}.tar.gz
-  md5: {{ md5 }}
+  sha256: 4037fce486c9725107b1690fbc67731713eef54e3fa53081865904c783533230
 
 build:
-  number: 7
+  number: 8
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
-  host:
-  run:
+    - pkg-config
 
 test:
   commands:
     - edena -h
 
 about:
-  home: 'http://www.genomic.ch/edena.php'
-  license: "GPL3"
-  summary: "de novo short reads assembler"
+  home: "http://www.genomic.ch/edena.php"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: COPYING
+  summary: "De novo short reads assembler."
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:edena
+    - usegalaxy-eu:edena_ass_wrapper
+    - usegalaxy-eu:edena_ovl_wrapper

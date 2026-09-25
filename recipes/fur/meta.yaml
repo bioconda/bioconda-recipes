@@ -1,0 +1,46 @@
+{% set name = "fur" %}
+{% set version = "4.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/evolbioinf/fur/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 26bccdbc2954b16c75d24d7b488297e100548481f650bee0ade3d82bb1f3c55d
+
+build:
+  number: 0
+  skip: true  # [osx]
+  binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
+  host:
+    - libdivsufsort
+  run:
+    - blast
+    - phylonium
+    - libdivsufsort
+
+test:
+  commands:
+    - fur -v
+    - makeFurDb -h
+
+about:
+  home: https://github.com/evolbioinf/fur
+  summary: Find unique genomic regions from target and neighbor genomes
+  license: GPL-3.0-or-later
+  dev_url: https://github.com/evolbioinf/fur
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab022
+    - doi:10.1093/bioadv/vbae113

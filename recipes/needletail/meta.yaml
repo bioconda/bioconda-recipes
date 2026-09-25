@@ -1,16 +1,14 @@
 {% set name = "needletail" %}
-{% set version = "0.6.1" %}
-{% set sha256 = "58c1e04fc706060192fa2669327d45ebad1ab99fb15f73f2e040e4f8b1d051d9" %}
+{% set version = "0.7.3" %}
+{% set sha256 = "9c34b118de6060eb08ea07d168d2d69f7dd1694e5326e3b4ad4087e20a04cc31" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/onecodex/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - patches/01-maturin-pyo3.patch
 
 build:
   number: 0
@@ -25,15 +23,15 @@ requirements:
     - python                              # [build_platform != target_platform]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - crossenv                            # [build_platform != target_platform]
-    - maturin >=1,<2                      # [build_platform != target_platform]
+    - maturin >=1.7,<2                    # [build_platform != target_platform]
     - {{ compiler("c") }}
-    - {{ compiler("rust") }}
     - {{ stdlib("c") }}
+    - {{ compiler("rust") }}
     - cargo-bundle-licenses
   host:
     - python
     - pip
-    - maturin >=1,<2 
+    - maturin >=1.7,<2
   run:
     - python
 
@@ -41,6 +39,8 @@ test:
   files:
     - test.fa
     - test.fq
+  imports:
+    - needletail
 
 about:
   home: https://github.com/onecodex/needletail

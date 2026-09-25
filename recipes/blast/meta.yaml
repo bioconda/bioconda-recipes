@@ -1,22 +1,24 @@
 {% set name = "blast" %}
-{% set version = "2.16.0" %}
-{% set sha256 = "17c93cf009721023e5aecf5753f9c6a255d157561638b91b3ad7276fd6950c2b" %}
+{% set version = "2.17.0" %}
+{% set sha256 = "502057a88e9990e34e62758be21ea474cc0ad68d6a63a2e37b2372af1e5ea147" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  - url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
-    sha256: {{ sha256 }}
-    patches:
-      - configurellvm.patch
-      - get_species_taxids.patch
-      - phonehome.patch
-      - update_configsub.patch
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - configurellvm.patch
+    - get_species_taxids.patch
+    - phonehome.patch
+    - update_configsub.patch
+    - project_tree_builder.patch
+    - vdb.patch
 
 build:
-  number: 4
+  number: 1
   run_exports:
     # Now, the point releases seem to be only bugfixes at least (but this definitely was not the
     # case up to v2.2.31)
@@ -25,9 +27,12 @@ build:
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
     - bzip2
     - entrez-direct
@@ -35,8 +40,6 @@ requirements:
     - curl
     - sqlite =3
   run:
-    - zlib
-    - bzip2
     - perl
     - perl-list-moreutils
     - perl-archive-tar
@@ -44,9 +47,8 @@ requirements:
     - entrez-direct
     - ncbi-vdb
     - curl
-      # Added to prevent regression bugs within 2.16.0.
-      # Remove on next release
-    - rpsbproc
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   files:
@@ -77,11 +79,11 @@ test:
     - get_species_taxids.sh -h > /dev/null
 
 about:
-  home: https://blast.ncbi.nlm.nih.gov/doc/blast-help/
+  home: "https://blast.ncbi.nlm.nih.gov/doc/blast-help"
   # SPDX license ID for NCBI Public Domain
-  license: NCBI-PD
-  license_file: c++/scripts/projects/blast/LICENSE
-  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+  license: "NCBI-PD"
+  license_file: "c++/scripts/projects/blast/LICENSE"
+  summary: "BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit."
   description: |
     BLAST Command Line Applications.
 
@@ -93,16 +95,14 @@ about:
     members of gene families.
 
     For more information, visit https://blast.ncbi.nlm.nih.gov
+  doc_url: "https://blast.ncbi.nlm.nih.gov/doc/blast-help"
 
 
 extra:
-  
   additional-platforms:
-    - linux-aarch64
-  # osx-arm64 can be enabled once:
-  # perl-list-moreutils-xs, perl-io-compress
-  # have osx-arm64 builds available
-  #  - osx-arm64
+    - osx-arm64
+    # CircleCI arm.large runner times out as the build takes too long
+    #- linux-aarch64
   identifiers:
     - biotools:blast
     - doi:10.1016/S0022-2836(05)80360-2

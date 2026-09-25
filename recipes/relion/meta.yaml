@@ -1,49 +1,70 @@
-{% set version = "4.0.2" %}
+{% set name = "relion" %}
+{% set version = "5.1.0" %}
 
 package:
-  name: relion
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/3dem/relion/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 7ccc941a6a885bd850efa8867ea908254d8dc260cf72cc24c375bb9f1d56bf91
+  url: https://github.com/3dem/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4767804dd8ba2198efd1e1082b4632bc36aeca0ad09d4d2f7de956f84bbbb429
 
 build:
-  number: 2
+  number: 1
+  # /opt/mambaforge/envs/bioconda/conda-bld/relion_1789376189154/work/src/acc/cpu/cpu_kernels/helper.h:656:4:
+  # error: use of undeclared identifier 'sincosf'; did you mean '__sincosf'?
+  skip: True  # [osx and x86_64]
   run_exports:
-    - {{ pin_subpackage('relion', max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake >=3.21
     - make
+    # python really only used as a build tool; no ${PREFIX}/bin/python needed.
+    - python >=3
+    - pkg-config
   host:
     - libtiff
     - fftw
-    - openmpi
+    - ghostscript
     - libpng
-  run: 
-    - libtiff
-    - fftw
     - openmpi
-    - libpng
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - tbb-devel           # [x86_64]
+    - pbzip2
+    - xz
+    - zstd
+  run:
+    - openmpi
+    - llvm-openmp         # [osx]
+    - libgomp             # [linux]
+    - tbb-devel           # [x86_64]
+    - pytorch
+    - ghostscript
 
 test:
   commands:
     - relion_image_handler --help
 
 about:
-  home: https://github.com/3dem/relion
-  license: GPLv2
+  home: "https://github.com/3dem/relion"
+  license: "GPL-2.0-or-later"
   license_file: LICENSE
-  license_family: GPL
-  summary: Image-processing software for cryo-electron microscopy
+  license_family: GPL2
+  summary: "Image-processing software for cryo-electron microscopy."
+  dev_url: "https://github.com/3dem/relion"
+  doc_url: "https://relion.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - biotools:relion-5
+    - doi:10.1002/2211-5463.13873
   recipe-maintainers:
     - multimeric

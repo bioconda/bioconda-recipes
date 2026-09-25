@@ -1,0 +1,54 @@
+{% set name = "hyphaeon-core" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: dc423df732b2636c158e3455a67ae098fe73fc6107aeb5882885dd6f6c2be6b4
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - pytorch >=2.0.0
+    - biopython >=1.80
+    - numpy >=1.22.0
+    - scipy >=1.9.0
+    - pandas >=1.5.0
+    - psutil >=5.9.0
+    - huggingface_hub >=0.20.0
+    - safetensors >=0.4.0
+
+test:
+  imports:
+    - aeon_core
+
+about:
+  home: https://github.com/veg/HyphAeon
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Aeon-Core: Shared bioinformatics infrastructure for Aeon-family packages"
+  description: |
+    Aeon-Core provides shared model, dataset, inference, weights, stats, and IO
+    infrastructure used by both HyphAeon (selection inference) and ChronAeon
+    (molecular clock dating) packages.
+  doc_url: https://github.com/veg/HyphAeon#readme
+  dev_url: https://github.com/veg/HyphAeon
+
+extra:
+  recipe-maintainers:
+    - d-callan

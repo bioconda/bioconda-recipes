@@ -1,0 +1,73 @@
+{% set name = "instanexus" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/instanexus-{{ version }}.tar.gz
+  sha256: b236790527ba59da0d607f54d36ef61ed2956d91ece479026830127e299c2772
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('instanexus', max_pin="x.x") }}
+  # The `instanexus` console script is declared in the package's own metadata,
+  # so pip creates the entry-point wrapper during install (see build.sh). We do
+  # NOT re-declare `entry_points:` here to avoid guessing the module:function
+  # target; the `instanexus --help` test below verifies the wrapper works.
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    # Core analysis dependencies (mirrors PyPI requires_dist for 0.2.1)
+    - biopython >=1.85
+    - pandas >=2.3.1
+    - tqdm >=4.67.1
+    - networkx >=3.3
+    - scikit-learn >=1.3
+    # Visualization-only dependencies (heatmap / sequence-logo / cluster plots)
+    - seaborn >=0.13.2
+    - matplotlib-base >=3.8.0
+    - plotly >=6.2.0
+    - logomaker >=0.8
+    - upsetplot
+    # External tools invoked as subprocesses by instanexus (must be on PATH):
+    #   instanexus/clustering.py -> `mmseqs easy-cluster`
+    #   instanexus/alignment.py  -> `clustalo`
+    - mmseqs2
+    - clustalo
+
+test:
+  imports:
+    - instanexus
+  commands:
+    - instanexus --help
+
+about:
+  home: https://github.com/Multiomics-Analytics-Group/InstaNexus
+  summary: "Generalizable direct protein sequencing with InstaNexus."
+  description: |
+    InstaNexus is an end-to-end command-line tool for de novo protein sequencing
+    from PSM (peptide-spectrum match) tables. A single invocation runs
+    preprocessing, assembly, MMseqs2 clustering, Clustal Omega alignment and
+    consensus generation, producing scaffolds and per-cluster consensus
+    sequences. It shells out to mmseqs2 and clustalo, which must be on PATH.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/Multiomics-Analytics-Group/InstaNexus
+  dev_url: https://github.com/Multiomics-Analytics-Group/InstaNexus
+
+extra:
+  recipe-maintainers:
+    - marcoreverenna
+  identifiers:
+    - doi:10.1101/2025.07.25.666861

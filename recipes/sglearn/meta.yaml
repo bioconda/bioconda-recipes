@@ -1,0 +1,48 @@
+{% set name = "sglearn" %}
+{% set version = "1.2.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sglearn-{{ version }}.tar.gz
+  sha256: 8c1ad73c3e2be97b51983b63df83d636af2f793ca95f9bdf830dd6c8b11b3a77
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("sglearn", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pytest-runner
+    - pip
+  run:
+    - python >=3.7
+    - pandas >=1.1
+    - biopython >=1.77
+    - seqfold >=0.7.7
+    - joblib >=1.0.1
+    - tqdm >=4.60.0
+
+test:
+  imports:
+    - sglearn
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/gpp-rnd/sglearn
+  summary: Python package for featurizing sgRNAs for machine learning
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ManuelTgn

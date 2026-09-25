@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "qubicdata-1.34.0"
+installBiocDataPackage.sh "qubicdata-1.38.0"

@@ -1,0 +1,65 @@
+{% set name = "kmate" %}
+{% set version = "0.1.0" %}
+
+# Bioconda recipe for kMate. This is the version to submit to
+# bioconda/bioconda-recipes (recipes/kmate/meta.yaml). It fetches the sdist from
+# PyPI (NOT the GitHub auto-tarball, which archives the whole ~185 MB repo).
+#
+# Before submitting: upload the sdist to PyPI and confirm the sha256 below
+# matches the PyPI-hosted file — see ../bioconda/SUBMISSION.md.
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ac20fee8912f78c41f873408ef2a69c8239fbb50e914da9195b7d7f82662c045
+
+build:
+  noarch: python                       # pure-Python -> one build, no platform matrix
+  number: 0
+  run_exports:                         # bioconda lint: pin downstream deps (0.x -> max_pin x.x)
+    - {{ pin_subpackage('kmate', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - kmate = kmate.cli:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.8
+    - numpy
+    - scipy
+    - pysam
+    - jellyfish                        # k-mer counter (kmer_count.py)
+    - samtools                         # BAM read access
+
+test:
+  imports:
+    - kmate
+  commands:
+    - kmate --help
+    - kmate --version
+
+about:
+  home: https://github.com/Tatianabellagio/kMate
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: k-mer-based founder-mixture frequency estimation for pool-seq
+  description: |
+    kMate estimates per-founder mixture proportions (h) in a sequenced pool from
+    canonical k-mer counts against a pangenome founder x k-mer matrix, then
+    projects to per-record allele frequencies for SNPs, indels and SVs in one
+    pass. Supports whole-chromosome (global) and per-window (window) estimation
+    and optional per-bubble k-mer weighting. `kmate selftest` verifies an install
+    on a bundled fixture.
+  dev_url: https://github.com/Tatianabellagio/kMate
+
+extra:
+  recipe-maintainers:
+    - Tatianabellagio

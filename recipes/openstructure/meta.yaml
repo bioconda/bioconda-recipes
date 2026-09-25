@@ -1,0 +1,106 @@
+{% set name = "OpenStructure" %}
+{% set version = "2.12.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://git.scicore.unibas.ch/schwede/{{ name|lower }}/-/archive/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 5a9ebd3ae053f1f9002bb086d2f11a18e83d777069f22f5492d50a85e356b694
+  patches:
+    # Link pymods/libost_gui as Python::Module (not Python::Python). Required on
+    # macOS to avoid a second libpython;
+    - 0001-link-python-as-module.patch
+    # libc++ 21: std::abs is not a float template (68d3844a / 5ab87cdc)
+    - 0002-std-abs-floating.patch
+    # linux-aarch64: single-precision mixed-radix C2C peak check too tight
+    - 0003-fft-c2c-odd-tolerance.patch
+
+build:
+  number: 0
+  # CircleCI 1h timeout on linux-aarch64: https://github.com/bioconda/bioconda-recipes/issues/58217
+  # -> Build two Python versions (3.12 + 3.13) only
+  skip: True  # [(py < 312 and aarch64) or (py > 313 and aarch64) or (py < 311 and arm64)]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler("fortran") }}  # for `tmalign` and `tmscore` implemented in Fortran
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+    - pkg-config
+    - wget
+  host:
+    - python {{ python }}
+    - libboost-devel
+    - libboost-python-devel
+    - eigen
+    - fftw
+    - libpng
+    - libtiff
+    - parasail
+    - numpy
+    - scipy >=1
+    - networkx >=2
+    - sqlite >=3,<4
+    - openmm >=7  # Officially uses 7.7.0, but relaxes the requirement to use Python >= 3.10
+    - zlib
+    # GUI/GFX/Qt: linux-aarch64 is built headless (-DENABLE_GUI=OFF) to save CI time
+    - qt >=5,<6  # [not aarch64]
+    - pyqt >=5,<6  # [not aarch64]
+    - pyqt5-sip  # [not aarch64]
+    - libglu  # [linux and not aarch64]
+    - libglvnd-devel  # [linux and not aarch64]
+    - libopengl-devel  # [linux and not aarch64]
+    - libgl-devel  # [linux and not aarch64]
+    - libegl-devel  # [linux and not aarch64]
+    - libglx-devel  # [linux and not aarch64]
+    - libgles-devel  # [linux and not aarch64]
+    - libxcb  # [linux and not aarch64]
+    - mesalib  # [linux and not aarch64]
+  run:
+    - python {{ python }}
+    - {{ pin_compatible("networkx") }}
+    - {{ pin_compatible("numpy") }}
+    - {{ pin_compatible("openmm") }}
+    - {{ pin_compatible("scipy") }}
+    - voronota
+    - ocl-icd-system  # [linux]
+    - ocl_icd_wrapper_apple  # [osx]
+
+test:
+  source_files:
+    - examples/scoring/model.pdb
+    - examples/scoring/reference.cif.gz
+  commands:
+    - ost -h 2>&1 | grep -q Usage
+    - lddt --help 2>&1 | grep -q usage
+    - molck --help
+    - ost compare-ligand-structures --help
+    - ost compare-structures --help
+    - ost compare-structures-legacy --help
+
+about:
+  home: "https://openstructure.org"
+  dev_url: "https://git.scicore.unibas.ch/schwede/openstructure"
+  doc_url: "https://openstructure.org/docs"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: "LICENSE.txt"
+  summary: "Open-Source Computational Structural Biology Framework."
+  description: |
+    This project aims to provide an open-source, modular, flexible, molecular modelling and visualization environment.
+    It is targeted at interested method developers in the field of structural bioinformatics.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  # TODO: Add DOIs for the publications on the various tools
+  identifiers:
+    - biotools:openstructure
+    - doi:10.1107/S0907444913007051

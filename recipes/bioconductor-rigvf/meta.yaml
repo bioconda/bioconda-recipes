@@ -1,0 +1,66 @@
+{% set version = "1.2.3" %}
+{% set name = "rigvf" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: bcc9f46f6f36461370238bd884cea156
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rigvf", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0), plyranges, plotgardener, org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg38.knownGene
+requirements:
+  host:
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-cachem
+    - r-dplyr
+    - r-httr2
+    - r-jsonlite
+    - r-memoise
+    - r-rjsoncons
+    - r-rlang
+    - r-tidyr
+    - r-whisker
+  run:
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-cachem
+    - r-dplyr
+    - r-httr2
+    - r-jsonlite
+    - r-memoise
+    - r-rjsoncons
+    - r-rlang
+    - r-tidyr
+    - r-whisker
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: R interface to the IGVF Catalog
+  description: The IGVF Catalog provides data on the impact of genomic variants on function. The `rigvf` package provides an interface to the IGVF Catalog, allowing easy integration with Bioconductor resources.
+  license_file: LICENSE
+

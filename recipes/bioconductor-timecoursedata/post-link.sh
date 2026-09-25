@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "timecoursedata-1.16.0"
+installBiocDataPackage.sh "timecoursedata-1.20.0"
