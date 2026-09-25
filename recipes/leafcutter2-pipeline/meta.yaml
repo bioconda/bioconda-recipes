@@ -1,0 +1,66 @@
+{% set name = "leafcutter2-pipeline" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abachu2005/Leaf_Cutter/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e643a079a569646379c20f79ae3a3c47780af9fde007af966cf5acc4bfd9cf59
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - leafcutter2-pipeline = scripts.lc2_pipeline:main
+    - leafcutter2-web = webapp.backend.main:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9
+    - fastapi >=0.104
+    - uvicorn >=0.24
+    - python-multipart >=0.0.6
+    - numpy >=1.22
+    - pandas >=1.4
+    - matplotlib-base >=3.5
+    - scipy >=1.9
+    - requests >=2.28
+    - tqdm >=4.64
+
+test:
+  imports:
+    - scripts
+    - webapp
+    - webapp.backend
+  commands:
+    - leafcutter2-pipeline --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/abachu2005/Leaf_Cutter
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Reproducible poison-exon discovery pipeline wrapping LeafCutter2 (zebrafish and other organisms).
+  description: |
+    leafcutter2-pipeline is a Python-only launcher and FastAPI web UI for the
+    LeafCutter2 splicing analysis tool. It implements an end-to-end pipeline
+    for poison-exon discovery from RNA-seq data, including reference
+    preparation, junction calling, clustering, NMD annotation, and
+    publication-ready reporting.
+  doc_url: https://github.com/abachu2005/Leaf_Cutter#readme
+  dev_url: https://github.com/abachu2005/Leaf_Cutter
+
+extra:
+  recipe-maintainers:
+    - abachu2005
