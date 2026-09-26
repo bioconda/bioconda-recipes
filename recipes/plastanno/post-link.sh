@@ -14,5 +14,11 @@ cat >> "${PREFIX}/.messages.txt" <<'MSG'
       conda activate plastanno
       plastanno fetch-db
 
+  Upgrading from an earlier version? The 3.0.0 database
+  adds eight genes, and fetch-db keeps an existing copy
+  unless told otherwise:
+
+      plastanno fetch-db --force
+
 ============================================================
 MSG
