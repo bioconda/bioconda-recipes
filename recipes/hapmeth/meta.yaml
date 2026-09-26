@@ -1,0 +1,52 @@
+{% set name = "hapmeth" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/martinandclaude/hapmeth/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e22fafffa88bc9e9d75165981e48480729ac35be6f761be936cfefbaf7d219a5
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hapmeth", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - hapmeth --version
+    - hapmeth --export-panels panels
+    - test -s panels/imprinted_germline_dmrs.hg38.bed
+
+about:
+  home: https://github.com/martinandclaude/hapmeth
+  license: MIT AND Bitstream-Vera
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - assets/fonts/LICENSE_DEJAVU.txt
+    - THIRDPARTY.yml
+  summary: Per-haplotype 5mC locus plots from haplotagged long-read modBAMs.
+  description: |
+    hapmeth plots CpG 5mC per haplotype from a haplotagged Oxford Nanopore
+    modBAM or CRAM, at built-in imprinting, X-inactivation and QC loci (hg38
+    and hs1) or any BED regions. It writes one figure per locus, an overview
+    figure and a TSV.
+  dev_url: https://github.com/martinandclaude/hapmeth
+  doc_url: https://github.com/martinandclaude/hapmeth#readme
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Martin9830
