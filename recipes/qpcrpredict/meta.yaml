@@ -1,0 +1,76 @@
+{% set name = "qpcrpredict" %}
+{% set version = "1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MHH-Bioinformatics-Hematology/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 10d2aa5e39c43d0de2ccfc1e573931a67e230a3f08d0e75bb190cd68740fc83f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - qpcrpredict = qpcrpredict.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.9
+    - numpy
+    - pandas
+    - scipy
+    # the packaged model is a scikit-learn pickle of this minor version
+    - scikit-learn >=1.9,<1.10
+    - joblib
+    - pyarrow
+    - lightgbm
+    - catboost
+    - pytorch
+    - tabpfn >=8,<9
+    - openpyxl
+    - xlrd >=2.0
+
+test:
+  imports:
+    - qpcrpredict
+  commands:
+    - qpcrpredict --version
+    - qpcrpredict predict --help > /dev/null
+    - qpcrpredict train --help > /dev/null
+    - qpcrpredict assay > /dev/null
+    - qpcrpredict info > /dev/null
+
+about:
+  home: "https://github.com/MHH-Bioinformatics-Hematology/qpcrpredict"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Trained positive/negative calls from raw real-time PCR run files (.eds, RDML)."
+  description: |
+    qpcrpredict predicts the positive/negative call of a qPCR assay directly from the raw run
+    file of the instrument (Applied Biosystems .eds or the vendor-neutral RDML format). Features
+    are taken only from the run file: the shape of the amplification curves and the Ct and
+    quantity of the target and its reference gene. A quality and review gate turns runs that
+    cannot be evaluated into an explicit 'na' (repeat) decision and borderline cases into a
+    'review' flag for human classification. Targets, reference gene, control names and
+    thresholds are defined in an assay configuration. A model for AML molecular MRD ships with
+    the package; `qpcrpredict train` fits a model for any other standard-curve qPCR assay.
+    The pretrained TabPFN models, which the optional TabPFN model families download on first
+    use, are licensed by Prior Labs GmbH for non-commercial use only.
+    Part of the LeukoPredict tools.
+  doc_url: "https://qpcrpredict.readthedocs.io/"
+  dev_url: "https://github.com/MHH-Bioinformatics-Hematology/qpcrpredict"
+
+extra:
+  recipe-maintainers:
+    - joachimwolff
