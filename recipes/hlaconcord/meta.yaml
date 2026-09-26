@@ -1,0 +1,54 @@
+{% set name = "hlaconcord" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 25a98e519ed7e5854d11a213f3f168a288c93b43c92306ee32b518e0daa1012e
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - hlacc = hlaconcord.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - hlaconcord
+  commands:
+    - hlacc --help
+    - hlacc --version
+
+about:
+  home: https://github.com/leonbzt/hlaconcord
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Harmonize and validate HLA typing output across multiple typers"
+  description: |
+    hlaconcord parses the native output of multiple NGS-based HLA typers
+    (OptiType, arcasHLA, HLA-LA, HLA-HD), normalizes every call to canonical
+    IPD-IMGT/HLA nomenclature, validates it against a pinned database release,
+    and reconciles database-version skew by matching renamed alleles on their
+    stable accession id -- so a version difference never masquerades as a real
+    disagreement. It emits a per-locus concordance/consensus report and a GL
+    String for cross-checking typers. No runtime dependencies (stdlib only);
+    the reference database is fetched on demand.
+  dev_url: https://github.com/leonbzt/hlaconcord
+  doc_url: https://github.com/leonbzt/hlaconcord
+
+extra:
+  recipe-maintainers:
+    - leonbzt
