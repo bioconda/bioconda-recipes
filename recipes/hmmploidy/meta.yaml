@@ -1,0 +1,53 @@
+{% set name = "hmmploidy" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SamueleSoraggi/HMMploidy/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 986af2015820d691a83547486e14cb572872c13737ebdefed503165ebaed92f5
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=61.0
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.23
+    - scipy >=1.9
+    - pandas >=1.5
+    - matplotlib-base >=3.6
+    - numba >=0.57
+    - samtools
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - hmmploidy
+    - hmmploidy.hmm
+    - hmmploidy.run
+  commands:
+    - hmmploidy --help
+
+about:
+  home: https://github.com/SamueleSoraggi/HMMploidy
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  license_file: LICENSE
+  summary: Genotype-likelihood- and depth-based HMM for inference of ploidy levels
+  dev_url: https://github.com/SamueleSoraggi/HMMploidy
+
+extra:
+  recipe-maintainers:
+    - SamueleSoraggi
