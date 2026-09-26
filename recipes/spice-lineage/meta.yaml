@@ -1,0 +1,73 @@
+package:
+  name: spice-lineage
+  version: "0.2.0"
+
+source:
+  url: https://github.com/Neurosurgery-Brain-Tumor-Center-DiazLab/SPICE/archive/refs/tags/v0.2.0.tar.gz
+  sha256: 48d67b1e5300203d5ce953f2bea25b958772d1887ed8ad1b83f31ce6ced71236
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - spice = spice_lineage.cli:main
+  run_exports:
+    - {{ pin_subpackage('spice-lineage', max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10,<4
+    - pandas >=1.5,<3
+    - r-base >=4.3.3,<4.4.0a0
+    - r-ape >=5.8,<6
+    - r-coda >=0.19,<0.20
+    - r-janitor >=2.2,<3
+    - r-posterior >=1.6.0,<1.7
+    - r-dplyr >=1.1,<2
+    - r-progress >=1.2,<2
+    - r-phangorn >=2.12,<3
+    - r-phytools >=2.5,<3
+    - r-ggplot2 >=3.5.2,<3.6
+    - r-ggsci >=3.2,<4
+    - bioconductor-ggtree >=3.10,<3.11
+    - iqtree >=2.4,<3
+
+test:
+  imports:
+    - spice_lineage
+  commands:
+    - spice --version
+    - spice --help
+    - spice import-monopogen --help
+    - spice filter --help
+    - spice phylogeny --help
+    - spice clones --help
+    - spice ancestry --help
+    - spice plasticity --help
+    - spice summarize --help
+    - iqtree2 --version
+    - >-
+      python -c "from spice_lineage.paths import R_DIR; expected = {'matrix_bridge.R', 'mutation_filter.R', 'BranchSupportCut.R', 'ancestry_core.R', 'plasticity_core.R', 'spice_ancestry_utils.R', 'spice_plasticity_utils.R'}; assert {p.name for p in R_DIR.glob('*.R')} == expected; assert all((R_DIR / p).stat().st_size for p in expected)"
+    - >-
+      Rscript --vanilla -e 'p <- c("ape","coda","janitor","posterior","dplyr","progress","phangorn","phytools","ggplot2","ggtree","ggsci"); stopifnot(all(vapply(p,requireNamespace,logical(1),quietly=TRUE))); cat(R.version.string,"\n"); print(sapply(p,function(x) as.character(packageVersion(x))))'
+
+about:
+  home: https://github.com/Neurosurgery-Brain-Tumor-Center-DiazLab/SPICE
+  dev_url: https://github.com/Neurosurgery-Brain-Tumor-Center-DiazLab/SPICE
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: Single-cell Plasticity Inference and Clonal Evolution
+  description: |
+    SPICE performs somatic SNV filtering, IQ-TREE lineage inference,
+    clone classification, ancestral-state inference and plasticity analysis.
+    BayesTraits V4.1.3 is externally supplied and is not redistributed.
+
+extra:
+  recipe-maintainers:
+    - diazlab
