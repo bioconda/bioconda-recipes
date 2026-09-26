@@ -1,0 +1,67 @@
+# Bioconda recipe. The sha256 is that of the GitHub tarball for tag v{{ version }}
+# (curl -sL <url> | sha256sum). To publish, copy this folder to
+# bioconda-recipes/recipes/spoligotyper and open a pull request. For a new release: tag it,
+# bump `version`, recompute the sha256 and reset `number` to 0.
+{% set name = "spoligotyper" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/spoligotyper/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 995dcee3252a6e4c2204158b45aba1746e86228caf0c8ee1320b983a6a4e73e2
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - spoligotyper = spoligotyper.cli:main
+    - spoligotyper-download-sit = spoligotyper.sitdb:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - bbmap >=38.0
+    - reportlab >=4.0
+
+test:
+  imports:
+    - spoligotyper
+  commands:
+    - spoligotyper --version
+    - spoligotyper --help
+    - spoligotyper-download-sit --help
+    - seal.sh --version
+    # Typing the spacer sequences themselves finds all 43 spacers (octal 777777777777771): checks Seal and Java
+    - spoligotyper -r1 "$(python -c 'from spoligotyper.spoligotype import SPACERS_FASTA; print(SPACERS_FASTA)')" -o test_out -t 1 | grep 777777777777771
+    - test -s test_out/spoligo_spacers_spoligotyping.pdf
+    # Bioconda also runs the tests as root in a container: leave no root-owned folder behind
+    - rm -rf test_out
+
+about:
+  home: https://github.com/duceppemo/spoligotyper
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: In silico spoligotyping of Mycobacterium tuberculosis complex genomes from reads or assemblies
+  description: |
+    spoligotyper finds the 43 spacers of the direct repeat (DR) locus of Mycobacterium tuberculosis complex
+    genomes in sequencing reads (fastq) or assemblies (fasta) with Seal from BBTools, and reports the
+    spoligotype as binary, octal and hexadecimal codes, and as an SB number from the Mbovis.org database.
+  dev_url: https://github.com/duceppemo/spoligotyper
+  doc_url: https://github.com/duceppemo/spoligotyper/wiki
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.22926160
+  recipe-maintainers:
+    - duceppemo
