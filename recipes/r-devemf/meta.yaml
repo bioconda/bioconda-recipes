@@ -1,4 +1,4 @@
-{% set version = '4.5-1' %}
+{% set version = '4.6' %}
 {% set posix = 'm2-' if win else '' %}
 
 package:
@@ -9,34 +9,25 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/devEMF_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/devEMF/devEMF_{{ version }}.tar.gz
-  sha256: cbb0f832dd59cea7c546ad0cdec100f49a7310694b3b32ef1c188bfa19dcf8e7
+  sha256: 91a4e8d651b29a78752415e1682de134ef7b1d00c341134581d752ed57f461d1
 
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  missing_dso_whitelist:
-    - '*/R.dll'        # [win]
-    - '*/Rblas.dll'    # [win]
-    - '*/Rlapack.dll'  # [win]
+  run_exports:
+    - {{ pin_subpackage("r-devemf", max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}              # [not win]
-    - {{ compiler('m2w64_c') }}        # [win]
     - {{ compiler('cxx') }}            # [not win]
-    - {{ compiler('m2w64_cxx') }}      # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}sed               # [win]
-    - {{ posix }}grep              # [win]
+    - {{ stdlib('c') }}
     - {{ posix }}autoconf
     - {{ posix }}automake          # [not win]
-    - {{ posix }}automake-wrapper  # [win]
     - pkg-config
     - {{ posix }}make
-    - {{ posix }}coreutils         # [win]
-    - {{ posix }}zip               # [win]
     - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
     - r-base
@@ -48,7 +39,6 @@ requirements:
 test:
   commands:
     - $R -e "library('devEMF')"           # [not win]
-    - "\"%R%\" -e \"library('devEMF')\""  # [win]
 
 about:
   home: https://github.com/plfjohnson/devEMF

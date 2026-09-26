@@ -1,0 +1,59 @@
+{% set name = "refseq2cds" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/chulbioinfo/refseq2cds/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b3ea5b9f9e804647b8d75cc7d6bc012ea41a21d8f79e09c9d7a925fdad0a7267
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9
+    - biopython >=1.85
+    - dendropy >=5
+    - jinja2 >=3
+    - networkx >=3
+    - pandas >=2
+    - pyarrow >=15
+    - ncbi-datasets-cli
+    - mafft
+    - pal2nal
+
+test:
+  imports:
+    - refseq2cds
+  commands:
+    - refseq2cds --help
+    - refseq2cds test --example mini
+
+about:
+  home: https://github.com/chulbioinfo/refseq2cds
+  license: MIT
+  license_file: LICENSE
+  summary: Build RefSeq ortholog CDS FASTA, alignments, and coordinate matrices.
+  description: |
+    refseq2cds builds assembly-exact RefSeq ortholog CDS FASTA files from
+    locked GCF annotation packages and NCBI Gene orthology edges. It supports
+    strict N-way singleton parsing, reference-gene present-species queries,
+    human CDS-to-genome coordinate matrices, MAFFT+PAL2NAL codon alignments,
+    and target-specific coding event BED outputs.
+  dev_url: https://github.com/chulbioinfo/refseq2cds
+
+extra:
+  recipe-maintainers:
+    - chulbioinfo

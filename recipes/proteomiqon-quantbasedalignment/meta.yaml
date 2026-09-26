@@ -1,0 +1,51 @@
+{% set name = "proteomiqon-quantbasedalignment" %}
+{% set version = "0.0.4" %}
+{% set sha256 = "edfc706ebc62d05a158c51be02bc1e74b4bcd13b1d8c37c27f95baf7073898d0" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.QuantBasedAlignment_linux_x64/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-quantbasedalignment"
+    - test -f "$PREFIX/lib/dotnet/tools/QuantBasedAlignment_linux_x64/ProteomIQon.QuantBasedAlignment_linux_x64.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-quantbasedalignment"
+    - grep -q "QuantBasedAlignment_linux_x64/ProteomIQon.QuantBasedAlignment_linux_x64.dll" "$PREFIX/bin/proteomiqon-quantbasedalignment"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: QuantBasedAlignment predicts where peptide ions from one run should appear in another run, enabling their later quantification even when they were not identified there.
+  description: | 
+    In data dependent acquisition the instrument picks the ions it fragments more or less at random. 
+    A peptide identified and quantified in one run is therefore often present in another run without ever having been fragmented there, 
+    so that run has no identification and no quantification for it. Run alignment maps the scan time of one run onto another, 
+    so that a later tool can look for the peptide where it should elute. 
+    QuantBasedAlignment reads the quantified peptide ions of a target run (-i) and of one or more source runs (-ii). 
+    On the peptide ions a source run shares with the target it fits a smoothing spline from source scan times to 
+    target scan times, and with that spline it predicts the scan time of every source peptide ion in the target run.
+    AlignmentBasedQuantification then extracts and quantifies the peptide ions at the predicted scan times.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/QuantBasedAlignment.html

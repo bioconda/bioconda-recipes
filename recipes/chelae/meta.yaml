@@ -1,5 +1,5 @@
 {% set name = "chelae" %}
-{% set version = "0.1.0" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 39cb2c912da5f411d05a8f8b6b2c38561bfb945d5bdebade7360594ba6853d13
+  sha256: da9b26117b51aec34fad102aa29645a221c8f88af3716aa9baaca7bce5613206
 
 build:
   number: 0
@@ -22,7 +22,10 @@ build:
     # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
     # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
     # in Cargo.toml).
-    - cargo install --locked cargo-multivers                                       # [x86_64]
+    # Floor of 0.12.0: that release carries the fexecve/memfd fix required for
+    # the launcher to run (and preserve argv[0]) under binfmt emulation -- see
+    # fulcrumgenomics/chelae#7 and fulcrumgenomics/riker#38.
+    - cargo install --locked --version '>=0.12.0' cargo-multivers                  # [x86_64]
     - cargo multivers --profile dist --out-dir "${PREFIX}/bin"                     # [x86_64]
     # aarch64: a single portable ARMv8-A binary built with the dist profile.
     # Do NOT use cargo-multivers here -- on non-x86_64 it would expand to every

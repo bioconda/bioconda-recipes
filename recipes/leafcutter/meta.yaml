@@ -1,0 +1,66 @@
+{% set name = "leafcutter" %}
+{% set version = "2.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/leafcutter2/leafcutter-ds/archive/bdf92d377f5dfbe5d643b5c217dc7047d70742e8.tar.gz
+  sha256: 7c6eeaad59393b372ca3a67cea3e0771ecefb851522686258fe1e82ca2641942
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('leafcutter', max_pin="x") }}
+  entry_points:
+    - leafcutter-cluster = leafcutter.__main__:leafcutter_cluster
+    - leafcutter-ds = leafcutter.__main__:leafcutter_ds
+    - leafcutter-bayes = leafcutter.__main__:leafcutter_bayes
+    - leafcutter-prepare-phenotype = leafcutter.__main__:leafcutter_prepare_phenotype
+    - leafcutter-gtf-to-exons = leafcutter.__main__:leafcutter_gtf_to_exons
+
+requirements:
+  host:
+    - python >=3.8,<3.14
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<3.14
+    - pytorch
+    - pyro-ppl
+    - scipy >=1.11
+    - pandas
+    - scikit-learn
+
+test:
+  imports:
+    - leafcutter
+  commands:
+    - leafcutter-cluster --help
+    - leafcutter-ds --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://davidaknowles.github.io/leafcutter/
+  dev_url: https://github.com/leafcutter2/leafcutter-ds
+  doc_url: https://davidaknowles.github.io/leafcutter/
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: Annotation-free quantification of RNA splicing from RNA-seq data
+  description: |
+    Leafcutter is a Python/PyTorch/Pyro implementation for differential splicing analysis.
+    Leafcutter quantifies RNA splicing variation using short-read RNA-seq data. The core 
+    idea is to leverage spliced reads (reads that span an intron) to quantify 
+    (differential) intron usage across samples.
+
+extra:
+  recipe-maintainers:
+    - JTL-lab
+  identifiers:
+    - biotools:leafcutter
+    - doi:10.1038/s41588-017-0004-9

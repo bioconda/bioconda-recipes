@@ -1,6 +1,6 @@
 {% set name = "oxo-flow-cli" %}
-{% set version = "0.4.2" %}
-{% set sha256 = "dfabf82e3d7fac5df4712bb92f305b5d05a624ce9b35f3b7befe63b5d1f3085b" %}
+{% set version = "0.20.1" %}
+{% set sha256 = "494bdc49dd713580fedc101855b4fb0a159abd1888d44b7589c33b0f57327da2" %}
 
 package:
   name: {{ name|lower }}
@@ -20,7 +20,11 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
-    - {{ compiler('rust') }}
+    # Pin the raw rust compiler: oxo-flow 0.17.0+ requires rustc >= 1.98.0
+    # (rust-version in Cargo.toml), but the rust_* metapackages that
+    # {{ compiler('rust') }} resolves to top out at 1.97.1 in repodata
+    # (the 1.98.x metapackage builds are missing on conda-forge).
+    - rust >=1.98.0
     - cargo-bundle-licenses
 
 test:
@@ -46,3 +50,9 @@ extra:
     - osx-arm64
   recipe-maintainers:
     - ShixiangWang
+  skip-lints:
+    # The rust_osx-arm64 / rust_linux-aarch64 metapackages that
+    # {{ compiler('rust') }} resolves to top out at 1.97.1 in repodata
+    # (the 1.98.x metapackage builds are missing on conda-forge), so the
+    # raw rust package is pinned instead to meet the crate MSRV (1.98.0).
+    - should_use_compilers
