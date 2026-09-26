@@ -11,7 +11,7 @@ source:
   sha256: c4f5d55dcb9bd5d019ef2a592d99bc0efd8c018a7959f697a9c9c713e06b26c6
 
 build:
-  number: 0
+  number: 1
 
   run_exports:
     - {{ pin_subpackage('umi-tools-rs', max_pin="x.x") }}
@@ -24,17 +24,20 @@ requirements:
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
     - {{ compiler('c') }} 
+    - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - cmake
     - make
     - clang
-    - libclang
+    # hts-sys uses bindgen 0.69, which cannot read struct fields with libclang 22+.
+    # https://github.com/rust-lang/rust-bindgen/issues/3275
+    - libclang <22
     - pkg-config
 
 
 test:
   commands:
-    - umi-tools-rs --version
+    - umi-tools-rs --version | grep -Fx "umi-tools-rs {{ version }}"
 
 about:
   home: https://github.com/vertti/umi-tools-rs
@@ -45,5 +48,7 @@ about:
   summary: A drop-in replacement for UMI-tools, written in Rust. Same flags, same output — just faster.
 
 extra:
+  additional-platforms:
+    - osx-arm64
   recipe-maintainers:
     - "@A-Noizes"  # your GitHub username
