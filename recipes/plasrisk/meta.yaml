@@ -1,0 +1,71 @@
+{% set version = "1.1.1" %}
+
+package:
+  name: plasrisk
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/plasrisk/plasrisk-{{ version }}.tar.gz
+  sha256: 951c507534e5e7199af88b0cc954e559e1452dbbfc85c761b379f4dafd3a81bb
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - plasrisk = plasrisk.cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage('plasrisk', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.8
+    - pandas >=1.3
+    - numpy >=1.20
+    # abricate and blast are recommended but not hard dependencies;
+    # the CLI falls back to sequence-only scoring when abricate is absent.
+    # Install them with: conda install -c bioconda -c conda-forge abricate blast
+
+test:
+  imports:
+    - plasrisk
+    - plasrisk.scoring
+    - plasrisk.annotate
+    - plasrisk.lookup
+  commands:
+    - plasrisk --help
+    - plasrisk --version
+    - python -c "from plasrisk import PlasRiskScorer, PIPdbScorer, get_scorer; s=get_scorer('plasrisk'); p=get_scorer('pipdb'); print('OK')"
+
+about:
+  home: https://github.com/LLQ95/PlasRisk
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Data-driven multi-model risk assessment for bacterial plasmids"
+  description: |
+    PlasRisk provides two scoring models for bacterial plasmid risk assessment.
+    The default output is a FASTA-only 5-dimension lite core (S_ARG, S_VF,
+    S_MOB, S_SIZE, S_BM) with equivalent discrimination to the full model;
+    --mode full adds host range (S_HOST), replicon type (S_REP), geographic
+    spread (S_GEO), habitat breadth (S_HAB), and temporal growth rate (S_GROW).
+    Weights were derived by data-driven consensus (Random Forest MDG, LASSO,
+    grid-search optimization) on 792,964 PIPdb plasmid sequence clusters.
+    The alternative PIPdb model reproduces the original 8-item ordinal
+    scoring system (Zhu et al., Nucleic Acids Res. 2025). Accepts FASTA
+    input and uses abricate for annotation when available; sequence-derived
+    dimensions fall back to replicon empirical medians when annotation is
+    unavailable.
+  doc_url: https://github.com/LLQ95/PlasRisk#readme
+  dev_url: https://github.com/LLQ95/PlasRisk
+
+extra:
+  recipe-maintainers:
+    - LLQ95
+  identifiers:
+    - doi:10.1093/nar/gkae952
