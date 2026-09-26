@@ -1,0 +1,229 @@
+Restore the GC protection that 1.16.0 removed from src/wdl.cpp.
+
+CRAN spp 1.16.0 ships spp_lwcc() and spp_wtd() -- the two narrow peak-calling
+kernels reached from find.binding.positions() -- with every PROTECT() call
+removed and every UNPROTECT() commented out. The result vectors (nv, rpp_R,
+rpv_R, names_R, ans_R) are therefore unprotected R allocations, so any later
+allocVector() or mkChar() inside the same .Call can trigger the garbage
+collector, which sees them as unreferenced and is free to reclaim or reuse the
+cells while the C code is still writing to them and while the caller is still
+holding the returned SEXP.
+
+The failure is nondeterministic and depends on heap state, not on the input
+data. When a reclaimed cell is re-allocated with a different type, R raises
+
+    INTEGER() can only be applied to a 'integer', not a '<other type>'
+
+from inside find.binding.positions(). When it is not, the run completes and
+returns the reclaimed cells as peak positions and scores, so a job that does not
+crash can still write silently wrong peaks. Both outcomes have been observed
+against bioconda's r-spp 1.16.0 (build 12, R 4.4.3): 'not a character' and 'not
+a double' from the same target on different days, and one target that failed
+three times and then succeeded weeks later with nothing changed.
+ENCODE-DCC/chip-seq-pipeline2#126 reports the identical message out of lwcc(),
+the sibling kernel in this same file, with one pseudo-replicate failing while
+its sibling succeeded; that issue does not state its spp version, so it is a
+consistent report rather than a confirmed instance.
+
+How 1.16.0 got this way, and why it cannot be fixed by a backport.
+
+The removal is upstream's own work, on the hms-dbmi/spp branch that produced the
+CRAN submission: commit 6c1f7cf "changing PROTECT to UNPROTECT in spp_lwcc() and
+spp_wtd() functions" followed by ad0cc9c "deletion of UNPROTECT as it gave an
+error", both 2019-05-23 on origin/cran-devel. src/wdl.cpp at the tip of that
+branch (a09d16a) is byte-identical to the file in the CRAN 1.16.0 tarball.
+
+The error that prompted the deletion was real. Upstream master (7f405c9, still
+version 1.15.5) does carry live PROTECT/UNPROTECT calls, but its counts do not
+balance: nv is protected once at its declaration and again inside the
+!return_peaks branch, while the exits are UNPROTECT(4) and UNPROTECT(1), so
+every call through either function leaks exactly one protection slot. Deleting
+the calls silenced the resulting stack-imbalance complaint and reintroduced the
+much worse problem it had been hiding.
+
+So there is no upstream tree to backport from. master is behind CRAN by version
+and unbalanced by protection count; cran-devel is the tree this patch fixes.
+The patch instead balances protection per branch, which is what both earlier
+states got wrong:
+
+  * the return_peaks path protects rpp_R, rpv_R, names_R and ans_R, and exits
+    UNPROTECT(4);
+  * the !return_peaks path protects nv, and exits UNPROTECT(1);
+  * nv is initialised to R_NilValue rather than to a throwaway allocVector().
+    R_NilValue is what silences the -Wmaybe-uninitialized warning the
+    declaration-site allocation was added for, and it needs no protection
+    because it allocates nothing.
+
+Dropping that declaration-site allocation is worth noting on its own. It runs
+unconditionally in 1.16.0, but d_nv is only ever assigned inside
+if(!return_peaks), so on the return_peaks path -- the only path
+window.chr.call.mirror.binding() ever takes -- it allocates a REALSXP of
+LENGTH(x_R) and abandons it. x_R is the strand histogram built by wtd(), of
+length window.size + 2*whs + 1, and find.binding.positions() defaults
+window.size to 4e7: roughly 320 MB allocated and immediately garbaged per call,
+per window, per worker. Removing it lowers both peak memory and the allocation
+pressure that decides when the collector runs.
+
+The same code has been running in production as descostesn::r-spp 1.16.1
+(github.com/descostesn/SPP-copy) since August 2026; this patch is that fork's
+src/wdl.cpp verbatim.
+
+Two deliberate limits on scope. The fork also bumps DESCRIPTION to 1.16.1; that
+hunk is left out so packageVersion("spp") keeps reporting the version this
+recipe declares -- hms-dbmi/spp#45 is a user asking which spp they actually have
+after installing from bioconda, and a patched build that self-reports a version
+CRAN never published would make that worse. And the MD5 hunk is only the one
+line for src/wdl.cpp, so tools::checkMD5sums("spp") stays TRUE for the installed
+package instead of failing on a file this recipe changed.
+
+Not yet offered upstream: hms-dbmi/spp has not had a commit since 2020-09-18,
+its last push was a contributor's branch in July 2021, and issues opened since
+(#45 in December 2023, #46 in May 2024) have no maintainer response. PR #41,
+which would merge the cran-devel tree into master, has been open since November
+2020 -- so upstream master has never even received the code this patch repairs.
+Happy to drop this patch if the maintainers would rather ship CRAN's source
+unchanged.
+
+diff --git a/MD5 b/MD5
+index 5ca2832..2faad6d 100644
+--- a/MD5
++++ b/MD5
+@@ -45,4 +45,4 @@ dd8bc59bde265c8cdf9e907c33a6fff4 *src/maqread.cpp
+ 08bf369a220a2bf9e67ca4867c670638 *src/pc.h
+ 88a5c7aeab4c28e3ab88281a5344ced4 *src/peaks.cpp
+ 2ee25121f93953359214c30b75c3fbc9 *src/spp_init.c
+-1aa7d7f195d15ed9d58329d5843eda4d *src/wdl.cpp
++b5ee09cc1a2fa7df73206032b63406a8 *src/wdl.cpp
+diff --git a/src/wdl.cpp b/src/wdl.cpp
+index 819a35f..334a5ec 100644
+--- a/src/wdl.cpp
++++ b/src/wdl.cpp
+@@ -86,16 +86,19 @@ extern "C" {
+     //  osize=16; isize=6; 
+ 
+ 
+-    SEXP nv;
+-    //UNPROTECT(nv=allocVector(REALSXP,n_x)); //putting declaration also here to avoid[-Wmaybe-uninitialized]
+-    nv=allocVector(REALSXP,n_x); //putting declaration also here to avoid[-Wmaybe-uninitialized]
++    // PROTECT calls restored: 1.16.0 dropped every PROTECT in this file, so a
++    // later allocVector could trigger GC and reclaim/reuse these SEXPs mid-call
++    // (symptom: "INTEGER() can only be applied to a 'integer', not a 'double'").
++    // Protection is balanced per branch, unlike 1.15.5 (which leaked one slot):
++    // the return_peaks path protects rpp/rpv/names/ans -> UNPROTECT(4); the
++    // !return_peaks path protects nv -> UNPROTECT(1).
++    SEXP nv = R_NilValue; // NilValue init (no allocation) silences [-Wmaybe-uninitialized]
+ 
+     double *d_nv;
+     vector<int> ppos;
+     vector<double> pval;
+     if(!return_peaks) {
+-      //UNPROTECT(nv=allocVector(REALSXP,n_x)); 
+-      nv=allocVector(REALSXP,n_x); 
++      PROTECT(nv=allocVector(REALSXP,n_x));
+       d_nv=REAL(nv);
+       for(int i=0;i<n_x;i++) {
+ 	d_nv[i]=0;
+@@ -308,11 +311,8 @@ extern "C" {
+       }
+ 
+       SEXP rpp_R,rpv_R;
+-      //UNPROTECT(rpp_R=allocVector(INTSXP,ppos.size())); 
+-      //UNPROTECT(rpv_R=allocVector(REALSXP,ppos.size())); 
+-      rpp_R=allocVector(INTSXP,ppos.size()); 
+-      rpv_R=allocVector(REALSXP,ppos.size()); 
+-
++      PROTECT(rpp_R=allocVector(INTSXP,ppos.size()));
++      PROTECT(rpv_R=allocVector(REALSXP,ppos.size()));
+       int* rpp=INTEGER(rpp_R);
+       double* rpv=REAL(rpv_R);
+ 
+@@ -324,21 +324,19 @@ extern "C" {
+       }
+     
+       SEXP ans_R, names_R;
+-      //UNPROTECT(names_R = allocVector(STRSXP, 2));
+-      names_R = allocVector(STRSXP, 2);
++      PROTECT(names_R = allocVector(STRSXP, 2));
+       SET_STRING_ELT(names_R, 0, mkChar("x"));
+       SET_STRING_ELT(names_R, 1, mkChar("v"));
+-    
+-      //UNPROTECT(ans_R = allocVector(VECSXP, 2));
+-      ans_R = allocVector(VECSXP, 2);
++
++      PROTECT(ans_R = allocVector(VECSXP, 2));
+       SET_VECTOR_ELT(ans_R, 0, rpp_R);
+       SET_VECTOR_ELT(ans_R, 1, rpv_R);
+       setAttrib(ans_R, R_NamesSymbol, names_R);
+-  
+-      //UNPROTECT(4);
++
++      UNPROTECT(4);
+       return(ans_R);
+     } else {
+-      //UNPROTECT(1);
++      UNPROTECT(1);
+       return(nv);
+     }
+ 
+@@ -411,16 +409,13 @@ extern "C" {
+     int bg_nn1=0;
+     int bg_nn2=0;
+     
+-    SEXP nv;
+-    //UNPROTECT(nv=allocVector(REALSXP,n_x)); //putting declaration also here to avoid[-Wmaybe-uninitialized]
+-    nv=allocVector(REALSXP,n_x); //putting declaration also here to avoid[-Wmaybe-uninitialized]
++    // PROTECT calls restored -- see the matching note in spp_lwcc above.
++    SEXP nv = R_NilValue; // NilValue init (no allocation) silences [-Wmaybe-uninitialized]
+     double *d_nv;
+     vector<int> ppos;
+     vector<double> pval;
+     if(!return_peaks) {
+-      //UNPROTECT(nv=allocVector(REALSXP,n_x)); 
+-      nv=allocVector(REALSXP,n_x); 
+-
++      PROTECT(nv=allocVector(REALSXP,n_x));
+       d_nv=REAL(nv);
+       for(int i=0;i<n_x;i++) {
+ 	d_nv[i]=0;
+@@ -638,11 +633,8 @@ extern "C" {
+       }
+ 
+       SEXP rpp_R,rpv_R;
+-      //UNPROTECT(rpp_R=allocVector(INTSXP,ppos.size())); 
+-      //UNPROTECT(rpv_R=allocVector(REALSXP,ppos.size())); 
+-      rpp_R=allocVector(INTSXP,ppos.size()); 
+-      rpv_R=allocVector(REALSXP,ppos.size()); 
+-
++      PROTECT(rpp_R=allocVector(INTSXP,ppos.size()));
++      PROTECT(rpv_R=allocVector(REALSXP,ppos.size()));
+       int* rpp=INTEGER(rpp_R);
+       double* rpv=REAL(rpv_R);
+ 
+@@ -654,21 +646,19 @@ extern "C" {
+       }
+     
+       SEXP ans_R, names_R;
+-      //UNPROTECT(names_R = allocVector(STRSXP, 2));
+-      names_R = allocVector(STRSXP, 2);
++      PROTECT(names_R = allocVector(STRSXP, 2));
+       SET_STRING_ELT(names_R, 0, mkChar("x"));
+       SET_STRING_ELT(names_R, 1, mkChar("v"));
+-    
+-      //UNPROTECT(ans_R = allocVector(VECSXP, 2));
+-      ans_R = allocVector(VECSXP, 2);
++
++      PROTECT(ans_R = allocVector(VECSXP, 2));
+       SET_VECTOR_ELT(ans_R, 0, rpp_R);
+       SET_VECTOR_ELT(ans_R, 1, rpv_R);
+       setAttrib(ans_R, R_NamesSymbol, names_R);
+-  
+-      //UNPROTECT(4);
++
++      UNPROTECT(4);
+       return(ans_R);
+     } else {
+-      //UNPROTECT(1);
++      UNPROTECT(1);
+       return(nv);
+     }
+ 
