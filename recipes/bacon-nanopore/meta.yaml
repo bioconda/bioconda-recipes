@@ -1,0 +1,57 @@
+{% set name = "bacon-nanopore" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/BACoN/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 58e1ce3e9ee06fd176232f6023cfc8f85c7ea1901ed5d90fc04942d5bf456a15
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - bacon = bacon.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - minimap2 >=2.24
+    - samtools >=1.21
+    - filtlong >=0.2.1
+    - flye >=2.9.5
+    - myloasm >=0.7
+    - ska2 >=0.5
+    - parsnp >=2.0
+    - harvesttools
+    - fasttree >=2.1.11
+    - iqtree >=2.2
+    - bbmap >=39
+    - python-isal
+
+test:
+  commands:
+    - bacon --help
+    - bacon --version
+
+about:
+  home: https://github.com/duceppemo/BACoN
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Bait, assemble and compare Nanopore reads matching a reference sequence, such as an organelle genome
+  dev_url: https://github.com/duceppemo/BACoN
+  doc_url: https://github.com/duceppemo/BACoN/wiki
+
+extra:
+  recipe-maintainers:
+    - duceppemo
