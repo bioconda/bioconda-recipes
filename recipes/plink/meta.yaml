@@ -1,49 +1,57 @@
 {% set name = "plink" %}
-{% set version = "1.90b7.7" %}
+{% set version = "1.90rc3" %}
+{% set tag = "v1.9.0-rc3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://github.com/chrchang/plink-ng/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: faa07757dd814ce0692275e6c2247f76ece74f3f49c50e6f3e4cc3539e85fe39
+
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
-source:
-  url: https://www.cog-genomics.org/static/bin/plink/plink_src.zip
-  sha256: a8c9577cfeeec0a624288999d1eed4148880c781eb85a42b720b8f8868afc141
-  patches:
-    - signed_int64_osx.patch
-    - makefile.patch [osx]
-    - socks.patch [osx]
-    - cxx_linking.patch [osx]
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
   host:
-    - openblas
     - zlib
-    - git
-    - tar
-    - wget
+    - openblas  # [linux]
   run:
-    - libopenblas
+    - libopenblas  # [linux]
 
 test:
   commands:
-    - plink --help
-    ###| grep "PLINK v1.90p"
+    - plink --version | grep "PLINK v{{ tag[1:] }}"
+    - plink --dummy 200 500 --out dummy
+    - plink --bfile dummy --maf 0.05 --freq --pca 2 --out out
+    - test -s out.frq
+    - test -s out.eigenvec
 
 about:
-  home: https://www.cog-genomics.org/plink/
-  license: GPL
-  license_file: LICENSE
-  summary: Whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner.
+  home: https://www.cog-genomics.org/plink/1.9/
+  dev_url: https://github.com/chrchang/plink-ng
+  doc_url: https://www.cog-genomics.org/plink/1.9/
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: 1.9/LICENSE
+  summary: Whole genome association analysis toolset (PLINK 1.9)
+  description: |
+    PLINK 1.9 is a whole-genome association analysis toolset, a faster and
+    more scalable replacement for PLINK 1.07 working on .bed/.bim/.fam
+    filesets.
 
 extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  identifiers:
+    - doi:10.1186/s13742-015-0047-8
+    - biotools:plink
