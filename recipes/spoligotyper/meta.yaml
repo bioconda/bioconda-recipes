@@ -3,7 +3,7 @@
 # bioconda-recipes/recipes/spoligotyper and open a pull request. For a new release: tag it,
 # bump `version`, recompute the sha256 and reset `number` to 0.
 {% set name = "spoligotyper" %}
-{% set version = "0.4.2" %}
+{% set version = "0.5.0" %}
 
 package:
   name: {{ name }}
@@ -11,7 +11,7 @@ package:
 
 source:
   url: https://github.com/duceppemo/spoligotyper/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: d102de841ffc6979b1faee363f3a406e40413314ba6571b8236fd63d47952d85
+  sha256: 6c82c38e0f0f44e8180418c4fe1af300b8d31a5c952c224efd6b54591bfdb847
 
 build:
   number: 0
@@ -19,6 +19,7 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - spoligotyper = spoligotyper.cli:main
+    - spoligotyper-download-sit = spoligotyper.sitdb:main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -38,6 +39,7 @@ test:
   commands:
     - spoligotyper --version
     - spoligotyper --help
+    - spoligotyper-download-sit --help
     - seal.sh --version
     # Typing the spacer sequences themselves finds all 43 spacers (octal 777777777777771): checks Seal and Java
     - spoligotyper -r1 "$(python -c 'from spoligotyper.spoligotype import SPACERS_FASTA; print(SPACERS_FASTA)')" -o test_out -t 1 | grep 777777777777771
