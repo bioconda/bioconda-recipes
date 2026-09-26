@@ -1,0 +1,57 @@
+{% set name = "seqgain" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rki-mf1/seqgain/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d9cc92b9b1166331a5eb7a961b35fcf0cd331d6c9de107ecf01540f4dc6a7db2
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - {{ PYTHON }} -m build --wheel --no-isolation
+    - {{ PYTHON }} -m installer --no-compile-bytecode --prefix {{ PREFIX }} dist/seqgain-{{ version }}-py3-none-any.whl
+  entry_points:
+    - seqgain = seqgain.cli:main
+    - seqgain-demo = seqgain.cli:demo_main
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=77.0.3
+    - python-build
+    - python-installer
+    - wheel
+  run:
+    - python >=3.11
+    - numpy >=1.26,<3
+    - scipy >=1.12,<2
+    - pysam >=0.22,<0.25
+    - plotly >=5.24,<7
+
+test:
+  imports:
+    - seqgain.cli
+    - seqgain.bam
+    - seqgain.report
+  commands:
+    - seqgain --version
+    - seqgain --help
+    - seqgain-demo --help
+
+about:
+  home: https://github.com/rki-mf1/seqgain
+  dev_url: https://github.com/rki-mf1/seqgain
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: K-mer discovery and reference coverage sequencing-effort scenarios
+
+extra:
+  recipe-maintainers:
+    - simonhtausch
