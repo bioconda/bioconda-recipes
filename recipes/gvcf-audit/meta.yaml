@@ -1,0 +1,47 @@
+{% set version = "0.5.1" %}
+
+package:
+  name: gvcf-audit
+  version: {{ version }}
+
+source:
+  url: https://github.com/DylanCosto/gvcf-audit/releases/download/v{{ version }}/gvcf-audit-{{ version }}-source.tar.gz
+  sha256: 726e671102aa8fb2168f80a8770a02cb51e93135799c72d9cfecbf3d2b928516
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('gvcf-audit', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --locked --no-track --root "$PREFIX" --path .
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - gvcf-audit --version
+    - gvcf-audit --help
+    - gvcf-audit compare --help
+    - gvcf-audit targets --help
+
+about:
+  home: https://github.com/DylanCosto/gvcf-audit
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Explain genotype callability and missing evidence in a gVCF
+  dev_url: https://github.com/DylanCosto/gvcf-audit
+
+extra:
+  recipe-maintainers:
+    - DylanCosto
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
