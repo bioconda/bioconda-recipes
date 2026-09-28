@@ -6,12 +6,6 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
 mkdir -p "${PREFIX}/bin"
 
-for CHANGE in "activate" "deactivate"
-do
-	mkdir -p "${PREFIX}/etc/conda/${CHANGE}.d"
-	cp -f "${RECIPE_DIR}/${CHANGE}.sh" "${PREFIX}/etc/conda/${CHANGE}.d/${PKG_NAME}_${CHANGE}.sh"
-done
-
 case $(uname -s) in
     Darwin)
 	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names" ;;

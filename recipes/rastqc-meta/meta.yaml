@@ -1,0 +1,125 @@
+{% set version = "0.2.0" %}
+{% set sha256 = "ceda2350f81218dc878652b467e9d0f27807d9001cd802f371088e20b9a5fd41" %}
+
+package:
+  name: rastqc-meta
+  version: {{ version }}
+
+source:
+  url: https://github.com/Huang-lab/RastQC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+# `rastqc` and `rastqc-nanopore` are the same program built from the same tag
+# with different cargo features, so they are always released together. They are
+# built as two outputs of one recipe to keep the version and sha256 in a single
+# place. Per CEP 0014 the top level builds nothing: requirements, run_exports
+# and tests belong to the outputs.
+outputs:
+  - name: rastqc
+    version: {{ version }}
+    script: build-rastqc.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('rastqc', max_pin='x.x') }}
+    requirements:
+      build:
+        - {{ compiler('rust') }}
+        - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - make
+        - pkg-config
+    test:
+      commands:
+        - rastqc --version
+        - rastqc --help
+    about:
+      home: https://github.com/Huang-lab/RastQC
+      license: MIT
+      license_family: MIT
+      license_file: LICENSE
+      summary: Fast Rust-based quality control for high-throughput sequencing data
+      description: |
+        RastQC is a drop-in replacement for FastQC written in Rust. It implements
+        all 12 FastQC modules with matching algorithms and output formats (HTML,
+        fastqc_data.txt, ZIP, native MultiQC JSON). On a real 18.7M-read NextSeq
+        run it is 2.9x faster than Falco on one core and 4.7x on four, and its
+        output is byte-identical at any thread count. For Oxford Nanopore data
+        (Fast5 + POD5 readers and long-read modules), install the sibling
+        package `rastqc-nanopore`.
+      dev_url: https://github.com/Huang-lab/RastQC
+      doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+  - name: rastqc-nanopore
+    version: {{ version }}
+    script: build-rastqc-nanopore.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('rastqc-nanopore', max_pin='x.x') }}
+    requirements:
+      build:
+        - {{ compiler('rust') }}
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - make
+        - pkg-config
+      host:
+        # hdf5-rs 0.8 (the version pinned in upstream Cargo.toml) supports HDF5
+        # 1.8/1.10/1.12 only and panics with "Invalid H5_VERSION" on 1.14+.
+        - hdf5 >=1.10,<1.13
+        - libarrow
+      run:
+        - hdf5 >=1.10,<1.13
+        - libarrow
+    test:
+      commands:
+        - rastqc-nanopore --version
+        - rastqc-nanopore --help
+        - rastqc-nanopore --long-read --help
+    about:
+      home: https://github.com/Huang-lab/RastQC
+      license: MIT
+      license_family: MIT
+      license_file: LICENSE
+      summary: Fast Rust-based QC for Oxford Nanopore sequencing data (Fast5 + POD5)
+      description: |
+        rastqc-nanopore is the long-read variant of RastQC. It adds Fast5 (HDF5)
+        and POD5 (Arrow) readers for Oxford Nanopore data, plus 3 long-read
+        modules (N50, quality-stratified length, homopolymer content) on top of
+        the 12 standard FastQC modules. The binary is installed as
+        `rastqc-nanopore` so this package can coexist with the core `rastqc`
+        package in the same environment.
+      dev_url: https://github.com/Huang-lab/RastQC
+      doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+about:
+  home: https://github.com/Huang-lab/RastQC
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast Rust-based quality control for high-throughput sequencing data
+  description: |
+    RastQC is a drop-in replacement for FastQC written in Rust. This recipe
+    builds two packages from one upstream tag: `rastqc`, the core short-read
+    build, and `rastqc-nanopore`, which adds the Fast5 (HDF5) and POD5 (Arrow)
+    readers and the long-read modules.
+  dev_url: https://github.com/Huang-lab/RastQC
+  doc_url: https://github.com/Huang-lab/RastQC/blob/main/README.md
+
+extra:
+  # Each output declares its own run_exports, which is what CEP 0014 asks for
+  # and what bioconda-utils checks from v5.0.0 on. The deployed linter reads
+  # build/run_exports from the top-level section exclusively, and a top-level
+  # copy is rejected by the newer check
+  # (unnecessary_run_exports_in_main_build_section_with_multiple_outputs), so
+  # the two cannot both be satisfied. Drop this skip once CI is on v5.0.0.
+  skip-lints:
+    - missing_run_exports
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Huang-lab
