@@ -1,0 +1,44 @@
+{% set name = "openomicsbench" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0f4cf443d45c87070e847f53271f79d1c708a37d491bbea62ef91edf13f5fb2e
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - pip
+    - python >=3.11
+    - setuptools >=68
+  run:
+    - python >=3.11
+    - pydantic >=2.13,<3
+    - numpy >=2.3,<3
+
+test:
+  imports:
+    - omicsbench
+  commands:
+    - omicsbench --help
+
+about:
+  home: https://github.com/vxxqv/openomicsbench
+  summary: Traceable omics benchmarks and deterministic FASTA and FASTQ tools
+  license: Apache-2.0
+  license_file: LICENSE
+  dev_url: https://github.com/vxxqv/openomicsbench
+
+extra:
+  recipe-maintainers:
+    - vxxqv

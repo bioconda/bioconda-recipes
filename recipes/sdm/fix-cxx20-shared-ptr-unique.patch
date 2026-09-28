@@ -1,0 +1,37 @@
+--- a/DNA.cpp
++++ b/DNA.cpp
+@@ -1813,7 +1813,7 @@
+     } else if (merge_) {
+         auto history = make_shared<MergeQualityEvidence>();
+         if (merge_->quality_sum_per_base_.empty()) {
+-            if (merge_.unique()) {
++            if (merge_.use_count() == 1) {
+                 const size_t n = std::min(static_cast<size_t>(merge_->length()), merge_->qual_.size());
+                 history->raw = std::move(merge_->qual_);
+                 history->raw.resize(n);
+@@ -1822,7 +1822,7 @@
+             }
+         } else {
+             // A caller may still own the former attachment; leave its data intact.
+-            if (merge_.unique()) {
++            if (merge_.use_count() == 1) {
+                 static_cast<DNAQualityEvidence&>(*history) = std::move(static_cast<DNAQualityEvidence&>(*merge_));
+             } else {
+                 static_cast<DNAQualityEvidence&>(*history) = static_cast<const DNAQualityEvidence&>(*merge_);
+--- a/diffDNA.cpp
++++ b/diffDNA.cpp
+@@ -216,12 +216,12 @@
+     return *sequences_->reference;
+ }
+ void diffDNA::detachSequences() {
+-    if (sequences_ && !sequences_.unique()) { sequences_ = std::make_shared<SequenceData>(*sequences_); }
++    if (sequences_ && sequences_.use_count() != 1) { sequences_ = std::make_shared<SequenceData>(*sequences_); }
+ }
+ void diffDNA::clear() {
+     if (sequences_) {
+         // Starting empty avoids copying a retained snapshot's entire variant map.
+-        if (!sequences_.unique()) { sequences_ = std::make_shared<SequenceData>(sequences_->reference, tracksSamples(), storesQualities(), sequences_->mateReference); }
++        if (sequences_.use_count() != 1) { sequences_ = std::make_shared<SequenceData>(sequences_->reference, tracksSamples(), storesQualities(), sequences_->mateReference); }
+         else {
+             std::visit([](auto& variants) { variants.clear(); }, sequences_->variants);
+             sequences_->identical = 0;
