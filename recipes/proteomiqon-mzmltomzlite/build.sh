@@ -1,10 +1,10 @@
 #!/bin/bash
-unzip $SRC_DIR/$PKG_VERSION
+set -euo pipefail
+unzip -q "$SRC_DIR/$PKG_VERSION" -d "$SRC_DIR"
 PREFIX=$(echo "${PREFIX}" | tr '\\' '/')
-DOTNET_ROOT="${PREFIX}/lib/dotnet"
-TOOL_ROOT=$DOTNET_ROOT/tools/MzMLToMzLite
+tool_root="$PREFIX/lib/dotnet/tools/MzMLToMzLite"
 
-mkdir -p $PREFIX/bin $TOOL_ROOT
-cp -r $SRC_DIR/tools/net5.0/any/* $TOOL_ROOT
+mkdir -p "$PREFIX/bin" "$tool_root"
+cp -R "$SRC_DIR/tools/net10.0/any/." "$tool_root/"
 cp "$RECIPE_DIR/proteomiqon-mzmltomzlite.sh" "$PREFIX/bin/proteomiqon-mzmltomzlite"
 chmod +x "$PREFIX/bin/proteomiqon-mzmltomzlite"

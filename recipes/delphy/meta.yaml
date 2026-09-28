@@ -1,0 +1,79 @@
+{% set name = "delphy" %}
+{% set version = "1.4.1" %}
+{% set abseil_commit = "8c495b5bbd54adeb7d82205c26830f76e50773b3" %}
+{% set ctpl_commit = "437e135dbd94eb65b45533d9ce8ee28b5bd37b6d" %}
+{% set cxxopts_commit = "eb787304d67ec22f7c3a184ee8b4c481d04357fd" %}
+{% set flatbuffers_commit = "3fda20d7c7fe1f8006210bddae8cb55bc7a74c3b" %}
+{% set googletest_commit = "d25e625364a2078c940da2cb1fcf098aa184fd9f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/broadinstitute/delphy/archive/refs/tags/{{ version }}.tar.gz
+    sha256: 6d1a3b0b4b2a8e8d6af3bb20e8660aacf26cd1d617899e1bd15b41da242c5e1e
+    patches:
+      - checkgit-hash-overrides.patch
+      # Boost >= 1.86 requires the flat_map allocator value_type to be pair<Key, T>, not pair<const Key, T>.
+      - flat-map-allocator-value-type.patch
+  # Git submodules pinned at tag {{ version }}; the GitHub tarball ships them as empty directories.
+  - url: https://github.com/abseil/abseil-cpp/archive/{{ abseil_commit }}.tar.gz
+    sha256: 031fcc4c14a50b173eb5a6ecbd3c2e6bafad3f34806a1257c930de3670a023b4
+    folder: third-party/abseil-cpp
+  - url: https://github.com/vit-vit/ctpl/archive/{{ ctpl_commit }}.tar.gz
+    sha256: 745d4197fa08fd4df526b0c411066442e45c5a8b05ede45e2861dcc353f38d6d
+    folder: third-party/ctpl
+  - url: https://github.com/jarro2783/cxxopts/archive/{{ cxxopts_commit }}.tar.gz
+    sha256: 9de524c1a8459bc0313a133c0b49c102abfed988022157a932463dbdd03735f9
+    folder: third-party/cxxopts
+  - url: https://github.com/google/flatbuffers/archive/{{ flatbuffers_commit }}.tar.gz
+    sha256: 9dfc72a7c5bc2f403ef4796c5d88a2406198477f5fde4a0c9db9b98b1fe41ed3
+    folder: third-party/flatbuffers
+  # Pinned in upstream CMakeLists.txt via FetchContent; provided here to avoid network access at configure time.
+  - url: https://github.com/google/googletest/archive/{{ googletest_commit }}.zip
+    sha256: 45085e7a631f9da804723b8c71a07a32b2ea2da6b699a4bf85039d4b6e1fb7dc
+    folder: googletest
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+    - git
+  host:
+    - libboost-headers
+    - eigen
+    - ms-gsl
+
+test:
+  commands:
+    - delphy --version
+    - delphy --help
+    # delphy_mcc has no help flag; it prints usage to stderr and exits 1 when called without arguments.
+    - delphy_mcc 2>&1 | grep -q "Delphy MCC Version"
+
+about:
+  home: https://github.com/broadinstitute/delphy
+  summary: Fast, scalable Bayesian phylogenetics with Explicit Mutation-Annotated Trees
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - third-party/abseil-cpp/LICENSE
+    - third-party/ctpl/LICENSE
+    - third-party/cxxopts/LICENSE
+    - third-party/flatbuffers/LICENSE
+  dev_url: https://github.com/broadinstitute/delphy
+  doc_url: https://github.com/broadinstitute/delphy/blob/main/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

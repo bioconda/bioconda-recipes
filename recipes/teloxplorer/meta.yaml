@@ -1,0 +1,88 @@
+{% set name = "teloxplorer" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hhuili/TeloXplorer/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c5f16dfadc0c8bd86ba541dec47d555f6205053be391f33a7e030540bccc39f6
+
+build:
+  number: 0
+  skip: true  # [win or py < 310 or py >= 314]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - telox = telox.cli:app
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+    - cmake >=3.15
+    - make
+  host:
+    - cmake >=3.15
+    - python >=3.10,<3.14
+    - pip
+    - scikit-build-core >=0.5.1
+    - pybind11 >=2.10.0
+    - zlib
+    - re2
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - python >=3.10,<3.14
+    - click >=8.0
+    - numpy
+    - pandas
+    - pysam >=0.19.1
+    - regex
+    - scipy
+    - hdbscan
+    - matplotlib-base
+    - telox-pyabpoa ==1.5.6.post1
+    - natsort >=8.0.0
+    - polyleven
+    - typer >=0.16.0
+    - minimap2
+    - samtools
+    - seqtk
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+
+test:
+  imports:
+    - telox
+    - telox.bloom_core
+    - telox.motiflev
+    - telox.telohmm
+    - telox.telox_tvr
+  commands:
+    - telox --version
+    - telox --help
+    - telogrep --help
+    - command -v minimap2
+    - python -c "import telox.telox_tvr as t; assert t.pyabpoa.__name__ == 'telox_pyabpoa'"
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/hhuili/TeloXplorer
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Chromosome-end-resolved telomere analysis using long-read sequencing data
+  description: |
+    TeloXplorer is a modular framework for chromosome-end-resolved telomere
+    analysis using Oxford Nanopore and PacBio long-read sequencing data or
+    genome assemblies.
+  dev_url: https://github.com/hhuili/TeloXplorer
+
+extra:
+  recipe-maintainers:
+    - hhuili
