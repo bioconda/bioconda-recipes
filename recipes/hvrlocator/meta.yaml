@@ -1,0 +1,55 @@
+{% set name = "HVRLocator" %}
+{% set version = "0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/fbcorrea/hvrlocator/archive/refs/heads/main.zip
+  sha256: 416ac2ea74d7172bca5428350deabbecfe78b2f2d574a1011b016dee096e89d0
+
+build:
+  number: 0
+  ## --ignore-requires-python should be removed with the next verison
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 --ignore-requires-python -vv "
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('hvrlocator', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9,<3.14
+    - setuptools
+  run:
+    - python >=3.9,<3.14 
+    - sra-tools 
+    - mafft 
+    - fastp
+    - biopython
+    - numpy
+    - scipy
+    - vsearch
+    #- nano # Check if we do not need it
+    #- git # We do not need it
+    - joblib
+    - scikit-learn =1.1.3
+
+test:
+  commands:
+    - hvrlocator -h
+
+about:
+  home: https://github.com/fbcorrea/hvrlocator
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE_repository 
+  summary: HVRLocator identifies spanning hypervariable regions from amplicon sequencing variants or SRA public runs 
+  dev_url: https://github.com/fbcorrea/hvrlocator 
+
+extra:
+  recipe-maintainers:
+    - fbcorrea
+    - joao1980
+    - ClarArboledaBaena
