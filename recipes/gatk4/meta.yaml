@@ -11,6 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
+  noarch: generic
   number: 0
   run_exports:
      - {{ pin_subpackage('gatk4-main', max_pin="x") }}
@@ -43,8 +44,6 @@ test:
 outputs:
   - name: gatk4-main
     script: build_main.sh
-    build:
-      noarch: generic
     requirements:
       run:
         - openjdk =17
@@ -57,8 +56,6 @@ outputs:
         - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
-    build:
-      noarch: generic
     requirements:
       run:
         - openjdk =17
@@ -73,17 +70,13 @@ outputs:
   - name: gatk4-lite
     script: build_lite.sh
     build:
-      skip: true  # [not (linux and x86_64)]
       run_exports:
         - {{ pin_subpackage('gatk4-lite', max_pin='x') }}
     requirements:
       build:
-        - binutils
         - unzip
-      host:
-        - openjdk >=17,<18
       run:
-        - libzlib
+        - openjdk =17
       run_constrained:
         - gatk4-main <0
     test:
@@ -93,11 +86,9 @@ outputs:
         - gatk Mutect2 --help
     about:
       home: https://github.com/broadinstitute/gatk
-      license: Apache-2.0 AND (GPL-2.0-only WITH Classpath-exception-2.0)
-      license_file:
-        - LICENSE-gatk.txt
-        - LICENSE-openjdk.txt
-      summary: GATK4 published local JAR with a compact Java runtime
+      license: Apache-2.0
+      license_file: LICENSE-gatk.txt
+      summary: GATK4 published local JAR with OpenJDK 17
       dev_url: https://github.com/broadinstitute/gatk
 
 about:
@@ -108,6 +99,4 @@ about:
   dev_url: https://github.com/broadinstitute/gatk
 
 extra:
-  notes: The gatk4-lite output uses the unchanged local JAR; Python and R tools need separate dependencies.
-  skip-lints:
-    - should_be_noarch_generic  # gatk4-lite bundles a platform-specific Java runtime
+  notes: The gatk4-lite output uses the unchanged local JAR and OpenJDK 17; Python and R tools need separate dependencies.
