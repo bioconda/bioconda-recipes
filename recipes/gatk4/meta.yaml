@@ -70,7 +70,7 @@ outputs:
   - name: gatk4-lite
     script: build_lite.sh
     build:
-      # jlink's runtime already uses relative library paths.
+      # Keep jlink's library paths relative to the Conda lib directory.
       binary_relocation: false
       run_exports:
         - {{ pin_subpackage('gatk4-lite', max_pin='x') }}
@@ -85,7 +85,7 @@ outputs:
         - gatk4-main <0
     test:
       commands:
-        - test -x "$PREFIX/share/gatk4-lite/runtime/bin/java"
+        - test -x "$PREFIX/lib/gatk4-lite-jvm/bin/java"
         - gatk --version
         - gatk --list
         - gatk --java-options '' --dry-run HaplotypeCaller
@@ -110,6 +110,3 @@ about:
   license_family: BSD
   summary: Genome Analysis Toolkit (GATK4)
   dev_url: https://github.com/broadinstitute/gatk
-
-extra:
-  notes: The gatk4-lite output uses the unchanged local JAR and a bundled Java 17 runtime; Python and R tools need separate dependencies.
