@@ -9,6 +9,9 @@ jlink --add-modules \
     java.base,java.logging,java.xml,java.management,java.naming,java.sql,java.desktop,jdk.unsupported,jdk.crypto.ec,java.security.jgss,java.instrument,jdk.zipfs,java.net.http \
     --strip-debug --no-header-files --no-man-pages --compress=2 \
     --output "$PREFIX/share/gatk4-lite/runtime"
+cp "$PREFIX/share/gatk4-lite/runtime/legal/java.base/LICENSE" "$SRC_DIR/LICENSE-openjdk.txt"
+cp "$PREFIX/share/gatk4-lite/runtime/legal/java.base/ASSEMBLY_EXCEPTION" "$SRC_DIR/ASSEMBLY_EXCEPTION-openjdk.txt"
+cp "$PREFIX/share/gatk4-lite/runtime/legal/java.base/ADDITIONAL_LICENSE_INFO" "$SRC_DIR/ADDITIONAL_LICENSE_INFO-openjdk.txt"
 
 cp "$RECIPE_DIR/gatk-lite" "$PREFIX/bin/gatk"
 chmod +x "$PREFIX/bin/gatk"
