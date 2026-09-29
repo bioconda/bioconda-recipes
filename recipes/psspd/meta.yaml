@@ -1,0 +1,63 @@
+{% set name = "psspd" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tanakat202/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 8680296f55411f9d6267f46acf91eb1c18cd974b702a0fa7f1b1e5eed4e27986
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.12
+    - pyyaml >=6.0
+    - blast >=2.16.0
+    - gmap >=2025.07.31
+    - primer3 >=2.6.1
+
+test:
+  commands:
+    # The launcher runs and reports its usage.
+    - psspd --help
+    # Exercises the real entry point: verifies that every bundled pipeline
+    # script is present and that blastn, blastp, makeblastdb, gmap, gmap_build
+    # and primer3_core all resolve from PATH inside the installed environment.
+    - psspd $PREFIX/share/psspd/config_sample.yaml --check-only
+
+about:
+  home: https://github.com/tanakat202/psspd
+  dev_url: https://github.com/tanakat202/psspd
+  doc_url: https://github.com/tanakat202/psspd/blob/{{ version }}/README.md
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - NOTICE
+  summary: Pipeline for strain-specific primer design from genome and CDS sequences
+  description: |
+    PSSPD is an offline pipeline that designs strain-specific primer sets from
+    genome and coding sequences. Given genome and CDS sequences for a target
+    strain and the strains it is compared against, it reports primers that
+    amplify genic regions of the target strain only.
+
+    The pipeline runs BLASTP to find genes of the target strain that have no
+    homolog in the compared strains, confirms their specificity against the
+    compared genomes with GMAP, designs primers on the remaining genes with
+    Primer3, and checks the specificity of the primers and their amplicons
+    against all genomes with BLASTN.
+
+    The pipeline runs in the current working directory, so results are written
+    where it is invoked rather than into the installation.
+
+extra:
+  recipe-maintainers:
+    - tanakat202
+    - manabuishii
