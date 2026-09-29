@@ -1,15 +1,21 @@
-#!/bin/bash
-set -x -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-TIR_LEARNER_DIR="${PREFIX}/share/TIR-Learner3"
+# Install package files
+mkdir -p "$PREFIX/lib/tir-learner4"
+cp -r TIR-Learner4/* "$PREFIX/lib/tir-learner4/"
 
-mkdir -p ${PREFIX}/bin
-mkdir -p ${TIR_LEARNER_DIR}
-cp -rf TIR-Learner3/* ${TIR_LEARNER_DIR}
+# Fix shebang in main script (original has #!/usr/app/env python3, a typo)
+sed -i '1s|.*|#!/usr/bin/env python3|' "$PREFIX/lib/tir-learner4/TIR-Learner.py"
 
-cat <<END >>${PREFIX}/bin/TIR-Learner
-#!/bin/bash
-python3 ${TIR_LEARNER_DIR}/TIR-Learner.py \$@
-END
+# Create CLI wrapper. TIR-Learner is the canonical command name, and what EDTA
+# locates via `command -v TIR-Learner`, so install directly under it.
+mkdir -p "$PREFIX/bin"
+cat > "$PREFIX/bin/TIR-Learner" << EOF
+#!/usr/bin/env bash
+exec python3 "$PREFIX/lib/tir-learner4/TIR-Learner.py" "\$@"
+EOF
+chmod +x "$PREFIX/bin/TIR-Learner"
 
-chmod 0755 ${PREFIX}/bin/TIR-Learner
+# Also expose tirlearner4 as an alias of the default TIR-Learner command
+ln -sf TIR-Learner "$PREFIX/bin/tirlearner4"

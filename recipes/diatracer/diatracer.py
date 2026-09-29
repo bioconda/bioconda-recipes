@@ -8,6 +8,7 @@ import glob
 import os
 import sys
 import subprocess
+from pathlib import Path
 
 jar_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "diaTracer.jar")
 
@@ -81,7 +82,8 @@ def main():
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
     # Find Bruker libraries in MSFragger installation and add to path for diaTracer
-    conda_prefix = os.getenv('CONDA_PREFIX')
+    # do not use CONDA_PREFIX (since it is not available in biocontainer)
+    conda_prefix = Path(__file__).parent.parent
     bruker_path = glob.glob('share/msfragger-*/MSFragger-*/ext/bruker', root_dir=conda_prefix)[0]
     ld_library_path = f'{conda_prefix}/{bruker_path}:{os.getenv("LD_LIBRARY_PATH","")}'
 

@@ -1,0 +1,31 @@
+--- a/src/gwaslab/hm/hm_liftover_v2.py
++++ b/src/gwaslab/hm/hm_liftover_v2.py
+@@ -16,9 +16,15 @@
+ try:
+     from sumstats_liftover import liftover_df
+ except ImportError:
+-    raise ImportError(
+-        "sumstats_liftover package is required. Install it with: pip install sumstats-liftover"
+-    )
++    liftover_df = None
++
++
++def _get_liftover_df():
++    if liftover_df is None:
++        raise ImportError(
++            "sumstats_liftover package is required. Install it with: pip install sumstats-liftover"
++        )
++    return liftover_df
+ 
+ 
+ def _normalize_chrom_name_vectorized(chrom_series: pd.Series, mapper: Optional[ChromosomeMapper] = None) -> pd.Series:
+@@ -253,7 +259,8 @@
+     original_chrom_normalized = _normalize_chrom_name_vectorized(sumstats[chrom], mapper=mapper)
+     
+     # Perform liftover using sumstats_liftover package
+-    sumstats = liftover_df(
++    liftover = _get_liftover_df()
++    sumstats = liftover(
+         df=sumstats,
+         chain_path=chain_path,
+         chrom_col=chrom,

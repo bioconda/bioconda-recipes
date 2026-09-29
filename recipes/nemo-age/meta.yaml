@@ -1,37 +1,55 @@
-{% set version = "0.30.0" %}
-{% set sha256 = "b4ce73a145c3a9b1e32aae6d6b54df02e26b6805ddc326f506fff4f8a772d54e" %}
+{% set version = "0.32.0" %}
+{% set sha256 = "81ff58a020d506a7c7da4e43e6fe62da023e947cfa641d6dd34ca72a43f7bbf4" %}
 
 package:
   name: nemo-age
   version: {{ version }}
 
-build:
-  number: 5
-
 source:
-  url: https://bitbucket.org/ecoevo/nemo-age-release/get/v{{ version }}.tar.gz
+  url: https://bitbucket.org/ecoevo/nemo-age-release/get/36bf8d4779b0377e299d63f6dfae6a7a46bd17f6.tar.gz
   sha256: {{ sha256 }}
   patches:
     - Makefile.patch
+    - 0001-cstdint.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nemo-age', max_pin="x.x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - sed
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mpich-mpicxx
+    - sed
     - gsl
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - mpich-mpicxx
     - gsl
-
-about:
-  home: https://bitbucket.org/ecoevo/nemo-age-release
-  summary: In Nemo-age, it is possible to model genetic and phenotypic evolution in populations with, for instance, overlapping generations, a seed bank, and multiple age classes with stage-specific transition rates, fecundities, selection pressures, and dispersal rates, among other things.
-  license: GPL-3
-  license_family: GPL3
-  license_file: readme.txt
-
 
 test:
   commands:
     - nemoage 2>&1 | grep "N E M O A G E"
+
+about:
+  home: "https://bitbucket.org/ecoevo/nemo-age-release"
+  summary: "In Nemo-age, it is possible to model genetic and phenotypic evolution in populations with, for instance, overlapping generations, a seed bank, and multiple age classes with stage-specific transition rates, fecundities, selection pressures, and dispersal rates, among other things."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "readme.txt"
+  dev_url: "https://bitbucket.org/ecoevo/nemo-age-release"
+  doc_url: "https://bitbucket.org/ecoevo/nemo-age-release/src/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1111/2041-210X.13460

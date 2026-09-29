@@ -1,0 +1,56 @@
+{% set version = "1.0.0" %}
+{% set name = "DeeDeeExperiment" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 64d15a7af0f6c5d0f7f2ba8a63bdb21b
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-deedeeexperiment", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: macrophage, knitr, BiocStyle, apeglm, mosdef, org.Hs.eg.db, topGO, clusterProfiler, DEFormats, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-cli
+  run:
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-cli
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: 'DeeDeeExperiment: An S4 Class for managing and exploring omics analysis results'
+  description: DeeDeeExperiment is an S4 class extending the SingleCellExperiment class, designed to integrate and manage omics analysis results. It introduces two dedicated slots to store Differential Expression Analysis (DEA) results and Functional Enrichment Analysis (FEA) results, providing a structured approach for downstream analysis.
+  license_file: LICENSE
+

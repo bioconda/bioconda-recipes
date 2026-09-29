@@ -1,0 +1,47 @@
+{% set version = "0.5.3" %}
+
+package:
+  name: apybiomart
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/a/apybiomart/apybiomart-{{ version }}.tar.gz
+  sha256: 0fe723c166c52245b0b5a35d9ff977090049719b74834f365a82fc0c96736988
+  patches:
+    - remove-asyncio.patch
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('apybiomart', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.4
+    - pytest-runner
+    - pip
+  run:
+    - python >=3.4
+    - requests
+    - aiohttp
+    - pandas
+
+test:
+  imports:
+    - apybiomart
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/robertopreste/apybiomart
+  summary: Async pythonic interface to Biomart.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - hschult

@@ -1,5 +1,5 @@
-{% set version = "2.1.0" %}
-{% set sha256 = "32dc3cdb3c8aec25a855b9dbcd09a7274a0bd95a94db11fb4f94567f35b98b90" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "c73df403c9a6bd1463d627e50a0d94a9743daff0385d3aa98df89416ab0a349e" %}
 
 package:
   name: svdss
@@ -8,8 +8,6 @@ package:
 source:
   url: https://github.com/Parsoa/SVDSS/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - cmake.patch
 
 build:
   number: 0
@@ -57,8 +55,15 @@ about:
   doc_url: "https://github.com/Parsoa/SVDSS/blob/v{{ version }}/README.md"
 
 extra:
+  #cli.c:(.text+0x11e8): undefined reference to `ksw_gg2_sse'
+  #src/abpoa/src/simd_instruction.h:21:10: fatal error: immintrin.h: No such file or directory
+  #include <immintrin.h>
+  #additional-platforms:
+    #- linux-aarch64
   identifiers:
     - biotools:svdss
     - doi:10.1038/s41592-022-01674-1
   recipe-maintainers:
     - ldenti
+  skip-lints:
+    - compiler_needs_stdlib_c

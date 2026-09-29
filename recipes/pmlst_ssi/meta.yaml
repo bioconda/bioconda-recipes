@@ -1,0 +1,56 @@
+{% set name = "pmlst_ssi" %}
+{% set version = "2.1.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://files.pythonhosted.org/packages/9d/d7/933e2bea42c38cf677ccedd99c32f6607c7fefdca3f1b54c96a4aa33dd3e/pmlst_ssi-2.1.1.tar.gz
+  sha256: e87026cd41bfd268fdc5c1c3a59b824cc9bf6c1d179d559015288a9cb1bf1b1b
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: '{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv'
+
+requirements:
+  host:
+    - hatchling
+    - pip
+    - python >=3.10,<3.15
+
+  run:
+    - python >=3.10,<3.15
+    - blast
+    - biopython >=1.81
+    - cgecore >=2,<3
+    - kma
+    - platformdirs
+    - tabulate >=0.8
+
+test:
+  commands:
+    - pmlst --help
+    - pmlst --version
+    - pmlst.py --version
+    - pmlst-download-db --help
+    - python -c "import pmlst; print('import ok')"
+
+about:
+  home: https://github.com/ssi-dk/pmlst
+  dev_url: https://github.com/ssi-dk/pmlst
+  doc_url: https://github.com/ssi-dk/pmlst#readme
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Plasmid Multi-Locus Sequence Typing
+
+extra:
+  identifiers:
+    - doi:10.1128/AAC.02412-14
+  notes: "pMLST requires an external database. Install or update it after package installation with pmlst-download-db."
+  recipe-maintainers:
+    - PovilasMat

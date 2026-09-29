@@ -10,22 +10,27 @@ source:
   sha256: c0c853031b8cc0b8d7e08674500d4d5929c0720e4e0a2e421272437022f30406
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
-    - keras
+    # mhcnuggets calls the Keras 2 API (e.g. Adam(lr=...)), which Keras 3
+    # removed. tensorflow >=2.16 vendors Keras 3, so both are capped.
+    - keras >=2.6,<3
     - numpy
     - pandas
-    - python =3.6
+    - python
     - scikit-learn
     - scipy
-    - tensorflow
+    - tensorflow >=2.6,<2.16
     - varcode
 
 test:

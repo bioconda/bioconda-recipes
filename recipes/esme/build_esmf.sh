@@ -38,7 +38,7 @@ export ESMF_LAPACK_LIBPATH="${PREFIX}"/lib
 export ESMF_F90COMPILEOPTS="-fallow-argument-mismatch"
 export ESMF_CXXCOMPILEOPTS="$ESMF_CXXCOMPILEOPTS -include cstdint"
 
-cd esme_esmf
+cd "${SRC_DIR}/esme_esmf"
 
 make -j ${CPU_COUNT}
 

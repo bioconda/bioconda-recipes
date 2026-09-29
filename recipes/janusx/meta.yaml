@@ -1,0 +1,80 @@
+{% set name = "janusx" %}
+{% set version = "1.0.27" %}
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/j/janusx/janusx-{{ version }}.tar.gz
+  sha256: ca1ad58bd191382b60b07e3d93c3f7fa91141ee9cf3623c14ab47dcc98293053
+build:
+  number: 0
+  python_version_independent: true  # [py == 310]
+  skip: true  # [win or py<310 or py>310]
+  script_env:
+    - CARGO_BUILD_JOBS
+  run_exports:
+    - {{ pin_subpackage('janusx', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python 3.10.*
+    - python-abi3  # [py == 310]
+    - pip
+    - maturin >=1.7,<2
+    - numpy >=1.23
+    - zlib
+    - openblas
+  run:
+    - python >=3.10
+    - {{ pin_compatible('numpy') }}
+    - libopenblas
+    - scipy
+    - pandas >=1.5
+    - matplotlib-base
+    - psutil
+    - rich
+    - rich-argparse
+    - tqdm
+    - joblib >=1.5
+    - threadpoolctl
+
+test:
+  requires:
+    - python
+  commands:
+    - jx -h
+    - jxpy -h
+    - python -c "import janusx.janusx"
+    - python -c "import janusx.janusx as _jx; assert str(_jx.rust_sgemm_backend()) == 'openblas'"
+    - python -c "import janusx.script.JanusX as jx; assert callable(jx.main)"
+
+about:
+  home: https://github.com/FJingxian/JanusX
+  summary: Rust-accelerated toolkit for GWAS, genomic selection, GRM/PCA, and post-analysis plotting
+  description: |
+    JanusX is a Python+Rust toolkit for genome-wide association studies,
+    genomic selection, GRM/PCA construction, and downstream visualization.
+    This package installs the `jx` and `jxpy` command-line entry points.
+
+    Core runtime dependencies are included. Heavier optional extras remain
+    user-managed; `scikit-learn`, `xgboost`, `statsmodels`, `toytree`, and
+    `toyplot` can be installed from conda-forge as needed.
+  license: AGPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://github.com/FJingxian/JanusX/tree/v{{ version }}/doc
+  dev_url: https://github.com/FJingxian/JanusX
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.01.20.700366
+  recipe-maintainers:
+    - FJingxian

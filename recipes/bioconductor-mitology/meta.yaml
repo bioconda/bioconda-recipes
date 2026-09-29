@@ -1,0 +1,64 @@
+{% set version = "1.2.0" %}
+{% set name = "mitology" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: aaf9506af4b0639fd2d5f434d2cd3cce
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mitology", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: Biobase, BiocStyle, GSVA, methods, rmarkdown, knitr, SummarizedExperiment, testthat
+requirements:
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-clusterprofiler >=4.18.0,<4.19.0
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-org.hs.eg.db >=3.22.0,<3.23.0
+    - bioconductor-reactomepa >=1.54.0,<1.55.0
+    - r-ape
+    - r-base
+    - r-circlize
+    - r-ggplot2
+    - r-magrittr
+    - r-scales
+  run:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-clusterprofiler >=4.18.0,<4.19.0
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-org.hs.eg.db >=3.22.0,<3.23.0
+    - bioconductor-reactomepa >=1.54.0,<1.55.0
+    - r-ape
+    - r-base
+    - r-circlize
+    - r-ggplot2
+    - r-magrittr
+    - r-scales
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: AGPL-3
+  summary: Study of mitochondrial activity from RNA-seq data
+  description: mitology allows to study the mitochondrial activity throught high-throughput RNA-seq data. It is based on a collection of genes whose proteins localize in to the mitochondria. From these, mitology provides a reorganization of the pathways related to mitochondria activity from Reactome and Gene Ontology. Further a ready-to-use implementation of MitoCarta3.0 pathways is included.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3'
+

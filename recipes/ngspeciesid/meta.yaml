@@ -1,0 +1,48 @@
+{% set name = "ngspeciesid" %}
+{% set version = "0.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ksahlin/NGSpeciesID/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0800e5e3125772a5747288fbf86c79060cf3b1b5175537f7d9028a97a04fcb6d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage("ngspeciesid", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12,<3.13
+    - pip
+    - setuptools >=68.0
+  run:
+    - python >=3.12,<3.13
+    - parasail-python >=1.2.4
+    - python-edlib >=1.3.9
+    - spoa
+    - racon
+    - minimap2
+    - samtools
+    - medaka >=2.0.1
+
+test:
+  commands:
+    - NGSpeciesID --help
+    - NGSpeciesID --version
+
+about:
+  home: https://github.com/ksahlin/NGSpeciesID
+  license: GPL-3.0-or-later
+  license_file: LICENSE.txt
+  summary: Reference-free clustering and consensus forming of long-read amplicon sequencing
+  description: |
+    NGSpeciesID is a tool for clustering and consensus forming of long-read
+    amplicon sequencing data (has been used with both PacBio and Oxford Nanopore
+    data). The repository is a modified version of isONclust, where consensus,
+    primer-removal, and polishing feautures have been added.

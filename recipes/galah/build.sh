@@ -8,8 +8,8 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-# build statically linked binary with Rust
+# build binary with Rust
 RUST_BACKTRACE=1
-cargo install -v --no-track --path . --root "${PREFIX}"
+cargo install -v --no-track --path . --root "${PREFIX}" --locked
 
 "${STRIP}" "${PREFIX}/bin/galah"

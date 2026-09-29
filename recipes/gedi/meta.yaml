@@ -1,0 +1,59 @@
+{% set name = "gedi" %}
+{% set version = "1.0.6a" %}
+{% set tag = "Gedi_" + version %}
+{% set sha256 = "ad45df75997f26ef7c44e6a00509f8dbc9e74e5e3ae3b225cb9a7afea3447c67" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/erhard-lab/gedi/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - openjdk >=11,<18
+    - maven
+  run:
+    - openjdk >=11,<18
+
+test:
+  commands:
+    - gedi -h
+    - gedi -e Version
+    - bamlist2cit -h
+    - gedi -e Price -h
+
+about:
+  home: https://github.com/erhard-lab/gedi
+  dev_url: https://github.com/erhard-lab/gedi
+  doc_url: https://github.com/erhard-lab/gedi/wiki
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: "GEDI: a Java framework for genomic data analysis, including the PRICE ORF caller for Ribo-seq."
+  description: |
+    Gedi is a software platform for working with genomic data such as
+    sequencing reads, sequences, per-base numeric values or annotations.
+    It is developed by the erhard-lab and bundles a number of executables
+    invoked via `gedi -e <Name>`. One of these is PRICE (probabilistic
+    inference of codon activities by an EM algorithm), a method for
+    identifying open reading frames from ribosome profiling (Ribo-seq)
+    data described in Erhard et al. (2018) Nature Methods.
+
+extra:
+  identifiers:
+    - doi:10.1038/s41592-018-0023-1
+  recipe-maintainers:
+    - pinin4fjords
+  notes: |
+    Gedi exposes its executables via `gedi -e <Name>`. The PRICE ORF
+    caller (Erhard et al., Nat Methods 2018) is available as
+    `gedi -e Price`. See `gedi -h` and `gedi -e <Name> -h` for usage.

@@ -9,4 +9,5 @@ export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root "${PREFIX}" --no-track --locked --path .
+RUST_BACKTRACE=1
+HTSLIB_STATIC=1 cargo install --verbose --root "${PREFIX}" --no-track --locked --path .

@@ -1,35 +1,30 @@
 #!/bin/bash
-set -eu -o pipefail
+set -euxo pipefail
 
-export INCLUDES="-I${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CFLAGS="${CFLAGS} -O3"
-export CXXFLAGS="${CXXFLAGS} -O3"
+# salmon 2.0 (Rust) bioconda build.
+#
+# The workspace builds the `salmon` binary from the `salmon-cli` crate. The
+# committed Cargo.lock pins exact dependency versions (cf1-rs, piscem-rs, ksw2rs
+# from crates.io), so `--locked` gives a reproducible build.
 
-if [[ `uname` == "Darwin" ]]; then
-	export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument -Wno-unused-parameter -Wno-array-bounds"
-	export CONFIG_ARGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-else
-	export CONFIG_ARGS=""
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib:/Library/Developer/CommandLineTools/usr/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"
 fi
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-	-DCONDA_BUILD=TRUE \
-	-DNO_IPO=TRUE \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-	-DCMAKE_C_COMPILER="${CC}" \
-	-DCMAKE_C_FLAGS="${CFLAGS}" \
-	-DBOOST_ROOT="${PREFIX}" \
-	-DBoost_NO_SYSTEM_PATHS=ON \
-	-DCEREAL_INCLUDE_DIR="${PREFIX}/include" \
-	-DLIB_GFF_INCLUDE_DIR="${PREFIX}/include" \
-	-DLIBSTADEN_LDFLAGS="-L${PREFIX}/lib" \
-	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${CONFIG_ARGS}"
+# Bundle third-party license texts for the package (bioconda policy for Rust).
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+# The repo's .cargo/config.toml pins a portable SIMD floor (x86-64-v2 / aarch64
+# NEON); the alignment kernel (ksw2rs) still selects AVX2/SSE4.1/NEON at runtime.
+# x86-64-v2 (SSE4.2, ~2009+) is the floor — note this if a broader baseline is
+# ever required for the conda channel.
+cargo install \
+  --no-track \
+  --locked \
+  --bins \
+  --root "${PREFIX}" \
+  --path crates/salmon-cli
+
+# `salmon-cli` installs a binary named `salmon` (see its [[bin]] name).
