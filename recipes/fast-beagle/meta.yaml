@@ -1,0 +1,54 @@
+{% set name = "fast-beagle" %}
+{% set version = "5.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/michael-denyer/fast-beagle-5.5/releases/download/v{{ version }}/fast-beagle-{{ version }}.tar.gz
+  sha256: ab36c1ad80bcfa0f11030607766ed340c3ea57324cbbcdd02104c1362fc05be8
+
+build:
+  number: 0
+  run_exports:
+    # The minor version is the Beagle edition (5.4, 5.5), whose output differs.
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - htslib
+
+test:
+  files:
+    - small.vcf
+  requires:
+    - htslib
+  commands:
+    - fast-beagle gt=small.vcf out=small nthreads=2
+    - test "$(bgzip -dc small.vcf.gz | grep -vc '^#')" = 40
+    - "! bgzip -dc small.vcf.gz | grep -v '^#' | cut -f10- | grep /"
+
+about:
+  home: https://github.com/michael-denyer/fast-beagle-5.5
+  dev_url: https://github.com/michael-denyer/fast-beagle-5.5
+  doc_url: https://github.com/michael-denyer/fast-beagle-5.5/blob/main/docs/usage.md
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: C port of Beagle 5.5 phasing and imputation with byte-identical output
+  description: |
+    fast-beagle is a standalone C port of Beagle 5.5 (27Feb25), the genotype
+    phasing and imputation tool. Its output is byte-identical to the Java
+    release run with the same nthreads=. It installs as fast-beagle and takes
+    Beagle's key=value arguments.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - michael-denyer
