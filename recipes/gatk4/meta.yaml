@@ -11,7 +11,6 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
   number: 0
   run_exports:
      - {{ pin_subpackage('gatk4-main', max_pin="x") }}
@@ -44,6 +43,8 @@ test:
 outputs:
   - name: gatk4-main
     script: build_main.sh
+    build:
+      noarch: generic
     requirements:
       run:
         - openjdk =17
@@ -56,6 +57,8 @@ outputs:
         - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
+    build:
+      noarch: generic
     requirements:
       run:
         - openjdk =17
@@ -67,6 +70,35 @@ outputs:
         - gatk --list
         - gatk MarkDuplicatesSpark --help
         - gatk DetermineGermlineContigPloidy --help
+  - name: gatk4-lite
+    script: build_lite.sh
+    build:
+      skip: true  # [not (linux and x86_64)]
+      run_exports:
+        - {{ pin_subpackage('gatk4-lite', max_pin='x') }}
+    requirements:
+      build:
+        - binutils
+        - unzip
+      host:
+        - openjdk >=17,<18
+      run:
+        - libzlib
+      run_constrained:
+        - gatk4-main <0
+    test:
+      commands:
+        - gatk --version
+        - gatk HaplotypeCaller --help
+        - gatk Mutect2 --help
+    about:
+      home: https://github.com/broadinstitute/gatk
+      license: Apache-2.0 AND (GPL-2.0-only WITH Classpath-exception-2.0)
+      license_file:
+        - LICENSE-gatk.txt
+        - LICENSE-openjdk.txt
+      summary: GATK4 published local JAR with a compact Java runtime
+      dev_url: https://github.com/broadinstitute/gatk
 
 about:
   home: https://www.broadinstitute.org/gatk/
@@ -74,3 +106,6 @@ about:
   license_family: BSD
   summary: Genome Analysis Toolkit (GATK4)
   dev_url: https://github.com/broadinstitute/gatk
+
+extra:
+  notes: The gatk4-lite output uses the unchanged local JAR; Python and R tools need separate dependencies.
