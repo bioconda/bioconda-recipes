@@ -1,0 +1,62 @@
+{% set name = "bionym" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # TODO: upload 0.1.0 to PyPI, then fill in the real sha256
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: TODO
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - bionym = bionym.cli:app
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - httpx >=0.27
+    - typer >=0.12
+    - pydantic >=2.6
+    - diskcache >=5.6
+    - python-dotenv >=1.0
+
+test:
+  imports:
+    - bionym
+  commands:
+    - bionym --help
+    - bionym version
+    - bionym resolve --help
+    - bionym ask --help
+    - pip check
+
+about:
+  home: https://github.com/d-callan/idresolver
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Resolve bioinformatics identifiers into confidence-scored knowledge graphs"
+  description: |
+    BioNym gathers evidence for a bioinformatics identifier (gene IDs,
+    eukaryotic pathogens in v1) from public APIs — NCBI, VEuPathDB, OMA,
+    UniProt, KEGG — and asks a typed-question judge (JEV / any
+    POST /v1/systemone-compatible backend) an ordered workflow of
+    questions to produce a confidence-scored knowledge graph with
+    evidence provenance on every edge. Ships a CLI, a FastAPI service,
+    a standalone HTML report, and a static D3 UI.
+  doc_url: https://github.com/d-callan/idresolver#readme
+  dev_url: https://github.com/d-callan/idresolver
+
+extra:
+  recipe-maintainers:
+    - d-callan
