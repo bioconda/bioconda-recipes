@@ -37,7 +37,7 @@ case "${target_platform}" in
             --root "${PREFIX}"
         ;;
 
-    osx-64|osx-arm64)
+    osx-arm64)
         # Apple Metal backend with the system Accelerate framework.
         cargo install \
             --features macos-accelerate,stdsimd,metal \
