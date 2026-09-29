@@ -24,14 +24,14 @@ requirements:
     - htslib
 
 test:
-  files:
-    - small.vcf
   requires:
     - htslib
   commands:
-    - fast-beagle gt=small.vcf out=small nthreads=2
-    - test "$(bgzip -dc small.vcf.gz | grep -vc '^#')" = 40
-    - "! bgzip -dc small.vcf.gz | grep -v '^#' | cut -f10- | grep /"
+    - 'printf ''##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\tC\tD\n'' > t.vcf'
+    - 'for p in 100 200 300 400 500 600 700 800; do printf ''1\t%s\t.\tA\tC\t.\tPASS\t.\tGT\t0/1\t1/1\t0/0\t0/1\n'' "$p" >> t.vcf; done'
+    - fast-beagle gt=t.vcf out=t nthreads=2
+    - test "$(bgzip -dc t.vcf.gz | grep -vc '^#')" = 8
+    - bgzip -dc t.vcf.gz | grep -v '^#' | cut -f10- | grep -c / | grep -qx 0
 
 about:
   home: https://github.com/michael-denyer/fast-beagle-5.5
