@@ -21,16 +21,6 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    # Required since conda-build's stdlib migration, and already present in the
-    # published recipe -- a PR that drops it regresses that migration. Keep it in step
-    # with upstream: this file is the source the bioconda recipe is copied FROM, so
-    # anything upstream gained and this did not comes straight back out on the next bump.
-    #
-    # This is NOT a package name. It resolves through the c_stdlib / c_stdlib_version
-    # variant keys in conda-forge's pinning, which bioconda's CI supplies. Building
-    # locally without that pinning fails with "c_osx-arm64 does not exist", which reads
-    # like a broken channel; pass -m "$CONDA_PREFIX/conda_build_config.yaml" from the
-    # bioconda-build env. See docs/RELEASING.md section 2.
     - {{ stdlib('c') }}
     - cmake >=3.15
     - make  # [unix]
@@ -51,19 +41,12 @@ test:
     - zna.core
     - zna.cli
     - zna.merge
-    # `zna merge` is compiled too, and a build that lost it would still pass every
-    # other test here -- the reference backend would quietly take over at 50x the cost.
     - zna.merge._accel
   commands:
     - zna --help
-    # Exercises the subcommand registration, which resolves through zna/merge/args.py
-    # and must not need the compiled backend just to print help.
     - zna merge --help
     - python -c "from zna.merge.backend import available_merge_backends as a; assert 'accel' in a(), 'merge C++ backend did not build'"
     - python -c "import zna; print('ZNA version:', zna.__version__)"
-    # Assert, do not merely print: the whole point of this package is the
-    # compiled extension, and a build that silently fell back to the pure-Python
-    # backend would otherwise pass its own test.
     - python -c "from zna import is_accelerated; assert is_accelerated(), 'C++ backend did not load'"
     - python -c "import zna, io; h=zna.ZnaHeader(read_group='t', seq_len_bytes=2); b=io.BytesIO(); w=zna.ZnaWriter(b,h); w.write_record('ACGTACGT',False,True,False); w.close(); r=list(zna.ZnaReader(io.BytesIO(b.getvalue())).records()); assert r[0][0]=='ACGTACGT', r"
 
