@@ -44,6 +44,8 @@ test:
 outputs:
   - name: gatk4-main
     script: build_main.sh
+    build:
+      skip: true  # [aarch64 or arm64]
     requirements:
       run:
         - openjdk =17
@@ -56,6 +58,8 @@ outputs:
         - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
+    build:
+      skip: true  # [aarch64 or arm64]
     requirements:
       run:
         - openjdk =17
@@ -74,21 +78,27 @@ outputs:
         - {{ pin_subpackage('gatk4-lite', max_pin='x') }}
     requirements:
       build:
+        - openjdk =17
         - unzip
       run:
-        - openjdk =17
+        - libzlib  # [linux]
       run_constrained:
         - gatk4-main <0
     test:
       commands:
+        - test -x "$PREFIX/share/gatk4-lite/runtime/bin/java"
         - gatk --version
+        - gatk --list
+        - gatk --java-options '' --dry-run HaplotypeCaller
         - gatk HaplotypeCaller --help
         - gatk Mutect2 --help
+        - gatk GenotypeGVCFs --help
+        - gatk FilterMutectCalls --help
     about:
       home: https://github.com/broadinstitute/gatk
       license: Apache-2.0
       license_file: LICENSE-gatk.txt
-      summary: GATK4 published local JAR with OpenJDK 17
+      summary: GATK4 published local JAR with a compact Java 17 runtime
       dev_url: https://github.com/broadinstitute/gatk
 
 about:
@@ -99,4 +109,7 @@ about:
   dev_url: https://github.com/broadinstitute/gatk
 
 extra:
-  notes: The gatk4-lite output uses the unchanged local JAR and OpenJDK 17; Python and R tools need separate dependencies.
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  notes: The gatk4-lite output uses the unchanged local JAR and a bundled Java 17 runtime; Python and R tools need separate dependencies.

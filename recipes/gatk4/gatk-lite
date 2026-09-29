@@ -15,7 +15,11 @@ while (($#)); do
     fi
     shift
 done
-set -- "${args[@]}"
+if [[ ${args[0]+x} ]]; then
+    set -- "${args[@]}"
+else
+    set --
+fi
 
 if [[ ${1:-} == --list ]]; then
     shift
@@ -23,12 +27,15 @@ if [[ ${1:-} == --list ]]; then
 fi
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-cmd=(java \
+cmd=("$script_dir/../share/gatk4-lite/runtime/bin/java" \
     -Dsamjdk.use_async_io_read_samtools=false \
     -Dsamjdk.use_async_io_write_samtools=true \
     -Dsamjdk.use_async_io_write_tribble=false \
-    -Dsamjdk.compression_level=2 \
-    "${java_options[@]}" -jar "$script_dir/../share/gatk4-lite/gatk.jar" "$@")
+    -Dsamjdk.compression_level=2)
+if [[ ${java_options[0]+x} ]]; then
+    cmd+=("${java_options[@]}")
+fi
+cmd+=(-jar "$script_dir/../share/gatk4-lite/gatk.jar" "$@")
 
 if "$dry_run"; then
     printf '%q ' "${cmd[@]}"
