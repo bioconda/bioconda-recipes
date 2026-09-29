@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "listeretalbsseq-1.38.0"
+installBiocDataPackage.sh "listeretalbsseq-1.42.0"

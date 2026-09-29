@@ -7,13 +7,12 @@ else
   export CONFIG_ARGS=""
 fi
 
-# configure CMake: install into $PREFIX
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+# configure CMake: install into $PREFIX (v1.0.0+ adds real install() rules that
+# install the binary, the bin/rad wrapper, and resources/ to share/rad).
+# ${CMAKE_ARGS} carries the conda toolchain settings (compiler, sysroot, etc.).
+cmake -S . -B build ${CMAKE_ARGS:-} -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" \
-   "${CONFIG_ARGS}"
+  ${CONFIG_ARGS}
 
-# build and install
 cmake --build build --clean-first -j "${CPU_COUNT}"
 cmake --install build --prefix "${PREFIX}"
-#super lazy local fix
-install -v -m 0755 ./build/rad "${PREFIX}/bin/rad"

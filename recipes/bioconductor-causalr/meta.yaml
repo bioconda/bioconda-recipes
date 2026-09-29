@@ -1,34 +1,26 @@
-{% set version = "1.38.0" %}
+{% set version = "1.42.0" %}
 {% set name = "CausalR" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Causal network analysis methods for regulator prediction and network reconstruction from genome scale data.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Causal network analysis methods
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 4f134020f652af53be66dacee82cc044
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-causalr", max_pin="x.x") }}'
-
-extra:
-  identifiers:
-    - biotools:causalr
-    - doi:10.1038/nmeth.3252
-  parent_recipe:
-    name: bioconductor-causalr
-    path: recipes/bioconductor-causalr
-    version: 1.14.1
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  noarch: generic
 
 # Suggests: knitr, RUnit, BiocGenerics
 requirements:
@@ -39,15 +31,23 @@ requirements:
     - r-base
     - r-igraph
 
-source:
-  md5: ad152d4f41605f4c7784494641686fd3
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Causal network analysis methods
+  description: Causal network analysis methods for regulator prediction and network reconstruction from genome scale data.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:causalr
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-causalr
+    path: recipes/bioconductor-causalr
+    version: 1.14.1
 

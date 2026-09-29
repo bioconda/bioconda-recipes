@@ -1,0 +1,52 @@
+{% set name = 'bppsuite' %}
+{% set version = '3.0.0' %}
+{% set sha256 = 'ff8c81eb648dbc86f451b88a7ae7743cccaab85ab5568f1190d7237157b7f64f' %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - pkg-config
+  host:
+    - bpp-phyl
+    - bpp-popgen
+    - eigen
+  run:
+    - bpp-phyl
+    - bpp-popgen
+
+test:
+  commands:
+    - test -x ${PREFIX}/bin/bppml
+    - test -x ${PREFIX}/bin/bppancestor
+    - test -x ${PREFIX}/bin/bppseqgen
+    - test -x ${PREFIX}/bin/bppdist
+    - test -x ${PREFIX}/bin/bppconsense
+
+about:
+  home: "https://github.com/BioPP/bppsuite"
+  license: "CECILL-2.1"
+  license_file: "LICENSES/CECILL-2.1.txt"
+  summary: "BppSuite is a suite of ready-to-use programs for phylogenetic and sequence analysis."
+  dev_url: "https://github.com/BioPP/bppsuite"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

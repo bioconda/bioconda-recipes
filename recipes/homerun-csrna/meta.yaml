@@ -1,0 +1,54 @@
+{% set version = "1.0.0" %}
+
+package:
+  name: homerun-csrna
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/h/homerun-csRNA/homerun_csrna-{{ version }}.tar.gz
+  sha256: 85e9332ef8991daaa7ea0c1c928860443f663fcf9fcd5fe0a0cac82282f4a5ff
+
+build:
+  entry_points:
+    - homerun = homerun.pipeline:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('homerun-csrna', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - pandas >=2.0
+    - numpy >=1.24
+    - matplotlib-base >=3.7
+    - seaborn >=0.12
+    - reportlab >=4.0
+    - samtools
+    - homer
+    - skewer
+    - star
+    - hisat2
+
+test:
+  imports:
+    - homerun
+  commands:
+    - pip check
+    - homerun --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://thomasmnguyen.dev/homerun/
+  summary: csRNA-seq pipeline
+  license: MIT
+  license_file: LICENSE
+  doc_url: https://thomasmnguyen.dev/homerun/
+  dev_url: https://github.com/thomasmnguyen/homerun-csrna

@@ -1,0 +1,31 @@
+diff --git a/lib/include/portcullis/python_helper.hpp b/lib/include/portcullis/python_helper.hpp
+index 92ef853..a18ddea 100644
+--- a/lib/include/portcullis/python_helper.hpp
++++ b/lib/include/portcullis/python_helper.hpp
+@@ -97,12 +97,15 @@ private:
+                  << " - PYTHONPATH (combined)               : " << this->full_python_path_str<< endl;
+         }
+         this->full_python_path_wchar = Py_DecodeLocale(this->full_python_path_str.c_str(), NULL);
+-        Py_SetPath(this->full_python_path_wchar);
++        PyConfig config;
++        PyConfig_InitPythonConfig(&config);
++        PyConfig_SetString(&config, &config.pythonpath_env, this->full_python_path_wchar);
+         if (this->verbose) {
+             cout << " - PYTHONPATH set"  << endl;
+         }
+ 
+-        Py_Initialize();
++        Py_InitializeFromConfig(&config);
++        PyConfig_Clear(&config);
+         if (this->verbose) {
+             cout << "Python interpretter initialised" << endl << endl;
+         }
+@@ -151,7 +154,7 @@ public:
+         }
+         PySys_SetArgv(argc, wargv);
+ 
+-        FILE* pf = _Py_fopen(full_script_path.c_str(), "r");
++        FILE* pf = fopen(full_script_path.c_str(), "r");
+         if (pf == NULL) {
+             BOOST_THROW_EXCEPTION(PortcullisPythonException() << PortcullisPythonErrorInfo(string(
+                     "Could not open script file as a python file object") + full_script_path.string()));

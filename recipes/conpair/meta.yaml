@@ -1,0 +1,71 @@
+{% set name = "conpair" %}
+{% set version = "0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nygenome/Conpair/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6069fca15279d5d9a6452707b47efe43873208bcfc5268ef56e564e44093d486
+  patches:
+    # `imp` was removed in Python 3.12; load the modules with plain imports.
+    - 0001-py312-remove-imp.patch
+    # Run the scripts under the env's python (upstream had pinned a python2.7 shebang).
+    - 0002-portable-shebang.patch
+    # Default CONPAIR_DIR and GATK_JAR to the install layout (share dir; bundled gatk 3.8 jar)
+    # so the tool is self-contained; -D & -G & the env vars still override if the users wants.
+    - 0003-self-contained-paths.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.7
+  run:
+    - python >=3.7
+    - numpy
+    - scipy
+    # run_gatk_pileup_for_sample.py shells out to the GATK3 `Pileup` walker
+    # (`java -jar $GATK_JAR -T Pileup`); GATK4 dropped that interface, so pin GATK3.
+    - gatk ==3.8
+
+test:
+  source_files:
+    # Conpair's own example GATK pileups; copied into the ephemeral test dir only (not installed
+    # into the package) and used by the functional checks below.
+    - data/example/pileup/NA12878_tumor80x.gatk.pileup.txt
+    - data/example/pileup/NA12878_normal40x.gatk.pileup.txt
+  imports:
+    - ContaminationModel
+    - ContaminationMarker
+    - Genotypes
+    - MathOperations
+  commands:
+    - run_gatk_pileup_for_sample.py --help
+    - verify_concordance.py --help
+    - estimate_tumor_normal_contamination.py --help
+    # GATK3 + the `Pileup` walker that run_gatk_pileup shells out to are installed and runnable.
+    - gatk3 -T Pileup --help 2>&1 | grep Pileup
+    # End-to-end on Conpair's bundled NA12878 pileups (markers resolved via the install default),
+    # reproducing upstream's published concordance (7363/7387 markers) + contamination (0.016%).
+    # Guarded on the input's presence: the example pileups are source_files, staged in the
+    # conda-build test but absent from the minimal biocontainer test, so this runs in the former
+    # and is skipped in the latter.
+    - if [ -f data/example/pileup/NA12878_tumor80x.gatk.pileup.txt ]; then verify_concordance.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -F 7363/7387; fi
+    - if [ -f data/example/pileup/NA12878_tumor80x.gatk.pileup.txt ]; then estimate_tumor_normal_contamination.py -T data/example/pileup/NA12878_tumor80x.gatk.pileup.txt -N data/example/pileup/NA12878_normal40x.gatk.pileup.txt | grep -F 0.016%; fi
+
+about:
+  home: https://github.com/nygenome/Conpair
+  license: Custom
+  license_file: LICENSE.txt
+  summary: "Concordance and contamination estimator for tumor-normal sequencing pairs"
+  dev_url: https://github.com/nygenome/Conpair
+
+extra:
+  recipe-maintainers:
+    - clintval

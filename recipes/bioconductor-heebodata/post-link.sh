@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "heebodata-1.44.0"
+installBiocDataPackage.sh "heebodata-1.48.0"

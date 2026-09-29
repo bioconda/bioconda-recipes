@@ -1,0 +1,61 @@
+{% set name = "circmimi" %}
+{% set version = "0.18.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5d189ce423637d956167a1a8c84f4bac332d65f5545340b0469daa70a0d2818d
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - setuptools
+    - click >=7.0
+    - numpy >=1.17.2
+    - pandas >=0.25.1
+    - scipy >=1.7.3
+  run:
+    - python >=3.6
+    - click >=7.0
+    - sqlalchemy >=1.3.8
+    - numpy >=1.17.2
+    - pandas >=0.25.1
+    - openpyxl
+    - networkx >=2.4
+    - lxml >=4.5.0
+    - scipy >=1.7.3
+    - statsmodels >=0.13.1
+    - requests
+    - tqdm
+    - bedtools >=2.29.0
+    - miranda
+    - blat 
+    - blast
+
+test:
+  imports:
+    - circmimi
+  commands:
+    - circmimi_tools --help
+
+about:
+  home: "https://github.com/TreesLab/CircMiMi"
+  license: MIT
+  summary: 'A package for constructing CLIP-seq data-supported "circRNA - miRNA - mRNA" interactions'
+  doc_url: "https://github.com/TreesLab/CircMiMi"
+  dev_url: "https://circmimi.genomics.sinica.edu.tw/"
+
+extra:
+  recipe-maintainers:
+    - razmia02

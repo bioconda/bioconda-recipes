@@ -1,0 +1,43 @@
+{% set version = "1.2.5" %}
+{% set name = "limpa" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 640aafb6acc1a0244de67ac944bf9104
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-limpa", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: arrow, knitr, BiocStyle
+requirements:
+  host:
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - r-base
+    - r-data.table
+    - r-statmod
+  run:
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - r-base
+    - r-data.table
+    - r-statmod
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  summary: Quantification and Differential Analysis of Proteomics Data
+  description: Quantification and differential analysis of mass-spectrometry proteomics data, with probabilistic recovery of information from missing values. Avoids the need for imputation. Estimates the detection probability curve (DPC), which relates the probability of successful detection to the underlying log-intensity of each precursor ion, and uses it to incorporate missing values into protein quantification and into subsequent differential expression analyses. The package produces objects suitable for downstream analysis in limma. The package accepts precursor (or peptide) intensities including missing values and produces complete protein quantifications without the need for imputation. The uncertainty of the protein quantifications is propagated through to the limma analyses using variance modeling and precision weights, ensuring accurate error rate control. The analysis pipeline can alternatively work with PTM or protein level data. The package name "limpa" is an acronym for "Linear Models for Proteomics Data".
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

@@ -20,7 +20,6 @@ fi
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
-    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \

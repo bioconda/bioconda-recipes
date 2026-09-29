@@ -1,13 +1,18 @@
-{% set version = "1.52.0" %}
+{% set version = "1.56.0" %}
 {% set name = "rqubic" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: This package implements the QUBIC algorithm introduced by Li et al. for the qualitative biclustering with gene expression data.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-  summary: Qualitative biclustering algorithm for expression data analysis in R
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: c40990a99b9d8d9afbfed9bc912c92aa
 
 build:
   number: 0
@@ -16,37 +21,34 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-rqubic", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: RColorBrewer
 requirements:
   build:
     - {{ compiler('c') }}
     - make
   host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
     - r-base
     - r-biclust
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
     - r-base
     - r-biclust
-
-source:
-  md5: d40e52edf078a301d33df897d1d77b48
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: Qualitative biclustering algorithm for expression data analysis in R
+  description: This package implements the QUBIC algorithm introduced by Li et al. for the qualitative biclustering with gene expression data.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 

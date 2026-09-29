@@ -1,36 +1,47 @@
 {% set name = "king" %}
-{% set version = "2.2.7" %}
+{% set version = "2.3.2" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://www.kingrelatedness.com/executables/KING{{ version }}code.tar.gz
-  sha256: 486e7e94dde16d427f9d3fc99a33fa3f72f67e2f61b7264b4579111c9fb95be3
+  sha256: b6c636ac99d2207d0c2435122abdc4bcd87260ccadaf27dc68df9000b4143a5b
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
   
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
   host:
     - zlib
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
   run:
-    - zlib
-    - openmp
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - king 2>&1 | grep "Genotype files"
 
 about:
-  home: http://people.virginia.edu/~wc9c/KING/
-  license: GPLv3
-  summary: "`Kinship-based INference for Gwas (KING) is a toolset that makes use of high-throughput SNP data typically seen in a genome-wide association study <http://people.virginia.edu/~wc9c/KING/>`_"
+  home: "https://people.virginia.edu/~wc9c/KING"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Kinship-based INference for Gwas (KING) is a toolset that makes use of high-throughput SNP data typically seen in a genome-wide association study."
+  doc_url: "https://people.virginia.edu/~wc9c/KING"
 
 extra:
   recipe-maintainers:
     - mtekman
+  identifiers:
+    - doi:10.1093/bioinformatics/btq559
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

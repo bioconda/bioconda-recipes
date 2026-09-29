@@ -1,0 +1,95 @@
+{% set name = "phageflow" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fcabezasmera/PhageFlow/archive/v{{ version }}.tar.gz
+  sha256: c935c1e1879809f5ba442923820a47cfe23ecb50abc390eea78ec12d8a3e51e0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage("phageflow", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - click >=8.1
+    - rich >=13.0
+    - pyyaml >=6.0
+    - biopython >=1.80
+    - pandas >=2.0
+    - numpy >=1.24
+    - matplotlib-base >=3.7
+    - pygenomeviz >=0.4.0
+    # ── QC ───────────────────────────────────────────────────────────────────
+    - fastp >=1.3
+    - fastqc >=0.12
+    - multiqc >=1.35
+    # ── Host removal ─────────────────────────────────────────────────────────
+    - bwa-mem2
+    - samtools >=1.23
+    - seqtk
+    - kraken2 >=2.1
+    - ncbi-datasets-cli
+    # ── Assembly ─────────────────────────────────────────────────────────────
+    - spades >=4.2
+    - megahit >=1.2.9
+    - cd-hit
+    # ── Coverage ─────────────────────────────────────────────────────────────
+    - coverm >=0.7
+    # ── Viral ID ─────────────────────────────────────────────────────────────
+    - genomad >=1.8
+    # ── Quality ──────────────────────────────────────────────────────────────
+    - checkv >=1.1
+    - mash >=2.3
+    - minimap2 >=2.24
+    - blast >=2.14          # provides blastn + makeblastdb
+    # ── Annotation ───────────────────────────────────────────────────────────
+    - pharokka >=1.9
+    - phold >=1.2
+    - dnaapler >=1.3
+    - pigz
+
+test:
+  imports:
+    - phageflow
+    - phageflow.cli
+    - phageflow.modules.qc
+    - phageflow.modules.host_removal
+    - phageflow.modules.assembly
+    - phageflow.modules.coverage
+    - phageflow.modules.viral_id
+    - phageflow.modules.quality
+    - phageflow.modules.annotate
+    - phageflow.modules.resistance
+    - phageflow.modules.runner
+  commands:
+    - phageflow --version
+    - phageflow --help
+
+about:
+  home: https://github.com/fcabezasmera/PhageFlow
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Modular bacteriophage genomics pipeline for complete genome recovery
+  description: |
+    PhageFlow is a modular pipeline for recovering complete and high-quality
+    phage genomes from Illumina paired-end sequencing. It supports purified
+    phage preparations, viromes, and environmental metagenomes.
+  doc_url: https://github.com/fcabezasmera/PhageFlow
+  dev_url: https://github.com/fcabezasmera/PhageFlow
+
+extra:
+  recipe-maintainers:
+    - fcabezasmera

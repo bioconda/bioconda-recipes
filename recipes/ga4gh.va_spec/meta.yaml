@@ -1,0 +1,45 @@
+{% set name = "ga4gh.va_spec" %}
+{% set version = "0.4.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/ga4gh_va_spec-{{ version }}.tar.gz
+  sha256: 73b755cd3ca5fa808d16ce447b753a83d03014a99804350fd6f3c50867c95958
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ga4gh.va_spec', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=65.3
+    - setuptools-scm >=8
+    - pip
+  run:
+    - python >=3.10
+    - ga4gh.vrs >=2.2.0,<3.0
+    - ga4gh.cat_vrs >=0.7.1,<0.8.dev0
+    - pydantic >=2.0,<3.0
+
+test:
+  imports:
+    - ga4gh
+    - ga4gh.va_spec
+
+about:
+  home: https://github.com/ga4gh/va-spec-python
+  summary: GA4GH Variant Annotation (VA) reference implementation
+  dev_url: https://github.com/ga4gh/va-spec-python
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - emmcauley

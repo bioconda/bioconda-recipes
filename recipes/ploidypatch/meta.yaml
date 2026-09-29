@@ -1,0 +1,57 @@
+{% set name = "ploidypatch" %}
+{% set version = "1.0.1" %}
+{% set release_tag = "v1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/707728642li/PloidyPatch/releases/download/{{ release_tag }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 7403f56f10588fe49ff133c08614f7db39a23a2de0f7c48d5a480d114e079606
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - ploidypatch = ploidypatch.cli:main
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.11
+
+test:
+  imports:
+    - ploidypatch
+  commands:
+    - ploidypatch --version
+    - ploidypatch --help
+    - ploidypatch patch --help
+    - python -c "import ploidypatch; assert ploidypatch.__version__ == '1.0.1'"
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/707728642li/PloidyPatch
+  dev_url: https://github.com/707728642li/PloidyPatch
+  doc_url: https://github.com/707728642li/PloidyPatch#documentation
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: Duplication-aware, review-oriented plant gene-model repair
+  description: |
+    PloidyPatch preserves structurally distinct plant gene-model candidates,
+    adds duplication-aware evidence when applicable, records explicit human
+    review, and applies immutable reversible GFF3 annotation patches.
+
+extra:
+  recipe-maintainers:
+    - 707728642li

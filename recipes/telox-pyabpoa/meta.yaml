@@ -1,0 +1,55 @@
+{% set name = "telox-pyabpoa" %}
+{% set version = "1.5.6.post1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hhuili/abPOA/releases/download/v{{ version }}/telox_pyabpoa-{{ version }}.tar.gz
+  sha256: f8a96a6562b6a5e4026b1281a124ba79edfdb06a74184af7ebec6cd34e0aefef
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - cython
+    - zlib
+  run:
+    - python
+
+test:
+  imports:
+    - telox_pyabpoa
+  commands:
+    - python -c "import telox_pyabpoa as p; a = p.msa_aligner(is_ascii=True); r = a.msa(['A@%Z', 'A@%Z'], out_cons=True, out_msa=False); assert r.cons_seq == ['A@%Z']"
+
+about:
+  home: https://github.com/hhuili/abPOA
+  summary: TeloXplorer-maintained abPOA fork with 128-character ASCII alignment support
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - include/simde/COPYING
+  dev_url: https://github.com/hhuili/abPOA
+
+extra:
+  recipe-maintainers:
+    - hhuili
+  identifiers:
+    - doi:10.1093/bioinformatics/btaa963
+    - biotools:abpoa
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,49 @@
+{% set name = "arcade" %}
+{% set version = "1.0.17" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/frhl/call_chets/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4fad0af4c2b357ec536b93669d56c6c2f61ca2ba703d4e54071897d703e677d2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - htslib
+    - zlib
+  run:
+    - htslib
+
+test:
+  commands:
+    - interpret_phase --help
+    - recode --help
+    - filter_pp --help
+    - make_pseudo_vcf --help
+    - count_by_gene --help
+
+about:
+  home: "https://github.com/frhl/call_chets"
+  license: MIT
+  license_file: LICENSE
+  summary: "Allelic Recoding via gram-sChmidt for Dominance Effects (ARCADE) - C++ tools for encoding biallelic variants for non-additive genetic association analysis"
+  doc_url: "https://frhl.github.io/call_chets"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - frhl
+  skip-lints:
+    - compiler_needs_stdlib_c

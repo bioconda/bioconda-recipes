@@ -1,5 +1,5 @@
 {% set name = "rad" %}
-{% set version = "0.6.0" %}
+{% set version = "1.0.2" %}
 
 package:
   name: {{ name }}
@@ -7,31 +7,38 @@ package:
 
 source:
   url: https://github.com/indianewok/rad/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 9463ba13a15e3b496df2f9f8b2fc6f0a2cc03c23fb8e44e2a5a6b384c974aafd
+  sha256: 6f5253456adf9b84de66583501d946656297f79645ac76d5b401e83d2f482af9
 
 build:
   number: 0
   run_exports:
-  - {{ pin_subpackage('rad') }}
+    - {{ pin_subpackage('rad', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
   host:
     - boost-cpp
     - zlib
+    - bzip2
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
   run:
     - boost-cpp
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
+    - pigz
 
 test:
   commands:
     - rad --help
+    - rad --version
+    - rad list
+    - test -f "${PREFIX}/share/rad/resources/read_layout/sctagger_sim_read_layout.csv"
+    - test -f "${PREFIX}/share/rad/resources/wl/3M-february-2018-3v3.txt_bitlist.csv.gz"
 
 about:
   home: "https://github.com/indianewok/rad"
@@ -48,6 +55,8 @@ about:
   doc_url: "https://github.com/indianewok/rad/blob/v{{ version }}/README.md"
 
 extra:
+  recipe-maintainers:
+    - indianewok
   additional-platforms:
     - linux-aarch64
     - osx-arm64

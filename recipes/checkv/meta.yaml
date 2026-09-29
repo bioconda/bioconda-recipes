@@ -1,5 +1,5 @@
 {% set name = "checkv" %}
-{% set version = "1.0.3" %}
+{% set version = "1.1.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,33 +7,37 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 2438516f270191267a9860dfe31bf596d64a4fbc16be922b46fb6a4fd98d762a
+  sha256: ed675601dafa8c6a10739c86499af7493c50d38bb491c3da87933759c1ef5f4a
 
 build:
-  number: 0
+  number: 1
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - checkv=checkv.cli:cli
+    - anicalc=checkv.commands.anicalc:cli
+    - aniclust=checkv.commands.aniclust:cli
   run_exports:
-    - {{ pin_subpackage("checkv", max_pin="x") }}
+    - {{ pin_subpackage("checkv", max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python
     - pip
-    - flit-core >=3.2,<4
+    - flit-core >=3.10,<4
   run:
-    - python >=3.6
+    - python
     - biopython
     - importlib-metadata >=0.12
-    - numpy
+    - numpy >=1.5
+    - pyrodigal-gv >=0.3.1
     - psutil
     - requests
     - kcounter
+    - click >=8.0
+    - loguru >=0.7
     - diamond <=2.1.8
-    - hmmer
-    - prodigal-gv
+    - hmmer >=3.3
 
 test:
   commands:
@@ -41,9 +45,9 @@ test:
 
 about:
   home: "https://bitbucket.org/berkeleylab/checkv"
-  license: Modified BSD
+  license: BSD-3-Clause-LBNL
   license_family: BSD
-  license_file: LICENSE.txt
+  license_file: LICENSE
   summary: "Assess the quality of metagenome-assembled viral genomes."
 
 extra:

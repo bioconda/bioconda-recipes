@@ -11,15 +11,20 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+  host:
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
     - cd-hit
+    - libgomp  # [linux]
     - llvm-openmp  # [osx]
 
 test:
@@ -27,9 +32,15 @@ test:
     - grf-main 2>&1 | grep -i usage
 
 about:
-  home: https://github.com/bioinfolabmu/GenericRepeatFinder
-  license: GPLv3
-  license_family: GPL
-  license_file: license.txt
-  summary: Generic Repeat Finder (GRF).
-  dev_url: https://github.com/bioinfolabmu/GenericRepeatFinder
+  home: "https://github.com/bioinfolabmu/GenericRepeatFinder"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "license.txt"
+  summary: "Generic Repeat Finder (GRF)."
+  dev_url: "https://github.com/bioinfolabmu/GenericRepeatFinder"
+  doc_url: "https://github.com/bioinfolabmu/GenericRepeatFinder/blob/v{{ version }}/readme.txt"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

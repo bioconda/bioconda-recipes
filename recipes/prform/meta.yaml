@@ -1,0 +1,58 @@
+{% set name = "prform" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a79ccbaff7290559576070a190bdc522117e4cc99a61340fc91e56a0e7164334
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - prform = prform.cli:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - pytorch >=2.0
+    - numpy >=1.22
+    - scipy >=1.9
+    - scikit-learn >=1.1
+    - joblib >=1.2
+    - h5py >=3.7
+
+test:
+  imports:
+    - prform
+  commands:
+    - prform --version
+    - prform --help
+
+about:
+  home: https://github.com/khoa-yelo/PRForm
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Predict programmed ribosomal frameshift (PRF) sites in RNA sequences.
+  description: |
+    prform scores every nucleotide of an RNA sequence for the probability
+    of a -1 or +1 ribosomal frameshift. A 1D residual network with a 10 kb
+    receptive field, plus a calibrated probability mapping, are bundled
+    with the package.
+  doc_url: https://github.com/khoa-yelo/PRForm
+  dev_url: https://github.com/khoa-yelo/PRForm
+
+extra:
+  recipe-maintainers:
+    - khoa-yelo

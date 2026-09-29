@@ -1,0 +1,57 @@
+{% set name = "cs-tagger" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiangyun-fun/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bd3b3753e21d7077f2cfe118bbd9dde142cbf1611f26bebd65edbd516c5d4586
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - clangdev
+    - cmake
+    - make
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - openssl
+    - libcurl
+
+test:
+  commands:
+    - cs-tagger --help
+    - cs-tagger --version
+
+about:
+  home: https://github.com/jiangyun-fun/cs-tagger
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - cs-tagger/THIRDPARTY.yml
+  summary: "Generate minimap2-like CS tags for BAM files."
+  description: |
+    CS tags encode the alignment between query and reference sequences in a
+    compact string representation. cs-tagger computes CS tags from an existing
+    BAM alignment and a reference FASTA, then writes them as auxiliary tags
+    into the output BAM.
+  dev_url: https://github.com/jiangyun-fun/cs-tagger
+
+extra:
+  recipe-maintainers:
+    - jiangyun-fun

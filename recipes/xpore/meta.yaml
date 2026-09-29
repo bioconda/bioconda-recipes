@@ -1,5 +1,5 @@
 {% set name = "xpore" %}
-{% set version = "2.1" %}
+{% set version = "2.2" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,20 +7,21 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 768f10720b717eaa11496fdfb692beda710118274a27b17eed8486842cea57eb
+  sha256: 8a068adcc91f0fd9eb8588ba0e73b183792278e67175db3c5b3dd9dcf58c13c8
 
 build:
   number: 0
   noarch: python
-  entry_points:
-    - xpore-dataprep=xpore.scripts.dataprep:main
-    - xpore-diffmod=xpore.scripts.diffmod:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage("xpore", max_pin="x.x") }} # not semver, breaking API change in 2.2
+  
 
 requirements:
   host:
     - pip
     - python
+    - setuptools >=61.0
   run:
     - h5py >=2.10.0
     - numpy >=1.18.0

@@ -1,18 +1,39 @@
 #!/bin/bash
 set -x -e
 
-mkdir -p ${PREFIX}/bin
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+mkdir -p "${PREFIX}/bin"
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+	*)
+	sed -i.bak 's|-march=x86-64-v3|-march=x86-64-v3 -Wno-register|' TERefiner/Makefile
+	sed -i.bak 's|-march=x86-64-v3|-march=x86-64-v3 -Wno-register|' ContigsCompactor-v0.2.0/ContigsMerger/Makefile ;;
+esac
+
+case $(uname -s) in
+    "Darwin")
+	sed -i.bak 's| -static||' TERefiner/Makefile ;;
+esac
+
+rm -f TERefiner/*.bak
+rm -f ContigsCompactor-v0.2.0/ContigsMerger/*.bak
 
 pushd TERefiner
-sed -i.bak "s/ -static//g" Makefile
-make CC=$CXX BAMTOOLS_LD=${PREFIX}/lib BAMTOOLS=${PREFIX}/include/bamtools
-cp TERefiner_1 ${PREFIX}/bin/ 
+make CC="${CXX}" -j"${CPU_COUNT}"
+install -v -m 0755 TERefiner_1 "${PREFIX}/bin"
 popd
 
-pushd ./ContigsCompactor-v0.2.0/ContigsMerger/ 
-make CC=$CXX CFLAGS="$CXXFLAGS -L${PREFIX}/lib"
-cp ContigsMerger ${PREFIX}/bin
+pushd ./ContigsCompactor-v0.2.0/ContigsMerger
+make CC="${CXX}" -j"${CPU_COUNT}"
+install -v -m 0755 ContigsMerger "${PREFIX}/bin"
 popd
 
-cp *.py ${PREFIX}/bin/
-chmod +x ${PREFIX}/bin/*
+install -v -m 0755 *.py "${PREFIX}/bin"

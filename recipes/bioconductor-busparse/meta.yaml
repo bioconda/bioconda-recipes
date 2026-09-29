@@ -1,13 +1,18 @@
-{% set version = "1.20.0" %}
+{% set version = "1.24.0" %}
 {% set name = "BUSpaRse" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: 'The kallisto | bustools pipeline is a fast and modular set of tools to convert single cell RNA-seq reads in fastq files into gene count or transcript compatibility counts (TCC) matrices for downstream analysis. Central to this pipeline is the barcode, UMI, and set (BUS) file format. This package serves the following purposes: First, this package allows users to manipulate BUS format files as data frames in R and then convert them into gene count or TCC matrices. Furthermore, since R and Rcpp code is easier to handle than pure C++ code, users are encouraged to tweak the source code of this package to experiment with new uses of BUS format and different ways to convert the BUS file into gene count matrix. Second, this package can conveniently generate files required to generate gene count matrices for spliced and unspliced transcripts for RNA velocity. Here biotypes can be filtered and scaffolds and haplotypes can be removed, and the filtered transcriptome can be extracted and written to disk. Third, this package implements utility functions to get transcripts and associated genes required to convert BUS files to gene count matrices, to write the transcript to gene information in the format required by bustools, and to read output of bustools into R as sparses matrices.'
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: BSD_2_clause + file LICENSE
-  license_file: LICENSE
-  summary: kallisto | bustools R utilities
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: a5e16b737dbbb588ff778a3a2ae6c5a1
 
 build:
   number: 0
@@ -16,11 +21,7 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-busparse", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: knitr, rmarkdown, testthat, BiocStyle, txdbmaker, TENxBUSData, TxDb.Hsapiens.UCSC.hg38.knownGene, txdbmaker, BSgenome.Hsapiens.UCSC.hg38, EnsDb.Hsapiens.v86
+# Suggests: knitr, rmarkdown, testthat, BiocStyle, txdbmaker, TENxBUSData, TxDb.Hsapiens.UCSC.hg38.knownGene, BSgenome.Hsapiens.UCSC.hg38, EnsDb.Hsapiens.v86
 # SystemRequirements: GNU make
 requirements:
 
@@ -30,23 +31,25 @@ requirements:
     - make
 
   host:
-    - bioconductor-annotationdbi >=1.68.0,<1.69.0
-    - bioconductor-annotationfilter >=1.30.0,<1.31.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-bsgenome >=1.74.0,<1.75.0
-    - bioconductor-ensembldb >=2.30.0,<2.31.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-plyranges >=1.26.0,<1.27.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-annotationfilter >=1.34.0,<1.35.0
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-ensembldb >=2.34.0,<2.35.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-plyranges >=1.30.0,<1.31.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
     - r-bh
     - r-dplyr
     - r-ggplot2
+    - r-lifecycle
     - r-magrittr
     - r-matrix
     - r-rcpp
@@ -58,25 +61,29 @@ requirements:
     - r-zeallot
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
 
   run:
-    - bioconductor-annotationdbi >=1.68.0,<1.69.0
-    - bioconductor-annotationfilter >=1.30.0,<1.31.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-biomart >=2.62.0,<2.63.0
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-bsgenome >=1.74.0,<1.75.0
-    - bioconductor-ensembldb >=2.30.0,<2.31.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicfeatures >=1.58.0,<1.59.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-plyranges >=1.26.0,<1.27.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-annotationfilter >=1.34.0,<1.35.0
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biomart >=2.66.0,<2.67.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-ensembldb >=2.34.0,<2.35.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-plyranges >=1.30.0,<1.31.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
     - r-bh
     - r-dplyr
     - r-ggplot2
+    - r-lifecycle
     - r-magrittr
     - r-matrix
     - r-rcpp
@@ -87,15 +94,14 @@ requirements:
     - r-tidyr
     - r-zeallot
 
-source:
-  md5: e79fe5b2e7c9decd8d072e3e0d5c0bec
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_2_clause + file LICENSE
+  summary: kallisto | bustools R utilities
+  description: 'The kallisto | bustools pipeline is a fast and modular set of tools to convert single cell RNA-seq reads in fastq files into gene count or transcript compatibility counts (TCC) matrices for downstream analysis. Central to this pipeline is the barcode, UMI, and set (BUS) file format. This package serves the following purposes: First, this package allows users to manipulate BUS format files as data frames in R and then convert them into gene count or TCC matrices. Furthermore, since R and Rcpp code is easier to handle than pure C++ code, users are encouraged to tweak the source code of this package to experiment with new uses of BUS format and different ways to convert the BUS file into gene count matrix. Second, this package can conveniently generate files required to generate gene count matrices for spliced and unspliced transcripts for RNA velocity. Here biotypes can be filtered and scaffolds and haplotypes can be removed, and the filtered transcriptome can be extracted and written to disk. Third, this package implements utility functions to get transcripts and associated genes required to convert BUS files to gene count matrices, to write the transcript to gene information in the format required by bustools, and to read output of bustools into R as sparses matrices.'
+  license_file: LICENSE
 

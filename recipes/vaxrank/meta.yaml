@@ -1,0 +1,77 @@
+{% set name = "vaxrank" %}
+{% set version = "1.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 0a287076eae0542a26fd0131848b230c803714de3ff5ba14d9add0e8d7c99be7
+  patches:
+    - drop-removed-jinja2-autoescape-extension.patch
+    - lazy-pdfkit-import.patch
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - vaxrank = vaxrank.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - six
+    - numpy >=1.14.0
+    - pandas
+    - pyensembl >=1.5.0
+    - varcode >=0.5.9
+    - isovar >=1.1.1
+    - mhctools >=1.5.0
+    - roman
+    - jinja2
+    # python-pdfkit is deliberately not a hard dependency: it is only needed
+    # for the optional --output-pdf-report format, and it requires the
+    # wkhtmltopdf binary, which has no osx build. Depending on it would make
+    # this noarch package uninstallable on osx without enabling anything
+    # there. pdfkit is therefore imported lazily (lazy-pdfkit-import.patch);
+    # install conda-forge::python-pdfkit alongside vaxrank for PDF reports.
+    - pypandoc
+    - shellinford >=0.3.4
+    - xlrd
+    - xlsxwriter
+    - xvfbwrapper
+    - future >=0.16.0
+    - astropy
+    # vaxrank.cli imports pkg_resources at runtime
+    - setuptools <82
+
+test:
+  imports:
+    - vaxrank
+    - vaxrank.manufacturability
+  commands:
+    - vaxrank --help
+
+about:
+  home: https://github.com/openvax/vaxrank
+  summary: Ranked vaccine peptides for personalized cancer immunotherapy
+  description: |
+    Vaxrank selects mutated peptides for therapeutic personalized cancer
+    vaccines, ranking candidates by a combination of predicted MHC binding
+    affinity, RNA expression support and manufacturability.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/openvax/vaxrank
+
+extra:
+  recipe-maintainers:
+    - jonasscheid

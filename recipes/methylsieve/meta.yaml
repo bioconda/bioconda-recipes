@@ -1,0 +1,43 @@
+{% set name = "methylsieve" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 353fedb428a96f7576043fb89f2b5b624b07c8ba58c80f245899cc992d2e9da8
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("methylsieve", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - methylsieve --help
+
+about:
+  home: https://github.com/fulcrumgenomics/methylsieve
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast per-template tagging and filtering of unconverted reads in bisulfite / EM-seq SAM/BAM files
+  dev_url: https://github.com/fulcrumgenomics/methylsieve
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
+  recipe-maintainers:
+    - tfenne

@@ -1,0 +1,104 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19 +19 @@
+-set(CMAKE_CXX_FLAGS "-O3 -Wall -ffast-math -fvisibility=hidden -fopenmp")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -ffast-math -fvisibility=hidden -fopenmp")
+@@ -20,0 +21 @@
++add_definitions(-DBOOST_LOG_DYN_LINK)
+@@ -82,0 +83,2 @@
++find_package(Threads REQUIRED)
++
+@@ -85,2 +87,3 @@
+-  libhts.a
+-  HINTS ${HTSLIB_PATH}
++  NAMES hts
++  HINTS ${HTSLIB_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -90 +93,3 @@
+-  libdeflate.a
++  NAMES deflate
++  HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -103,2 +108,3 @@
+-  libboost_log_setup.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_log_setup
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -108,2 +114,3 @@
+-  libboost_log.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_log
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -113,2 +120,3 @@
+-  libboost_program_options.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_program_options
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -118,2 +126,3 @@
+-  libboost_filesystem.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_filesystem
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -123,2 +132,3 @@
+-  libboost_system.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_system
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -128,2 +138,3 @@
+-  libboost_thread.a
+-  HINTS ${BOOST_PATH}
++  NAMES boost_thread
++  HINTS ${BOOST_PATH} ${CMAKE_PREFIX_PATH} $ENV{PREFIX}
++  PATH_SUFFIXES lib
+@@ -131,6 +142,6 @@
+-find_library(Z libz.so)
+-find_library(SSL libssl.so)
+-find_library(CRYPTO libcrypto.so)
+-find_library(BZ2 libbz2.so)
+-find_library(LZMA liblzma.so)
+-find_library(CURL libcurl.so)
++find_library(Z NAMES z HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(SSL NAMES ssl HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(CRYPTO NAMES crypto HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(BZ2 NAMES bz2 HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(LZMA NAMES lzma HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(CURL NAMES curl HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
+@@ -147 +158 @@
+-  ${PTHREAD}
++  Threads::Threads
+@@ -151 +161,0 @@
+-  ${DL}
+@@ -154,0 +165 @@
++  ${CMAKE_DL_LIBS}
+@@ -221,3 +232,3 @@
+-find_library(LAPACK liblapack.a)
+-find_library(LAPACKE liblapacke.a)
+-find_library(OPENBLAS libopenblas.a)
++find_library(LAPACK NAMES lapack HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(LAPACKE NAMES lapacke HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
++find_library(OPENBLAS NAMES openblas libopenblas.so.0 HINTS ${CMAKE_PREFIX_PATH} $ENV{PREFIX} PATH_SUFFIXES lib)
+--- a/src/io/bgz_writer.cpp
++++ b/src/io/bgz_writer.cpp
+@@ -1,3 +1,4 @@
+ #include "bgz_writer.hpp"
+-
++#include <utility>
++
+ using namespace std;
+--- a/src/meta/htp_meta_analyzer.cpp
++++ b/src/meta/htp_meta_analyzer.cpp
+@@ -670,2 +670,2 @@
+-    sum_stats.gene_cond_scores = this->conditional_scores(gene_conditional_variants_idx, Eigen::all);
+-    sum_stats.gene_cond_scorev = this->conditional_scorev(gene_conditional_variants_idx, Eigen::all);
++    sum_stats.gene_cond_scores = this->conditional_scores(gene_conditional_variants_idx, Eigen::placeholders::all);
++    sum_stats.gene_cond_scorev = this->conditional_scorev(gene_conditional_variants_idx, Eigen::placeholders::all);
+--- a/src/run_compute_ref_ld.cpp
++++ b/src/run_compute_ref_ld.cpp
+@@ -115 +115 @@
+-  MatrixXf GtG = block1(Eigen::all, block1_keep_idx).transpose() * block2(Eigen::all, block2_keep_idx) / block1.rows();
++  MatrixXf GtG = block1(Eigen::placeholders::all, block1_keep_idx).transpose() * block2(Eigen::placeholders::all, block2_keep_idx) / block1.rows();

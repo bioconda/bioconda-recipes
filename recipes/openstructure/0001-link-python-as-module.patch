@@ -1,0 +1,27 @@
+Link Python extension modules (and libost_gui) against CMake Python::Module
+instead of Python::Python. conda-forge macOS python does not link libpython;
+linking the embed library into MODULE extensions loads a second copy and
+segfaults on import. gosty is an embedding executable and keeps Python::Python.
+
+--- a/cmake_support/OST.cmake	2026-08-15 15:25:53
++++ b/cmake_support/OST.cmake	2026-08-15 15:25:53
+@@ -543,7 +543,7 @@
+     endif()
+     target_link_libraries("_${_LIB_NAME}" ${_PARENT_LIB_NAME}
+                           Boost::python
+-                          Python::Python)
++                          Python::Module)
+ 
+     set_target_properties("_${_LIB_NAME}"
+                           PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PYMOD_STAGE_DIR})
+--- a/modules/gui/src/CMakeLists.txt	2026-08-15 15:25:53
++++ b/modules/gui/src/CMakeLists.txt	2026-08-15 15:25:53
+@@ -453,7 +453,7 @@
+        DEPENDS_ON ost_gfx ost_io ost_mol_alg ost_seq_alg
+        LINK ${QT_LIBRARIES}
+             Boost::python
+-            Python::Python
++            Python::Module
+             ${SPNAV_LIBRARIES}
+         NO_STATIC)
+ 
