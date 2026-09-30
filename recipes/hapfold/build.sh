@@ -21,6 +21,6 @@ make CC="${CXX}" \
      VERBOSE=1
 
 install -m 0755 HapFold ${PREFIX}/bin/HapFold
-install -m 0755 build/libhifiasm_embedded.so ${PREFIX}/lib/libhifiasm_embedded.so
-patchelf --set-rpath '$ORIGIN/../lib' ${PREFIX}/bin/HapFold
+mkdir -p ${PREFIX}/bin/build
+install -m 0755 build/libhifiasm_embedded.so ${PREFIX}/bin/build/libhifiasm_embedded.so
 ln -sf HapFold ${PREFIX}/bin/hapfold
