@@ -1,26 +1,20 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 make clean || true
 
-mkdir -p ${PREFIX}/bin
+make -j"${CPU_COUNT}" \
+    CC="${CC}" \
+    CXX="${CXX}" \
+    LIBS="${SRC_DIR}/lib/libminimap2.a -lz -lpthread -lm" \
+    VERBOSE=1
 
-ln -s ${CXX} ./g++
-export PATH=$(pwd):$PATH
+mkdir -p "${PREFIX}/bin"
+install -m 0755 HapFold "${PREFIX}/bin/HapFold"
 
-export CFLAGS="${CFLAGS} -I${PREFIX}/include -fpermissive -Wall "
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -fpermissive -Wall"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+mkdir -p "${PREFIX}/bin/build"
+install -m 0755 \
+    build/libhifiasm_embedded.so \
+    "${PREFIX}/bin/build/libhifiasm_embedded.so"
 
-make CC="${CXX}" \
-     CXX="${CXX}" \
-     CFLAGS="${CFLAGS}" \
-     CXXFLAGS="${CXXFLAGS}" \
-     LDFLAGS="${LDFLAGS}" \
-     LIBS="-L${PREFIX}/lib -lm -lz -lpthread ${SRC_DIR}/lib/libminimap2.a" \
-     VERBOSE=1
-
-install -m 0755 HapFold ${PREFIX}/bin/HapFold
-mkdir -p ${PREFIX}/bin/build
-install -m 0755 build/libhifiasm_embedded.so ${PREFIX}/bin/build/libhifiasm_embedded.so
-ln -sf HapFold ${PREFIX}/bin/hapfold
+ln -sf HapFold "${PREFIX}/bin/hapfold"
