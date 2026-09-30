@@ -14,7 +14,8 @@ if [[ "$CXX" == *gnu-c++* ]]; then
   #export LDFLAGS="-v ${LDFLAGS}"
 fi
 
-mkdir build
+# The release tarball ships an empty build/ directory.
+mkdir -p build
 cd build
 
 # Set INSTALL_RPATH to PREFIX such that there are no warnings during linkage fixing of conda-build
@@ -26,7 +27,7 @@ cd build
 #  by the tools and written to their INI files). With GIT_TRACKING=OFF it takes the branch and revision
 #  from the values below, and the release tag v<version> as branch gives the plain version.
 cmake -S .. -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
-	-DGIT_TRACKING=OFF -DOPENMS_GIT_SHORT_REFSPEC="v${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="TODO_short_sha_of_v3.6.0" \
+	-DGIT_TRACKING=OFF -DOPENMS_GIT_SHORT_REFSPEC="v${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="5d5cbff" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
 	-DHAS_XSERVER=OFF -DWITH_GUI=OFF -DENABLE_CLASS_TESTING=OFF -DENABLE_TOPP_TESTING=OFF -DBOOST_USE_STATIC=OFF -DBUILD_EXAMPLES=OFF -DENABLE_CWL=OFF -DWITH_HDF5=OFF \
