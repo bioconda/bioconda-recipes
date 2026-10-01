@@ -1,0 +1,57 @@
+{% set version = "0.9.1" %}
+{% set sha256 = "1a02be3dba79d2b09ceeb2c80063080b7d01573573f02d0c3ee6695055548256" %}
+
+package:
+  name: proteus-bio
+  version: {{ version }}
+
+source:
+  url: https://github.com/OtoYuki/proteus/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('proteus-bio', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  source_files:
+    - crates/proteus-core/tests/data/1crn.pdb
+    - crates/proteus-core/tests/data/2ptc_EI.pdb
+  commands:
+    - proteus --version
+    - proteus analyze crates/proteus-core/tests/data/1crn.pdb --json | grep -q TTCCPSIVARSNFNVCRLPGTPEAICATYTGCIIIPGATCPGDYAN
+    - proteus analyze crates/proteus-core/tests/data/2ptc_EI.pdb --interface I:E --json | grep -q '"interface_binder":"I"'
+
+about:
+  home: https://github.com/OtoYuki/proteus
+  dev_url: https://github.com/OtoYuki/proteus
+  doc_url: https://github.com/OtoYuki/proteus/blob/v{{ version }}/README.md
+  license: MIT OR Apache-2.0
+  license_family: MIT
+  license_file:
+    - LICENSE-MIT
+    - LICENSE-APACHE
+    - THIRDPARTY.yml
+  summary: Triage of predicted protein structures and designed binders, with every metric checked against its reference implementation.
+  description: |
+    One binary that measures folders of predicted protein models in parallel and writes one row
+    per model to Parquet, CSV or JSON. It covers confidence, DSSP secondary structure,
+    MolProbity-style Ramachandran, covalent geometry and rotamers (reproducing cctbx), SASA, and
+    non-covalent interactions. With --interface it adds binder-target interface metrics for
+    design campaigns: ipSAE, ipAE, LIS and ipTM from the predictor's PAE, plus dSASA, shape
+    complementarity and cross-interface contacts. No Python, no Rosetta.
+
+extra:
+  recipe-maintainers:
+    - OtoYuki
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
