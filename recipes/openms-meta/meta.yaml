@@ -25,6 +25,9 @@ source:
     # 3.6.0 resolves share/OpenMS from the compiled-in install path first. conda's binary prefix
     # replacement pads that string with NULs, which the compiler-folded length keeps in the path.
     - 0001-File-take-install-path-lengths-at-run-time.patch
+    # bind_format.cpp includes OpenMS/FORMAT/BrukerTimsFile.h unconditionally, but libopenms (built with
+    # WITH_OPENTIMS=OFF) does not install that header; the bindings that use it are already guarded.
+    - 0001-bind_format-include-BrukerTimsFile.h-only-with-WITH_OPENTIMS.patch
 {% endif %}
 
 build:
@@ -37,6 +40,9 @@ build:
 #  container:
 #    extended-base: True
 
+# The top-level requirements must not contain python: conda-build then runs build.sh (the C++
+# build) once, and only the pyopenms output is built once per Python version from the same work
+# directory. With python here, the whole C++ build would run again for every Python version.
 requirements:
 
     build:
@@ -217,12 +223,78 @@ outputs:
       dev_url: "https://github.com/OpenMS/OpenMS"
       doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
+  # pyopenms 3.5.0 and earlier came from a recipe of their own, which pinned libopenms to the same
+  # version and so could only be built after this recipe's packages were published.
+  - name: pyopenms
+    version: {{ version }}
+    script: package_pyopenms.sh
+    build:
+      # pyOpenMS requires Python >= 3.11 (requires-python in src/pyOpenMS/pyproject.toml,
+      # find_package(Python 3.11 REQUIRED) in src/pyOpenMS/CMakeLists.txt; OpenMS/OpenMS#10119).
+      # linux-aarch64 is skipped as in the former pyopenms recipe: pyopenms 3.5.0 is a heavy build
+      # that repeatedly tripped CircleCI arm.large infrastructure_fail (not a recipe issue; it builds
+      # fine locally within the runner's memory and time budget). The nanobind build of 3.6.0 may be
+      # lighter; re-enable after a trial build.
+      skip: true  # [py < 311 or aarch64]
+      run_exports:
+        - {{ pin_subpackage('pyopenms', max_pin="x") }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - ninja
+        - cmake >=3.24
+      host:
+        - python
+        # Since 3.6.0 the bindings are nanobind (no Cython/autowrap). CMake takes nanobind from this
+        # interpreter (python -m nanobind --cmake_dir); without it, it git-clones nanobind v3.1.0 and
+        # builds without type stubs. nanobind.stubgen generates the .pyi stubs during the build.
+        - nanobind >=3.1,<4
+        - numpy >=2.0
+        # The stub generation imports the freshly built package during the build.
+        - pandas >=3
+        - matplotlib-base
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        # _arrow_zerocopy links Arrow directly; same major as libopenms ("23.* *_cpu", see the openms output)
+        - libarrow 23.* *_cpu
+        # find_package(OpenMS) needs the Boost headers (find_dependency(Boost) in OpenMSConfig.cmake)
+        - libboost-headers
+        # pyOpenMS itself: find_package(Eigen3 REQUIRED); header-only, so no run dependency.
+        # (Since 3.6.0 find_package(OpenMS) no longer looks for Eigen, see OpenMS#10169.)
+        - eigen >=3.4.0
+      run:
+        - python
+        # Not taken from libopenms' run_exports, see the openms output (conda-build#3478).
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - numpy >=2.0
+        - pandas >=3
+        - matplotlib-base >=3.5
+
+    test:
+      imports:
+        - pyopenms
+      commands:
+        # __version__ comes from the dist-info (importlib.metadata); "0+unknown" means it is missing
+        - python -c "import pyopenms as oms; assert oms.__version__ == '{{ version }}', oms.__version__; print(oms.__version__)"
+        # needs share/OpenMS/CHEMISTRY/unimod.xml, i.e. a working data path of the installed libopenms
+        - python -c "import pyopenms as oms; n = oms.ModificationsDB().getNumberOfModifications(); assert n > 100, n; print(n)"
+        # TODO run the full test suite?
+
+    about:
+      home: "https://github.com/OpenMS/OpenMS"
+      license: "BSD-3-Clause"
+      license_family: BSD
+      license_file: LICENSE
+      summary: "Python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses."
+      dev_url: "https://github.com/OpenMS/OpenMS"
+      doc_url: "https://openms.readthedocs.io/en/latest"
+
 about:
   home: "https://github.com/OpenMS/OpenMS"
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "OpenMS is an open-source software C++ library for LC-MS data management and analyses. The openms-meta package should not be installed. Please use one of its outputs libopenms, openms (=tools) or openms-thirdparty."
+  summary: "OpenMS is an open-source software C++ library for LC-MS data management and analyses. The openms-meta package should not be installed. Please use one of its outputs libopenms, openms (=tools), openms-thirdparty or pyopenms."
   dev_url: "https://github.com/OpenMS/OpenMS"
   doc_url: "https://openms.readthedocs.io/en/latest/index.html"
 
