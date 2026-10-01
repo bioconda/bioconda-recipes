@@ -22,13 +22,13 @@ requirements:
     - cargo-bundle-licenses
 
 test:
-  source_files:
-    - crates/proteus-core/tests/data/1crn.pdb
-    - crates/proteus-core/tests/data/2ptc_EI.pdb
+  # Self-contained: BioContainers re-runs these commands in the bare image, without source files.
+  # Two alanines in chains A and B, 4 Å apart.
   commands:
     - proteus --version
-    - proteus analyze crates/proteus-core/tests/data/1crn.pdb --json | grep -q TTCCPSIVARSNFNVCRLPGTPEAICATYTGCIIIPGATCPGDYAN
-    - proteus analyze crates/proteus-core/tests/data/2ptc_EI.pdb --interface I:E --json | grep -q '"interface_binder":"I"'
+    - printf 'ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00 90.00           N\nATOM      2  CA  ALA A   1       1.458   0.000   0.000  1.00 90.00           C\nATOM      3  C   ALA A   1       2.009   1.420   0.000  1.00 90.00           C\nATOM      4  O   ALA A   1       1.251   2.390   0.000  1.00 90.00           O\nATOM      5  CB  ALA A   1       1.988  -0.773  -1.199  1.00 90.00           C\nATOM      6  N   ALA B   1       4.000  -3.000  -2.000  1.00 90.00           N\nATOM      7  CA  ALA B   1       5.458  -3.000  -2.000  1.00 90.00           C\nATOM      8  C   ALA B   1       6.009  -1.580  -2.000  1.00 90.00           C\nATOM      9  O   ALA B   1       5.251  -0.610  -2.000  1.00 90.00           O\nATOM     10  CB  ALA B   1       4.500  -2.000  -3.000  1.00 90.00           C\nEND\n' > ab.pdb
+    - proteus analyze ab.pdb --json | grep -q '"sequence":"A/A"'
+    - proteus analyze ab.pdb --interface A:B --json | grep -q '"interface_binder":"A"'
 
 about:
   home: https://github.com/OtoYuki/proteus
