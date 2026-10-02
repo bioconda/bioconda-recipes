@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
 export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration"
+# bindgen loads libclang from the build env; clangdev is avoided because on macOS its
+# libLLVM.dylib overwrites the one rustc loads.
+export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 # Make sure bindgen passes on our compiler flags.
 export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
