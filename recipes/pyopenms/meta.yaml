@@ -1,0 +1,97 @@
+{% set name = "pyopenms" %}
+{% set version = "3.6.0" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+{% if "dev" in version %}
+
+source:
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  md5: unused
+{% else %}
+
+source:
+  # Since 3.6.0 releases are tagged v<version> (before: release/<version>); the release/3.6.0 URL is a 404.
+  url: https://github.com/OpenMS/OpenMS/releases/download/v{{ version }}/OpenMS-{{ version }}.tar.gz
+  sha256: 70c7f7afff938634b5e87a7c9f71856a4469ae0e45d66dd50655460dbf6d6535
+  patches:
+    # bind_format.cpp includes OpenMS/FORMAT/BrukerTimsFile.h unconditionally, but libopenms (built with
+    # WITH_OPENTIMS=OFF) does not install that header; the bindings that use it are already guarded.
+    - 0001-bind_format-include-BrukerTimsFile.h-only-with-WITH_OPENTIMS.patch
+{% endif %}
+
+build:
+  number: 0
+  # pyOpenMS requires Python >= 3.11 (requires-python in src/pyOpenMS/pyproject.toml,
+  # find_package(Python 3.11 REQUIRED) in src/pyOpenMS/CMakeLists.txt; OpenMS/OpenMS#10119).
+  skip: true  # [py < 311]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - ninja
+    - cmake >=3.24
+  host:
+    - python
+    # Since 3.6.0 the bindings are nanobind (no Cython/autowrap). CMake takes nanobind from this
+    # interpreter (python -m nanobind --cmake_dir); without it, it git-clones nanobind v3.1.0 and
+    # builds without type stubs. nanobind.stubgen generates the .pyi stubs during the build.
+    - nanobind >=3.1,<4
+    - numpy >=2.0
+    # The stub generation imports the freshly built package during the build.
+    - pandas >=3
+    - matplotlib-base
+    - libopenms =={{ version }}
+    # _arrow_zerocopy links Arrow directly; same major as libopenms
+    - libarrow =23=*_cpu
+    # find_package(OpenMS) needs the Boost headers (find_dependency(Boost) in OpenMSConfig.cmake)
+    - libboost-headers
+    # pyOpenMS itself: find_package(Eigen3 REQUIRED); header-only, so no run dependency.
+    # (Since 3.6.0 find_package(OpenMS) no longer looks for Eigen, see OpenMS#10169.)
+    - eigen >=3.4.0
+  run:
+    - python
+    - libopenms =={{ version }}
+    - numpy >=2.0
+    - pandas >=3
+    - matplotlib-base >=3.5
+
+test:
+  imports:
+    - pyopenms
+  commands:
+    # __version__ comes from the dist-info (importlib.metadata); "0+unknown" means it is missing
+    - python -c "import pyopenms as oms; assert oms.__version__ == '{{ version }}', oms.__version__; print(oms.__version__)"
+    # needs share/OpenMS/CHEMISTRY/unimod.xml, i.e. a working data path of the installed libopenms
+    - python -c "import pyopenms as oms; n = oms.ModificationsDB().getNumberOfModifications(); assert n > 100, n; print(n)"
+    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
+    # TODO run the full test suite?
+
+about:
+  home: "https://github.com/OpenMS/OpenMS"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses."
+  dev_url: "https://github.com/OpenMS/OpenMS"
+  doc_url: "https://openms.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    # linux-aarch64 temporarily skipped: pyopenms 3.5.0 is a heavy build that
+    # repeatedly tripped CircleCI arm.large infrastructure_fail (not a recipe issue;
+    # it builds fine locally within the runner's memory and time budget).
+    # The nanobind build of 3.6.0 may be lighter; re-enable after a trial build.
+    - osx-arm64
+  identifiers:
+    - biotools:openms
+    - doi:10.1038/s41592-024-02197-7
+{% if "dev" in version %}
+  skip-lints:
+    - uses_vcs_url
+{% endif %}

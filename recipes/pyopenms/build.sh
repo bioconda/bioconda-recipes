@@ -14,17 +14,13 @@ if [[ "$CXX" == *gnu-c++* ]]; then
   #export LDFLAGS="-v ${LDFLAGS}"
 fi
 
-# This output script runs once per Python version, in the work directory of the top-level build
-# (build.sh), which conda-build runs only once because the top-level requirements have no python.
-# build/ holds that C++ build tree, which the other outputs install from; pyOpenMS gets its own
-# tree per Python version, so that no CMake cache leaks from one interpreter into the next.
-PYOPENMS_BUILD_DIR="build-pyopenms-py${PY_VER}"
-rm -rf "${PYOPENMS_BUILD_DIR}"
-mkdir "${PYOPENMS_BUILD_DIR}"
-cd "${PYOPENMS_BUILD_DIR}"
+# The 3.6.0 source tarball has no top-level folder and ships an empty build/ directory:
+# a plain "mkdir build" fails under conda-build's errexit.
+mkdir -p build
+cd build
 
 # pyOpenMS 3.6.0 is built with nanobind; src/pyOpenMS is configured standalone against the
-# libopenms output in $PREFIX (find_package(OpenMS)), as the wheel workflow does through py-build-cmake.
+# installed libopenms (find_package(OpenMS)), as the wheel workflow does through py-build-cmake.
 # py-build-cmake itself cannot be used: pyproject.toml asks for py-build-cmake~=0.5.1 (conda-forge
 # has 0.4.3) and for a cp311-abi3 wheel.
 # Set INSTALL_RPATH to PREFIX such that there are no warnings during linkage fixing of conda-build
@@ -74,7 +70,3 @@ echo "conda" > "${SITE_PACKAGES}/${DIST_INFO}/INSTALLER"
   find pyopenms "${DIST_INFO}" -type f ! -name RECORD | LC_ALL=C sort | sed 's/$/,,/'
   echo "${DIST_INFO}/RECORD,,"
 ) > "${SITE_PACKAGES}/${DIST_INFO}/RECORD"
-
-# Every Python version would otherwise leave a full build tree next to the C++ one.
-cd ..
-rm -rf "${PYOPENMS_BUILD_DIR}"
