@@ -1,0 +1,45 @@
+{% set version = "0.2.3" %}
+{% set sha256 = "fd77775f911c7a5657d23d16a8d5b97929394ddf57923943cf70b7bd8cbc8a90" %}
+
+package:
+  name: picardmetrics
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/slowkow/picardmetrics/archive/refs/tags/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('picardmetrics', max_pin='x') }}
+
+requirements:
+  run:
+    - picard
+    - samtools
+    - ucsc-gtftogenepred
+    - filo
+    - perl
+    - coreutils
+
+test:
+  commands:
+    - picardmetrics 2>&1 | grep -q "picardmetrics"
+
+about:
+  home: https://github.com/slowkow/picardmetrics
+  license: MIT
+  license_family: MIT
+  summary: Run Picard tools on BAM files and collate multiple metrics files
+  description: >-
+    picardmetrics runs up to 12 Picard tools on each BAM file and collates
+    all of the output files into a single table with up to 90 different
+    metrics. It also automatically creates the .refFlat and .rRNA.list
+    files required for CollectRnaSeqMetrics.
+  dev_url: https://github.com/slowkow/picardmetrics
+
+extra:
+  recipe-maintainers:
+    - apeltzer
