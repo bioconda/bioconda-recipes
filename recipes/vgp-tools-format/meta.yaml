@@ -1,0 +1,41 @@
+{% set version = "1.0" %}
+
+package:
+  name: vgp-tools-format
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/VGP/vgp-tools/archive/25a3c486f20a6e07821c675f0a66e268c6e713ba.tar.gz
+  sha256: 64dc1efae8764ce404f98e54a1e7c7fdd2c749a2b7c7882fc80df343953a4df4
+  patches: 
+    - vgp-tools.patch
+
+requirements:
+  build: 
+    - {{ compiler("c") }}
+    - make
+  host:
+    - htslib
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+
+test:
+  commands:
+    - VGPzip 2>&1 | grep Usage > /dev/null
+    - VGPseq -v 2>&1 | grep Usage > /dev/null
+    - VGPpair -v 2>&1 | grep Usage > /dev/null
+    - VGPpacbio -v 2>&1 | grep Usage > /dev/null
+    - VGPcloud -v 2>&1 | grep Usage > /dev/null
+    - Dazz2pbr -v 2>&1 | grep Usage > /dev/null
+    - Dazz2sxs -v 2>&1 | grep Usage > /dev/null
+
+about:
+    home: https://github.com/VGP/vgp-tools/tree/master/VGP
+    license: BSD-3
+    license_file: LICENSE
+    summary: These command line tools are used for importing and operating on data in VGP-formats.
