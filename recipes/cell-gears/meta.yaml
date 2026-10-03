@@ -1,0 +1,53 @@
+{% set name = "cell-gears" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/cell-gears-{{ version }}.tar.gz
+  sha256: 11b8a180b0af7fa797999c0272a5f1c39f5e89bb6d09b784df5cd2b892507959
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("cell-gears", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=38.6.0
+    - pip
+  run:
+    - python
+    - numpy
+    - pandas
+    - tqdm
+    - scikit-learn
+    - pytorch
+    - scanpy
+    - networkx
+    - dcor
+
+test:
+  imports:
+    - gears
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snap-stanford/GEARS
+  summary: GEARS
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1038/s41587-023-01905-6
+  recipe-maintainers:
+    - jdblischak
