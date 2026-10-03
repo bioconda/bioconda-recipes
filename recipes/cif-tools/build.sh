@@ -12,11 +12,6 @@ else
   export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 fi
 
-sed -i '
-/find_package(cifpp 9\.0\.5 QUIET)/i\
-find_package(FastFloat CONFIG QUIET)\n
-' CMakeLists.txt
-
 cmake -S . -B build -G Ninja \
   ${CMAKE_ARGS} \
   -DCMAKE_PREFIX_PATH="${PREFIX}" \
