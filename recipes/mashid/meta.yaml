@@ -1,0 +1,53 @@
+# Bioconda recipe. The sha256 is that of the GitHub tarball for tag v{{ version }}
+# (curl -sL <url> | sha256sum). To publish, copy this folder to
+# bioconda-recipes/recipes/mashid and open a pull request. For a new release: tag it,
+# bump `version`, recompute the sha256 and reset `number` to 0.
+{% set name = "mashid" %}
+{% set version = "0.2.8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/mashID/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: aae1e169517b5b07cc5fc3f43fe6ee2221bdefe952fd21e093bc42e43a90763d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - mashID = mashid.cli:main
+    - make_mashID_db = mashid.makedb:main
+    - mashID_download_db = mashid.download_cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - mash >=2.3
+    - python-isal
+
+test:
+  commands:
+    - mashID --help
+    - make_mashID_db --help
+    - mashID_download_db --help
+
+about:
+  home: https://github.com/duceppemo/mashID
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Identify organisms from genome assemblies or raw reads using Mash
+  dev_url: https://github.com/duceppemo/mashID
+
+extra:
+  recipe-maintainers:
+    - duceppemo
