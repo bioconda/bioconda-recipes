@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-#Note: bioconda's mulled-test part of the build is peculiar in that 
+#Note: bioconda's mulled-build-and-test part of the build is peculiar in that 
 #it runs tests without installing the test.requires to make sure the
 #package installation is meaningful with only the things referenced 
 #in requirements.run . This means that any tests listed in test.commands
