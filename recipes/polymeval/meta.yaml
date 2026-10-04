@@ -1,0 +1,46 @@
+{% set name = "polymeval" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/casparbein/polymeval/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b642477353c6016bd95185e8e94bc60d014ab59ee95111fe9ed109e3de352770
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - polymeval = polymeval.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - ruamel.yaml >=0.18
+    - snakemake >=9.0
+    - snakemake-executor-plugin-slurm
+
+test:
+  commands:
+    - polymeval --help
+    - polymeval --version
+
+about:
+  home: https://github.com/casparbein/polymeval
+  license: MIT
+  license_file: LICENSE
+  summary: "Snakemake pipeline to (1) evaluate polymerase-amplified PacBio HiFi read sets or (2) benchmark HG002 PacBio HiFi reads for SNP/InDel/TR/SV calling against various gold standard ground truths."
+  dev_url: https://github.com/casparbein/polymeval
+
+extra:
+  recipe-maintainers:
+    - casparbein
