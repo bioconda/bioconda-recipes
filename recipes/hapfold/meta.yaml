@@ -1,4 +1,4 @@
-{% set version = "0.2.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: hapfold
@@ -6,12 +6,15 @@ package:
 
 source:
   url: https://github.com/LuoGroup2023/HapFold/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 898f81ca452fa2954bed369b1dfa763b522ba721ef998bc71cd695b760827004
+  sha256: 1447de36ccc75f1b089f707702fba26c16a65bc8a4995dafcaa79b1982d12810
+  patches:
+    - fix-conda-flags.patch
+
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
   run_exports:
-    - {{ pin_subpackage('hapfold', max_pin="x.x") }}
+    - {{ pin_subpackage('hapfold', max_pin="x") }}
+
 requirements:
   build:
     - make
@@ -20,18 +23,23 @@ requirements:
     - {{ stdlib('c') }}
   host:
     - zlib
-  run:
-    - zlib
+
 test:
   commands:
     - HapFold 2>&1 | grep 'Usage'
 
 about:
-  home: https://github.com/LuoGroup2023/HapFold
+  home: "https://github.com/LuoGroup2023/HapFold"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: 'Efficient and Accurate Chromosome-Scale Haplotype Reconstruction.'
-  dev_url: https://github.com/LuoGroup2023/HapFold
-  doc_url: https://github.com/LuoGroup2023/HapFold
+  summary: "Haplotype-aware assembly and T2T-level scaffolding for diploid genomes."
+  dev_url: "https://github.com/LuoGroup2023/HapFold"
+  doc_url: "https://github.com/LuoGroup2023/HapFold"
 
+extra:
+  recipe-maintainers:
+    - Yichen-HNU
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
