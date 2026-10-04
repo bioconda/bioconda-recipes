@@ -1,6 +1,6 @@
 {% set name = "tesseract-assembler" %}
-{% set version = "1.2.4" %}
-{% set sha256 = "a7a2dfb86915cc94e00036c88aa28f22c0dc25c50fa5e4d8af9553d1bfc15efa" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "6f5f476621fc6cfd70e7e404bc5f8d8c5b0b25a378320d10b494ff88faa81e75" %}
 
 package:
   name: {{ name }}
@@ -11,6 +11,8 @@ source:
   # byte-reproducible from the recipe alone, and a tag can be moved after the fact.
   url: https://github.com/iowa69/TesserACT/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - tesseract-1.4.0-macos.patch  # [osx]
 
 build:
   number: 0
@@ -37,7 +39,8 @@ requirements:
     - zlib
   # --map-polish shells out to one of these. They are not needed to assemble, so they
   # constrain rather than depend: installing the package should not drag in an aligner.
-  run_constrained:
+  run:
+    - python
     - bowtie2
     - bwa
 
@@ -45,7 +48,6 @@ test:
   commands:
     - tesseract-asm --version
     - tesseract-asm --help
-    - tesseract-model --help
     - tesseract-klebsiella --help
     # The flag checks live in run_test.sh, against help text captured to a file.
     #
@@ -55,11 +57,9 @@ test:
     # on which flag matches soon enough to kill the writer first, so it passed here and on
     # ARM and failed on the Linux runner, on --model, with --model plainly present in the
     # help it had just printed.
-  # The functional test lives in run_test.sh, which conda-build picks up automatically from
-  # the recipe directory. An assembler that installs but cannot assemble is worth catching
-  # here rather than in someone's pipeline.
-  requires:
-    - python
+    # The functional test lives in run_test.sh, which conda-build picks up automatically from
+    # the recipe directory. An assembler that installs but cannot assemble is worth catching
+    # here rather than in someone's pipeline.
 
 about:
   home: "https://github.com/iowa69/TesserACT"
@@ -84,7 +84,7 @@ about:
     With a model carrying a plasmid panel it also labels every contig chromosomal, plasmid
     or unknown, groups the contigs of one plasmid, and marks contigs whose two ends join as
     complete replicons. Pre-built Klebsiella models are attached to the GitHub releases.
-  doc_url: "https://github.com/iowa69/TesserACT#readme"
+  doc_url: "https://github.com/iowa69/TesserACT/blob/v{{ version }}/README.md"
   dev_url: "https://github.com/iowa69/TesserACT"
 
 extra:

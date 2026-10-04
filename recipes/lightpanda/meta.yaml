@@ -1,0 +1,58 @@
+{% set name = "lightpanda" %}
+{% set version = "0.3.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/lightpanda-io/browser/releases/download/{{ version }}/lightpanda-x86_64-linux  # [linux and x86_64]
+    sha256: 895339b02205171a181dde743ae0068bb4564884076feac8482baca9c212aa5a  # [linux and x86_64]
+  - url: https://github.com/lightpanda-io/browser/releases/download/{{ version }}/lightpanda-aarch64-linux  # [linux and aarch64]
+    sha256: 4c0ecb28b4fcfb6d5bce82ec86e15fc6cde89cea168cf3840494f0ee26755852  # [linux and aarch64]
+  - url: https://github.com/lightpanda-io/browser/releases/download/{{ version }}/lightpanda-x86_64-macos  # [osx and x86_64]
+    sha256: 5e118b6e91c2cccb1ce7f0d34fc39dab262b947e4dea29a90b1a75b9399d7862  # [osx and x86_64]
+  - url: https://github.com/lightpanda-io/browser/releases/download/{{ version }}/lightpanda-aarch64-macos  # [osx and arm64]
+    sha256: ae99542d81af23087296ec037abb0d57a57002502f5ff4c1b0b05dfa484b79b8  # [osx and arm64]
+  - url: https://raw.githubusercontent.com/lightpanda-io/browser/refs/tags/{{ version }}/LICENSE
+    sha256: 8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef
+
+build:
+  number: 0
+  skip: true  # [win]
+  binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage("lightpanda", max_pin="x.x") }}
+
+
+test:
+  commands:
+    - test -x "${PREFIX}/bin/lightpanda"  # [linux]
+    - lightpanda version  # [osx]
+    - lightpanda --help  # [osx]
+
+about:
+  home: https://lightpanda.io
+  dev_url: https://github.com/lightpanda-io/browser
+  doc_url: https://lightpanda.io/docs/
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: Headless browser designed for AI agents and automation
+  description: |
+    Lightpanda is a headless browser designed for AI agents and automation.
+    This recipe packages the official stable release binaries published by
+    the upstream project for Linux and macOS.
+
+extra:
+  notes: |
+    The Linux release binaries require glibc >=2.34 on linux-64 and
+    glibc >=2.38 on linux-aarch64. Bioconda's Linux CI image uses
+    CentOS 7 with glibc 2.17, so Linux tests verify installation only.
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - pentamorfico
+  skip-lints:
+    - should_be_noarch_generic
