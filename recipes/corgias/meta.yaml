@@ -1,0 +1,52 @@
+{% set name = "corgias" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f0f9f1dcc51815547c6d8077bfbd76815bcd903bdaf4685c3c81b7c41efcc236
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - corgias = corgias.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - hatchling
+  run:
+    - python >=3.10,<3.13
+    - ete3
+    - pastml
+    - polars >=1.26.0
+    - pyarrow >=19.0.1
+    - scipy >=1.7.0
+    - statsmodels >=0.14.4
+    - tqdm >=4.0.0
+
+test:
+  imports:
+    - corgias
+  commands:
+    - corgias --help
+
+about:
+  home: https://github.com/ynishimuraLv/corgias
+  summary: "Phylogenetic profiling tool for identifying co- and anti-correlated orthologs in large-scale prokaryotic genome datasets"
+  license: GPL-3.0-only
+  license_file: LICENSE
+  dev_url: https://github.com/ynishimuraLv/corgias
+  doc_url: https://github.com/ynishimuraLv/corgias
+
+extra:
+  recipe-maintainers:
+    - ynishimuraLv
