@@ -1,23 +1,26 @@
-{% set version = "0.2.1" %}
-{% set sha256 = "be96056e0e44137007a4c44b86068c67cac9309d653543cd67a4ac837e3022e0" %}
+{% set version = "0.2.2" %}
+{% set sha256 = "6f396495dbb7fae281e60e0b83bdda9b25c3b029453da3aa089bd43f5dd15b21" %}
 
 package:
   name: helperlibs
   version: '{{ version }}'
 
 source:
-  url: https://github.com/kblin/bioinf-helperlibs/archive/release-0-2-1.tar.gz
+  url: https://github.com/kblin/bioinf-helperlibs/archive/release-{{ version.replace('.', '-') }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   noarch: python
   number: 0
-  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  script: $PYTHON -m pip install --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vvv .
+  run_exports:
+    - {{ pin_subpackage('helperlibs', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
+    - setuptools
   run:
     - python >=3.6
     - biopython >=1.76
@@ -35,4 +38,5 @@ about:
   home: https://github.com/kblin/bioinf-helperlibs
   license: GPL-3.0
   license_family: GPL
+  license_file: LICENSE.txt
   summary: A collection of bioinformatics-related helper functions
