@@ -11,7 +11,10 @@ source:
 
 build:
   number: 6
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -40,6 +43,7 @@ about:
   license_file: LICENSE
   summary: "Python interface for the seq-align C library."
   dev_url: "https://github.com/Lioscro/pyseq-align"
+  doc_url: "https://github.com/Lioscro/pyseq-align/blob/v{{ version }}/README.md"
 
 extra:
   additional-platforms:
