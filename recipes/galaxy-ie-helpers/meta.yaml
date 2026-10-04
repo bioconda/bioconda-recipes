@@ -1,37 +1,48 @@
+{% set name = "galaxy-ie-helpers" %}
+{% set version = "0.3.0" %}
+
 package:
-  name: galaxy-ie-helpers
-  version: "0.3.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/f5/f2/439eabe51dd7c54f5d832963d44b77124b3511f65791ac3da6b12c35a170/galaxy_ie_helpers-0.3.0.tar.gz
+  url: https://files.pythonhosted.org/packages/source/g/galaxy-ie-helpers/galaxy_ie_helpers-{{ version }}.tar.gz
   sha256: 20ae6e187f42c96cc29022b540618cd3bb58a999cec7927836e3c0860be60c55
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - get = galaxy_ie_helpers.cli:get
+    - put = galaxy_ie_helpers.cli:put
+    - get_user_history = galaxy_ie_helpers.cli:get_user_history
+    - gx-get = galaxy_ie_helpers.cli:get
+    - gx-put = galaxy_ie_helpers.cli:put
+    - gx-get-user-history = galaxy_ie_helpers.cli:get_user_history
   run_exports:
-    - {{ pin_subpackage("galaxy-ie-helpers", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.10
     - setuptools
-    - bioblend
-
+    - pip
   run:
-    - python
+    - python >=3.10
     - bioblend
 
 test:
   imports:
     - galaxy_ie_helpers
-
   commands:
     - put --help
     - get --help
 
 about:
-  home: https://github.com/bgruening/galaxy_ie_helpers
+  home: "https://github.com/bgruening/galaxy_ie_helpers"
   license: MIT
-  summary: "Helper scripts to work with Galaxy's Interactive Environments"
   license_family: MIT
+  license_file: LICENSE
+  summary: "Helper scripts to work with Galaxy's Interactive Environments."
+  dev_url: "https://github.com/bgruening/galaxy_ie_helpers"
