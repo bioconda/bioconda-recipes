@@ -1,35 +1,39 @@
 {% set name = "grapetree" %}
-{% set version = "2.1" %}
+{% set version = "3.0.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: b68985a2bdbe8353f9657ce3bd5b42be67c3c28e972d6fa390d12a0f19ff8b74
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8d73dcde3a8bd5152065c428a89ca380b7a7d3affeff8dc4310fcfa8bf50733a
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - grapetree = grapetree.grapetree:main
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+    - grapetree = grapetree.cli:main
+    - MSTrees.py = grapetree.module.MSTrees:main
+  script: {{ PYTHON }} -m pip install . -vvv --no-build-isolation --no-cache-dir --no-deps
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.10
+    - hatchling >=1.26
     - pip
-    - python
   run:
+    - python >=3.10
     - ete3
     - flask
     - networkx
-    - numba
     - numpy
-    - psutil
     - pandas
+    - psutil
     - requests
-    - python
+    - legacy-cgi  # [py >= 313]
     - unidecode
  
 test:
@@ -40,11 +44,15 @@ test:
 
 about:
   home: "https://github.com/achtman-lab/GrapeTree"
-  license: "GNU General Public v3 (GPLv3)"
+  license: "GPL-3.0-only"
   license_family: GPL3
   license_file: LICENSE 
   summary: "Web interface of GrapeTree, which is a program for phylogenetic analysis."
+  dev_url: "https://github.com/achtman-lab/GrapeTree"
+  doc_url: "https://enterobase.readthedocs.io/en/latest/grapetree/grapetree-about.html"
 
 extra:
   recipe-maintainers:
     - simonhtausch
+  identifiers:
+    - doi:10.1101/gr.232397.117
