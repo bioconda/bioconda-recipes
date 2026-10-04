@@ -1,0 +1,76 @@
+{% set name = "baysor-cpp" %}
+{% set version = "0.8.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/kharchenkolab/Baysor/archive/refs/tags/cpp-{{ version }}.tar.gz
+    sha256: 7ea3997388898cabd095df39faa8cb30551516a3c37eb010f99f29056aff0b9f
+  - url: https://github.com/LTLA/aarand/archive/refs/tags/v1.0.2.tar.gz
+    sha256: 106309082292356d5ae546c24bbd2295416aaff378755ec1f1645207fce10323
+    folder: third_party/aarand
+  - url: https://github.com/LTLA/CppKmeans/archive/refs/tags/v3.1.1.tar.gz
+    sha256: 3895fe98e16c7c20a2f0a4d07706bdb3f4e8546e55c1e83e912ad8e1c8e24067
+    folder: third_party/kmeans
+  - url: https://github.com/LTLA/subpar/archive/refs/tags/v0.3.1.tar.gz
+    sha256: dc9c450be5176a05ce697c6feadbdd84d1fe530e414d1e0d2837e89174ecc1de
+    folder: third_party/subpar
+  - url: https://github.com/knncolle/knncolle/archive/refs/tags/v2.3.0.tar.gz
+    sha256: 25a87e56d037fec491b55a39807f58c6466766200d34b6e3f54c5c2b771dddca
+    folder: third_party/knncolle
+  - url: https://github.com/LTLA/CppIrlba/archive/refs/tags/v2.0.2.tar.gz
+    sha256: c5daed5bdaf5991f324e1081f7c180c2fecc0da5bf0f60af057547d28fa56127
+    folder: third_party/irlba
+  - url: https://github.com/LTLA/umappp/archive/refs/tags/v2.0.1.tar.gz
+    sha256: e846b6bac2bb4e5020d76e739b792a492ed63fc27cc45bd27be238053675b5f6
+    folder: third_party/umappp
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.24
+    - ninja
+  host:
+    - eigen
+    - spdlog
+    - fmt
+    - cgal-cpp
+    - libboost-headers
+    - gmp
+    - mpfr
+    - libarrow
+    - libparquet
+    - hdf5
+    - nlohmann_json
+    - libtiff
+    - llvm-openmp  # [osx]
+  run:
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - baysor --help
+    - baysor run --help
+
+about:
+  home: https://github.com/kharchenkolab/Baysor
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Bayesian segmentation of imaging-based spatial transcriptomics data (C++ implementation)
+  doc_url: https://kharchenkolab.github.io/Baysor/dev/
+  dev_url: https://github.com/kharchenkolab/Baysor
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
