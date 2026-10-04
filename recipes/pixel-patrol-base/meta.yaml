@@ -1,0 +1,84 @@
+{% set name = "pixel-patrol-base" %}
+{% set version = "0.9.2" %}
+{% set python_min = "3.12" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pixel_patrol_base-{{ version }}.tar.gz
+  sha256: b4ac0f9d3a184c420271268bec661f3dfc7d00c6744327ebb656706364cce8af
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - pixel-patrol = pixel_patrol_base.cli:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling <1.27
+  run:
+    - python >={{ python_min }}
+    - click >=8.2.1
+    - packaging >=21.0
+    - matplotlib-base >=3.10.3 
+    - numpy
+    - polars >=1.33.0
+    - pyarrow >=21.0.0
+    - pyyaml >=6.0.2
+    - statsmodels >=0.14.4
+    - dask-core >=2025.5.1
+    - distributed >=2025.5.1
+    - python-duckdb >=1.2.0
+    - psutil >=6.0.0
+    - tqdm >=4.67.1
+    - yaspin >=3.4.0
+
+test:
+  source_files:
+    - tests
+    - pyproject.toml
+  imports:
+    - pixel_patrol_base
+    - pixel_patrol_base.cli
+    - pixel_patrol_base.api
+    - pixel_patrol_base.core.processing
+    - pixel_patrol_base.plugin_registry
+    - pixel_patrol_base.viewer_extensions
+  requires:
+    - python {{ python_min }}
+    - pip
+    - pytest >=8.3.5
+    - pytest-mock >=3.14.1
+  commands:
+    - pip check
+    - pixel-patrol --help
+    - pixel-patrol --version
+
+about:
+  home: https://ida-mdc.github.io/pixel-patrol/
+  dev_url: https://github.com/ida-mdc/pixel-patrol
+  doc_url: https://ida-mdc.github.io/pixel-patrol/
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - src/pixel_patrol_base/viewer_dist/LICENSES.txt 
+  summary: Image prevalidation tool for bioimage datasets
+  description: |
+    PixelPatrol scans image collections, extracts file- and pixel-level
+    metadata into a Parquet table and presents it as an interactive web
+    report, helping to spot problems in bioimage datasets before analysis.
+    This is the base package providing the CLI, processing pipeline,
+    plugin registry and the pre-built web viewer.
+
+extra:
+  recipe-maintainers:
+    - rmassei
