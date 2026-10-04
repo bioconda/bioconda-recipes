@@ -1,0 +1,60 @@
+{% set name = "methunmix" %}
+{% set version = "2.0.0rc2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Zhangmochen-zmc/MethUnmix/releases/download/v{{ version }}/methunmix-{{ version }}.tar.gz
+  # This digest is for the immutable GitHub Release-attached RC artifact.
+  # A changed archive requires a new release and a new audited source binding.
+  sha256: f92e609526ea12a28f472f2a7054932c52eb188ca26de2f7fa80764fe3ec559f
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - methunmix = demethflow_core.cli:main
+    - demethflow = demethflow_core.legacy:main
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10,<3.14
+    - nextflow >=26.04.4,<26.05
+    - openjdk >=17,<18
+
+test:
+  commands:
+    - methunmix --version
+    - methunmix --help
+    - methunmix doctor --help
+    - methunmix asset --help
+    - methunmix asset list
+    - demethflow --version
+
+about:
+  home: https://github.com/Zhangmochen-zmc/MethUnmix
+  license: MIT
+  license_file: LICENSE
+  summary: Offline DNA methylation deconvolution workflow
+  description: |
+    MethUnmix is the successor to DeMethFlow. Large references, models,
+    containers and genome caches are installed as explicit external assets.
+  dev_url: https://github.com/Zhangmochen-zmc/MethUnmix
+
+extra:
+  recipe-maintainers:
+    - Zhangmochen-zmc
+  notes: |
+    Complete workflow execution is validated on Linux x86_64. Runtime assets
+    are not bundled in this Conda package. The RC source checksum is bound to
+    the immutable Release asset and must be changed only for a new audited
+    release artifact.
