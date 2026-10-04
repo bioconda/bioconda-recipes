@@ -1,0 +1,55 @@
+{% set name = "fast-beagle" %}
+{% set version = "5.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/michael-denyer/fast-beagle-5.5/releases/download/v{{ version }}/fast-beagle-{{ version }}.tar.gz
+  sha256: ab36c1ad80bcfa0f11030607766ed340c3ea57324cbbcdd02104c1362fc05be8
+
+build:
+  number: 0
+  run_exports:
+    # The minor version is the Beagle edition (5.4, 5.5), whose output differs.
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - htslib
+
+test:
+  requires:
+    - htslib
+  commands:
+    - 'printf ''##fileformat=VCFv4.2\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tA\tB\tC\tD\n'' > t.vcf'
+    - 'for p in 100 200 300 400 500 600 700 800; do printf ''1\t%s\t.\tA\tC\t.\tPASS\t.\tGT\t0/1\t1/1\t0/0\t0/1\n'' "$p" >> t.vcf; done'
+    - fast-beagle gt=t.vcf out=t nthreads=2
+    - test "$(bgzip -dc t.vcf.gz | grep -vc '^#')" = 8
+    - bgzip -dc t.vcf.gz | grep -v '^#' | cut -f10- | grep -c / | grep -qx 0
+
+about:
+  home: https://github.com/michael-denyer/fast-beagle-5.5
+  dev_url: https://github.com/michael-denyer/fast-beagle-5.5
+  doc_url: https://github.com/michael-denyer/fast-beagle-5.5/blob/main/docs/usage.md
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: C port of Beagle 5.5 phasing and imputation with byte-identical output
+  description: |
+    fast-beagle is a standalone C port of Beagle 5.5 (27Feb25), the genotype
+    phasing and imputation tool. Its output is byte-identical to the Java
+    release run with the same nthreads=. It installs as fast-beagle and takes
+    Beagle's key=value arguments.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - michael-denyer
