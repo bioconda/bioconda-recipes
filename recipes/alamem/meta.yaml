@@ -1,0 +1,44 @@
+{% set name = "alamem" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yunwilliamyu/alamem/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 850fa58a621a6ed19fa91441d0e8610c3db031c63f726f29b9ff72183b53cb74
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}   # needed for mimalloc's C sources
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - alamem --help
+    - alamem --version
+
+about:
+  home: https://github.com/yunwilliamyu/alamem
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Approximate local alignment via MEM chaining without base-level extension (similar in scope to BLAT).
+  dev_url: https://github.com/yunwilliamyu/alamem
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - yunwilliamyu
