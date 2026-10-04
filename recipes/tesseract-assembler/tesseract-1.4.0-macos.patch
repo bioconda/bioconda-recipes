@@ -1,5 +1,5 @@
 diff --git a/src/dev_fork_batch.cpp b/src/dev_fork_batch.cpp
-index fb7ba64..ef2d4df 100644
+index fb7ba64..9d27224 100644
 --- a/src/dev_fork_batch.cpp
 +++ b/src/dev_fork_batch.cpp
 @@ -18,7 +18,9 @@
@@ -12,9 +12,37 @@ index fb7ba64..ef2d4df 100644
  #include <sys/resource.h>
  #include <sys/stat.h>
  #include <sys/types.h>
-@@ -283,7 +285,12 @@ ForkBatch::Entry ForkBatch::enter(AssemblyOptions& o,const UnitigGraph& graph,co
-             ::sigaddset(&childUnblock, SIGINT);
-             ::sigaddset(&childUnblock, SIGTERM);
+@@ -27,6 +29,11 @@
+ #include <time.h>
+ #include <unistd.h>
+ 
++#ifdef __APPLE__
++// macOS headers do not declare environ (POSIX leaves it to the program).
++extern char** environ;
++#endif
++
+ namespace ts { namespace dev { namespace {
+ const std::array<const char*, 7> flags = {{
+     "TESSERACT_ROUTE_DISTANCE", "TESSERACT_WEIGHTED_RESOLVER_COVERAGE",
+@@ -156,7 +163,7 @@ bool safeSignalState(std::string& error) {
+     }
+     sigset_t mask;
+     if (::sigprocmask(SIG_SETMASK, nullptr, &mask) != 0 ||
+-        ::sigismember(&mask, SIGINT) || ::sigismember(&mask, SIGTERM)) {
++        sigismember(&mask, SIGINT) || sigismember(&mask, SIGTERM)) {
+         error = "developer fork requires unblocked SIGINT and SIGTERM";
+         return false;
+     }
+@@ -279,11 +286,16 @@ ForkBatch::Entry ForkBatch::enter(AssemblyOptions& o,const UnitigGraph& graph,co
+             if (sigaction(SIGINT, &childDefault, nullptr) != 0 ||
+                 sigaction(SIGTERM, &childDefault, nullptr) != 0) ::_exit(125);
+             sigset_t childUnblock;
+-            ::sigemptyset(&childUnblock);
+-            ::sigaddset(&childUnblock, SIGINT);
+-            ::sigaddset(&childUnblock, SIGTERM);
++            sigemptyset(&childUnblock);
++            sigaddset(&childUnblock, SIGINT);
++            sigaddset(&childUnblock, SIGTERM);
              if (::sigprocmask(SIG_UNBLOCK, &childUnblock, nullptr) != 0) ::_exit(125);
 +#ifdef __linux__
              if(::prctl(PR_SET_PDEATHSIG,SIGTERM)!=0||::getppid()!=parentPid_)::_exit(125);
@@ -25,6 +53,22 @@ index fb7ba64..ef2d4df 100644
              int log=::open((dir+"/diagnostic.log").c_str(),O_CREAT|O_EXCL|O_WRONLY,0644);
              if(log<0||::dup2(log,STDOUT_FILENO)<0||::dup2(log,STDERR_FILENO)<0)::_exit(125);
              if(log>STDERR_FILENO)::close(log);
+diff --git a/src/envflags.cpp b/src/envflags.cpp
+index d1fad0d..ba5d478 100644
+--- a/src/envflags.cpp
++++ b/src/envflags.cpp
+@@ -12,6 +12,11 @@
+ #include <vector>
+ #include <unistd.h>
+ 
++#ifdef __APPLE__
++// macOS headers do not declare environ (POSIX leaves it to the program).
++extern char** environ;
++#endif
++
+ namespace ts { namespace env {
+ namespace {
+ 
 diff --git a/src/util.cpp b/src/util.cpp
 index bd4ce7c..20d9286 100644
 --- a/src/util.cpp
