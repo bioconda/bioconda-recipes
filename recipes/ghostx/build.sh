@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -xe
 
+export CFLAGS="${CFLAGS} -O3"
+
 mkdir -p "$PREFIX/bin"
 
 cd src
