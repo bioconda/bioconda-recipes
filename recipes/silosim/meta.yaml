@@ -1,0 +1,62 @@
+{% set name = "silosim" %}
+{% set version = "0.1.3" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/microbialARC/SILOSim/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f86e94eef78fc3a2be447c12ca912d7d125975b466c874d1522ff00c18c2058d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - silosim = silosim.bin.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=62.3
+  run:
+    - python >={{ python_min }}
+    - snakemake-minimal >=9.0,<10
+    - pandas >=2.0
+    - pyyaml >=6.0
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - silosim
+  commands:
+    - silosim --help
+    - silosim --version
+
+about:
+  home: https://github.com/microbialARC/SILOSim
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Profiles per-site bacterial genome variability and simulates bacterial genome evolution.
+  description: |
+    SILOSim profiles per-site variability of a bacterial genome against closely related
+    genomes, inferring substitution entropy and mobile genetic elements, and uses these
+    empirical profiles to simulate genome evolution along a time-scale phylogeny with
+    weighted substitution, recombination, and gene gain and loss. This package installs the
+    command-line interface and the Snakemake workflows; tool environments (Bakta, WhatsGNU,
+    NCBI Datasets, FastANI, MUMmer4, snp-dists and R packages) are created by Snakemake on first use.
+  dev_url: https://github.com/microbialARC/SILOSim
+  doc_url: https://github.com/microbialARC/SILOSim/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - qianxuans
+  notes: |
+    Tool environments are built by Snakemake on the first run, so the first run needs internet access. SILOSim runs on Linux; the profiler with public query genomes needs at least 40 GB of RAM.
