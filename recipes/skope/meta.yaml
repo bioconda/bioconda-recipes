@@ -1,0 +1,54 @@
+{% set name = "skope" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bede/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: dc1b37e00ab19d2279dd176d134f10401f566c61945d35f998d063a2d0c17ced
+
+build:
+  number: 0
+  script:
+    # The default config.toml has target-cpu=native,
+    # but we don't want that for portable CI builds.
+    # Instead, use x86-64-v3 for x64, apple-m1 for macos,
+    # and the default otherwise.
+    - mv .cargo/config-portable.toml .cargo/config.toml
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --no-track --locked --verbose --root "${PREFIX}" --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - skope --version
+
+about:
+  home: "https://github.com/bede/skope"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Accelerated genome containment and abundance estimation."
+  dev_url: "https://github.com/bede/skope"
+  doc_url: "https://github.com/bede/skope/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - bede
+  identifiers:
+    - doi:10.64898/2026.05.18.26353500
