@@ -1,0 +1,48 @@
+{% set name = "Perseus" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/matnguyen/Perseus/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fb37e5a0e1f75551143e904411f6f0e51bef8b2db3d672bd9bb2a82664796d82
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  script: |
+    {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.10,<3.13
+    - numpy
+    - pandas
+    - pytorch
+    - scikit-learn
+    - ete3
+    - pyarrow
+    - alive-progress
+
+test:
+  commands:
+    - perseus -h
+
+about:
+  home: https://github.com/matnguyen/Perseus
+  summary: "Perseus: Lineage-aware Kraken2 refinement for long-read metagenomics"
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - matnguyen

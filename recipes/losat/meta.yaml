@@ -1,0 +1,53 @@
+{% set name = "losat" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/satoshikawato/LOSAT/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: dc5ab9a34ec419f412892e9464f6947d6b57224e4691df8f8d558fe7371aadaf
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - test -x "${PREFIX}/bin/losat"
+    - losat --version
+    - losat --help
+    - losat blastp --help
+    - losat blastn --help
+    - losat tblastx --help
+
+about:
+  home: https://github.com/satoshikawato/LOSAT
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: BLAST-compatible local sequence alignment tool implemented in Rust
+  description: |
+    LOSAT is a Rust implementation of BLAST-compatible local sequence alignment
+    focused on certified local query/subject profiles for BLASTN, BLASTP, and
+    TBLASTX. NCBI BLAST+ is a validation oracle only and is not a LOSAT runtime
+    or build dependency.
+  dev_url: https://github.com/satoshikawato/LOSAT
+  doc_url: https://github.com/satoshikawato/LOSAT/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - satoshikawato
