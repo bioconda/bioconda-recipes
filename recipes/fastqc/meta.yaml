@@ -1,27 +1,32 @@
-{% set name = "fastqc" %}
-{% set version = "0.12.1" %}
+{% set name = "FastQC" %}
+{% set version = "0.13.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip
-  sha256: 5f4dba8780231a25a6b8e11ab2c238601920c9704caa5458d9de559575d58aa7
+  url: https://github.com/s-andrews/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 68c1c84775ee9e7ec41cf45ba770f217d17d5d377c3fcad13b5b4389c483e69f
 
 build:
   noarch: generic
   detect_binary_files_with_prefix: true
   number: 0
+  run_exports:
+    - {{ pin_subpackage('fastqc', max_pin="x.x") }}
 
 requirements:
+  build:
+    - ant >=1.10.0
+    - openjdk >=8.0.144
   run:
     # Enforce a version requirement on openjdk to ensure
     # it comes from the conda-forge channel and not default.
     # Many yaks were shaved to bring us this information.
     # Version number reference: https://github.com/conda/conda/issues/6948#issuecomment-369360906
     - openjdk >=8.0.144
-    - perl
+    - python >=3
     - fontconfig
     - font-ttf-dejavu-sans-mono
     - xz =5
@@ -34,9 +39,10 @@ test:
 about:
   home: 'http://www.bioinformatics.babraham.ac.uk/projects/fastqc/'
   license: GPL >=3
+  license_file: LICENSE
   summary: 'A quality control tool for high throughput sequence data.'
 
 extra:
   identifiers:
-    - biotools:{{ name }}
-    - usegalaxy-eu:{{ name }}
+    - biotools:{{ name|lower }}
+    - usegalaxy-eu:{{ name|lower }}
