@@ -2,27 +2,34 @@
 {% set version = "1.2.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/piaso-tools/piaso_tools-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/p/piaso-tools/piaso_tools-{{ version }}.tar.gz
   sha256: e3acbde5f1f733929de54d59c652648f61e7bf38c01f31ff45e3a0bfc3069303
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  skip: True  # [py < 39]
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('piaso', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}      # rusqlite (bundled SQLite) and zstd compile C code
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   host:
-    - python >=3.9
+    - python
     - pip
     - maturin >=1.0,<2
   run:
-    - python >=3.9
+    - python
     - anndata >=0.8
     - scanpy >=1.9.1
     - cosg >=1.1.2
@@ -30,7 +37,7 @@ requirements:
     - matplotlib-base >=3.5.2
     - pandas >=1.4.4
     - scipy >=1.7.3
-    - seaborn >=0.11.2
+    - seaborn-base >=0.11.2
     - scikit-learn >=1.1
     - statsmodels >=0.13.2
     - tqdm
@@ -40,26 +47,32 @@ requirements:
     - zstandard
     - h5py
     - umap-learn >=0.5.8
-    - igraph >=0.10
-    - cytome >=0.3.3,<1
+    - python-igraph >=0.10
+    - cytome >=0.3.6,<1
 
 test:
   imports:
     - piaso
+    - piaso._piaso
 
 about:
-  home: https://piaso.org
-  license: BSD-3-Clause
+  home: "https://piaso.org"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "PIASO: Precise Integrative Analysis of Single-cell Omics"
+  summary: "PIASO: Precise Integrative Analysis of Single-cell Omics."
   description: |
     PIASO is a Python toolkit for precise integrative analysis of single-cell omics data.
     It provides methods for single-cell RNA-seq and ATAC-seq data analysis, including
     batch integration, clustering, and visualization.
-  dev_url: https://github.com/genecell/PIASO
-  doc_url: https://piaso.org
+  dev_url: "https://github.com/genecell/PIASO"
+  doc_url: "https://piaso.org"
 
 extra:
+  identifiers:
+    - doi:10.1038/s41586-025-09996-8
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - genecell
