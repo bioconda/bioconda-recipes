@@ -10,6 +10,7 @@ cp -Rf ${SRC_DIR} ${PREFIX}/opt/${PKG_NAME}
 # symlink to binaries
 mkdir -p "${PREFIX}/bin"
 
-ln -sf "${PREFIX}/opt/${PKG_NAME}/TransDecoder.Predict" ${PREFIX}/bin/
-ln -sf "${PREFIX}/opt/${PKG_NAME}/TransDecoder.LongOrfs" ${PREFIX}/bin/
-ln -sf "${PREFIX}/opt/${PKG_NAME}/util/*.pl" ${PREFIX}/bin/
+ln -sf "${PREFIX}/opt/${PKG_NAME}/TransDecoder" ${PREFIX}/bin/
+for f in "${PREFIX}/opt/${PKG_NAME}/util/"*.pl; do
+	ln -sf "$f" "${PREFIX}/bin/"
+done

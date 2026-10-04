@@ -1,4 +1,4 @@
-{% set version = "1.4.2" %}
+{% set version = "1.5.1" %}
 
 package:
   name: dfast
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/nigyta/dfast_core/archive/{{ version }}.tar.gz
-  sha256: a4417dd5c757ea682d8b20ec3b8c4f37322a4d4168133e9f4296f0c89c6fad60 
+  sha256: 4f71f18ca1d1ad3bb73d65ad4e319763a1181dee7e6d0ed8f17d8fb96ad2905c
 
 build:
   number: 0
@@ -18,25 +18,28 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - python >=3.7
+    - python >=3.10
     - biopython >=1.67
   host:
     - zlib
   run:
-    - python >=3.7
+    - python >=3.10
     - biopython
-    - openjdk
+    - openjdk  # CRT
     - aragorn
-    - barrnap
-    - blast >=2.6.0
+    - blast >=2.13
+    - rpsbproc >=0.5
     - ghostx
-    - hmmer >=3.1b2
+    - diamond  # --aligner diamond
+    - hmmer >=3.1b2  # hmmscan, nhmmer and hmmbuild (rRNA prediction)
+    - last >=1180  # lastal -G <genetic code>
     - metagene_annotator >=1.0  # [x86_64]
-    - plasmidfinder >=2.1.6
+    - prodigal  # --use_prodigal (default CDS prediction from DFAST 1.6)
 
 test:
   commands:
     - dfast --version
+    - dfast_file_downloader.py -h
 
 about:
   home: "https://dfast.nig.ac.jp"
@@ -55,6 +58,6 @@ extra:
     - biotools:dfast
     - doi:10.1093/bioinformatics/btx713
   skip-lints:
-    #We ship some custom last binaries
+    # MGA (mga_4) and CRT are still bundled; they will be replaced in DFAST 1.6
     - should_be_noarch_generic
     - compiler_needs_stdlib_c

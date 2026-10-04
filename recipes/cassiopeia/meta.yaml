@@ -2,27 +2,31 @@
 {% set version = "2.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/YosefLab/Cassiopeia/archive/{{ version }}.tar.gz
   sha256: 28ae7495152683f5733222255056a1e7b2f7a51e1cee2f23f0d9f8ae5f4c3742
+  patches:
+    - 0001-numpy2-compat.patch
 
 build:
-  number: 2
+  number: 3
   entry_points:
     - cassiopeia-preprocess = cassiopeia.preprocess.cassiopeia_preprocess:main
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   run_exports:
-    - {{ pin_subpackage('cassiopeia', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
   host:
     - python
     - pip
+    - setuptools
     - cython
     - numpy
   run:
@@ -33,20 +37,22 @@ requirements:
     - ete3 >=3.1.1
     - hits
     - itolapi
+    - legacy-cgi
     - matplotlib-base >=2.2.2
     - nbconvert >=5.4.0
     - nbformat >=4.4.0
     - networkx >=2.5
-    - ngs-tools >=1.5.3
+    - ngs-tools
     - numba >=0.51.0
+    - numpy
     - pandas >=1.1.4
     - pysam >=0.14.1
+    - pyseq-align
     - python-levenshtein
     - pyyaml >=3.12
     - scipy >=1.2.0
     - typing-extensions >=3.7.4
     - tqdm >=4
-    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
@@ -55,13 +61,20 @@ test:
     - cassiopeia-preprocess --help
 
 about:
-  home: https://github.com/YosefLab/Cassiopeia
+  home: "https://github.com/YosefLab/Cassiopeia"
   summary: "An end-to-end pipeline for single-cell lineage tracing experiments."
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  dev_url: https://github.com/YosefLab/Cassiopeia
+  dev_url: "https://github.com/YosefLab/Cassiopeia"
+  doc_url: "https://cassiopeia-lineage.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - mencian
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:Cassiopeia
+    - doi:10.1186/s13059-020-02000-8
