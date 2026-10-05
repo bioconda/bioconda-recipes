@@ -30,5 +30,5 @@ cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/plasmidfinder.sh
 unset PLASMID_DB
 EOF
 
-chmod 0755 ${SP_DIR}/resfinder/plasmidfinder.py
-cp -rf ${SP_DIR}/resfinder/plasmidfinder.py ${PREFIX}/bin/
+chmod 0755 ${SP_DIR}/plasmidfinder/plasmidfinder.py
+cp -rf ${SP_DIR}/plasmidfinder/plasmidfinder.py ${PREFIX}/bin/
