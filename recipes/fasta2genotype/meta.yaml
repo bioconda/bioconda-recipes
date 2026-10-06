@@ -1,0 +1,60 @@
+{% set name = "fasta2genotype" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5773bccbf53daf15289090291936067c5bfd52f991fb7592731380efbb5f23a4
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - fasta2genotype = fasta2genotype:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.9
+
+test:
+  source_files:
+    - examples/
+    - tests/
+  imports:
+    - fasta2genotype
+  commands:
+    - fasta2genotype --help
+    - fasta2genotype --version
+    - fasta2genotype -f examples/stacks_v2/populations.samples.fa -p examples/stacks_v2/popmap.tsv -o out/demo -F all --remove-monomorphic
+    - python -m unittest discover -s tests
+
+about:
+  home: https://github.com/paulmaier/fasta2genotype
+  summary: Convert Stacks haplotype FASTA files into input for population-genetic software.
+  description: |
+    fasta2genotype converts the per-sample haplotype FASTA file written by the
+    Stacks populations program (Stacks 1 and 2) into input files for
+    population-genetic software, including Structure, Genepop, Arlequin,
+    migrate-n, G-PhoCS, PHYLIP, TreeMix, LFMM, DIYABC, BayeScan, samBada and
+    GenAlEx, with optional quality filters.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/paulmaier/fasta2genotype
+  doc_url: https://github.com/paulmaier/fasta2genotype#readme
+
+extra:
+  recipe-maintainers:
+    - paulmaier
+  identifiers:
+    - doi:10.1111/evo.13868
