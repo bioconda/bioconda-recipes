@@ -16,9 +16,15 @@ source:
     - patches/0003-create-simd-dispatch.patch
     - patches/0004-use-cxxflags-depends.patch   # [osx]
     - patches/0005-arm64.patch  # [osx]
+    # 0 input reads with libc++: upstream commit 14b1f23 from alexdobin/STAR#2691 (#2632), as used by brewsci/homebrew-bio
+    - patches/0006-libcxx-stringbuf-pubsetbuf.patch  # [osx]
+    # --quantMode crash on uninitialised transform.outQuant (alexdobin/STAR#2142)
+    - patches/0007-init-transform-outQuant.patch
+    # 2nd pass (--twopassMode) misreads input re-opened through --readFilesCommand with libc++
+    - patches/0008-libcxx-fresh-ifstream-on-reopen.patch  # [osx]
 
 build:
-  number: 8
+  number: 9
   run_exports:
     - {{ pin_subpackage('star', max_pin="x") }}
 
@@ -37,8 +43,12 @@ requirements:
     - htslib >=1.21
     - llvm-openmp   # [osx]
     - libgomp  # [linux]
+    # GNU zcat for --readFilesCommand zcat; macOS's /usr/bin/zcat only reads .Z files
+    - gzip  # [osx]
 
 test:
+  requires:
+    - gawk  # run_test.sh
   commands:
     - STAR --version
     - STARlong --version
