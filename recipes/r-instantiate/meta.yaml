@@ -16,10 +16,6 @@ build:
   rpaths:
     - lib/R/lib/
     - lib/
-  missing_dso_whitelist:
-    - '*/R.dll'        # [win]
-    - '*/Rblas.dll'    # [win]
-    - '*/Rlapack.dll'  # [win]
   run_exports:
     - {{ pin_subpackage("r-instantiate", max_pin="x.x") }}
 
@@ -27,17 +23,10 @@ requirements:
   build:
     - {{ compiler('c') }}              # [not win]
     - {{ stdlib('c') }}
-    - {{ compiler('m2w64_c') }}        # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}sed               # [win]
-    - {{ posix }}grep              # [win]
     - {{ posix }}autoconf
     - {{ posix }}automake          # [not win]
-    - {{ posix }}automake-wrapper  # [win]
     - pkg-config
     - {{ posix }}make
-    - {{ posix }}coreutils         # [win]
-    - {{ posix }}zip               # [win]
     - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
     - r-base
@@ -53,12 +42,14 @@ requirements:
 test:
   commands:
     - $R -e "library('instantiate')"           # [not win]
-    - "\"%R%\" -e \"library('instantiate')\""  # [win]
 
 about:
-  home: https://wlandau.github.io/instantiate/, https://github.com/wlandau/instantiate
+  home: https://wlandau.github.io/instantiate/
+  dev_url: https://github.com/wlandau/instantiate
   license: MIT
-  summary: Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled
+  summary: "pre-compiled CmdStan models in R packages"
+  description: |
+    Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled
     'CmdStan' models into CRAN-ready statistical modeling R packages. The models compile
     once during installation, the executables live inside the file systems of their
     respective packages, and users have the full power and convenience of 'cmdstanr'
