@@ -2,7 +2,7 @@
 set -euo pipefail
 
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
-export CARGO_BUILD_JOBS="${CPU_COUNT}"
+export CARGO_BUILD_JOBS=2
 export CARGO_INCREMENTAL=0
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
