@@ -1,82 +1,84 @@
 {% set name = "PLINDER" %}
-{% set version = "0.2.27" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.12" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/plinder-org/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 4019b303ec879d1e7bdaad653d796975bb932d71826d8f67d3fabe9743cafb9c
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/plinder-${{ version }}.tar.gz
+  sha256: 48f6669eece102b9540b7460196d552e2a7ffbd0cc0e0b35e0751b6547ad8789
 
 build:
-  number: 1
+  number: 0
   noarch: python
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - plinder_download = plinder.core.index.utils:download_plinder_cmd
-    - plinder_eval = plinder.eval.docking.write_scores:evaluate_cmd
-    - plinder_stratify = plinder.eval.docking.stratify_test_set:stratify_cmd
-    - plinder_plot = plinder.eval.docking.make_plots:plot_cmd
+    - plinder_eval = plinder.eval.cli:main
+    - plinder_prepare_release = plinder.data.pipeline.public_release:main
   script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.10
-    - python-build >=0.9.0
-    - setuptools >=65.4.0
-    - setuptools-scm >=7.0.5
+    - python {{ python_min }}.*
+    - python-build
+    - setuptools
+    - setuptools-scm
     - pip
   run:
     - __unix
-    - python >=3.10
-    - biotite >=1.0
+    - python >={{ python_min }}
+
+    # Core runtime dependencies
+    - biotite >=1.2
     - numpy
+    - threadpoolctl >=3.6
     - pandas
-    - typing_extensions
     - pydantic
     - tqdm
-    - plotly
-    - nbformat
-    - google-cloud-storage
-    - gcsfs
-    - gemmi
-    - rdkit >=2024.03.6
+    - peppr >=0.13
+    - voronotalt >=1.1
+    - rdkit >=2025.09.1
     - pyarrow
     - omegaconf
-    - mmcif
-    - eval-type-backport
-    - posebusters
-    - python-duckdb
+    - python-duckdb >=1.5
     - cloudpathlib >=0.25,<0.26
-    - mols2grid
-    - six
-    - foldseek
-    - networkit >=11.0
-    - keyrings.google-artifactregistry-auth
+    - requests
+
+    # Dependencies for data generation
+    - google-cloud-storage
+    - gcsfs
+    - numba
     - mmseqs2
-    - plip ==2.3.0
-    - reduce
-    - openbabel
-    - openstructure
-    - pytorch-cpu
+    - foldseek
+    - networkit >11.0
     - tabulate
-    - mmpdb
-    - ligand-validation
+    - mmpdb >=3.1.4,<3.2
+    - ligand-validation ==0.0.1
+
+    # Dependencies for evaluation, loading, and plotting
+    - openstructure >=2.12.0
+    - posebusters >=0.6.5
+    - pytorch-cpu
+    - matplotlib-base
+    - seaborn
+    - mols2grid
+    - matplotlib-venn
+    - scipy
 
 test:
   imports:
     - plinder
   commands:
-    # Skip `pip check` as it fails at detecting openbabel
-    # Refer to https://github.com/conda-forge/openbabel-feedstock/issues/49
     - plinder_download --help
     - plinder_eval --help
-    - plinder_stratify --help
-    - plinder_plot --help
+    - plinder_prepare_release --help
+  pip_check: true
 
 about:
   summary: 'PLINDER: The Protein-Ligand INteraction Dataset and Evaluation Resource.'
@@ -89,7 +91,7 @@ about:
   home: "https://www.plinder.sh"
   dev_url: "https://github.com/plinder-org/plinder"
   doc_url: "https://plinder-org.github.io/plinder"
-  license: "MIT AND Apache-2.0"
+  license: "Apache-2.0"
   license_file:
     - NOTICE
     - LICENSE.txt
