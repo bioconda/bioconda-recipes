@@ -1,12 +1,8 @@
 {% set name = "kmate" %}
-{% set version = "0.1.0" %}
+{% set version = "0.1.4" %}
 
-# Bioconda recipe for kMate. This is the version to submit to
-# bioconda/bioconda-recipes (recipes/kmate/meta.yaml). It fetches the sdist from
-# PyPI (NOT the GitHub auto-tarball, which archives the whole ~185 MB repo).
-#
-# Before submitting: upload the sdist to PyPI and confirm the sha256 below
-# matches the PyPI-hosted file — see ../bioconda/SUBMISSION.md.
+# Bioconda recipe for kMate (recipes/kmate/meta.yaml upstream). Fetches the PyPI
+# sdist, NOT the GitHub auto-tarball, which archives the whole ~185 MB repo.
 
 package:
   name: {{ name|lower }}
@@ -14,7 +10,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ac20fee8912f78c41f873408ef2a69c8239fbb50e914da9195b7d7f82662c045
+  sha256: d800c3258a2ec72884ae5dda37b52cdf03df50af0e5a0c4f22a510d835ebb2e6
 
 build:
   noarch: python                       # pure-Python -> one build, no platform matrix
@@ -27,16 +23,23 @@ build:
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.9,<3.13
     - pip
     - setuptools >=61
   run:
-    - python >=3.8
+    # <3.13 and the py* build: build-index imports the dna_jellyfish bindings, which
+    # only the Python-specific kmer-jellyfish builds ship (3.9-3.12). Without both, a
+    # fresh solve takes the newest Python and the old build-less kmer-jellyfish, whose
+    # bindings are compiled for 3.10 only -> ModuleNotFoundError: dna_jellyfish.
+    - python >=3.9,<3.13
     - numpy
     - scipy
     - pysam
-    - jellyfish                        # k-mer counter (kmer_count.py)
+    - kmer-jellyfish >=2.3.1 py*       # k-mer counter + bindings -- NOT `jellyfish`,
+                                       # which on conda-forge is a Python string-similarity
+                                       # library and ships no `jellyfish` binary.
     - samtools                         # BAM read access
+    - bcftools                         # decompose / haploidize (panel VCF prep)
 
 test:
   imports:
@@ -44,6 +47,10 @@ test:
   commands:
     - kmate --help
     - kmate --version
+    - python -c "import dna_jellyfish"   # build-index needs the bindings
+    # End-to-end: exercises jellyfish/samtools, so a missing or wrong binary
+    # dependency fails CI instead of shipping a package that cannot count k-mers.
+    - kmate selftest
 
 about:
   home: https://github.com/Tatianabellagio/kMate
@@ -55,9 +62,9 @@ about:
     kMate estimates per-founder mixture proportions (h) in a sequenced pool from
     canonical k-mer counts against a pangenome founder x k-mer matrix, then
     projects to per-record allele frequencies for SNPs, indels and SVs in one
-    pass. Supports whole-chromosome (global) and per-window (window) estimation
-    and optional per-bubble k-mer weighting. `kmate selftest` verifies an install
-    on a bundled fixture.
+    pass. Fits one mixture per chromosome (inbred/selfing pools) or per window
+    (recombinant pools), and builds its founder matrices from a pangenome VCF.
+    `kmate selftest` verifies an install on a bundled fixture.
   dev_url: https://github.com/Tatianabellagio/kMate
 
 extra:

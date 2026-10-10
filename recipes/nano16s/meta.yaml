@@ -1,0 +1,74 @@
+{% set name = "nano16s" %}
+{% set version = "1.2.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lz245/nano16s/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9d51b4a9c2cafec0b4a989689fc3ebb6dd814e34602c25e890f9654b38c19d69
+
+build:
+  number: 0
+  # Nothing is compiled — a bash CLI, Snakemake rules and Python scripts, all
+  # of which run on any platform the dependencies support.
+  noarch: generic
+  # nano16s follows semantic versioning, and nothing links against it: it is a
+  # CLI and a workflow, not a library.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: |
+    mkdir -p $PREFIX/bin $PREFIX/share/$PKG_NAME
+    # The CLI expects workflow/, config/, tools/ and test/ to sit together; it
+    # looks for them under ../share/nano16s relative to its own location.
+    cp -r workflow config tools test $PREFIX/share/$PKG_NAME/
+    cp bin/nano16s $PREFIX/bin/nano16s
+    chmod +x $PREFIX/bin/nano16s
+
+requirements:
+  run:
+    - python >=3.10
+    - snakemake >=9.0,<10
+    - nanostat >=1.6
+    - porechop_abi >=0.5
+    - chopper >=0.9
+    - emu >=3.6
+    - minimap2 >=2.28
+    - samtools >=1.19
+    - wget
+
+test:
+  commands:
+    # Resolves ROOT and reads its own VERSION.
+    - nano16s --version
+    - nano16s --help
+    # Proves the packaged layout is found: both fail if ROOT is wrong.
+    - test -f $PREFIX/share/nano16s/workflow/Snakefile
+    - nano16s db list
+    # Full pipeline is not run here — it needs a reference database, which is
+    # a ~110 MB download and deliberately not part of the package.
+
+about:
+  home: https://github.com/lz245/nano16s
+  license: MIT
+  license_file: LICENSE
+  summary: Taxonomic profiling of Oxford Nanopore full-length 16S rRNA amplicon data
+  description: |
+    A Snakemake workflow for taxonomic profiling of Oxford Nanopore full-length
+    16S rRNA amplicon data. Runs on an ordinary laptop or workstation with a
+    single install command and no container or cluster requirement.
+
+    Includes a builder for an up-to-date Emu reference database from the current
+    NCBI 16S RefSeq Targeted Loci collection. The database is downloaded and
+    built by `nano16s db build` after installation rather than shipped in the
+    package, since it is refreshed on NCBI's schedule rather than the tool's.
+  doc_url: https://github.com/lz245/nano16s#readme
+  dev_url: https://github.com/lz245/nano16s
+
+extra:
+  recipe-maintainers:
+    - lz245
+    - adapapavandharma
+  identifiers:
+    - doi:10.5281/zenodo.22031297

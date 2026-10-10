@@ -1,50 +1,55 @@
 {% set name = "PlasmidFinder" %}
-{% set version = "2.1.6" %}
-{% set sha256 = "ce1535c2a227a7dfa798468e8c8e9ce8602e6b16f0cf33cd4802b8f40c8b61ec" %}
+{% set version = "3.0.3" %}
+{% set sha256 = "da7474d1cebd3b69935baa0b388282e7b94f2302074034b785d34d2e34199fe1" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://bitbucket.org/genomicepidemiology/{{ name|lower }}/get/{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/p/plasmidfinder/plasmidfinder-{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-   - python_path.patch
 
 build:
-  number: 2
-  noarch: generic
+  number: 0
+  noarch: python
   run_exports:
-    - {{ pin_subpackage('plasmidfinder', max_pin='x.x') }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.10
+    - pip
+    - pdm-backend
     - kma
     - wget
-    - setuptools  # [py>=312]
+    - tar
   run:
-    - python >=3
-    - kma
+    - python >=3.10
     - biopython
+    - pandas
     - tabulate
     - cgecore
     - blast
-    - setuptools  # [py>=312]
+    - kma
 
 test:
-  commands:
-    - plasmidfinder.py --help
+  imports:
+    - plasmidfinder
 
 about:
-  home: https://bitbucket.org/genomicepidemiology/plasmidfinder
-  license: Apache-2.0
+  home: "https://bitbucket.org/genomicepidemiology/plasmidfinder"
+  license: "Apache-2.0"
   license_family: APACHE
+  license_file: LICENSE
   summary: "PlasmidFinder allows identification of plasmids in total or partial sequenced isolates of bacteria."
+  dev_url: "https://bitbucket.org/genomicepidemiology/plasmidfinder"
+  doc_url: "https://bitbucket.org/genomicepidemiology/plasmidfinder/src/{{ version }}/README.md"
 
 extra:
   identifiers:
     - doi:10.1128/AAC.02412-14
+    - biotools:PlasmidFinder
+    - usegalaxy-eu:plasmidfinder
   recipe-maintainers:
     - npavlovikj
