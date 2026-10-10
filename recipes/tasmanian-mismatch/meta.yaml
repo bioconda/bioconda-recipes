@@ -22,9 +22,13 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - llvmdev
+    # On macOS, llvmdev (also pulled in by clangdev) ships lib/libLLVM.dylib, which
+    # clobbers the one rustc links against -> "dyld: missing symbol called".
+    # bindgen (rust-htslib) only needs libclang there.
+    - llvmdev  # [linux]
+    - clangdev  # [linux]
+    - libclang  # [osx]
     - pkg-config
-    - clangdev
     - make
     - cmake
     - patchelf  # [linux]
