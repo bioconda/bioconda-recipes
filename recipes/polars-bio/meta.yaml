@@ -1,5 +1,5 @@
 {% set name = "polars-bio" %}
-{% set version = "0.35.1" %}
+{% set version = "0.36.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/polars_bio-{{ version }}.tar.gz
-  sha256: 70febfd08ade96da7495334fc804ab1838b14f8ee79ade9c4aeaa06b1361f6ee
+  sha256: 0a2fdaed6c8fa936720f64b844754ae6f875153786111e278c9867eafeee9af8
 
 build:
   number: 0
@@ -38,11 +38,14 @@ requirements:
     - maturin >=1.0,<2.0
   run:
     - python
-    - polars >=1.37.1
+    # polars 2.0 changed headerless CSV column naming and breaks
+    # scan_table/read_table; support is planned for polars-bio 0.37.0.
+    # polars < 1.40 returns wrong counts for cool/mcool scans.
+    - polars >=1.40.0,<2
     - pyarrow >=23.0.1,<25
     - datafusion >=53.0.0,<54
     - tqdm >=4.67.0,<5
-    - polars-config-meta >=0.3.0,<1
+    - polars-config-meta >=0.3.2,<1
 
 test:
   imports:

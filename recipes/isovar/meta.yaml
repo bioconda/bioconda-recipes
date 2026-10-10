@@ -1,5 +1,5 @@
 {% set name = "isovar" %}
-{% set version = "1.7.2" %}
+{% set version = "1.45.2" %}
 
 package:
   name: {{ name }}
@@ -7,55 +7,56 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b05fa8ce03a429702d2a325c7210b5970a5d902d34637ee8fe116656854e766a
+  sha256: ba7791724d1d544a28a2261e427f37df40e5421b2865fdb82991592cbc0120a4
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - isovar = isovar.cli.isovar_main:run
+    - isovar = isovar.cli.commands:run
     - isovar-protein-sequences = isovar.cli.isovar_protein_sequences:run
+    - isovar-protein-hypotheses = isovar.cli.isovar_protein_hypotheses:run
     - isovar-translations = isovar.cli.isovar_translations:run
     - isovar-reference-contexts = isovar.cli.isovar_reference_contexts:run
     - isovar-allele-reads = isovar.cli.isovar_allele_reads:run
     - isovar-allele-counts = isovar.cli.isovar_allele_counts:run
     - isovar-variant-reads = isovar.cli.isovar_variant_reads:run
     - isovar-variant-sequences = isovar.cli.isovar_variant_sequences:run
+    - isovar-plot = isovar.cli.isovar_plot:run
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3.9
     - pip
-    - setuptools >=64
+    - setuptools >=77
   run:
-    - python
+    - python >=3.9
     - pyensembl >=1.5.0
-    - varcode >=0.9.0
+    - varcode >=10.5.2
     - pandas >=0.23.0
     - pysam >=0.15.2
-    - psutil
+    - python-edlib
+    #- osteosarc
 
 test:
-  imports:
-    - isovar
-    - isovar.cli
   commands:
     - isovar --help
 
 about:
-  home: https://github.com/openvax/isovar
-  summary: Determine mutant protein sequences from RNA using assembly around variants
+  home: "https://github.com/openvax/isovar"
+  summary: "Determine mutant protein sequences from RNA using assembly around variants."
   description: |
     Isovar assembles RNA reads which support a variant to determine the mutant
     protein sequence(s) that a tumour actually expresses, rather than relying
     on a reference transcript annotation alone.
-  license: Apache-2.0
+  license: "Apache-2.0"
   license_family: APACHE
   license_file: LICENSE
-  dev_url: https://github.com/openvax/isovar
+  dev_url: "https://github.com/openvax/isovar"
+  doc_url: "https://github.com/openvax/isovar#documentation"
 
 extra:
   recipe-maintainers:

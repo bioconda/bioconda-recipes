@@ -1,0 +1,122 @@
+diff --git a/src/dev_fork_batch.cpp b/src/dev_fork_batch.cpp
+index fb7ba64..9d27224 100644
+--- a/src/dev_fork_batch.cpp
++++ b/src/dev_fork_batch.cpp
+@@ -18,7 +18,9 @@
+ #include <iomanip>
+ #include <limits.h>
+ #include <sstream>
++#ifdef __linux__
+ #include <sys/prctl.h>
++#endif
+ #include <sys/resource.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+@@ -27,6 +29,11 @@
+ #include <time.h>
+ #include <unistd.h>
+ 
++#ifdef __APPLE__
++// macOS headers do not declare environ (POSIX leaves it to the program).
++extern char** environ;
++#endif
++
+ namespace ts { namespace dev { namespace {
+ const std::array<const char*, 7> flags = {{
+     "TESSERACT_ROUTE_DISTANCE", "TESSERACT_WEIGHTED_RESOLVER_COVERAGE",
+@@ -156,7 +163,7 @@ bool safeSignalState(std::string& error) {
+     }
+     sigset_t mask;
+     if (::sigprocmask(SIG_SETMASK, nullptr, &mask) != 0 ||
+-        ::sigismember(&mask, SIGINT) || ::sigismember(&mask, SIGTERM)) {
++        sigismember(&mask, SIGINT) || sigismember(&mask, SIGTERM)) {
+         error = "developer fork requires unblocked SIGINT and SIGTERM";
+         return false;
+     }
+@@ -279,11 +286,16 @@ ForkBatch::Entry ForkBatch::enter(AssemblyOptions& o,const UnitigGraph& graph,co
+             if (sigaction(SIGINT, &childDefault, nullptr) != 0 ||
+                 sigaction(SIGTERM, &childDefault, nullptr) != 0) ::_exit(125);
+             sigset_t childUnblock;
+-            ::sigemptyset(&childUnblock);
+-            ::sigaddset(&childUnblock, SIGINT);
+-            ::sigaddset(&childUnblock, SIGTERM);
++            sigemptyset(&childUnblock);
++            sigaddset(&childUnblock, SIGINT);
++            sigaddset(&childUnblock, SIGTERM);
+             if (::sigprocmask(SIG_UNBLOCK, &childUnblock, nullptr) != 0) ::_exit(125);
++#ifdef __linux__
+             if(::prctl(PR_SET_PDEATHSIG,SIGTERM)!=0||::getppid()!=parentPid_)::_exit(125);
++#else
++            // No PR_SET_PDEATHSIG outside Linux: keep the reparenting check only.
++            if(::getppid()!=parentPid_)::_exit(125);
++#endif
+             int log=::open((dir+"/diagnostic.log").c_str(),O_CREAT|O_EXCL|O_WRONLY,0644);
+             if(log<0||::dup2(log,STDOUT_FILENO)<0||::dup2(log,STDERR_FILENO)<0)::_exit(125);
+             if(log>STDERR_FILENO)::close(log);
+diff --git a/src/envflags.cpp b/src/envflags.cpp
+index d1fad0d..ba5d478 100644
+--- a/src/envflags.cpp
++++ b/src/envflags.cpp
+@@ -12,6 +12,11 @@
+ #include <vector>
+ #include <unistd.h>
+ 
++#ifdef __APPLE__
++// macOS headers do not declare environ (POSIX leaves it to the program).
++extern char** environ;
++#endif
++
+ namespace ts { namespace env {
+ namespace {
+ 
+diff --git a/src/util.cpp b/src/util.cpp
+index bd4ce7c..20d9286 100644
+--- a/src/util.cpp
++++ b/src/util.cpp
+@@ -5,6 +5,9 @@
+ #include <sys/resource.h>
+ #include <unistd.h>
+ #include <sys/stat.h>
++#ifdef __APPLE__
++#include <mach/mach.h>
++#endif
+ 
+ namespace ts {
+ namespace util {
+@@ -71,6 +74,14 @@ std::string dirname(const std::string& path) {
+ }
+ 
+ long long currentMemoryBytes() {
++#ifdef __APPLE__
++    // No /proc on macOS: ask the Mach kernel for this task's resident size.
++    mach_task_basic_info_data_t info;
++    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
++    if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO,
++                  reinterpret_cast<task_info_t>(&info), &count) != KERN_SUCCESS) return 0;
++    return static_cast<long long>(info.resident_size);
++#else
+     // statm reports pages; field 2 is resident set size.
+     std::FILE* f = std::fopen("/proc/self/statm", "r");
+     if (!f) return 0;
+@@ -79,6 +90,7 @@ long long currentMemoryBytes() {
+     std::fclose(f);
+     if (n != 2) return 0;
+     return rss * static_cast<long long>(::sysconf(_SC_PAGESIZE));
++#endif
+ }
+ 
+ long long totalMemoryBytes() {
+@@ -91,8 +103,13 @@ long long totalMemoryBytes() {
+ long long peakMemoryBytes() {
+     struct rusage ru;
+     if (getrusage(RUSAGE_SELF, &ru) != 0) return 0;
++#ifdef __APPLE__
++    // ru_maxrss is in bytes on macOS.
++    return static_cast<long long>(ru.ru_maxrss);
++#else
+     // ru_maxrss is in kilobytes on Linux.
+     return static_cast<long long>(ru.ru_maxrss) * 1024;
++#endif
+ }
+ 
+ }  // namespace util
