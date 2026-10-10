@@ -1,5 +1,5 @@
 {% set name = "pod5" %}
-{% set version = "0.3.39" %}
+{% set version = "0.3.48" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a6cc840cb9766e86c78d1d74fc71ff1c4d347943d91bdc7a2d0c834e54271d89
+  sha256: 841e96228dc434b9c15a1a18b23600d4d32348af9780674b23cf5c27a09c05bc
 
 build:
   number: 0
@@ -15,6 +15,8 @@ build:
   entry_points:
     - pod5 = pod5.tools.main:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -22,7 +24,7 @@ requirements:
   host:
     - python >=3.9
     - pip
-    - setuptools
+    - setuptools-scm >=6.2
   run:
     - python >=3.9
     - deprecated
@@ -31,7 +33,7 @@ requirements:
     - more-itertools
     - numpy >=1.21.0
     - typing-extensions  # [py < 310]
-    - pyarrow >=18.0.0,<21.0.0
+    - pyarrow <23.0.0
     - pytz
     - packaging
     - polars >=1.30

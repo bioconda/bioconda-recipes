@@ -13,14 +13,14 @@ source:
     - 0001-change-verbosity-remove-expr.patch
 
 build:
-  number: 0
+  number: 2
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
     - cmake
     - make
     - pkg-config
@@ -37,10 +37,12 @@ requirements:
     - llvm-openmp  # [osx]
     - libgomp  # [linux]
     - openmpi
+    - pigz
     - python >=3.8
 
 test:
   commands:
+    - pigz --version
     - spades.py --version 2>&1 | grep {{ version }}
     - rnaspades.py --version 2>&1 | grep {{ version }}
     - metaspades.py --version 2>&1 | grep {{ version }}

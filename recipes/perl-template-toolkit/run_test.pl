@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Template", "3.103"],
+    ["Template", "3.106"],
 );
 
 foreach $item (@items) {
