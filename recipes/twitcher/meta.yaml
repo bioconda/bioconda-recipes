@@ -1,0 +1,55 @@
+{% set name = "twitcher" %}
+{% set version = "0.8.1" %}
+{% set sha256 = "a2768d188e0c551638f9bbce4c716e326a5ed395bd711cb6d79849ab17b75c80" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://static.crates.io/crates/{{ name }}/{{ name }}-{{ version }}.crate
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+    - clangdev
+  host:
+    - openssl
+    - libcurl
+    - zlib
+    - bzip2
+    - xz
+  run:
+    - openssl
+
+test:
+  commands:
+    - twitcher --version
+
+about:
+  home: https://version.helsinki.fi/kraujasp/twitcher
+  dev_url: https://version.helsinki.fi/kraujasp/twitcher
+  doc_url: http://loytynojalab.biocenter.helsinki.fi/twitcher/
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - {{ name }}-{{ version }}/LICENSE
+    - {{ name }}-{{ version }}/THIRDPARTY.yml
+  summary: Find template switch mutations in genomic data
+
+extra:
+  recipe-maintainers:
+    - jeeeesper
