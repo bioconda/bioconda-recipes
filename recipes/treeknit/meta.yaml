@@ -1,0 +1,50 @@
+{% set name = "treeknit" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux64]
+    sha256: b88a094d0dc5603691734dbebdcddf019ebd10dd5a5ec54b7503dcfd0d50e0d8                                            # [linux64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [aarch64]
+    sha256: cad854370c4a76a183dc6b3741bc1ba096c13c4156d6b5bbab1633935bb57147                                            # [aarch64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: 192768f3e0767c20c324ff46e7b20bf556f3779c9a0839c1bfe5c18d1784f462                                            # [osx and x86_64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: a9fb7e06f3a875d007b1c6f47bd3580dc3705404793d32698224ed2d6ffd141b                                            # [osx and arm64]
+
+build:
+  number: 0
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+test:
+  commands:
+    - treeknit --version
+    - treeknit --help
+
+about:
+  home: "https://github.com/neherlab/treeknit"
+  dev_url: "https://github.com/neherlab/treeknit"
+  license: MIT
+  license_family: MIT
+  summary: "Inference of reassortment from segment trees"
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pcbi.1010394
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  autobump:
+    enable: false
+  recipe-maintainers:
+    - ivan-aksamentov
+    - rneher
+    - PierreBarrat
+  skip-lints:
+    # repackaged binary
+    - should_be_noarch_generic
