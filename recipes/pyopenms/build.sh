@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export PLATFORM_CMAKE_EXTRAS=""
+
 if [[ "$CXX" == *gnu-c++* ]]; then
   # For stuff like this GCC bug (especially on ARM) https://gcc.gnu.org/bugzilla/show_bug.cgi?id=111516
   echo "Detected gcc: ignoring some compile warnings."
@@ -14,8 +15,7 @@ if [[ "$CXX" == *gnu-c++* ]]; then
   #export LDFLAGS="-v ${LDFLAGS}"
 fi
 
-mkdir build
-cd build
+rm -rf build
 
 # QT_HOST_PATH(_CMAKE_DIR) only needed when you actually need use the Qt MOC executable on source files with signals and slots
 #  i.e. when OpenMS is built with GUI (which it is not). Note: You will need to move qt6-main from "host"
@@ -28,8 +28,8 @@ cd build
 # Regarding PY_NUM_MODULES: This is a tradeoff between compile time and RAM usage.
 #  We do not recommend less than 12 for current CI runners. You can try to decrease when they get more RAM
 #  or faster CPUs.
-cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
-	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="c1370fb" \
+cmake -S src/pyOpenMS -B build -G Ninja -DCMAKE_BUILD_TYPE="Release" \
+	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="5d5cbff" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
