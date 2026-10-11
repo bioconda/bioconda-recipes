@@ -3,30 +3,38 @@
 @@ -1,8 +1,8 @@
 -DEST_DIR = ~/bin
 +DEST_DIR = $(PREFIX)/bin
-
+ 
 -CFLAGS = -O3 -Wall -Wextra -Wno-unused-result -fno-strict-aliasing
 +CFLAGS = -O3 -Wall -Wextra -Wno-unused-result -fno-strict-aliasing -I$(PREFIX)/include -L$(PREFIX)/lib
-
+ 
 -CC = gcc
 +CC ?= gcc
-
- ALL = FasTAN
-
-@@ -12,7 +12,7 @@
+ 
+ ALL = FasTAN FastLTR FastTIR
+ 
+@@ -12,13 +12,13 @@
  GDB.h: gene_core.h
-
+ 
  FasTAN: FasTAN.c alncode.c alncode.h ANO.c ANO.h GDB.c GDB.h ONElib.c ONElib.h align.c align.h
 -	$(CC) $(CFLAGS) -o FasTAN FasTAN.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz
 +	$(CC) $(CFLAGS) -o FasTAN FasTAN.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz -lpthread
-
+ 
+ FastLTR: FastLTR.c alncode.c alncode.h ANO.c ANO.h GDB.c GDB.h ONElib.c ONElib.h align.c align.h
+-	$(CC) $(CFLAGS) -o FastLTR FastLTR.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz
++	$(CC) $(CFLAGS) -o FastLTR FastLTR.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz -lpthread
+ 
+ FastTIR: FastTIR.c alncode.c alncode.h ANO.c ANO.h GDB.c GDB.h ONElib.c ONElib.h align.c align.h
+-	$(CC) $(CFLAGS) -o FastTIR FastTIR.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz
++	$(CC) $(CFLAGS) -o FastTIR FastTIR.c alncode.c align.c ANO.c GDB.c gene_core.c ONElib.c -lm -lz -lpthread
+ 
  clean:
  	rm -f $(ALL)
-@@ -20,7 +20,7 @@
+@@ -26,7 +26,7 @@
  	rm -f FasTAN.tar.gz
-
+ 
  install:
 -	cp $(ALL) $(DEST_DIR)
 +	install -v -m 0755 $(ALL) $(DEST_DIR)
-
+ 
  package:
  	make clean
