@@ -1,41 +1,58 @@
+{% set name = "shapemapper" %}
+{% set version = "2.3.2" %}
+
 package:
-  name: shapemapper
-  version: "1.2"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: http://www.chem.unc.edu/rna/software-files/ShapeMapper_v1.2.tar.gz
-  md5: 640bf3f898a37ff8c5ca06f5e68c40d3
+  url: https://github.com/Weeks-UNC/{{ name }}2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 896675d744d774b8dda55acb01459bfc588f2988667488eaff4c6be2b43e17fc
+  patches:
+    - 0001-boost185.patch
 
 build:
-  number: 2
-  skip: True # [osx or py3k]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake <4
+    - ninja
+    - pkg-config
   host:
     - python
     - bowtie2
-    - matplotlib
+    - matplotlib-base
     - httplib2
     - rnastructure
   run:
     - python
     - bowtie2
-    - matplotlib
+    - matplotlib-base
     - httplib2
     - rnastructure
 
 test:
   commands:
-    - type ShapeMapper.py
-    - type trimPhred
-    - type parseAlignment
-    - type countMutations
+    - shapemapper --version
+    - shapemapper --help
 
 about:
-  home: http://www.chem.unc.edu/rna/software.html
+  home: "https://github.com/Weeks-UNC/shapemapper2"
   license: GPL
-  license_file: COPYING
-  summary: ShapeMapper converts raw sequencing files into mutational profiles, creates SHAPE reactivity plots, and provides extensive diagnostic information useful for experiment analysis and troubleshooting.
+  license_file: "LICENSE.txt"
+  summary: "ShapeMapper converts raw sequencing files into mutational profiles, creates SHAPE reactivity plots, and provides extensive diagnostic information useful for experiment analysis and troubleshooting."
+  dev_url: "https://github.com/Weeks-UNC/shapemapper2"
+  doc_url: "https://github.com/Weeks-UNC/shapemapper2/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1261/rna.061945.117
