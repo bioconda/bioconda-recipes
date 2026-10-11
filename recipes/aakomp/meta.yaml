@@ -2,30 +2,33 @@
 {% set version = "1.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/BirolLab/aakomp/releases/download/1.0.0/aakomp-1.0.0.tar.gz
+  url: https://github.com/BirolLab/{{ name }}/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
   sha256: 8b8cfbe9c50fd20b9f9a929cd27fb5e93710adf2cc14c3db3d4408f77a0f9309
 
 build:
-  skip: true  # [win]
   number: 1
+  skip: True  # [win]
   run_exports:
-    - {{ pin_subpackage('aakomp', max_pin='x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
     - cmake
     - meson
     - ninja
+    - pkg-config
+    - python >=3.9
     - pigz
   host:
-    - python >=3.9
     - mamba
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - gperftools =2.10
     - sdsl-lite
     - libdivsufsort
@@ -33,7 +36,7 @@ requirements:
     - zlib
     - boost-cpp
     - btllib
-    - hmmer =3.1
+    - hmmer
     - r-base >=4.2,<5
     - r-ggplot2
     - r-dplyr
@@ -41,20 +44,18 @@ requirements:
     - r-cairo
     - r-gridextra
     - r-pracma
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-
   run:
     - python >=3.9
     - mamba
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
     - gperftools =2.10
     - sdsl-lite
     - libdivsufsort
     - libsequence
-    - zlib
     - boost-cpp
     - btllib
-    - hmmer =3.1
+    - hmmer
     - r-base >=4.2,<5
     - r-ggplot2
     - r-dplyr
@@ -70,12 +71,17 @@ test:
     - run-aakomp --help
 
 about:
-  home: https://github.com/bcgsc/aakomp
-  license: GPL-3.0
+  home: "https://github.com/bcgsc/aakomp"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: "amino acid k-mer-based genome completeness assessment"
+  summary: "Amino acid k-mer-based genome completeness assessment."
+  dev_url: "https://github.com/bcgsc/aakomp"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    # sdsl-lite not available on osx-arm64
+    #- osx-arm64
   recipe-maintainers:
     - jwcodee
-
