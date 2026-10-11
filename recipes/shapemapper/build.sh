@@ -28,6 +28,8 @@ cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX="(pwd)" \
 	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	"${CONFIG_ARGS}"
 
+ninja -C build -j"${CPU_COUNT}"
+
 cd internals/bin
 
 install -v -m 0755 *.sh *.py "${PREFIX}/bin"
