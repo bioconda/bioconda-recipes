@@ -1,8 +1,12 @@
-{% set version = "3.6.2" %}
+{% set version = "3.6.4" %}
 
 package:
   name: submission-excel2xml
   version: {{ version }}
+
+source:
+  url: https://github.com/ddbj/submission-excel2xml/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d00701114b0985547747e0e69054d46f8606bb20f76cd3e4318a4e8e60b3e842 
 
 build:
   number: 0
@@ -10,18 +14,16 @@ build:
   run_exports:
     - {{ pin_subpackage('submission-excel2xml', max_pin="x") }}
 
-source:
-  url: https://github.com/ddbj/submission-excel2xml/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 98ea1448f2096c33d4f8a640795ef202d59105406ec057c0bb455e4b271df2e8 
-
 requirements:
-  host:
+  build:
     - make
-    - ruby >=3.0
     - compilers
-  run:
-    - ruby >=3.0
+  host:
+    - ruby <4
     - libxml2
+  run:
+    - ruby <4
+    - rb-nokogiri  # [x86_64]
 
 test:
   commands:
@@ -32,8 +34,10 @@ test:
     - excel2xml_jga -j JSUB999999 ${XDG_DATA_HOME}/submission-excel2xml/example/JSUB999999_jga_metadata.xlsx && validate_meta_jga -j JSUB999999
 
 about:
-  home: https://github.com/ddbj/submission-excel2xml
-  license: Apache License 2.0
-  summary: Generate DRA metadata XML files from Excel spreadsheet
-
-
+  home: "https://github.com/ddbj/submission-excel2xml"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "Generate DRA metadata XML files from Excel spreadsheet."
+  dev_url: "https://github.com/ddbj/submission-excel2xml"
+  doc_url: "https://github.com/ddbj/submission-excel2xml/blob/v{{ version }}/README.md"
