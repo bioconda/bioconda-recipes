@@ -6,9 +6,7 @@ set -euo pipefail
 mkdir -p "${PREFIX}/bin"
 
 make -j"${CPU_COUNT:-4}" CXX="${CXX:-g++}"
+make -j"${CPU_COUNT:-4}" CXX="${CXX:-g++}" tesseract-model
 
-install -v -m 0755 tesseract-asm "${PREFIX}/bin"
-install -v -m 0755 tesseract-get-models "${PREFIX}/bin"
-install -v -m 0755 tesseract-klebsiella "${PREFIX}/bin"
-install -v -m 0755 tesseract-eskape "${PREFIX}/bin"
-install -v -m 0755 models.sha256 "${PREFIX}/bin"
+install -v -m 0755 tesseract tesseract-asm tesseract-model "${PREFIX}/bin"
+install -v -m 0755 scripts/tesseract-get-models scripts/models.sha256 models/om2detect.sketch "${PREFIX}/bin"
