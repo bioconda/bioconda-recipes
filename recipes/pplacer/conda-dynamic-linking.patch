@@ -1,0 +1,26 @@
+--- a/dune
++++ b/dune
+@@ -1,12 +1,8 @@
+ (include_subdirs unqualified)
+ 
+-; A fully static executable isn't achievable on aarch64: Ubuntu's prebuilt
+-; libc.a crt startup code (libc-start.o) accesses __stack_chk_guard through a
+-; short-range GOT-relative relocation that overflows once the statically
+-; linked binary (all of the OCaml runtime plus every module) grows past
+-; ~1MB of GOT distance -- "relocation truncated to fit:
+-; R_AARCH64_LD64_GOTPAGE_LO15". That's baked into glibc's own prebuilt
+-; object, so no flag on our side can fix it; only skip -static there.
++; Conda supplies shared libraries, not all the static archives required by
++; -static. Use dynamic linking on every Linux architecture; dependency
++; run_exports in the recipe record the required runtime libraries.
+ (rule
+  (targets static-link-flags.sexp)
+  (deps
+@@ -17,6 +13,6 @@
+    static-link-flags.sexp
+    (system
+-    "case \"$(uname -m)\" in aarch64|arm64) echo '()' ;; *) echo '(-ccopt -static -ccopt -no-pie)' ;; esac"))))
++    "case \"$(uname -m)\" in aarch64|arm64) echo '()' ;; *) echo '(-ccopt -no-pie)' ;; esac"))))
+ 
+ (executables
+  (public_names pplacer guppy rppr -)
