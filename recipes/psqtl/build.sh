@@ -3,11 +3,11 @@
 mkdir -p $PREFIX/bin
 
 cp psQTL_prep.py $PREFIX/bin/psQTL_prep.py
-cp psQTL_prep.py $PREFIX/bin/psQTL_prep
+ln -s $PREFIX/bin/psQTL_prep.py $PREFIX/bin/psQTL_prep
 cp psQTL_proc.py $PREFIX/bin/psQTL_proc.py
-cp psQTL_proc.py $PREFIX/bin/psQTL_proc
+ln -s $PREFIX/bin/psQTL_proc.py $PREFIX/bin/psQTL_proc
 cp psQTL_post.py $PREFIX/bin/psQTL_post.py
-cp psQTL_post.py $PREFIX/bin/psQTL_post
+ln -s $PREFIX/bin/psQTL_post.py $PREFIX/bin/psQTL_post
 cp _version.py $PREFIX/bin/_version.py
 
 mkdir -p $PREFIX/bin/modules

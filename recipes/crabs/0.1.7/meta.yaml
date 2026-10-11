@@ -1,0 +1,48 @@
+{% set name = "crabs" %}
+{% set version = "0.1.7" %}
+{% set sha256 = "21dccb121379ad0cd9e6579cc9f0ce8a8884fca3970edefee507604641cd3523" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gjeunen/reference_database_creator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+    - biopython >=1.78,<1.85
+
+  run:
+    - python >=3.8
+    - biopython >=1.78,<1.85
+    - tqdm
+    - numpy
+    - pandas
+    - matplotlib-base
+    - cutadapt >=3.4
+    - vsearch >=2.13.3
+    - muscle
+
+test:
+  commands:
+    - crabs -h
+
+about:
+  home: https://github.com/gjeunen/reference_database_creator
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CRABS is a program to download and curate reference databases for eDNA metabarcoding."
+  dev_url: https://github.com/gjeunen/reference_database_creator

@@ -1,0 +1,56 @@
+{% set version = "1.2.0" %}
+{% set name = "SEraster" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 83f9d8f731b370316c3597fbd9d6646d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-seraster", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: CooccurrenceAffinity, nnSVG, testthat (>= 3.0.0), knitr, rmarkdown, BiocManager, remotes
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-ggplot2
+    - r-matrix
+    - r-rearrr
+    - r-sf
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-ggplot2
+    - r-matrix
+    - r-rearrr
+    - r-sf
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Rasterization Preprocessing Framework for Scalable Spatial Omics Data Analysis
+  description: SEraster is a rasterization preprocessing framework that aggregates cellular information into spatial pixels to reduce resource requirements for spatial omics data analysis. SEraster reduces the number of spatial points in spatial omics datasets for downstream analysis through a process of rasterization where single cells’ gene expression or cell-type labels are aggregated into equally sized pixels based on a user-defined resolution. SEraster is built on an R/Bioconductor S4 class called SpatialExperiment. SEraster can be incorporated with other packages to conduct downstream analyses for spatial omics datasets, such as detecting spatially variable genes.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

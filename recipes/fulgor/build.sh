@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 echo "Build GGCAT"
 
 (cd external/ggcat/crates/capi/ggcat-cpp-api && make)
@@ -17,7 +18,7 @@ echo "Build Fulgor"
 
 mkdir build
 cd build
-cmake ..
+cmake .. ${CMAKE_ARGS}
 make -j${CPU_COUNT}
 
 # Installation

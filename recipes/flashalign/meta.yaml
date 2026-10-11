@@ -1,0 +1,50 @@
+{% set name = "flashalign" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/97YearsOldProgrammer/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8cee1d02a9830329086c30bea200fcdecd9133fef639213ae3e276dc24e2c883
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - cmake
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - flashalign version | grep {{ version }}
+    - flashalign align --help 2>&1 | grep 'Usage'
+    - test -e $PREFIX/share/man/man1/flashalign.1
+
+about:
+  home: "https://github.com/97YearsOldProgrammer/flashalign"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_NOTICES.md
+  summary: "A fast aligner for long DNA and mRNA reads."
+  dev_url: "https://github.com/97YearsOldProgrammer/flashalign"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.5281/zenodo.22985251
+  recipe-maintainers:
+    - 97YearsOldProgrammer

@@ -1,0 +1,67 @@
+{% set name = "openspliceai" %}
+{% set version = "0.0.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d1a37dbdd91595b631e571ef6f611f763e5b598ceae506669174fc54a8e6b436
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("openspliceai", max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9
+    - pytorch >=2.2.1
+    - numpy >=1.24.4
+    - pandas >=1.5.3
+    - h5py >=3.9.0
+    - tqdm >=4.65.2
+    - scikit-learn >=1.4.1
+    - biopython >=1.83
+    - matplotlib-base >=3.8.3
+    - psutil >=5.9.2
+    - pysam >=0.22.0
+    - pyfaidx >=0.8.1.1
+    - gffutils >=0.12
+    - mappy >=2.28
+
+test:
+  imports:
+    - openspliceai
+    - openspliceai.openspliceai
+  commands:
+    - openspliceai --help
+
+about:
+  home: https://github.com/Kuanhao-Chao/OpenSpliceAI
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Deep learning framework that decodes splicing across species
+  description: |
+    OpenSpliceAI is an open-source, PyTorch-based reimplementation and extension
+    of SpliceAI for splice-site prediction. It is distributed as a single
+    `openspliceai` command with subcommands for create-data, train, transfer,
+    calibrate, predict, and variant scoring, and ships pretrained models for
+    several species.
+  doc_url: https://ccb.jhu.edu/openspliceai/
+  dev_url: https://github.com/Kuanhao-Chao/OpenSpliceAI
+
+extra:
+  recipe-maintainers:
+    - Kuanhao-Chao
+  identifiers:
+    - doi:10.7554/eLife.107454

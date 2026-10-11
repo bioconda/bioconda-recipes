@@ -1,0 +1,56 @@
+{% set name = "ssuplex" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ayobi/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e8393526159dd825122abad803838bcf04bb9d1130dfd93b1c310afea72312d1
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    - hmmer >=3.1
+
+test:
+  commands:
+    - ssuplex --help
+    - ssuplex --version
+
+about:
+  home: https://github.com/ayobi/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Fast SSU rRNA extraction and origin sorting (bacterial, archaeal, eukaryotic, mitochondrial, chloroplast) for eDNA reads."
+  description: |
+    SSUplex extracts small-subunit rRNA (16S/18S) sequences from environmental
+    sequencing reads and sorts them by origin so each set can be routed to the
+    appropriate downstream classifier. It is a Rust reimplementation of the
+    Metaxa2 SSU extraction and origin-classification step, using nhmmer to scan
+    both strands. HMM profiles are not bundled; build them from the Metaxa2 SSU
+    profile database as described in the README.
+  dev_url: https://github.com/ayobi/{{ name }}
+  doc_url: https://github.com/ayobi/{{ name }}#readme
+
+extra:
+  recipe-maintainers:
+    - ayobi
+  identifiers:
+    - doi:10.64898/2026.07.02.736232
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,72 @@
+{% set version = "1.0.0" %}
+{% set name = "CSOA" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 01981ff6f66b309ef3fd464259c82a9b
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-csoa", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, patchwork, rmarkdown, scRNAseq, scuttle, stringr, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-bayesbio
+    - r-dplyr
+    - r-ggplot2
+    - r-henna
+    - r-kerntools
+    - r-qs
+    - r-reshape2
+    - r-rlang
+    - r-seurat
+    - r-seuratobject
+    - r-sgof
+    - r-spatstat.utils
+    - r-textshape
+    - r-wesanderson
+  run:
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-bayesbio
+    - r-dplyr
+    - r-ggplot2
+    - r-henna
+    - r-kerntools
+    - r-qs
+    - r-reshape2
+    - r-rlang
+    - r-seurat
+    - r-seuratobject
+    - r-sgof
+    - r-spatstat.utils
+    - r-textshape
+    - r-wesanderson
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Calculate per-cell gene signature scores in scRNA-seq data using cell set overlaps
+  description: Cell Set Overlap Analysis (CSOA) is a tool for calculating per-cell gene signature scores in an scRNA-seq dataset. CSOA constructs a set for each gene in the signature, consisting of the cells that highly express the gene. Next, all overlaps of pairs of cell sets are computed, ranked, filtered and scored. The CSOA per-cell score is calculated by summing up all products of the overlap scores and the min-max-normalized expression of the two involved genes. CSOA can run on a Seurat object, a SingleCellExperiment object, a matrix and a dgCMatrix.
+  license_file: LICENSE
+
