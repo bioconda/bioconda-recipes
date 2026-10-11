@@ -9,12 +9,10 @@ mkdir -p "${PREFIX}/bin"
 # Copy across unit tests and python scripts
 cp -rf unit-tests "${SHARE_DIR}"
 
-sed -i.bak 's|-O2|-O3 -std=c++11|' source/Makefile
-rm -f source/*.bak
-
 2to3 -wn scripts/*.py
 2to3 -wn source/*.py
 
+sed -i.bak 's|-O2|-O3 -std=c++11|' source/Makefile
 sed -i.bak '1s/^\.7//' source/ExpressBetaDiversity.cpp
 rm -f source/*.bak
 
