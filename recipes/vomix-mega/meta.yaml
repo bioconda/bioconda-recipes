@@ -1,0 +1,50 @@
+{% set name = "vOMIX-MEGA" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/holab-hku/vOMIX-MEGA/archive/v{{ version }}.tar.gz
+  sha256: 7d8a04951c3e6c97cf110d2fcb8b615f89ea58942f122740c8666d537d7e3fbe
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  entry_points:
+    - vomix = vomix.vomix:cli
+  run_exports:
+    - {{ pin_subpackage('vomix-mega', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.10,<3.14
+    - click >=8,<9
+    - rich-click >=1.5,<2
+    - snakemake >=9.23.1,<10
+    - biopython >=1.84
+    - snakemake-executor-plugin-cluster-generic >=1.0.9,<2
+
+test:
+  imports:
+    - vomix
+  commands:
+    - pip check
+    - vomix --help
+
+about:
+  home: https://github.com/holab-hku/vOMIX-MEGA
+  license: GPL-3.0-only
+  license_file: LICENSE.md
+  summary: 'An ultra-fast & modular end-to-end pipeline for terabyte-scale viral metagenomics analysis.'
+
+extra:
+  recipe-maintainers:
+    - erfanshekarriz

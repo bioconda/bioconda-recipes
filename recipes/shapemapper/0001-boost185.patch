@@ -1,0 +1,88 @@
+diff --git a/internals/cpp-src/CMakeLists.txt b/internals/cpp-src/CMakeLists.txt
+index 4e3eb75..9d10190 100644
+--- a/internals/cpp-src/CMakeLists.txt
++++ b/internals/cpp-src/CMakeLists.txt
+@@ -28,7 +28,7 @@ set(CMAKE_C_FLAGS "-Wall -g -O2")
+ #    message(STATUS "${_variableName}=${${_variableName}}")
+ #endforeach()
+ 
+-find_package(Boost PATHS ../thirdparty/miniconda/envs/shapemapper_make/include/boost COMPONENTS filesystem program_options iostreams system REQUIRED)
++find_package(Boost PATHS ../thirdparty/miniconda/envs/shapemapper_make/include/boost COMPONENTS filesystem program_options iostreams REQUIRED)
+ 
+ 
+ if ( Boost_FOUND )
+diff --git a/internals/cpp-src/src/MutationCounter.cpp b/internals/cpp-src/src/MutationCounter.cpp
+index 151d6b8..30e081f 100644
+--- a/internals/cpp-src/src/MutationCounter.cpp
++++ b/internals/cpp-src/src/MutationCounter.cpp
+@@ -112,7 +112,7 @@ namespace mutation_counter {
+                 throw std::runtime_error("ERROR: Could not open input file " + filename +
+                                          " - unknown error.\nCheck file and folder permissions.");
+             }
+-            if (BF::extension(BF::path(filename)) == ".gz") {
++            if (BF::path(filename).extension().string() == ".gz") {
+                 // decompress gzip if file looks compressed
+                 files.back()->push(BI::gzip_decompressor());
+             }
+@@ -142,7 +142,7 @@ namespace mutation_counter {
+                         "ERROR: Could not open output file " + out_names[i] + "\nCheck file and folder permissions.");
+             }
+             std::unique_ptr <BI::filtering_ostream> out(new BI::filtering_ostream);
+-            if (BF::extension(BF::path(out_names[i])) == ".gz") {
++            if (BF::path(out_names[i]).extension().string() == ".gz") {
+                 // compress using gzip if requested
+                 out->push(BI::gzip_compressor());
+             }
+diff --git a/internals/cpp-src/src/MutationParser.cpp b/internals/cpp-src/src/MutationParser.cpp
+index db669b7..e71b5f6 100644
+--- a/internals/cpp-src/src/MutationParser.cpp
++++ b/internals/cpp-src/src/MutationParser.cpp
+@@ -891,7 +891,7 @@ namespace mutation_parser {
+         BI::filtering_istream in;
+         // universal newline support filter
+         in.push(BI::newline_filter(BI::newline::posix));
+-        if (BF::extension(BF::path(filename)) == ".gz") {
++        if (BF::path(filename).extension().string() == ".gz") {
+             // decompress gzip if file looks compressed
+             in.push(BI::gzip_decompressor());
+         }
+@@ -904,7 +904,7 @@ namespace mutation_parser {
+         }
+ 
+         BI::filtering_ostream out;
+-        if (BF::extension(BF::path(outname)) == ".gz") {
++        if (BF::path(outname).extension().string() == ".gz") {
+             // compress using gzip if requested
+             out.push(BI::gzip_compressor());
+         }
+@@ -934,7 +934,7 @@ namespace mutation_parser {
+ //                        "ERROR: Could not open output file " + outname_ga + "\nCheck file and folder permissions.");
+ //            }
+ 
+-            //if (BF::extension(BF::path(outname_ga)) == ".gz") {
++            //if (BF::path(outname_ga).extension().string() == ".gz") {
+                 // compress using gzip if requested
+             //    out_GA.push(BI::gzip_compressor());
+             //}
+diff --git a/internals/cpp-src/src/ReadTrimmer.cpp b/internals/cpp-src/src/ReadTrimmer.cpp
+index 25c30a0..b4730d7 100644
+--- a/internals/cpp-src/src/ReadTrimmer.cpp
++++ b/internals/cpp-src/src/ReadTrimmer.cpp
+@@ -109,7 +109,7 @@ namespace read_trimmer {
+         BI::filtering_istream in;
+         // universal newline support filter
+         in.push(BI::newline_filter(BI::newline::posix));
+-        if (BF::extension(BF::path(filename)) == ".gz") {
++        if (BF::path(filename).extension().string() == ".gz") {
+             // decompress gzip if file looks compressed
+             in.push(BI::gzip_decompressor());
+         }
+@@ -128,7 +128,7 @@ namespace read_trimmer {
+                     "ERROR: Could not open output file " + outname + "\nCheck file and folder permissions.");
+         }
+         BI::filtering_ostream out;
+-        if (BF::extension(BF::path(outname)) == ".gz") {
++        if (BF::path(outname).extension().string() == ".gz") {
+             // compress using gzip if requested
+             out.push(BI::gzip_compressor());
+         }

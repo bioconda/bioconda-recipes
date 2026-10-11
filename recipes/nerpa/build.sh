@@ -41,3 +41,6 @@ cp -rf * ${SHARE_PATH}/
 
 ln -s ${SHARE_PATH}/nerpa.py ${PREFIX}/bin/nerpa.py
 ln -s ${SHARE_PATH}/nerpa.py ${PREFIX}/bin/nerpa
+
+mkdir -p "${SHARE_PATH}/external_tools/paras"
+cp paras_model/model.paras "${SHARE_PATH}/external_tools/paras/"
