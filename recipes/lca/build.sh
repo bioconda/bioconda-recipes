@@ -23,6 +23,7 @@ esac
 case $(uname -s) in
     Darwin)
         sed -i.bak 's|-Wl,--whole-archive||' Makefile
+		sed -i.bak 's|-Wl,--no-whole-archive||' Makefile
         ;;
 esac
 
