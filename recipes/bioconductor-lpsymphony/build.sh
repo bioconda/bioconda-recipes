@@ -10,7 +10,7 @@ mkdir -p ~/.R
 
 echo -e "CC=$CC
 FC=$FC
-CXX=$CXX
+CXX=$CXX -Wno-register
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
