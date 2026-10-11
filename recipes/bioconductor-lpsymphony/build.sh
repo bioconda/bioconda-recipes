@@ -15,4 +15,6 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 
+sed -i.bak 's/CXXFLAGS="-w -g -O2"/CXXFLAGS="-w -g -O3 -std=gnu++14"/g' configure && rm -f configure.bak
+
 $R CMD INSTALL --build . "${R_ARGS}"
