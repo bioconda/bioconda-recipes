@@ -13,6 +13,8 @@ export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
 export PATH="${HOME}/.cargo/bin:${PATH}"
 
+cargo update --manifest-path rust/Cargo.toml -p hts-sys --precise 2.2.1
+
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 if [[ "$(uname -s)" == "Darwin" ]]; then
