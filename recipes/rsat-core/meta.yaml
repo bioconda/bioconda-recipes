@@ -5,17 +5,16 @@ package:
   name: rsat-core
   version: {{ version }}
 
-build:
-  run_exports:
-    - {{ pin_subpackage('rsat-core', max_pin="x.x") }}
-  number: 0
-  skip: True  # [py2k]
-  script_env:
-   - LC_ALL=POSIX
-
 source:
   url: https://github.com/rsa-tools/rsat-code/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script_env:
+   - LC_ALL=POSIX
+  run_exports:
+    - {{ pin_subpackage('rsat-core', max_pin=None) }}
 
 requirements:
   build:
@@ -24,9 +23,8 @@ requirements:
     - {{ compiler('fortran') }}
     - {{ stdlib('c') }}
     - make
-    - r-base 4.2.3 
-    - openssl 3.5.4
-
+    - r-base
+    - openssl
   run:
     ## Python3      
     - python
@@ -39,8 +37,8 @@ requirements:
     - pyyaml
     - opencv
     ## R and BioConductor dependencies
-    - r-base 4.2.3
-    - openssl 3.5.4  
+    - r-base
+    - openssl
     - r-gplots
     - r-jpeg
     - r-png
@@ -116,12 +114,14 @@ test:
     - "rsat matrix-clustering -h"
 
 about:
-  home: "http://rsat.eu"
+  home: "https://github.com/rsa-tools/rsat-code"
   summary: "Regulatory Sequence Analysis Tools (RSAT)"
-  license: "GNU Affero General Public License v3"
-  license_file: LICENSE.txt
+  license: "AGPL-3.0-only"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
   description: "Detection and analysis of regulatory signals in non-coding sequences."
   dev_url: "https://github.com/rsa-tools/rsat-code"
+  doc_url: "http://rsat.eu"
 
 extra:
   identifiers:
@@ -129,6 +129,7 @@ extra:
     - doi:10.1093/nar/gky317
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   notes: |
     This package installs RSAT tools to analyse cis-regulatory elements, supporting:
     * motif discovery (support genome-wide data sets like ChIP-seq)
