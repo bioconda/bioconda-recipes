@@ -1,0 +1,54 @@
+{% set name = "gnk_fastasort" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "c73fdd7add9cd8e4167e1befa3a59ba47d58f56a30b7fb734956737d549a688d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage( name|lower , max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.12
+
+test:
+  imports:
+    - gnk_fastasort
+  commands:
+    - fastasort -h
+
+about:
+  home: https://github.com/sanger-tol/gnk_fastasort
+  dev_url: https://github.com/sanger-tol/gnk_fastasort
+  license: MIT
+  license_file: LICENSE
+  summary: A package to generate a GenomeNote ordered TSV of a genome.
+  description: |
+    This package uses can use either a SAMTOOLS FAIDX indexed genome or
+    an API call to NCBI to retrieve a sequence report.
+    This is then used to generate a preferred ordering of the genome as a TSV,
+    which can then be used to re-order a pretextsnapshot or create a re-ordered
+    fasta file using samtools faidx.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
+  recipe-maintainers:
+    - DLBPointon

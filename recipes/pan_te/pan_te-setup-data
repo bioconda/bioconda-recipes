@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# pan_te-setup-data — fetch the data assets that cannot ship inside the conda package
+# (license / redistribution limits): the Dfam library used by RepeatMasker, and the
+# ClassifyTE code + trained models.
+#
+# This script performs REAL downloads. If a download fails it stops with the exact error
+# and a non-zero exit code — it never fabricates or stubs the data.
+#
+#   pan_te-setup-data --classifyte-dir <DIR>           # fetch ClassifyTE repo + models
+#   pan_te-setup-data --dfam-url <URL>                 # fetch a Dfam famdb partition for RepeatMasker
+#   pan_te-setup-data --dfam-list                      # show how to pick a Dfam partition
+#   pan_te-setup-data --classifyte-dir <DIR> --dfam-url <URL>   # both
+set -euo pipefail
+
+CLASSIFYTE_DIR=""
+DFAM_URL=""
+DFAM_LIST=0
+CLASSIFYTE_REPO="https://github.com/unavailable-2374/ClassifyTE.git"
+# ClassifyTE_Models.zip (Google Drive file id from the Pan_TE README).
+CLASSIFYTE_MODELS_GDRIVE_ID="1CuDciG0Ru5zRBhffjQmgJdqSMQB89mfh"
+
+usage() {
+    sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'
+    cat <<'EOF'
+
+Options:
+  --classifyte-dir DIR   Clone ClassifyTE here and install its models into DIR/models.
+                         Pass DIR to Pan_TE later as --model-dir.
+  --dfam-url URL         Download this Dfam famdb .h5 partition into RepeatMasker's
+                         Libraries/famdb/ directory (see --dfam-list for how to choose).
+  --dfam-list            Explain how to choose a Dfam partition URL, then exit.
+  -h, --help             Show this help.
+EOF
+}
+
+die() { echo "[pan_te-setup-data] ERROR: $*" >&2; exit 1; }
+log() { echo "[pan_te-setup-data] $*"; }
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --classifyte-dir) CLASSIFYTE_DIR="${2:?}"; shift 2 ;;
+        --dfam-url)       DFAM_URL="${2:?}"; shift 2 ;;
+        --dfam-list)      DFAM_LIST=1; shift ;;
+        -h|--help)        usage; exit 0 ;;
+        *) die "unknown argument: $1 (see --help)" ;;
+    esac
+done
+
+if [ "$DFAM_LIST" -eq 1 ]; then
+    cat <<'EOF'
+Choosing a Dfam partition for RepeatMasker
+------------------------------------------
+RepeatMasker reads TE families from a famdb HDF5 database under
+  <conda-env>/share/RepeatMasker/Libraries/famdb/
+The bioconda `repeatmasker` package ships only a small root partition. For real
+annotation, download a partition from the Dfam release directory and point --dfam-url at it:
+
+  Browse:   https://www.dfam.org/releases/   (pick a release, then the `families/` dir)
+  Files look like:  dfam39_full.0.h5.gz, dfam39_full.1.h5.gz, ...  (partition 0 = root + common)
+
+Pick the partition(s) covering your clade (partition 0 is always required), then:
+  pan_te-setup-data --dfam-url https://www.dfam.org/releases/Dfam_3.9/families/dfam39_full.0.h5.gz
+
+Note: full Dfam partitions are large (many GB). Verify the current release/filenames on the
+site above — Dfam version numbers change over time. This tool downloads exactly the URL you give.
+EOF
+    exit 0
+fi
+
+[ -n "$CLASSIFYTE_DIR" ] || [ -n "$DFAM_URL" ] || { usage; die "nothing to do: pass --classifyte-dir and/or --dfam-url"; }
+
+# ---------------------------------------------------------------------------
+# ClassifyTE: clone repo + fetch trained models
+# ---------------------------------------------------------------------------
+if [ -n "$CLASSIFYTE_DIR" ]; then
+    command -v git >/dev/null   || die "git not found on PATH"
+    command -v gdown >/dev/null || die "gdown not found (it is a pan_te run dependency; activate the pan_te env)"
+
+    mkdir -p "$CLASSIFYTE_DIR"
+    if [ -d "$CLASSIFYTE_DIR/.git" ]; then
+        log "ClassifyTE repo already present at $CLASSIFYTE_DIR (skipping clone)"
+    else
+        log "cloning ClassifyTE into $CLASSIFYTE_DIR"
+        git clone --depth 1 "$CLASSIFYTE_REPO" "$CLASSIFYTE_DIR"
+    fi
+
+    mkdir -p "$CLASSIFYTE_DIR/models"
+    local_zip="$CLASSIFYTE_DIR/ClassifyTE_Models.zip"
+    log "downloading ClassifyTE models (Google Drive id $CLASSIFYTE_MODELS_GDRIVE_ID)"
+    gdown --id "$CLASSIFYTE_MODELS_GDRIVE_ID" -O "$local_zip" \
+        || die "ClassifyTE model download failed (the Google Drive file may require manual download; see the Pan_TE README link)"
+
+    log "unzipping models"
+    command -v unzip >/dev/null || die "unzip not found on PATH"
+    tmp_extract="$(mktemp -d)"
+    unzip -q -o "$local_zip" -d "$tmp_extract"
+    # the zip contains a ClassifyTE_Models/ dir; copy its *.pkl into models/
+    found=0
+    while IFS= read -r -d '' m; do
+        cp "$m" "$CLASSIFYTE_DIR/models/"; found=$((found + 1))
+    done < <(find "$tmp_extract" -name '*.pkl' -print0)
+    rm -rf "$tmp_extract"
+    [ "$found" -gt 0 ] || die "no .pkl model files found inside $local_zip"
+    log "installed $found ClassifyTE model file(s) into $CLASSIFYTE_DIR/models"
+    log "pass this to Pan_TE:  --model-dir $CLASSIFYTE_DIR"
+fi
+
+# ---------------------------------------------------------------------------
+# Dfam: download a famdb partition into the active RepeatMasker install
+# ---------------------------------------------------------------------------
+if [ -n "$DFAM_URL" ]; then
+    command -v RepeatMasker >/dev/null || die "RepeatMasker not found on PATH (activate the pan_te env)"
+    rm_path="$(command -v RepeatMasker)"
+    # RepeatMasker lives at <prefix>/share/RepeatMasker/RepeatMasker on bioconda.
+    rm_share="$(cd "$(dirname "$rm_path")" && pwd)"
+    if [ ! -d "$rm_share/Libraries" ]; then
+        # bioconda symlinks the launcher into bin/; resolve to the real share dir.
+        real_rm="$(readlink -f "$rm_path")"
+        rm_share="$(dirname "$real_rm")"
+    fi
+    famdb_dir="$rm_share/Libraries/famdb"
+    [ -d "$rm_share/Libraries" ] || die "could not locate RepeatMasker Libraries dir (looked under $rm_share)"
+    mkdir -p "$famdb_dir"
+
+    fname="$(basename "$DFAM_URL")"
+    out="$famdb_dir/$fname"
+    log "downloading Dfam partition -> $out"
+    curl -fL --retry 3 -o "$out" "$DFAM_URL" || die "Dfam download failed for $DFAM_URL"
+
+    if [[ "$fname" == *.gz ]]; then
+        log "decompressing $fname"
+        gunzip -f "$out"
+        out="${out%.gz}"
+    fi
+    [ -s "$out" ] || die "downloaded Dfam file is empty: $out"
+    log "Dfam partition installed at $out"
+    log "verify RepeatMasker sees it:  famdb.py -i $famdb_dir info  (or run RepeatMasker on a test FASTA)"
+fi
+
+log "done."

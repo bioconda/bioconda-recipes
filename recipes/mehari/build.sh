@@ -17,4 +17,4 @@ rm .cargo/config.toml  # remove custom config.toml for now
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust
-cargo install --no-track --locked --root "${PREFIX}" --path .
+cargo install --no-track --locked --root "${PREFIX}" --path mehari

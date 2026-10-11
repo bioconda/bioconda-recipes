@@ -1,43 +1,48 @@
 {% set name = "lib-pod5" %}
-{% set version = "0.3.33" %}
+{% set version = "0.3.48" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   git_url: https://github.com/nanoporetech/pod5-file-format.git
   git_rev: {{ version }}
   sha256: unused
+  patches:
+    - 0001-CMakeLists.patch
+    - pod5-0.3.48-arrow21.patch
 
 build:
   number: 0
-  skip: True  # [py < 38]
+  skip: True  # [py < 310]
   script_env:
     - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
-    - {{ pin_subpackage('lib-pod5', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - cmake
-    - make
+    - ninja
     - pkg-config
   host:
     - python
     - pip
     - setuptools
-    - setuptools-scm
+    - setuptools-scm ==7.1.0
+    - python-build
     - pybind11
     - flatbuffers
-    - pyarrow <21
+    - pyarrow <23
     - zstd
     - zlib
   run:
     - python
     - numpy >=1.21.0
-    - pyarrow <21
+    - pyarrow <23
 
 test:
   imports:

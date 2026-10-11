@@ -1,5 +1,5 @@
 {% set name = "correlationplus" %} 
-{% set version = "0.2.1" %}
+{% set version = "0.2.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,22 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 848ca7d2a7d42ca7b8ca19a7fefd2d8621330e1c5e6101364744453bec798ac1
+  sha256: 0dd442521eac1cc78b7fef268c61e12d7cc05f0cd1bf137794bea0feadf8e5de
 
 build:
   number: 0
   noarch: python
   entry_points:
     - correlationplus=correlationplus.scripts.correlationplus:main
-  script: "{{ PYTHON }} -m pip install . -vv --ignore-installed --no-deps"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -v
+  run_exports:
+    - {{ pin_subpackage('correlationplus', max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
     - matplotlib-base
     - networkx
@@ -39,7 +42,7 @@ test:
 
 about:
   home: "https://github.com/tekpinar/correlationplus"
-  license: "GNU Lesser General Public v3 (LGPLv3)"
+  license: LGPL-3.0-or-later
   license_family: LGPL
   license_file: COPYING.LESSER
   summary: "A Python package to calculate, visualize and analyze dynamical correlations of proteins."
@@ -49,3 +52,4 @@ about:
 extra:
   recipe-maintainers:
     - bneron
+    - tekpinar

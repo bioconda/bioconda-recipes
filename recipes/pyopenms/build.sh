@@ -29,21 +29,25 @@ cd build
 #  We do not recommend less than 12 for current CI runners. You can try to decrease when they get more RAM
 #  or faster CPUs.
 cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
-	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="27e3601" \
+	-DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" -DOPENMS_GIT_SHORT_SHA1="c1370fb" \
  	-DOPENMS_CONTRIB_LIBS="SILENCE_WARNING_SINCE_NOT_NEEDED" \
 	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
 	-DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-    -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=12 \
+    -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=16 \
     -DNO_DEPENDENCIES=ON -DNO_SHARE=ON \
 	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
  	${PLATFORM_CMAKE_EXTRAS}
 
 # NO_DEPENDENCIES since conda takes over re-linking etc
 
-# limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
+# Limit parallel jobs for memory usage since pyopenms has huge cython generated cpp files.
+# With 3.5.0 the generated sources grew enough that building at full CPU_COUNT parallelism
+# OOMs the 16 GB CI runners (each Cython process has a large fixed cost). -j3 (paired with
+# the increased PY_NUM_MODULES above) keeps peak RAM within budget while retaining enough
+# parallelism to build in reasonable time.
 #cmake --build . --clean-first --target pyopenms -j 1
-ninja pyopenms -j"${CPU_COUNT}"
+ninja pyopenms -j3
 
 echo "wheels are in `find . | grep whl`"  >&2
 ${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --use-pep517 --no-binary=pyopenms -vvv
