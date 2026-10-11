@@ -3,45 +3,53 @@
 
 package:
   name: r-rrbgen
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/rwdavies/rrbgen/releases/download/{{ version }}/rrbgen_{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
-  number: 12
-  script: '$R CMD INSTALL --build --install-tests .'
+  number: 13
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  script:
+    - export DISABLE_AUTOBREW=1
+    # DESCRIPTION forces C++11; RcppArmadillo >=15.2.5 requires C++14+
+    - sed -i.bak '/^SystemRequirements: C++11$/d' DESCRIPTION && rm -f DESCRIPTION.bak
+    - ${R} CMD INSTALL --build --install-tests . "${R_ARGS}"
   run_exports:
     - {{ pin_subpackage('r-rrbgen', max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
   host:
     - r-base
     - r-rcpp >=0.12.18
     - r-rcpparmadillo >=0.8.600.0.0
-    - r-testthat >=2.0.0    
+    - r-testthat >=2.0.0
   run:
     - r-rcpp >=0.12.18
     - r-rcpparmadillo >=0.8.600.0.0
     - r-base
     - r-testthat >=2.0.0
-    
+
 test:
   commands:
-    - $R -e "library('rrbgen')"  
+    - $R -e "library('rrbgen')"
     - $R -e "testthat::test_package('rrbgen', stop_on_failure = TRUE, stop_on_warning = TRUE)"
 
 about:
-  home: https://github.com/rwdavies/rrbgen
-  license: GPL3
+  home: "https://github.com/rwdavies/rrbgen"
+  license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: A lightweight limited functionality R bgen read/write library
-  doc_url: https://github.com/rwdavies/rrbgen
-  dev_url: https://github.com/rwdavies/rrbgen
+  summary: "A lightweight limited functionality R bgen read/write library."
+  doc_url: "https://github.com/rwdavies/rrbgen"
+  dev_url: "https://github.com/rwdavies/rrbgen"
 
 extra:
   additional-platforms:
