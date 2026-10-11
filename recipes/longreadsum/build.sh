@@ -13,7 +13,8 @@ sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
 sed -i.bak 's|-std=c++11|-std=c++14|' setup.py
 rm -f *.bak
 
-echo "#pragma once\n#define VERSION \"v${PKG_VERSION}\"" > include/version.h
+# Upstream's committed version.h is stale (v1.4.0-5-g9e0d2c4); regenerate it for this release
+printf '#pragma once\n#define VERSION "v%s"\n' "${PKG_VERSION}" > "${SRC_DIR}/include/version.h"
 
 # Build the C++ library
 make CXX="${CXX}" -j"${CPU_COUNT}"
