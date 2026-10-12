@@ -1,0 +1,68 @@
+{% set name = "hrpv2" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndolfoG/HRPv2/releases/download/v{{ version }}/HRPv2-{{ version }}.tar.gz
+  sha256: a0edc5a1a77ec7995950295e9c4608768c9dd39886be0d56b4e35e060d79c6f1
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - bash
+    - coreutils
+  run:
+    - python >=3.12,<3.13
+    - openjdk >=11,<12
+    - bash
+    - coreutils
+    - genblastg =1.38
+    - blast-legacy =2.2.26
+    - hmmer >=3.4,<3.5
+    - meme >=5.5.9,<5.6
+    - mafft >=7.526,<7.527
+
+test:
+  commands:
+    - HRPv2 --version | grep -Fx "HRPv2"
+    - HRPv2 --help > /dev/null
+    - test -x "${PREFIX}/bin/run_genblastG"
+    - test -r "${PREFIX}/share/hrpv2/alignscore.txt"
+    - command -v genblastG
+    - command -v blastall
+    - command -v formatdb
+    - command -v hmmbuild
+    - command -v hmmsearch
+    - command -v meme
+    - command -v meme2meme
+    - command -v mast
+    - command -v mafft
+
+about:
+  home: https://github.com/AndolfoG/HRPv2
+  dev_url: https://github.com/AndolfoG/HRPv2
+  doc_url: https://github.com/AndolfoG/HRPv2/blob/main/README.md
+  license: GPL-3.0-only
+  license_file:
+    - LICENSE
+    - COPYRIGHT
+    - NOTICE
+  summary: Genome-wide prediction, classification and filtering of plant NB-LRR resistance genes
+
+extra:
+  notes: |
+    HRPv2 installs a compatibility wrapper named run_genblastG for GenBlastG
+    1.38 and its BLAST legacy dependencies. InterProScan is not distributed
+    with HRPv2. Install InterProScan separately and pass the absolute path to
+    interproscan.sh with --interproscan-bin.
+  recipe-maintainers:
+    - AndolfoG
+
