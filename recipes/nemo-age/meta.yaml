@@ -1,16 +1,15 @@
-{% set version = "0.32.0" %}
-{% set sha256 = "81ff58a020d506a7c7da4e43e6fe62da023e947cfa641d6dd34ca72a43f7bbf4" %}
+{% set version = "0.33.0" %}
+{% set commit = "59212f12fd26f24577c20453421a4a658eb9d00c" %}
 
 package:
   name: nemo-age
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/ecoevo/nemo-age-release/get/36bf8d4779b0377e299d63f6dfae6a7a46bd17f6.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-    - Makefile.patch
-    - 0001-cstdint.patch
+  # Immutable, commit-pinned tarball of the v0.33.0 tag of the public release
+  # repository.
+  url: https://bitbucket.org/ecoevo/nemo-age-release/get/{{ commit }}.tar.gz
+  sha256: b21853507b01b7319741b149fe6a069c6c85652a953114e6afaa5eaf681392d6
 
 build:
   number: 0
@@ -20,30 +19,30 @@ build:
 requirements:
   build:
     - make
-    - {{ stdlib('c') }}
+    - sed          # build.sh patches three Makefile lines
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - mpich-mpicxx
-    - sed
+    # GSL is the only library this build uses. MPI is never enabled (build.sh
+    # does not set MPI=1, so -DUSE_MPI is never defined), there is no
+    # `#pragma omp` in src/, and BLAS comes from GSL's own -lgslcblas; the
+    # previous mpich-mpicxx / libgomp / llvm-openmp entries were unused.
     - gsl
   run:
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - mpich-mpicxx
     - gsl
 
 test:
-  commands:
-    - nemoage 2>&1 | grep "N E M O A G E"
+  files:
+    - smoke.ini
+  # run_test.sh in this directory is picked up automatically. It runs a short
+  # simulation rather than only checking that the binary prints its version.
 
 about:
   home: "https://bitbucket.org/ecoevo/nemo-age-release"
   summary: "In Nemo-age, it is possible to model genetic and phenotypic evolution in populations with, for instance, overlapping generations, a seed bank, and multiple age classes with stage-specific transition rates, fecundities, selection pressures, and dispersal rates, among other things."
   license: "GPL-3.0-or-later"
   license_family: GPL3
-  license_file: "readme.txt"
+  license_file: COPYING
   dev_url: "https://bitbucket.org/ecoevo/nemo-age-release"
   doc_url: "https://bitbucket.org/ecoevo/nemo-age-release/src/v{{ version }}/README.md"
 
@@ -53,3 +52,5 @@ extra:
     - osx-arm64
   identifiers:
     - doi:10.1111/2041-210X.13460
+  recipe-maintainers:
+    - fredgui
