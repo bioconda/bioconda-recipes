@@ -1,0 +1,57 @@
+{% set name = "gff3-validator" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gff3_validator-{{ version }}.tar.gz
+  sha256: 1ac25dda9af64b41ce25cb6042496493c96838879fac90371ba47cfd657aa24f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - gff3-validate = gff3_validator.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - poetry-core >=1.8,<3
+  run:
+    - python >=3.9
+    - pyyaml >=6.0.1,<7
+
+test:
+  imports:
+    - gff3_validator
+  commands:
+    - gff3-validate --version
+    - gff3-validate --help
+
+about:
+  home: https://github.com/FAIR-bioHeaders/gff3-validator
+  summary: Validate GFF3 files against GFF3 1.26, with optional genome-aware biology checks.
+  description: |
+    gff3-validator checks GFF3 files against the GFF3 1.26 specification:
+    syntax, attributes, directives and feature structure (IDs, Parent
+    references, cycles, sequence regions), and with --genome, CDS phase,
+    start and stop codons, internal stops and strand consistency. Every
+    finding cites a numbered rule with its specification reference and a
+    suggested fix. Reports are text, JSON, HTML or SARIF. Plain and
+    gzip/BGZF input is streamed. Also runs in the browser at
+    https://fair-bioheaders.github.io/gff3-validator/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/FAIR-bioHeaders/gff3-validator/blob/main/docs/rules.md
+  dev_url: https://github.com/FAIR-bioHeaders/gff3-validator
+
+extra:
+  recipe-maintainers:
+    - adamjohnwright
