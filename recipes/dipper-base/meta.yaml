@@ -2,7 +2,7 @@
 {% set version = "0.1.5" %}
 
 package:
-  name: {{ name }}
+  name: {{ name }}-base
   version: {{ version }}
 
 source:
@@ -10,10 +10,10 @@ source:
   sha256: 7e60648d372677a5107d112f7316808d3a14c56521a7d5748bd873d81e034c62
 
 build:
-  number: 0
+  number: 1
   skip: True  # [win]
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage('dipper', max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,21 +23,56 @@ requirements:
     - cmake
     - make
     - pkg-config
-    - cuda-nvcc  # [linux]
-    - cuda-cudart-dev  # [linux]
-    - cuda-version >=12.0,<13  # [linux]
   host:
     - zlib
-    - boost-cpp
-    - tbb
+    - libboost-devel
     - tbb-devel
   run:
-    - boost-cpp
     - tbb
 
-test:
-  commands:
-    - dipper_cpu --help
+outputs:
+  - name: dipper
+    files:
+      - bin/dipper_cpu
+    requirements:
+      host:
+        - zlib
+        - libboost-devel
+        - tbb-devel
+      run:
+        - tbb
+    test:
+      commands:
+        - dipper_cpu --help
+
+  - name: dipper-cuda
+    build:
+      skip: True  # [not linux]
+      script: bash ${RECIPE_DIR}/build_cuda.sh
+      run_exports:
+        - {{ pin_subpackage('dipper-cuda', max_pin="x.x") }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - cmake
+        - make
+        - pkg-config
+        - cuda-nvcc
+        - cuda-version >=12.0,<13
+      host:
+        - cuda-cudart-dev
+        - cuda-version >=12.0,<13
+        - zlib
+        - libboost-devel
+        - tbb-devel
+      run:
+        - tbb
+        - dipper =={{ version }}
+    test:
+      commands:
+        - test -x "${PREFIX}/bin/dipper"
 
 about:
   home: "https://github.com/TurakhiaLab/DIPPER"
