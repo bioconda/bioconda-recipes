@@ -1,0 +1,47 @@
+{% set name = "hmmibd-rs" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "dbb73e4a7253be323820b6185f109c9e8d856273f79235e7821b48ba472caf7c" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url:  https://github.com/bguo068/hmmibd-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install --no-track --locked --root "{{ PREFIX }}" --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ stdlib("c") }} 
+  host:
+    - zlib
+    - libiconv
+
+test:
+  commands:
+    - hmmibd-rs --help
+
+about:
+  home: https://github.com/bguo068/hmmibd-rs
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: 'An enhanced, multi-threaded implementation of hmmIBD for parallelizable identity-by-descent detection.'
+  doc_url: https://github.com/bguo068/hmmibd-rs
+
+extra:
+  identifier:
+    - doi:10.1186/s12936-026-05814-2
+  recipe-maintainers:
+    - bguo068
