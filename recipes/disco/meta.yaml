@@ -14,23 +14,26 @@ source:
     - sstr.patch
     - 0003-Utils-cstdint.patch  # [linux]
     - 0004-cs2-parser-pr_type-buffer-size.patch
+    - 0005-overlapgraph-erase-iterator-invalidation.patch
 
 build:
-  number: 1
+  number: 2
   run_exports:
-    - {{ pin_subpackage('disco', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
-    - {{ stdlib('c') }}
     - pkg-config
   host:
+    - coreutils  # [osx and x86_64]
     - mpich-mpicxx
     - zlib
   run:
+    - coreutils  # [osx and x86_64]
     - mpich-mpicxx
     - biopython
     - bbmap
@@ -46,13 +49,17 @@ test:
     - fullsimplify --help
 
 about:
-  home: "http://disco.omicsbio.org"
+  home: "https://github.com/abiswas-odu/Disco"
   license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
   summary: "Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler."
+  dev_url: "https://github.com/abiswas-odu/Disco"
+  doc_url: "https://github.com/abiswas-odu/Disco/blob/{{ version }}/README.md"
 
 extra:
+  identifiers:
+    - usegalaxy-eu:disco
   additional-platforms:
     - linux-aarch64
     - osx-arm64
