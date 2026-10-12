@@ -6,7 +6,7 @@ export BOOST_ROOT="${PREFIX}"
 if [[ "${target_platform}" == osx-* ]]; then
     export MACOSX_DEPLOYMENT_TARGET="11.3"
     export CXXFLAGS="${CXXFLAGS:-} -D_LIBCPP_DISABLE_AVAILABILITY -mmacosx-version-min=11.3"
-    export LDFLAGS="${LDFLAGS:-} -Wl,-no_fatal_warnings -mmacosx-version-min=11.3"
+    export LDFLAGS="${LDFLAGS:-} -mmacosx-version-min=11.3"
 fi
 
 mkdir -p build
