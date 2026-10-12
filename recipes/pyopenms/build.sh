@@ -48,8 +48,14 @@ ninja pyopenms -j3
 
 # The CMake component python_modules is what the wheel contains (install_components in pyproject.toml):
 # the extension modules, the Python files, the .pyi stubs and py.typed.
+# No --strip on macOS: llvm-otool aborted on a stripped x86_64 module during conda-build's rpath fixing
+# (libopenms is not stripped either).
+STRIP_ARG="--strip"
+if [[ "$target_platform" == osx-* ]]; then
+  STRIP_ARG=""
+fi
 SITE_PACKAGES=$(${PYTHON} -c "import sysconfig; print(sysconfig.get_path('platlib'))")
-cmake --install . --component python_modules --prefix "${SITE_PACKAGES}" --strip
+cmake --install . --component python_modules --prefix "${SITE_PACKAGES}" ${STRIP_ARG}
 
 # pyopenms.__version__ is importlib.metadata.version("pyopenms"), which needs a dist-info
 # (without one it reports "0+unknown", as the 3.6.0dev nightly packages do).
