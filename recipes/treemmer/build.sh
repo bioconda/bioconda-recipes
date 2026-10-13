@@ -3,13 +3,11 @@ set -euxo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-# Install the original script
-install -m 755 Treemmer_v0.3.py "${PREFIX}/bin/Treemmer_v0.3.py"
+install -m 755 "${SRC_DIR}/Treemmer.py" "${PREFIX}/bin/Treemmer.py"
 
-# Wrapper that silences warnings (e.g. ete3 SyntaxWarnings on newer Python)
 cat > "${PREFIX}/bin/treemmer" << 'EOF'
 #!/usr/bin/env bash
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "${DIR}/python" -W ignore "${DIR}/Treemmer_v0.3.py" "$@"
+exec "${DIR}/python" -W ignore "${DIR}/Treemmer.py" "$@"
 EOF
 chmod 755 "${PREFIX}/bin/treemmer"
