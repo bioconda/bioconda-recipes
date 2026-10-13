@@ -1,13 +1,311 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-# Upstream script still has Python 2-only print statements; convert to Python 3.
-2to3 -w -n "${SRC_DIR}/Treemmer.py"
-
 mkdir -p "${PREFIX}/bin"
+
+# Port Treemmer.py (v0.3 tarball) to Python 3
+patch -p1 -d "${SRC_DIR}" << 'PATCH_EOF'
+--- a/Treemmer.py
++++ b/Treemmer.py
+@@ -52,11 +52,11 @@
+ 	flag=0
+ 
+ 	if arguments.verbose==3:
+-		print "leaf findN at ieration:	" + str(counter)
+-		print leaf
+-		print "parent findN at ieration:	" + str(counter)
+-		print parent
+-		print parent.get_children()
++		print("leaf findN at ieration:	" + str(counter))
++		print(leaf)
++		print("parent findN at ieration:	" + str(counter))
++		print(parent)
++		print(parent.get_children())
+ 
+ 	sister_flag=0
+ 	for n in range(0,len(parent.get_children())):				##this for loop start from parent and climb up max two nodes, if it finds leaves calculate the distances, 
+@@ -64,8 +64,8 @@
+ 			flag=1
+ 			break
+ 		if arguments.verbose==3:							
+-			print "children	" + str(n)
+-			print parent.children[n]
++			print("children	" + str(n))
++			print(parent.children[n])
+ 					
+ 		if (parent.children[n].is_leaf()):						# search at one node of distance
+ 			if (parent.children[n] != leaf):
+@@ -73,11 +73,11 @@
+ 				dlist.update({leaf.name + "," +parent.children[n].name : DIS})
+ 				flag=flag+1
+ 				if arguments.verbose==3:
+-					print leaf.name + "," +parent.children[n].name + str(DIS) + "have one node of distance"
++					print(leaf.name + "," +parent.children[n].name + str(DIS) + "have one node of distance")
+ 		else:	
+ 			if flag == 0:									
+ 				if arguments.verbose==3:					#going up, search at two nodes of distance
+-					print "going up, brother is node"
++					print("going up, brother is node")
+ 				
+ 				temp_dlist={}
+ 				for nn in range(0,len(parent.children[n].get_children())):
+@@ -90,7 +90,7 @@
+ 	if ((sister_flag==1) and (flag==0)):						#collect results at two nodes of distance only if there are no leaves that are closer
+ 		dlist.update(temp_dlist)
+ 		if arguments.verbose==3:
+-			print str(temp_dlist) + "	are not sister taxa, but neighbours first is leaf, second is upper neighbor"
++			print(str(temp_dlist) + "	are not sister taxa, but neighbours first is leaf, second is upper neighbor")
+ 
+ 
+ 	
+@@ -98,9 +98,9 @@
+ 		parent=parent.up 		#### therefore I climb the tree down towards the root of one more step and look for leaves
+ 		multi_flag=0
+ 		if arguments.verbose==3:
+-			print "going down"		
+-			print "gran parent"		
+-			print parent
++			print("going down")		
++			print("gran parent")		
++			print(parent)
+ 		temp_dlist={}
+ 		for n in range(0,len(parent.get_children())):		#this for loop start from gran parent and climb up max one nodes, if it finds leaves calculate the distances, 
+ 			if parent.is_root():
+@@ -112,7 +112,7 @@
+ 		if multi_flag==1:					# this is to deal with polytomies 
+ 			dlist.update(temp_dlist)
+ 			if arguments.verbose==3:
+-				print leaf.name + "," +parent.children[n].name + str(DIS) + "	are not sister taxa, but neighbours first is leaf, second is neighbor of downstair (towards root)"
++				print(leaf.name + "," +parent.children[n].name + str(DIS) + "	are not sister taxa, but neighbours first is leaf, second is neighbor of downstair (towards root)")
+ 	
+ 	return (dlist)
+ 		
+@@ -122,12 +122,12 @@
+ 	
+ 
+ 	if arguments.verbose > 1:
+-		print "checking " + str(leaf_to_prune)
++		print("checking " + str(leaf_to_prune))
+ 	warning=0	
+ 	for tag in  dict_meta[leaf_to_prune]:      # loop thru all the tags of the selected leaf
+ 		tag_counter=0
+ 
+-		for k,v in dict_meta.items():		#loop thru all the leaves,tag 
++		for k,v in list(dict_meta.items()):		#loop thru all the leaves,tag 
+ 			flag=0
+ 			for value in v:					
+ 				if (str(value) == str(tag)):		#count the leaves with the tag 
+@@ -135,7 +135,7 @@
+ 			if flag==1:				# if the leaf has several time the same tag (mistake in input) it counts only one
+ 				tag_counter = tag_counter +1
+ 		if arguments.verbose > 1:
+-			print str(leaf_to_prune)+ " " + str(tag) + " "+ str(tag_counter)
++			print(str(leaf_to_prune)+ " " + str(tag) + " "+ str(tag_counter))
+ 		if (arguments.list_meta_count):						# if -lmc option
+ 			if tag_counter <= int(dict_meta_count[tag]):
+ 				warning=1
+@@ -145,7 +145,7 @@
+ 				if (int(tag_counter) <= int(arguments.meta_count)):
+ 					warning=1
+ 		if arguments.verbose > 1:
+-			print "warning = "+ str(warning)		
++			print("warning = "+ str(warning))		
+ 	return (warning)			
+ 
+ 
+@@ -159,10 +159,10 @@
+ 		if (len(dlist) == 0):
+ 			leaf_to_prune = "stop,"
+ 			break
+-		min_val = min(dlist.itervalues())
++		min_val = min(dlist.values())
+ 		d_min={}
+ 	
+-		for k, v in dlist.iteritems(): 
++		for k, v in dlist.items(): 
+ 			if v == min_val:
+ 				d_min.update({k:v})
+ 	
+@@ -197,7 +197,7 @@
+ 					leaf_to_keep = leaf
+ 
+ 		if arguments.verbose > 1:		
+-			print "leaf_to_check  " + str(leaf_to_prune)
++			print("leaf_to_check  " + str(leaf_to_prune))
+ 
+ 		if (arguments.list_meta and dict_meta[leaf_to_prune]):			#check if leaf is protected
+ 			warning=check_protected(leaf_to_prune)
+@@ -205,8 +205,8 @@
+ 			if warning == 1:
+ 
+ 				if arguments.verbose > 1:
+-					print " checking the neighbour"
+-					print "leaf_to_check " + str(leaf_to_keep)
++					print(" checking the neighbour")
++					print("leaf_to_check " + str(leaf_to_keep))
+ 				warning=check_protected(leaf_to_keep)			# if leaf is protected I check the sister
+ 				if warning == 0 :
+ 					leaf_to_prune=leaf_to_keep
+@@ -263,7 +263,7 @@
+ ##########################################		PRUNE LEAF FROM MATRIX		#######################
+ def prune_dist_matrix(dlist,leaf_to_prune):
+ 	key_del=[]
+-	for k, v in dlist.iteritems():
++	for k, v in dlist.items():
+ 
+ 		(one,two)=k.split(",")
+ 		if ((one == leaf_to_prune) or (two == leaf_to_prune)):
+@@ -303,10 +303,10 @@
+ def read_list_meta (path_to_list_meta):
+ 
+ 	dict_meta = defaultdict(list)
+-	with open(path_to_list_meta, 'rb') as f:
++	with open(path_to_list_meta, 'r', newline='') as f:
+ 		reader = csv.reader(f)
+ 		list_meta = list(reader)
+-	list_meta=filter(None, list_meta)
++	list_meta=[_f for _f in list_meta if _f]
+    		 
+ 	for taxa_name, tag in list_meta:	
+ 		dict_meta[taxa_name].append(tag)
+@@ -318,10 +318,10 @@
+ 
+ def read_list_tags (path_to_list_tag):
+ 	dict_tag= defaultdict(list)
+-	with open(path_to_list_tag, 'rb') as f:
++	with open(path_to_list_tag, 'r', newline='') as f:
+     		reader = csv.reader(f)
+     		list_tag = list(reader)
+-	list_tag=filter(None, list_tag)
++	list_tag=[_f for _f in list_tag if _f]
+ 
+ 	for tag, count in list_tag:	
+ 		dict_tag[tag] = count
+@@ -421,29 +421,29 @@
+ 
+ if arguments.verbose > 0:
+ 												# print progress on standard output
+-	print "N of taxa in tree is : "+ str(len(t))
++	print("N of taxa in tree is : "+ str(len(t)))
+ 	
+ 	if arguments.solve_polytomies:
+-		print "\nPolytomies will be solved at random"
++		print("\nPolytomies will be solved at random")
+ 	else:
+-		print "\nPolytomies will be kept"
++		print("\nPolytomies will be kept")
+ 	
+ 	if arguments.prune_random:
+-		print "\nA random leaf is pruned at each iteration, you don't really need Treemmer to do this"
++		print("\nA random leaf is pruned at each iteration, you don't really need Treemmer to do this")
+ 
+ 	if arguments.stop_at_X_leaves:
+-		print "\nTreemmer will reduce the tree to " + str(arguments.stop_at_X_leaves) + " leaves"
++		print("\nTreemmer will reduce the tree to " + str(arguments.stop_at_X_leaves) + " leaves")
+ 	else: 
+ 		if arguments.stop_at_RTL:
+-			print "\nTreemmer will reduce the tree to " + str(arguments.stop_at_RTL) + " of the original tree length"
++			print("\nTreemmer will reduce the tree to " + str(arguments.stop_at_RTL) + " of the original tree length")
+ 		else: 
+-			print "\nTreemmer will calculate the tree length decay"
++			print("\nTreemmer will calculate the tree length decay")
+ 
+ 	if arguments.list_meta:
+-		print "\nsome leaves are protected by the -lm options and will not be pruned based on what specified with -mc or -lmc"  
++		print("\nsome leaves are protected by the -lm options and will not be pruned based on what specified with -mc or -lmc")  
+ 	
+-	print "\nTreemmer will prune " + str(arguments.resolution) + " leaves at each iteration"
+-	print "\nTreemmer will use " + str(arguments.cpu) + " cpu(s)"
++	print("\nTreemmer will prune " + str(arguments.resolution) + " leaves at each iteration")
++	print("\nTreemmer will use " + str(arguments.cpu) + " cpu(s)")
+ 
+ x=[]
+ y=[]	
+@@ -471,9 +471,9 @@
+ 	DLIST={}
+ 
+ 	if arguments.verbose > 0:
+-		print "\niter		" + str(counter)
++		print("\niter		" + str(counter))
+ 		if arguments.verbose > 1:
+-			print "\ncalculating distances\n"
++			print("\ncalculating distances\n")
+ 		
+ 	DLIST = Parallel(n_jobs=arguments.cpu)(delayed(parallel_loop)(i) for i in range(0,arguments.cpu))	#loop all leaves and find neighbours, report pairs and distances
+ 	result = {}
+@@ -484,8 +484,8 @@
+ 	DLIST=result
+ 
+ 	if arguments.verbose > 1:
+-		print DLIST
+-		print "\npruning\n"
++		print(DLIST)
++		print("\npruning\n")
+ 
+ 	for r in range (1,arguments.resolution+1):    				#resolution loop (find leaf to prune, prune it, update matrix r times)
+ 
+@@ -502,7 +502,7 @@
+ 
+ 		if (leaf_to_p == "stop,"):
+ 			if r == 1:				# if r > 1 some taxa might have been no considered because surrounded by already pruned leaves
+-				print "WARNING: all remaining leaves are protected by the -lm option, outputting the results at current iteration"
++				print("WARNING: all remaining leaves are protected by the -lm option, outputting the results at current iteration")
+ 			if r > 1:
+ 				leaf_to_p = ""
+ 				break				#if r > 1 make another cycle recalculating distances and maybe find some more leaves to prune 
+@@ -553,22 +553,22 @@
+ 
+ 		if arguments.verbose > 1:										# print progress on standard output
+ 
+-			print "\n ITERATION RESOLUTION:	" + str(r)
+-			print "leaf to prune:\n" + str(leaf_to_p) + "	" + str(leaf_to_prune.dist)
+-			print "\n new tree"
+-			print t
+-			print "\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t))
+-			print "\nnew matrix\n"
+-			print DLIST
++			print("\n ITERATION RESOLUTION:	" + str(r))
++			print("leaf to prune:\n" + str(leaf_to_p) + "	" + str(leaf_to_prune.dist))
++			print("\n new tree")
++			print(t)
++			print("\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t)))
++			print("\nnew matrix\n")
++			print(DLIST)
+ 
+ 	if (stop ==1):
+ 		if arguments.verbose > 0:
+-			print "\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t))
++			print("\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t)))
+ 		break	
+ 
+ 	if (leaf_to_p == "stop,"):
+ 		if arguments.verbose > 0:
+-			print "\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t))
++			print("\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t)))
+ 		break
+ 
+ 	if not (arguments.fine_plot):											# normal plot (with -fp = FALSE)
+@@ -578,7 +578,7 @@
+ 		y.append(rel_TL)
+ 		
+ 	if arguments.verbose > 0:
+-		print "\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t))
++		print("\nRTL :	" + str(rel_TL) + " N_seq:	" +str(len(t)))
+ 
+ 	
+ if ((stop == 0) or (arguments.plot_always)):														# create file for plot of rltd
+@@ -589,5 +589,5 @@
+ 		make_plot()
+ 
+ if (arguments.verbose > 0):
+-	print "\n If you use Treemmer for your research, please cite:\n\n \"Treemmer: a tool to reduce large phylogenetic datasets with minimal loss of diversity\" Menardo et. al., BMC Bioinformatics (2018) 19:164\n\n"
++	print("\n If you use Treemmer for your research, please cite:\n\n \"Treemmer: a tool to reduce large phylogenetic datasets with minimal loss of diversity\" Menardo et. al., BMC Bioinformatics (2018) 19:164\n\n")
+ 
+PATCH_EOF
 
 install -m 755 "${SRC_DIR}/Treemmer.py" "${PREFIX}/bin/Treemmer.py"
 
+# Wrapper that silences warnings (e.g. ete3 SyntaxWarnings on newer Python)
 cat > "${PREFIX}/bin/treemmer" << 'EOF'
 #!/usr/bin/env bash
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
