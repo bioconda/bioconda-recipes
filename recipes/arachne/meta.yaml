@@ -1,19 +1,23 @@
 {% set name = "arachne" %}
-{% set version = "0.1.1" %}
+{% set version = "0.3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/pdimens/arachne/releases/download/{{ version }}/arachne.{{ version }}.tar.gz 
-  sha256: 7774fc2c351b613c58d6ef4c2010c3fd593bfe4239986ca442f96f44ea134b4f
+  url: https://github.com/blinkseq/arachne/releases/download/{{ version }}/arachne.{{ version }}.tar.gz 
+  sha256: 599960c3d4d88d0d180db23b5df96d64a47af46dca2441fa17d9d8e46212ee7d
 
 build:
   number: 0
-  skip: true  # [osx]
+  # Undefined symbols for architecture arm64:
+  # "_SecTrustCopyCertificateChain", referenced from:
+  # _crypto/x509/internal/macos.x509_SecTrustCopyCertificateChain_trampoline.abi0 in go.o
+  # ld: symbol(s) not found for architecture arm64
+  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('arachne', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,36 +27,38 @@ requirements:
     - go-licenses
     - make
   host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - zlib
-    - jemalloc
   run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - samtools >=1.23
-    - bwa >=0.7.19,<0.8
+    - minibwa >=0.7,<0.8
 
 test:
   commands:
     - arachne --version
 
 about:
-  home: "https://github.com/pdimens/arachne"
-  summary: "Linked-Read Alignment Tool and successor to Lariat"
+  home: "https://github.com/blinkseq/arachne"
+  summary: "Linked-Read Alignment Tool and successor to Lariat."
   description: |
-    Arachne is a fork intended to be a revival and continuation of Lariat, the linked-read aware aligner created by 10X Genomics and
-    bundled in their LongRanger pipeline. Arachne does not directly support any specific linked-read FASTQ format. Instead, it expects
-    the 'standard' linked-read data format, which is a consistent future-proof format following the internationally recognized FASTQ
-    and SAM specifications. The package provides a lossless converter that accepts haplotagging, stLFR, and TELLseq FASTQ data to
-    faciliate these conversions.
+    Arachne is a fork of Lariat that takes the best parts of lariat (speed, usability, not being C++)
+    and marries it with the mapping performance of EMA. Because of this and other improvements and
+    updates, Arachne output will be different from either Lariat or EMA output, presumably better.
   license: MIT
   license_family: MIT
   license_file:
     - LICENSE
-    - gobwa/bwa/COPYING
+    - gominibwa/minibwa/LICENSE.txt
     - library_licenses/
-  dev_url: "https://github.com/pdimens/arachne"
-  doc_url: "https://pdimens.github.io/arachne/"
+  dev_url: "https://github.com/blinkseq/arachne"
+  doc_url: "https://blinkseq.github.io/arachne"
 
 extra:
   recipe-maintainers:
     - pdimens
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
