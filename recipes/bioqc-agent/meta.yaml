@@ -1,0 +1,52 @@
+{% set name = "bioqc-agent" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/zarrine905/bioqc-agent.git
+  git_rev: 0b7c59187b67a96de76334771e0f80bddf7a2004
+
+build:
+  number: 0
+  noarch: python
+  script: bash build.sh
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - fastqc
+    - pandas
+    - pyyaml
+    - scikit-learn
+
+test:
+  commands:
+    - bioqc-agent --help
+
+about:
+  home: https://github.com/zarrine905/bioqc-agent
+  license: MIT
+  license_file: LICENSE
+  summary: Rule-based NGS FASTQ QC with optional ML anomaly screening
+  description: |
+    BioQC-Agent combines FastQC, configurable deterministic QC rules,
+    optional machine-learning anomaly screening, and optional local
+    LLM-assisted interpretation for paired-end FASTQ data.
+  doc_url: https://github.com/zarrine905/bioqc-agent#readme
+  dev_url: https://github.com/zarrine905/bioqc-agent
+
+extra:
+  recipe-maintainers:
+    - zarrine905
+  notes: |
+    The installed bioqc-agent command runs the pipeline and expects paired-end
+    FASTQ files. Ollama and the llama3.2:3b model are optional external
+    components for local LLM draft output; they are not installed by this
+    package. The deterministic QC and ML steps can run without Ollama.
+    The recipe pins an immutable Git commit because upstream has not yet
+    published a tagged release.
