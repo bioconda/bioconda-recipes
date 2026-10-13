@@ -21,6 +21,11 @@ build:
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
+requirements:
+  run:
+    # unwinding library of the glibc builds, which load libgcc_s.so.1
+    - libgcc  # [linux]
+
 test:
   commands:
     - treeknit --version
@@ -48,3 +53,5 @@ extra:
   skip-lints:
     # repackaged binary
     - should_be_noarch_generic
+    # libgcc is the runtime library of the repackaged binaries, no compiler runs
+    - should_use_compilers
