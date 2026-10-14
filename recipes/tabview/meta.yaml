@@ -1,34 +1,40 @@
+{% set version = "1.5.0" %}
+
 package:
   name: tabview
-  version: "1.5.0"
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/1a/b0/b0e7b597357942b8cf23a09a3805ea6226fce5325d7315aa5d90076893b7/tabview-1.5.0.tar.gz
+  url: https://pypi.org/packages/source/t/tabview/tabview-{{ version }}.tar.gz
   sha256: d28f1a638c5bcf01280b8fc292a83caa872a5001293f04dcb35a9afe60bd7c96
 
 build:
-  noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
+  entry_points:
+    - tabview = tabview.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('tabview', max_pin="x") }}
 
 requirements:
   host:
-    - python
-    - setuptools
-    - ncurses
-
+    - python >=3.11
+    - hatchling
+    - pip
   run:
-    - python
-    - ncurses
+    - python >=3.11
 
 test:
   imports:
     - tabview
-
   commands:
     - tabview -h > /dev/null || [[ "$?" == 2 ]]
 
 about:
-  home: https://github.com/firecat53/tabview
-  license: MIT License
-  summary: 'A curses command-line CSV and list (tabular data) viewer'
+  home: "https://github.com/Tabviewer/tabview"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  dev_url: "https://github.com/Tabviewer/tabview"
+  summary: "A curses command-line CSV and list (tabular data) viewer."
