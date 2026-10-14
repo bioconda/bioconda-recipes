@@ -18,17 +18,23 @@ case $(uname -m) in
 	;;
 esac
 
+case $(uname -s) in
+    Darwin)
+	cp -f ${RECIPE_DIR}/spinLock.h sparsePregraph/inc/
+	;;
+esac
+
 cp -f ${PREFIX}/lib/libbam.a standardPregraph/inc/
 cp -f ${PREFIX}/lib/libbam.a sparsePregraph/inc/
 
-make SOAPdenovo-63mer
-make SOAPdenovo-127mer
+make SOAPdenovo-63mer CC="${CXX}"
+make SOAPdenovo-127mer CC="${CXX}"
 
 install -v -m 0755 SOAPdenovo-127mer "$PREFIX/bin"
 install -v -m 0755 SOAPdenovo-63mer "$PREFIX/bin"
 
 cd fusion
 
-make
+make CC="${CC}"
 
 install -v -m 0755 SOAPdenovo-fusion "$PREFIX/bin"
