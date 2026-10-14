@@ -12,6 +12,10 @@ export DISABLE_AUTOBREW=1
 # R refuses to build packages that mark themselves as Priority: Recommended
 mv DESCRIPTION DESCRIPTION.old
 grep -va '^Priority: ' DESCRIPTION.old > DESCRIPTION
+
+# maptools was retired from CRAN in Oct 2023 and is no longer available;
+# remove it from the declared dependencies since it is not actually used by calder2.
+sed -i 's/, maptools\b//g; s/\bmaptools, //g; s/\bmaptools\b//g' DESCRIPTION
 # shellcheck disable=SC2086
 ${R} CMD INSTALL --build . ${R_ARGS}
 

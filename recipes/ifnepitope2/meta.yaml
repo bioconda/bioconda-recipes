@@ -1,0 +1,59 @@
+{% set version = "1.2" %}
+
+package:
+  name: ifnepitope2
+  version: {{ version }}
+
+source:
+  - url: https://pypi.org/packages/source/i/ifnepitope2/ifnepitope2-{{ version }}.tar.gz
+    sha256: dd201a610ca4d32d79c57cba6d450cf01dbc1a79afbdb5ce8d36742d3fa49001
+  - url: https://media.githubusercontent.com/media/raghavagps/ifnepitope2/3e5c2feec445cf3524a19066235b6014fcf783e5/LICENSE
+    sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
+    folder: license
+
+build:
+  entry_points:
+    - ifnepitope2 = ifnepitope2.python_scripts.ifnepitope2:main
+  noarch: python
+  script:
+    - sed -i.bak 's|"/../blast_binaries/linux/blastp"|"blastp"|; s|"/../blast_binaries/mac/blastp"|"blastp"|' src/ifnepitope2/python_scripts/ifnepitope2.py
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - rm -rf $SP_DIR/ifnepitope2/blast_binaries
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("ifnepitope2", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<3.11
+    - numpy >=1.21,<2
+    - pandas ==1.4.0
+    - tqdm
+    - scikit-learn ==1.2.1
+    - blast
+    - setuptools <81
+
+test:
+  imports:
+    - ifnepitope2
+  commands:
+    - pip check
+    - ifnepitope2 --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/raghavagps/ifnepitope2
+  summary: A tool to predict ifn inducing epitopes
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: license/LICENSE
+
+extra:
+  recipe-maintainers:
+    - steffenlem

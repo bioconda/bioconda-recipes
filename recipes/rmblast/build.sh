@@ -59,7 +59,7 @@ BLAST_SRC_DIR="$SRC_DIR/c++"
 RESULT_PATH="$BLAST_SRC_DIR/Release"
 
 if [[ `uname` == "Linux" ]]; then
-	export CONFIG_ARGS="--with-runpath=\"${LIB_INSTALL_DIR}\" --with-openmp --with-hard-runpath --with-dll --without-zstd"
+	export CONFIG_ARGS="--with-runpath=\"${LIB_INSTALL_DIR}\" --with-openmp --with-hard-runpath --with-dll --without-zstd --with-vdb=${PREFIX}"
 	if [[ "$(uname -m)" == "x86_64" ]]; then
             export CONFIG_ARGS="${CONFIG_ARGS} --with-64"
 	fi
@@ -82,7 +82,6 @@ fi
     --without-debug \
     --with-experimental=Int8GI \
     --with-strip \
-    --with-vdb="${PREFIX}" \
     --with-z="${PREFIX}" \
     --with-bz2="${PREFIX}" \
     --with-sqlite3="${PREFIX}" \

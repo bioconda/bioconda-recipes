@@ -1,24 +1,37 @@
-{% set version = "1.2.0" %}
+{% set name = "staphscope-sccmec-data" %}
+{% set version = "2.0.0" %}
 
 package:
-  name: staphscope-sccmec-data
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbeckley-hub/staphscope-typing-tool/releases/download/v{{ version }}/staphscope-sccmec-data-v{{ version }}.tar.gz
-  sha256: fa03619392056e9eb9bbedda074549e88c5d6e568240e8ac32fed67263333161
+  # Attach a tarball containing a top-level `sccmec_module_cge/` directory
+  url: https://github.com/bbeckley-hub/staphscope-typing-tool/releases/download/v{{ version }}/{{ name }}-v{{ version }}.zip
+  
+  sha256: d917f88f6aa8df0f05ba6ac470ada307f78d5215d29a0161b27647b294045c9e
 
 build:
   noarch: generic
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage('staphscope-sccmec-data', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 test:
   commands:
-    - test -n "$(find $PREFIX -name mec_database_20171117.fasta -print -quit)"
+    - test -f $PREFIX/share/staphscope/modules/sccmec_module_cge/run_sccmec_batch.sh
+    - test -f $PREFIX/share/staphscope/modules/sccmec_module_cge/SCCmecFinder_v4.py
+    - test -f $PREFIX/share/staphscope/modules/sccmec_module_cge/database/mec_database_20171117.fasta
 
 about:
   home: https://github.com/bbeckley-hub/staphscope-typing-tool
-  summary: 'SCCmec typing database for StaphScope'
   license: MIT
+  summary: 'SCCmec typing database and scripts for StaphScope'
+  description: |
+    Database and helper scripts for the SCCmecFinder CGE module of StaphScope.
+    Provides reference FASTA files, k-mer templates, and batch wrappers used
+    by the SCCmec typing pipeline.
+
+extra:
+  recipe-maintainers:
+    - bbeckley-hub

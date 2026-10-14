@@ -1,0 +1,47 @@
+{% set name = "ldpop" %}
+{% set version = "1.0.2" %}
+{% set commit = "cceed0150194ea8bf3415aa9bf3ee002e6b6e480" %}
+{% set sha256 = "c8b6aff543bf3b588ab2bd8b40f83fd9053ecee6594e5d01320bec28995ac966" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/popgenmethods/{{ name }}/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage('ldpop', max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - numpy
+    - scipy >=1.0.0
+    - pandas
+    - future
+
+test:
+  imports:
+    - ldpop
+
+about:
+  home: https://github.com/popgenmethods/ldpop
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Two-locus sampling probability for variable population size
+  dev_url: https://github.com/popgenmethods/ldpop
+
+extra:
+  recipe-maintainers:
+    - d-callan

@@ -2,18 +2,12 @@
 set -euo pipefail
 
 MAIN_SRC="${SRC_DIR}/main_src"
-UPDATE_SRC="${SRC_DIR}/update_src"
 
 mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 
 # Copy main release contents
-cp -r "$MAIN_SRC"/{*.py,ref_schemas,conf,files,validators} \
+cp -r "$MAIN_SRC"/{*.py,ref_schemas,conf,files,validators,pipelines,vrs} \
     "$PREFIX/bin/beacon2-ri-tools/"
-
-# Copy the whole missing update directory from the fixed commit archive
-mkdir -p "$PREFIX/bin/beacon2-ri-tools/validators/update"
-cp -r "$UPDATE_SRC"/validators/update/* \
-    "$PREFIX/bin/beacon2-ri-tools/validators/update/"
 
 # Ensure package recognition
 touch "$PREFIX/bin/beacon2-ri-tools/validators/__init__.py"
@@ -33,8 +27,7 @@ for script in "${scripts[@]}"; do
 
   cat <<EOF > "$WRAPPER"
 #!/bin/bash
-cd "\$CONDA_PREFIX/bin/beacon2-ri-tools"
-exec python "./${script}" "\$@"
+exec python "\$CONDA_PREFIX/bin/beacon2-ri-tools/${script}" "\$@"
 EOF
 
   chmod +x "$WRAPPER"

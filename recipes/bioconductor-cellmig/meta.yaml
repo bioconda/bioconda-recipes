@@ -1,0 +1,82 @@
+{% set version = "1.0.0" %}
+{% set name = "cellmig" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 12287018f08707bef68e7187af1aa54b
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cellmig", max_pin="x.x") }}'
+
+# Suggests: BiocStyle, knitr, testthat
+# SystemRequirements: GNU make
+requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+
+  host:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - r-ape
+    - r-base
+    - r-bh >=1.66.0
+    - r-ggforce
+    - r-ggplot2
+    - r-patchwork
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-reshape2
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.4.0
+    - r-scales
+    - r-stanheaders >=2.18.0
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - r-ape
+    - r-base
+    - r-bh >=1.66.0
+    - r-ggforce
+    - r-ggplot2
+    - r-patchwork
+    - r-rcpp >=0.12.0
+    - r-rcppeigen >=0.3.3.3.0
+    - r-rcppparallel >=5.0.1
+    - r-reshape2
+    - r-rstan >=2.18.1
+    - r-rstantools >=2.4.0
+    - r-scales
+    - r-stanheaders >=2.18.0
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  summary: Uncertainty-aware quantitative analysis of high-throughput live cell migration data
+  description: High-throughput cell imaging facilitates the analysis of cell migration across many wells treated under different biological conditions. These workflows generate considerable technical noise and biological variability, and therefore technical and biological replicates are necessary, leading to large, hierarchically structured datasets, i.e., cells are nested within technical replicates that are nested within biological replicates. Current statistical analyses of such data usually ignore the hierarchical structure of the data and fail to explicitly quantify uncertainty arising from technical or biological variability. To address this gap, we present cellmig, an R package implementing Bayesian hierarchical models for migration analysis. cellmig quantifies condition- specific velocity changes (e.g., drug effects) while modeling nested data structures and technical artifacts. It further enables synthetic data generation for experimental design optimization.
+  license_file: LICENSE
+
