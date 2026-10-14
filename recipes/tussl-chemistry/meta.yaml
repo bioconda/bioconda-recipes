@@ -1,0 +1,71 @@
+{% set name = "tussl-chemistry" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Tussl-Co/TusslChemistry/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 12a229441398020fffcbb5e4bba2b0085ba70c7a34f5d61efd10aeb5042c03ea
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    # Cargo.toml's rust-version is 1.88 (let-chains); cargo refuses an older rustc. conda's cargo
+    # ignores rust-toolchain.toml, so the pinned conda-forge Rust is what builds the package.
+    - {{ compiler('rust') }}
+    # The C compiler links tchem; its run_exports add libgcc, which provides the libgcc_s.so.1
+    # Rust's standard library links against (conda-build warns otherwise).
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    # tchem runs curl to read a public run by accession. tchem-fetch-whitelists (bash) downloads
+    # the vendors' barcode lists with curl and checks them with gzip, coreutils, grep and gawk.
+    # The lists themselves are never shipped.
+    - bash
+    - curl
+    - gzip
+    - coreutils
+    - grep
+    - gawk
+
+test:
+  commands:
+    - tchem --version
+    - tchem --help
+    - tchem --version | grep -qx "tchem {{ version }}"
+    # Without arguments the fetcher prints its usage and exits 1.
+    - (tchem-fetch-whitelists 2>&1 || true) | grep -q usage
+    - test -f "${PREFIX}/share/tussl-chemistry/data/lists.tsv"
+    # Only the registry is shipped, never a barcode list.
+    - test "$(ls "${PREFIX}/share/tussl-chemistry/data")" = lists.tsv
+
+about:
+  home: https://github.com/Tussl-Co/TusslChemistry
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Names a single-cell RNA library's chemistry from its first reads, across vendors.
+  description: |
+    tchem reads the first reads of a single-cell RNA library and names its kit, read geometry,
+    barcode lists, cDNA strand and library type, with a confidence, across vendors (10x, BD
+    Rhapsody, Parse, SPLiT-seq, Singleron, ScaleBio, MGI and others). tchem-fetch-whitelists
+    downloads the vendors' barcode lists and checks each against its registered sha256; the
+    lists belong to their vendors and are not part of this package.
+  doc_url: https://github.com/Tussl-Co/TusslChemistry/blob/v{{ version }}/README.md
+  dev_url: https://github.com/Tussl-Co/TusslChemistry
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - artymisterJ
