@@ -56,3 +56,4 @@ fi
 install -v -m 0755 ../SOAPdenovo-63mer "$PREFIX/bin"
 install -v -m 0755 ../SOAPdenovo-127mer "$PREFIX/bin"
 install -v -m 0755 SOAPdenovo-fusion "$PREFIX/bin"
+install -v -m 0755 finalFusion "$PREFIX/bin"
