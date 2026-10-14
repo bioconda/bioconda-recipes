@@ -37,12 +37,21 @@ rm -f standardPregraph/*.bak
 
 make clean
 
-make SOAPdenovo-63mer
-make SOAPdenovo-127mer
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	make SOAPdenovo-63mer LIBS="-pthread -lbam -lz -lm"
+	make SOAPdenovo-127mer LIBS="-pthread -lbam -lz -lm"
+else
+	make SOAPdenovo-63mer
+	make SOAPdenovo-127mer
+fi
 
 cd fusion
 
-make
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	make LIBS="-pthread -lm"
+else
+	make
+fi
 
 install -v -m 0755 ../SOAPdenovo-63mer "$PREFIX/bin"
 install -v -m 0755 ../SOAPdenovo-127mer "$PREFIX/bin"
