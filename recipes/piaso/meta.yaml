@@ -1,59 +1,78 @@
 {% set name = "piaso" %}
-{% set version = "1.0.3" %}
+{% set version = "1.2.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/p/piaso-tools/piaso_tools-{{ version }}.tar.gz
-  sha256: ced6c8f6a7d0fbd7548feef55623ee7bd8f188122dca2e5a5177f7568d9db4e5
+  url: https://pypi.org/packages/source/p/piaso-tools/piaso_tools-{{ version }}.tar.gz
+  sha256: e3acbde5f1f733929de54d59c652648f61e7bf38c01f31ff45e3a0bfc3069303
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  skip: True  # [py < 39]
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('piaso', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}      # rusqlite (bundled SQLite) and zstd compile C code
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   host:
-    - python >=3.9
+    - python
     - pip
-    - hatchling
+    - maturin >=1.0,<2
   run:
-    - python >=3.9
+    - python
     - anndata >=0.8
     - scanpy >=1.9.1
-    - cosg >=1.0.3
+    - cosg >=1.1.2
     - numpy >=1.21.6
     - matplotlib-base >=3.5.2
     - pandas >=1.4.4
     - scipy >=1.7.3
-    - seaborn >=0.11.2
+    - seaborn-base >=0.11.2
     - scikit-learn >=1.1
     - statsmodels >=0.13.2
     - tqdm
     - typing_extensions
     - requests
+    - lz4
+    - zstandard
+    - h5py
+    - umap-learn >=0.5.8
+    - python-igraph >=0.10
+    - cytome >=0.3.6,<1
 
 test:
   imports:
     - piaso
+    - piaso._piaso
 
 about:
-  home: https://piaso.org
-  license: BSD-3-Clause
+  home: "https://piaso.org"
+  license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE
-  summary: "PIASO: Precise Integrative Analysis of Single-cell Omics"
+  summary: "PIASO: Precise Integrative Analysis of Single-cell Omics."
   description: |
     PIASO is a Python toolkit for precise integrative analysis of single-cell omics data.
     It provides methods for single-cell RNA-seq and ATAC-seq data analysis, including
     batch integration, clustering, and visualization.
-  dev_url: https://github.com/genecell/PIASO
-  doc_url: https://piaso.org
+  dev_url: "https://github.com/genecell/PIASO"
+  doc_url: "https://piaso.org"
 
 extra:
+  identifiers:
+    - doi:10.1038/s41586-025-09996-8
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - genecell
