@@ -1,0 +1,46 @@
+{% set version = "1.2.0" %}
+{% set name = "RbowtieCuda" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: d5810006727977aa74b93c7035f261df
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rbowtiecuda", max_pin="x.x") }}'
+# Suggests: knitr, rmarkdown, RUnit, BiocGenerics
+# SystemRequirements: C++20, GNU make, cmake, CUDA Toolkit(>=10), MSVC, libthrust-dev, libcub-dev, gcc, g++
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+  host:
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - r-base
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: BSD_3_clause + file LICENSE
+  summary: An R Wrapper for nvBowtie and nvBWT, a rewritten version of Bowtie2 for cuda
+  description: This package provides an R wrapper for the popular Bowtie2 sequencing read aligner, optimized to run on NVIDIA graphics cards. It includes wrapper functions that enable both genome indexing and alignment to the generated indexes, ensuring high performance and ease of use within the R environment.
+  license_file: LICENSE
+

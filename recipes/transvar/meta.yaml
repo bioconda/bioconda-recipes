@@ -1,0 +1,53 @@
+{% set name = "transvar" %}
+{% set version = "2.5.10.20211024" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/t/transvar/TransVar-{{ version }}.tar.gz
+  sha256: a52a3b27079317da6530f85359d0f4064419f2765b460973108ac9efb57fd724
+  patches:
+    - fix_locale.patch
+
+build:
+  number: 0
+  skip: true  # [win]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - zlib
+  run:
+    - python
+    - future
+
+test:
+  commands:
+    - transvar --help
+
+about:
+  home: "https://github.com/zwdzwd/transvar"
+  license: MIT
+  license_file: "LICENSE.txt"
+  summary: "Transcript-based variant annotator."
+  description: |
+    TransVar is a multi-way annotator for genetic elements and genetic variations.
+    It supports genomic, cDNA, and protein-level variant annotation.
+  dev_url: "https://github.com/zwdzwd/transvar"
+  doc_url: "https://transvar.readthedocs.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:transvar
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved
+    - missing_run_exports  # transvar is a CLI application; no ABI/API run_exports neededs

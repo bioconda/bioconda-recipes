@@ -1,0 +1,53 @@
+
+{% set name = "mags-visualization" %}
+{% set version = "0.0.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/usegalaxy-eu/MAGs-visualization/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: aca7decf221b1715e35085bba2bd07c20630274bbc84b42d354b196a58bbba29
+
+build:
+  noarch: python
+  number: 0
+  script:
+    - python -m pip install . --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9,<3.13
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.9,<3.13
+    - pandas
+    - numpy
+    - matplotlib-base
+    - seaborn
+    - plotly
+    - networkx
+    - python-kaleido =0.2.1
+
+test:
+  imports:
+      - mags_visualization
+      - mags_visualization.sanky_taxa
+  commands:
+    - mags-visualization --help
+
+about:
+  home: https://github.com/usegalaxy-eu/MAGs-visualization
+  summary: "Visualization toolkit for MAG quality, taxonomy, clustering, abundance patterns and functional annotation."
+  license: GPL-3.0
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - alexandrah1704

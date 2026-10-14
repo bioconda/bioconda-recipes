@@ -1,0 +1,50 @@
+{% set name = "genomicranges" %}
+{% set version = "0.9.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b5f538b56f58ad246818192b9350740f601155e716b75c4cb7d72ee44f836de4
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python
+    - numpy
+    - biocutils >=0.4.0
+    - biocframe >=0.8.0
+    - iranges >=0.7.2
+    - compressed-lists >=0.4.3
+
+test:
+  imports:
+    - genomicranges
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/BiocPy/GenomicRanges
+  summary: Container class to represent and operate over genomic regions and annotations.
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

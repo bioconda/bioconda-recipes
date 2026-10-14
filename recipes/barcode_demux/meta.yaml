@@ -1,0 +1,56 @@
+{% set name = "barcode_demux" %}
+{% set version = "1.0.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/huiN95/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 070960d3d2fa66f1b8b9bbd0c607136a785119713574e41d6799a052739e1f00
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - pkg-config
+    - make
+    - cargo-bundle-licenses
+  host:
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+  run:
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+
+test:
+  commands:
+    - barcode_demux --version
+    - barcode_demux --help
+
+about:
+  home: https://github.com/huiN95/barcode_demux
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "A high-performance tool for demultiplexing sequencing reads based on barcodes."
+  dev_url: https://github.com/huiN95/barcode_demux
+
+extra:
+  recipe-maintainers:
+    - huiN95

@@ -1,0 +1,41 @@
+{% set name = "prinseq-rust" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/metageni/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 78547cacb752a238dc4df4776a6cb5e13c6f8ec212dcafc1e3dc1c7f1f81b464
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - prinseq-rust --version
+    - prinseq-rust --help
+
+about:
+  home: https://github.com/metageni/prinseq-rust
+  license: GPL-2.0-only
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast FASTQ/FASTA quality control and filtering tool (Rust port of PRINSEQ++)
+
+extra:
+  recipe-maintainers:
+    - metageni

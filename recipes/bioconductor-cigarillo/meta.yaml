@@ -1,0 +1,60 @@
+{% set version = "1.2.1" %}
+{% set name = "cigarillo" %}
+{% set bioc = "3.23" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 68182faeb5bef61b9543067b36fc8347
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-cigarillo", max_pin="x.x") }}'
+
+# Suggests: Rsamtools, GenomicAlignments, RNAseqData.HNRNPC.bam.chr14, BSgenome.Hsapiens.UCSC.hg19, testthat, knitr, rmarkdown, BiocStyle
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocgenerics >=0.58.1,<0.59.0
+    - bioconductor-biostrings >=2.80.2,<2.81.0
+    - bioconductor-iranges >=2.46.0,<2.47.0
+    - bioconductor-s4vectors >=0.50.3,<0.51.0
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocgenerics >=0.58.1,<0.59.0
+    - bioconductor-biostrings >=2.80.2,<2.81.0
+    - bioconductor-iranges >=2.46.0,<2.47.0
+    - bioconductor-s4vectors >=0.50.3,<0.51.0
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Efficient manipulation of CIGAR strings
+  description: CIGAR stands for Concise Idiosyncratic Gapped Alignment Report. CIGAR strings are found in the BAM files produced by most aligners and in the AIRR-formatted output produced by IgBLAST. The cigarillo package provides functions to parse and inspect CIGAR strings, trim them, turn them into ranges of positions relative to the "query space" or "reference space", and project positions or sequences from one space to the other. Note that these operations are low-level operations that the user rarely needs to perform directly. More typically, they are performed behind the scene by higher-level functionality implemented in other packages like Bioconductor packages GenomicAlignments and igblastr.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

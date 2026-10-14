@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 8eb055f..d20d02c 100644
+index 5b095d62..4a6b74d6 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -20,21 +20,21 @@
@@ -10,10 +10,11 @@ index 8eb055f..d20d02c 100644
 +INSTALL_DIR ?= "$(PREFIX)/bin"
  
  OPTIMIZE ?= yes
- USEREADLINE ?= yes
+-USEREADLINE ?= no
 -USEBOOST ?= no
 -USEHDF5 ?= no
 -USEGSL ?= no
++USEREADLINE ?= yes
 +USEBOOST ?= yes
 +USEHDF5 ?= yes
 +USEGSL ?= yes
@@ -33,7 +34,7 @@ index 8eb055f..d20d02c 100644
 +GSL_INCLUDE_DIR ?= "$(PREFIX)/include/gsl"
  MOTHUR_FILES="\"Enter_your_default_path_here\""
  MOTHUR_TOOLS="\"Enter_your_mothur_tools_path_here\""
- VERSION = "\"1.48.3\""
+ VERSION = "\"1.48.5\""
 @@ -50,8 +50,8 @@ ifeq  ($(strip $(OPTIMIZE)),yes)
      CXXFLAGS += -O3
  endif
@@ -45,18 +46,35 @@ index 8eb055f..d20d02c 100644
  
  ifeq  ($(strip $(MOTHUR_FILES)),"\"Enter_your_default_path_here\"")
  else
-@@ -109,8 +109,8 @@ endif
-     subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
-     subDirIncludes = $(patsubst %, -I %, $(subdirs))
-     subDirLinking =  $(patsubst %, -L%, $(subdirs))
+@@ -104,12 +104,12 @@ endif
+ # INCLUDE directories for mothur
+ 
+ 	VPATH=source/calculators:source/chimera:source/classifier:source/clearcut:source/commands:source/communitytype:source/datastructures:source/engines:source/metastats:source/read:source/svm:source/
+-    skipUchime := source/uchime_src/
+-    subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/))))
+-    subDirIncludes = $(patsubst %, -I %, $(subdirs))
+-    subDirLinking =  $(patsubst %, -L%, $(subdirs))
 -    CXXFLAGS += -I. $(subDirIncludes)
 -    LDFLAGS += $(subDirLinking)
-+    CXXFLAGS += -I. -Isource $(subDirIncludes)
-+    LDFLAGS += -Lsource $(subDirLinking)
++  skipUchime := source/uchime_src/
++  subdirs :=  $(sort $(dir $(filter-out  $(skipUchime), $(wildcard source/*/)))) source/
++  subDirIncludes = $(patsubst %, -I %, $(subdirs))
++	subDirLinking =  $(patsubst %, -L%, $(subdirs))
++	CXXFLAGS += -I. -Isource $(subDirIncludes)
++	LDFLAGS += -Lsource $(subDirLinking)
  
+ 		OBJECTS=$(patsubst %.cpp,%.o,$(wildcard $(addsuffix *.cpp,$(subdirs))))
+     OBJECTS+=$(patsubst %.c,%.o,$(wildcard $(addsuffix *.c,$(subdirs))))
+@@ -117,7 +117,7 @@ endif
+     OBJECTS+=$(patsubst %.c,%.o,$(wildcard *.c))
  
- #
-@@ -132,7 +132,7 @@ install : mothur
+ mothur : $(OBJECTS) uchime
+-	$(CXX) $(LDFLAGS) $(TARGET_ARCH) -o $@ $(OBJECTS) $(LIBS)
++	$(CXX) $(LDFLAGS) $(TARGET_ARCH) -o $@ $(sort $(OBJECTS)) $(LIBS)
+ 
+ uchime :
+ 	cd source/uchime_src && export CXX=$(CXX) && make clean && make && mv uchime ../../ && cd ..
+@@ -127,7 +127,7 @@ install : mothur
  ifeq  ($(strip $(INSTALL_DIR)),"\"Enter_your_mothur_install_path_here\"")
  else
  	mkdir -p ${INSTALL_DIR}

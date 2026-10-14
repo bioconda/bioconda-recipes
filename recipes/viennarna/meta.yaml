@@ -1,12 +1,12 @@
-{% set version = "2.7.1" %}
-{% set sha256 = "f8bc6bf07886a0015f9ba7379b4ae9dcfc272ecd16cb69243067b07088e841de" %}
+{% set version = "2.7.2" %}
+{% set sha256 = "1ab5f4a4f76fc85a2243546088e45f5d85f2d7a56cc656e969b005cce9bfab5f" %}
 
 package:
   name: viennarna
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # Ronny said VRNA is stable in x.x releases
     - {{ pin_subpackage('viennarna', max_pin='x.x') }}
@@ -20,6 +20,7 @@ source:
 requirements:
   build:
     - make
+    - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -32,6 +33,7 @@ requirements:
     - lapack
     - llvm-openmp # [osx]
   run:
+    - perl
     - python
     - llvm-openmp # [osx]
 
@@ -40,10 +42,13 @@ test:
     - RNAalifold --version
     - RNAeval    --version
     - RNAfold    --version
+    - RNAplot    --version
     - RNAplfold  --version
     - RNAsubopt  --version
     - RNAlocmin  --version
     - kinwalker  --help >& /dev/null
+    - python -c "import RNA"
+    - perl -MRNA -e "print qq(ok\n)"
 
 about:
   home: http://www.tbi.univie.ac.at/RNA/

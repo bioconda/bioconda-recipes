@@ -1,68 +1,52 @@
-{% set version = "1.18.0" %}
+{% set version = "2.0.1" %}
 {% set name = "SingleCellSignalR" %}
-{% set bioc = "3.20" %}
-
-about:
-  description: Allows single cell RNA seq data analysis, clustering, creates internal network and infers cell-cell interactions.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Cell Signalling Using Single Cell RNAseq Data Analysis
-
-build:
-  noarch: generic
-  number: 0
-  rpaths:
-    - lib/R/lib/
-    - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-singlecellsignalr", max_pin="x.x") }}'
+{% set bioc = "3.22" %}
 
 package:
   name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 
-# Suggests: knitr, rmarkdown
-requirements:
-  host:
-    - bioconductor-edger >=4.4.0,<4.5.0
-    - bioconductor-limma >=3.62.0,<3.63.0
-    - bioconductor-multtest >=2.62.0,<2.63.0
-    - bioconductor-scran >=1.34.0,<1.35.0
-    - r-base
-    - r-biocmanager
-    - r-circlize
-    - r-data.table
-    - r-foreach
-    - r-gplots
-    - r-igraph
-    - r-pheatmap
-    - r-rtsne
-    - r-stringr
-  run:
-    - bioconductor-edger >=4.4.0,<4.5.0
-    - bioconductor-limma >=3.62.0,<3.63.0
-    - bioconductor-multtest >=2.62.0,<2.63.0
-    - bioconductor-scran >=1.34.0,<1.35.0
-    - r-base
-    - r-biocmanager
-    - r-circlize
-    - r-data.table
-    - r-foreach
-    - r-gplots
-    - r-igraph
-    - r-pheatmap
-    - r-rtsne
-    - r-stringr
-
 source:
-  md5: 0e82613ffe044a13aff73b6929714472
   url:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0d500e7f2c40e7d9d67cd348d8cd42b2
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-singlecellsignalr", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, markdown, rmarkdown
+requirements:
+  host:
+    - bioconductor-bulksignalr >=1.2.0,<1.3.0
+    - r-base
+    - r-foreach
+    - r-ggplot2
+    - r-matrixstats
+    - r-matrixtests
+  run:
+    - bioconductor-bulksignalr >=1.2.0,<1.3.0
+    - r-base
+    - r-foreach
+    - r-ggplot2
+    - r-matrixstats
+    - r-matrixtests
 
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: CeCILL | file LICENSE
+  summary: Cell Signalling Using Single-Cell RNA-seq or Proteomics Data
+  description: Inference of ligand-receptor (L-R) interactions from single-cell expression (transcriptomics/proteomics) data. SingleCellSignalR v2 inferences rely on the statistical model we introduced in the BulkSignalR package as well as the original SingleCellSignalR LR-score (both are available). SingleCellSignalR v2 can be regarded as a wrapper to BulkSignalR fundamental classes. This also enables v2 users to work with any species, whereas only Mus musculus & Homo sapiens were available before in SingleCellSignalR v1.
+  license_file: LICENSE
 

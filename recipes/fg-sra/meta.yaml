@@ -1,0 +1,64 @@
+{% set name = "fg-sra" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/{{ name }}/releases/download/v{{ version }}/{{ name }}-buildable-src-{{ version }}.tar.gz
+  sha256: aad46ba2b86c25133a79f38955946517f4f736acacfdbe5a86b7a821aca9ee01
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - cmake
+    - make
+    - patch
+    - pkg-config
+    - clang
+    - libclang
+    - flex
+    - bison
+
+test:
+  commands:
+    - fg-sra --help
+    - fg-sra tosam --help
+    - fg-sra fastq --help
+    - fg-sra info --help
+
+about:
+  home: "https://github.com/fg-labs/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "High-performance SRA-to-SAM/BAM/FASTQ converter."
+  description: |
+    fg-sra is a high-performance toolkit for converting NCBI SRA archives.
+    `fg-sra tosam` replaces sam-dump, writing SAM, BAM, FASTA, or FASTQ with
+    multi-threaded processing, genomic region filtering, quality score
+    quantization, and reference caching. `fg-sra fastq` writes FASTQ in spot
+    order with mates paired, and `fg-sra info` describes an archive's kind,
+    totals, qualities, read names, and read layout.
+  dev_url: "https://github.com/fg-labs/{{ name }}"
+  doc_url: "https://github.com/fg-labs/{{ name }}/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13
+    - tfenne

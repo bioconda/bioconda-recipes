@@ -1,0 +1,53 @@
+{% set version = "0.1.8" %}
+
+package:
+  name: turboani
+  version: {{ version }}
+
+source:
+  url: https://github.com/jianshu93/turboani/archive/v{{ version }}.tar.gz
+  sha256: 0810a46bb4a75da6eef40e02c4fec0a157cef4ea2405a76213bb561c2075a0da
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage('turboani', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib("c") }}
+    - pkg-config
+    - make
+    - cmake
+  host:
+    # Only needed on macOS (any arch) and Linux aarch64
+    - fontconfig
+    - freetype
+    - expat  # [linux]
+  run:
+    - fontconfig
+    - freetype
+
+test:
+  commands:
+    - turboani -h
+    - fastani -h
+
+about:
+  home: "https://github.com/jianshu93/turboani"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE-MIT
+  summary: "TurboANI is a super fast homology-aware average nucleotide identity estimation algorithm at unprecedented scale"
+  dev_url: "https://github.com/jianshu93/turboani"
+  doc_url: "https://github.com/jianshu93/turboani/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64 
+  recipe-maintainers:
+   - jianshu93

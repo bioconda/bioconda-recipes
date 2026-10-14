@@ -1,0 +1,157 @@
+diff --git a/src/junction_filter.hpp b/src/junction_filter.hpp
+index 9d7e411..e5a2b44 100644
+--- a/src/junction_filter.hpp
++++ b/src/junction_filter.hpp
+@@ -44,7 +44,8 @@ using boost::filesystem::remove;
+ using boost::filesystem::exists;
+ using boost::filesystem::create_symlink;
+ using boost::filesystem::create_directory;
+-using boost::filesystem::symbolic_link_exists;
++using boost::filesystem::is_symlink;
++using boost::filesystem::symlink_status;
+ 
+ #include <portcullis/bam/genome_mapper.hpp>
+ using portcullis::bam::GenomeMapper;
+diff --git a/src/portcullis.cc b/src/portcullis.cc
+index 59bfc16..4d5f6fc 100644
+--- a/src/portcullis.cc
++++ b/src/portcullis.cc
+@@ -295,7 +295,7 @@ int mainFull(int argc, char *argv[]) {
+         genomeFile = vm["genome-file"].as<path>();
+     }
+     // Test if provided genome exists
+-    if (!exists(genomeFile) && !symbolic_link_exists(genomeFile)) {
++    if (!exists(genomeFile) && !is_symlink(symlink_status(genomeFile))) {
+         BOOST_THROW_EXCEPTION(PortcullisException() << PortcullisErrorInfo(string(
+                 "Could not find genome file at: ") + genomeFile.string()));
+     }
+diff --git a/src/prepare.cc b/src/prepare.cc
+index f0b3ba2..6a0b0a3 100644
+--- a/src/prepare.cc
++++ b/src/prepare.cc
+@@ -55,19 +55,19 @@ using namespace portcullis::bam;
+ #include "prepare.hpp"
+ 
+ bool portcullis::PreparedFiles::valid(bool useCsi) const {
+-	if (!bfs::exists(getSortedBamFilePath()) && !bfs::symbolic_link_exists(getSortedBamFilePath())) {
++	if (!bfs::exists(getSortedBamFilePath()) && !bfs::is_symlink(bfs::symlink_status(getSortedBamFilePath()))) {
+ 		BOOST_THROW_EXCEPTION(PrepareException() << PrepareErrorInfo(string(
+ 								  "Could not find sorted BAM files at: ") + getSortedBamFilePath().string()));
+ 	}
+-	if (!bfs::exists(getBamIndexFilePath(useCsi)) && !bfs::symbolic_link_exists(getBamIndexFilePath(useCsi))) {
++	if (!bfs::exists(getBamIndexFilePath(useCsi)) && !bfs::is_symlink(bfs::symlink_status(getBamIndexFilePath(useCsi)))) {
+ 		BOOST_THROW_EXCEPTION(PrepareException() << PrepareErrorInfo(string(
+ 								  "Could not find BAM index at: ") + getBamIndexFilePath(useCsi).string()));
+ 	}
+-	if (!bfs::exists(getGenomeFilePath()) && !bfs::symbolic_link_exists(getGenomeFilePath())) {
++	if (!bfs::exists(getGenomeFilePath()) && !bfs::is_symlink(bfs::symlink_status(getGenomeFilePath()))) {
+ 		BOOST_THROW_EXCEPTION(PrepareException() << PrepareErrorInfo(string(
+ 								  "Could not find genome file at: ") + getGenomeFilePath().string()));
+ 	}
+-	if (!bfs::exists(getGenomeIndexFilePath()) && !bfs::symbolic_link_exists(getGenomeIndexFilePath())) {
++	if (!bfs::exists(getGenomeIndexFilePath()) && !bfs::is_symlink(bfs::symlink_status(getGenomeIndexFilePath()))) {
+ 		BOOST_THROW_EXCEPTION(PrepareException() << PrepareErrorInfo(string(
+ 								  "Could not find genome index at: ") + getGenomeIndexFilePath().string()));
+ 	}
+@@ -97,11 +97,11 @@ portcullis::Prepare::Prepare(const path& _outputPrefix) {
+ 
+ bool portcullis::Prepare::copy(const path& from, const path& to, const string& msg, const bool requireInputFileExists) {
+ 	// Check if output file already exists (if so don't do anything)
+-	if (bfs::exists(to) || bfs::symbolic_link_exists(to)) {
++	if (bfs::exists(to) || bfs::is_symlink(bfs::symlink_status(to))) {
+ 		cout << "Prepped " << msg << " file detected: " << to << endl;
+ 	}
+ 	// Check if input file is required to exist (if so either symlink or copy)
+-	else if (requireInputFileExists || bfs::exists(from) || bfs::symbolic_link_exists(from)) {
++	else if (requireInputFileExists || bfs::exists(from) || bfs::is_symlink(bfs::symlink_status(from))) {
+ 		if (useLinks) {
+ 			bfs::create_symlink(bfs::canonical(from), to);
+ 			cout << "Created symlink from " << from << " to " << to << endl;
+@@ -122,7 +122,7 @@ bool portcullis::Prepare::copy(const path& from, const path& to, const string& m
+ 	else if (!requireInputFileExists) {
+ 		cout << "Existing " << msg << " not found.  Will create later." << endl;
+ 	}
+-	return bfs::exists(to) || bfs::symbolic_link_exists(to);
++	return bfs::exists(to) || bfs::is_symlink(bfs::symlink_status(to));
+ }
+ 
+ bool portcullis::Prepare::genomeIndex() {
+@@ -153,7 +153,7 @@ bool portcullis::Prepare::genomeIndex() {
+  */
+ bool portcullis::Prepare::bamMerge(vector<path> bamFiles) {
+ 	path mergedBam = output->getSortedBamFilePath();
+-	bool mergedBamExists = bfs::exists(mergedBam) || bfs::symbolic_link_exists(mergedBam);
++	bool mergedBamExists = bfs::exists(mergedBam) || bfs::is_symlink(bfs::symlink_status(mergedBam));
+ 	if (mergedBamExists) {
+ 		cout << "Pre-merged BAM detected: " << mergedBam << endl;
+ 	}
+@@ -191,7 +191,7 @@ bool portcullis::Prepare::bamMerge(vector<path> bamFiles) {
+ 		cout << "done." << endl;
+ 	}
+ 	// Return true if the merged BAM exists now, which is should do
+-	return bfs::exists(mergedBam) || bfs::symbolic_link_exists(mergedBam);
++	return bfs::exists(mergedBam) || bfs::is_symlink(bfs::symlink_status(mergedBam));
+ }
+ 
+ /**
+@@ -202,7 +202,7 @@ bool portcullis::Prepare::bamMerge(vector<path> bamFiles) {
+ bool portcullis::Prepare::bamSort(const path& input, const path& output) {
+ 	const path unsortedBam = input;
+ 	const path sortedBam = output;
+-	bool sortedBamExists = bfs::exists(sortedBam) || bfs::symbolic_link_exists(sortedBam);
++	bool sortedBamExists = bfs::exists(sortedBam) || bfs::is_symlink(bfs::symlink_status(sortedBam));
+ 	if (sortedBamExists) {
+ 		cout << "Prepped sorted BAM detected: " << sortedBam << endl;
+ 	}
+@@ -220,7 +220,7 @@ bool portcullis::Prepare::bamSort(const path& input, const path& output) {
+ 			cout.flush();
+ 			int exitCode = system(sortCmd.c_str());
+ 			path badNameMergeFile = path(sortedBam.string() + ".bam");
+-			if (bfs::exists(badNameMergeFile) || bfs::symbolic_link_exists(badNameMergeFile)) {
++			if (bfs::exists(badNameMergeFile) || bfs::is_symlink(bfs::symlink_status(badNameMergeFile))) {
+ 				boost::filesystem::rename(badNameMergeFile, sortedBam);
+ 			}
+ 			if (exitCode != 0 || !bfs::exists(sortedBam) || !BamHelper::isCoordSortedBam(sortedBam)) {
+@@ -232,13 +232,13 @@ bool portcullis::Prepare::bamSort(const path& input, const path& output) {
+ 		}
+ 	}
+ 	// Return true if the sorted BAM exists now, which is should do
+-	return bfs::exists(sortedBam) || bfs::symbolic_link_exists(sortedBam);
++	return bfs::exists(sortedBam) || bfs::is_symlink(bfs::symlink_status(sortedBam));
+ }
+ 
+ bool portcullis::Prepare::bamIndex(const bool copied) {
+ 	const path sortedBam = output->getSortedBamFilePath();
+ 	const path indexedFile = output->getBamIndexFilePath(useCsi);
+-	bool indexedBamExists = bfs::exists(indexedFile) || bfs::symbolic_link_exists(indexedFile);
++	bool indexedBamExists = bfs::exists(indexedFile) || bfs::is_symlink(bfs::symlink_status(indexedFile));
+ 	if (indexedBamExists && !copied) {
+ 		if (verbose) cout << "Prepped indexed BAM detected: " << indexedFile << endl;
+ 	}
+@@ -256,7 +256,7 @@ bool portcullis::Prepare::bamIndex(const bool copied) {
+ 		cout << "done." << endl
+ 			 << "BAM index created at: " << output->getBamIndexFilePath(useCsi) << endl;
+ 	}
+-	return bfs::exists(indexedFile) || bfs::symbolic_link_exists(indexedFile);
++	return bfs::exists(indexedFile) || bfs::is_symlink(bfs::symlink_status(indexedFile));
+ }
+ 
+ void portcullis::Prepare::prepare(vector<path> bamFiles, const path& originalGenomeFile) {
+@@ -320,7 +320,7 @@ void portcullis::Prepare::prepare(vector<path> bamFiles, const path& originalGen
+ 									  "Could not sort: ") + output->getUnsortedBamFilePath().string()));
+ 		}
+ 		// Save disk space by deleting the unsorted BAM if present
+-		if (!bfs::symbolic_link_exists(output->getUnsortedBamFilePath()) && bfs::exists(output->getUnsortedBamFilePath())) {
++		if (!bfs::is_symlink(bfs::symlink_status(output->getUnsortedBamFilePath())) && bfs::exists(output->getUnsortedBamFilePath())) {
+ 			bfs::remove(output->getUnsortedBamFilePath());
+ 		}
+ 	}
+@@ -436,7 +436,7 @@ int portcullis::Prepare::main(int argc, char *argv[]) {
+ 		genomeFile = vm["genome-file"].as<path>();
+ 	}
+ 	// Test if provided genome exists
+-	if (!bfs::exists(genomeFile) && !bfs::symbolic_link_exists(genomeFile)) {
++	if (!bfs::exists(genomeFile) && !bfs::is_symlink(bfs::symlink_status(genomeFile))) {
+ 		BOOST_THROW_EXCEPTION(PrepareException() << PrepareErrorInfo(string(
+ 								  "Could not find genome file at: ") + genomeFile.string()));
+ 	}
