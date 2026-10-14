@@ -1,5 +1,4 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-cp $SRC_DIR/bin/iseq $PREFIX/bin
-chmod +x $PREFIX/bin/iseq
+install -v -m 0755 bin/iseq "$PREFIX/bin"
