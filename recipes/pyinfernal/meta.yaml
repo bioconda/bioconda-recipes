@@ -1,0 +1,51 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: pyinfernal
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pyinfernal/pyinfernal-{{ version }}.tar.gz
+  sha256: c9da4e91e6bfefe4fb32d88b5b106580279907c1d7ce92c23c65dd4117381da0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('pyinfernal', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+  host:
+    - python
+    - scikit-build-core >=0.11
+    - cython >=3.0
+    - pyhmmer >=0.12.0,<0.13.dev0
+    - pip
+  run:
+    - python
+    - pyhmmer >=0.12.0,<0.13.dev0
+
+test:
+  imports:
+    - pyinfernal
+
+about:
+  home: "https://github.com/althonos/pyinfernal"
+  summary: "Cython bindings and Python interface to Infernal."
+  doc_url: "https://pyinfernal.readthedocs.io/en/stable"
+  license: "BSD-3-Clause AND MIT"
+  license_file:
+    - COPYING
+    - vendor/infernal/LICENSE
+    - vendor/infernal/release-notes/LICENSE.tag
+    - vendor/infernal/release-notes/LICENSE.sh.in
+  dev_url: "https://github.com/althonos/pyinfernal"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
