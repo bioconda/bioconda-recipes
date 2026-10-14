@@ -6,7 +6,7 @@ MAIN_SRC="${SRC_DIR}/main_src"
 mkdir -p "$PREFIX/bin/beacon2-ri-tools"
 
 # Copy main release contents
-cp -r "$MAIN_SRC"/{*.py,ref_schemas,conf,files,validators,pipelines,vrs} \
+cp -r "$MAIN_SRC"/{*.py,conf,files,validators,pipelines,vrs,csv,phenopackets-to-BFF} \
     "$PREFIX/bin/beacon2-ri-tools/"
 
 # Ensure package recognition
@@ -20,6 +20,7 @@ scripts=(
   "individuals_to_cohorts_csv.py"
   "remove_dataset.py"
   "update_record.py"
+  "jsonschema_to_csv.py"
 )
 
 for script in "${scripts[@]}"; do
