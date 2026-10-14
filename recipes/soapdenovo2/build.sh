@@ -27,14 +27,23 @@ esac
 cp -f ${PREFIX}/lib/libbam.a standardPregraph/inc/
 cp -f ${PREFIX}/lib/libbam.a sparsePregraph/inc/
 
+# sparsePregraph and the final link are C++; standardPregraph is C
+sed -i.bak "s|^CC[[:space:]]*=[[:space:]]*g++|CC = ${CXX}|" Makefile sparsePregraph/Makefile
+sed -i.bak "s|^CC[[:space:]]*=[[:space:]]*gcc|CC = ${CC} -std=gnu17 -fcommon -fpermissive|" standardPregraph/Makefile
+
+rm -f *.bak
+rm -f sparsePregraph/*.bak
+rm -f standardPregraph/*.bak
+
+make clean
+
 make SOAPdenovo-63mer
 make SOAPdenovo-127mer
-
-install -v -m 0755 SOAPdenovo-127mer "$PREFIX/bin"
-install -v -m 0755 SOAPdenovo-63mer "$PREFIX/bin"
 
 cd fusion
 
 make
 
+install -v -m 0755 ../SOAPdenovo-63mer "$PREFIX/bin"
+install -v -m 0755 ../SOAPdenovo-127mer "$PREFIX/bin"
 install -v -m 0755 SOAPdenovo-fusion "$PREFIX/bin"

@@ -1,15 +1,14 @@
 diff --git a/Makefile b/Makefile
-index f46b30d..e025d8d 100644
+index f46b30d..ce69a83 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,5 +1,5 @@
- MAKEFLAGS += --no-print-directory
--CC = g++
-+CC ?= $(CXX)
- ifdef debug
- CFLAGS=         -O0 -g -fomit-frame-pointer -DDEBUG
- else
-@@ -15,7 +15,7 @@ LIBS=       -pthread -lz -lm
+@@ -10,12 +10,12 @@ SUBDIRS = sparsePregraph standardPregraph fusion
+ PROG=       SOAPdenovo-63mer SOAPdenovo-127mer SOAPdenovo-fusion
+ INCLUDES=   -I./sparsePregraph/inc -I./standardPregraph/inc
+ 
+-LIBPATH=    -L./sparsePregraph/inc -L./standardPregraph/inc -L/lib64 -L/usr/lib64
++LIBPATH=    -L$(PREFIX)/lib
+ LIBS=       -pthread -lz -lm
  EXTRA_FLAGS= 
  
  BIT_ERR = 0
@@ -19,7 +18,7 @@ index f46b30d..e025d8d 100644
  endif
  
 diff --git a/fusion/Makefile b/fusion/Makefile
-index 6b1159a..a625198 100755
+index 6b1159a..8fe575f 100755
 --- a/fusion/Makefile
 +++ b/fusion/Makefile
 @@ -6,10 +6,10 @@ bindir = $(exec_prefix)/bin
@@ -31,19 +30,19 @@ index 6b1159a..a625198 100755
 -LIBS = -lm -lpthread
 -INCDIRS = -Iinc/
 +CC ?= $(CC)
-+CCOPT = -O3 -fprefetch-loop-arrays -funroll-loops -fomit-frame-pointer -w -fcommon -Wno-implicit-function-declaration
++CCOPT = -O3 -fprefetch-loop-arrays -funroll-loops -fomit-frame-pointer -w -fcommon -Wno-implicit-function-declaration -std=gnu17 -fcommon -fpermissive
 +LIBS = -lm -pthread
 +INCDIRS = -Iinc/ -I../sparsePregraph/inc/ -I../standardPregraph/inc/
  CFLAGS = ${CCOPT} ${INCDIRS}
  
  all: SOAPdenovo-fusion
 diff --git a/sparsePregraph/Makefile b/sparsePregraph/Makefile
-index e3551ff..9d94e45 100644
+index e3551ff..ea11e05 100644
 --- a/sparsePregraph/Makefile
 +++ b/sparsePregraph/Makefile
 @@ -1,4 +1,4 @@
 -CC=            g++
-+CC ?=            $(CXX)
++CC = x86_64-conda-linux-gnu-c++
  ifdef debug
  CFLAGS=         -O0 -g -fomit-frame-pointer -DDEBUG
  else
@@ -56,11 +55,8 @@ index e3551ff..9d94e45 100644
  BIT_ERR = 1
  endif
  
-diff --git a/sparsePregraph/inc/libbam.a b/sparsePregraph/inc/libbam.a
-index d86ebe0..aa9373d 100644
-Binary files a/sparsePregraph/inc/libbam.a and b/sparsePregraph/inc/libbam.a differ
 diff --git a/standardPregraph/Makefile b/standardPregraph/Makefile
-index 1f20e7c..8a27aba 100644
+index 1f20e7c..d0fe3e6 100644
 --- a/standardPregraph/Makefile
 +++ b/standardPregraph/Makefile
 @@ -5,13 +5,13 @@
@@ -68,7 +64,7 @@ index 1f20e7c..8a27aba 100644
  ###################################
  
 -CC=             gcc
-+CC ?=             $(CC)
++CC = x86_64-conda-linux-gnu-cc -std=gnu17 -fcommon -fpermissive
  GCCVERSIONMAJOR := $(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 4)
  GCCVERSIONMINOR := $(shell expr `$(CC) -dumpversion | cut -f2 -d.` \>= 4)
  ifdef debug
