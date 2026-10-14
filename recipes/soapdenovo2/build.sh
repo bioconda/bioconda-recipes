@@ -16,9 +16,6 @@ case $(uname -m) in
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
 esac
 
 cp -f ${PREFIX}/lib/libbam.a standardPregraph/inc/
