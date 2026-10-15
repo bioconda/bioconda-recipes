@@ -12,10 +12,6 @@ export CFLAGS="${CFLAGS} -O3 -std=gnu11"
 export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14 -Wno-use-after-free -Wno-misleading-indentation -Wno-unused-result"
 export LC_ALL="en_US.UTF-8"
 
-sed -i.bak 's|-O2|-O3|' Flye/lib/minimap2/Makefile
-sed -i.bak 's|-lpthread|-pthread|' Flye/lib/minimap2/Makefile
-rm -rf Flye/lib/minimap2/*.bak
-
 ROOT=`pwd -P`
 [ -z "${DEST}" ] && DEST="${ROOT}"
 
@@ -44,8 +40,14 @@ make install-special -j"${CPU_COUNT}"
 echo "Creating example config file masurca_config_example.txt:"
 ${BINDIR}/masurca -g masurca_config_example.txt
 
-cd ${SRC_DIR}/Flye
-make -j"${CPU_COUNT}"
-install -v -m 0755 bin/flye* "${PREFIX}/bin"
+# MaSuRCA calls Flye as <bin>/../Flye/bin/flye and flye-minimap2 (polishing,
+# scaffolding, FLYE_ASSEMBLY=1). The bundled copy is Flye 2.5, whose launcher
+# requires Python 2.7, and installing it into ${PREFIX}/bin shadowed the flye
+# run dependency. Point MaSuRCA's Flye path at the flye package instead.
+mkdir -p "${PREFIX}/Flye/bin"
+for tool in flye flye-minimap2; do
+	printf '#!/bin/sh\nexec "$(dirname "$0")/../../bin/%s" "$@"\n' "${tool}" > "${PREFIX}/Flye/bin/${tool}"
+	chmod 0755 "${PREFIX}/Flye/bin/${tool}"
+done
 
 find "${PREFIX}/bin" -name "*.pl" -exec sed -i '1s|^#!.*perl.*|#!/usr/bin/env perl|' {} +
