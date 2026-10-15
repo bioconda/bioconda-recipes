@@ -1,0 +1,68 @@
+{% set name = "chemembed" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 862fa08cd95a72cf945283122c12ca75ae9ac806645327b901effae0d22effad
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.9
+    - numpy >=1.18.0
+    - pandas >=1.0.0
+    - scipy >=1.4.0
+    - pytorch >=1.13.0
+    - pyyaml >=5.3.0
+    - rdkit >=2020.09.1
+    - tqdm >=4.0.0
+    - pyarrow >=8
+
+test:
+  imports:
+    - chemembed.cli
+    - chemembed.data_processing
+    - chemembed.model_utils
+    - chemembed.reference_utils
+    - pyarrow
+    - pandas
+  commands:
+    - chemembed --help
+
+about:
+  home: https://github.com/faizanurv/ChemEmbed
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Metabolite identification from MS/MS spectra using molecular embeddings
+  description: |
+    ChemEmbed identifies metabolites by transforming an experimental MS/MS
+    spectrum into a learned molecular embedding with a convolutional neural
+    network, then ranking candidate structures from a reference database by
+    cosine similarity against that predicted embedding.
+
+    Models and the reference database are not included and must be supplied
+    separately. 
+  dev_url: https://github.com/faizanurv/ChemEmbed
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1093/bib/bbag054

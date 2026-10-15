@@ -13,9 +13,13 @@ source:
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
   md5: 3b93f97d6adb9864db8a1f4d40d168e0
+  patches:
+    - 0001-do-not-vendor-minimap2-oarfish.patch
+    - 0002-fix-basilisk-flames-env-package-versions.patch
+
 
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -26,13 +30,16 @@ build:
 requirements:
 
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }} # build dependenvy installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L26
     - automake
     - make
 
   host:
     - bioconductor-bambu >=3.12.0,<3.13.0
+    - r-xgboost >=3.1.2,<3.5 # There seem to be some version constraints here, but they remain unclear, and this should probably be fixed in the bioconda recipe for bioconductor-bambu. This is the best info I could find, and seems to refer to what ended up in Bioconductor release 3.22: https://github.com/GoekeLab/bambu/issues/447#issuecomment-3741976709
     - bioconductor-basilisk >=1.22.0,<1.23.0
     - bioconductor-biocgenerics >=0.56.0,<0.57.0
     - bioconductor-biocparallel >=1.44.0,<1.45.0
@@ -87,6 +94,12 @@ requirements:
     - liblapack
     - zlib
     - liblzma-devel
+    - glpk # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L11
+    - libcurl # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L12  , this implicitly pulls in openssl, another build dependency from the Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L13
+    - libxml2-devel >=2.14.5 # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L14
+    - imagemagick # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L16  , this implicitly also pulls in libpng, another build dependency from the Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L15
+    - bzip2 # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L17
+    - ncurses # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L19
 
   run:
     - bioconductor-bambu >=3.12.0,<3.13.0
@@ -139,10 +152,18 @@ requirements:
     - r-tibble
     - r-tidyr
     - r-tidyselect
-    - r-withr
+    - samtools >=1.14 # runtime dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L54  , version constraint from: https://github.com/mritchielab/FLAMES/issues/34#issuecomment-2153219282
+    - oarfish >=0.8,<0.9 # runtime dependency manually installed in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L90
+    - minimap2 >=2.29 # runtime dependency installed (?) as a permanent copy of the minimap2 source code: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/src/submodule/minimap2/minimap.h#L8  , the bioconda recipe includes k8, which seems to have been missing from the deb package in the past
+    - libuv # runtime dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L65 (probably for python env setup with basilisk?)
+    - git # Avoid errors such as: Error in step barcode_demultiplex: bootstrapping of pyenv requires git to be installed, pipeline stopped.
+    - pkg-config # build dependency installed via apt in Dockerfile: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/Dockerfile#L21 (seems to be needed for pyenv installation, which basilisk uses for python env installations)
+    - python ==3.11.9 # IF YOU UPDATE THIS VERSION, ALSO UPDATE IT IN THE BASILISK_CUSTOM_PYTHON_ENV_X_Y_Z VARIABLES IN THE ACTIVATE AND DEACTIVATE SCRIPTS (activate.sh, activate.fish, deactivate.sh, deactivate.fish)  # This and the following dependecies are for basilisk env usage: https://github.com/mritchielab/FLAMES/blob/f8c31c2cec3e1b4e5558e0502cf8647461ace6f4/R/basilisk.R#L5-L13
+    - pip # reticulate needs this to be present under macOS for using the above pre-installed python version, even though the reticulate pyenv install then re-installs a newer pip version
 
 test:
   commands:
+    # see run_test.r for more comprehensive test
     - $R -e "library('{{ name }}')"
 
 about:
