@@ -7,7 +7,7 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 # Same code as the release archives: the release profile (panic = abort, overflow checks), built
 # from Cargo.lock, without debug info and stripped (.github/workflows/release.yml).
 cargo install --no-track --locked --verbose --root "${PREFIX}" --path . \
-  --config profile.release.debug=0 --config profile.release.strip=true
+  --config profile.release.debug=0
 # The list fetcher reads ../data/lists.tsv beside its own directory: keep that layout under share/.
 share="${PREFIX}/share/tussl-chemistry"
 install -d "${share}/scripts" "${share}/data"
