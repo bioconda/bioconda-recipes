@@ -1,0 +1,73 @@
+# Recipe for bioconda-recipes. To submit, copy this file to
+# recipes/deeprok/meta.yaml in a fork of
+# https://github.com/bioconda/bioconda-recipes and open a PR.
+#
+# Before submitting:
+#   1. Tag and publish a GitHub release (the repo must be PUBLIC -- bioconda
+#      builds from a public URL).
+#   2. Fill in the sha256 below:
+#        curl -sL https://github.com/susanxu3/deeprok/archive/refs/tags/v0.1.0.tar.gz | shasum -a 256
+#   3. Put your GitHub username under extra.recipe-maintainers.
+#
+# To build from this checkout instead, replace the whole `source:` block with
+#   source:
+#     path: ../..
+# and run: conda build conda/recipe -c conda-forge
+{% set name = "deeprok" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/susanxu3/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ce0919f1e0eb4cbdd2bdf6eecbad4b60f4987a5d1037a4e941e8ffdea5081e53
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - deeprok = deeprok.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10,<3.14
+    - numpy >=1.24,<3
+    - pytorch >=2.1,<3
+
+test:
+  imports:
+    - deeprok
+    - deeprok._core.hmm_duration_decode
+  source_files:
+    - tests/data/ecoli_k12_200kb.fna.gz
+  commands:
+    - deeprok --version
+    - deeprok --help
+    - deeprok -q -p meta -i tests/data/ecoli_k12_200kb.fna.gz -o test.gff3 -a test.faa
+    - test -s test.gff3 && test -s test.faa
+
+about:
+  home: https://github.com/susanxu3/deeprok
+  summary: Neural prokaryotic gene finder (CNN+BiLSTM + segmental ORF HMM)
+  description: |
+    Predicts protein-coding genes in bacterial and archaeal genomes. A CNN+BiLSTM
+    trained on 666 GTDB family representatives scores every base; a segmental ORF
+    HMM decodes complete genes; a start-site ranker self-trained on the input genome
+    refines translation starts. Writes GFF3, protein and CDS FASTA.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - susanxu3
