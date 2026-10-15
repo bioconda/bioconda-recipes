@@ -1,0 +1,62 @@
+{% set version = "2.4.0" %}
+
+package:
+  name: samstat
+  version: {{ version }}
+
+source:
+  url: https://github.com/TimoLassmann/samstat/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 39120c61c0370b9d76ac4853c12afc96d185960f63f724888a6d0c09e634ac7c
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('samstat', max_pin='x') }}
+
+requirements:
+  # htslib 1.24 is bundled in the source archive (thirdparty/) and built without network access
+  build:
+    - {{ compiler('c') }}
+    - cmake >=3.19
+    - make
+    - autoconf
+    - automake
+  host:
+    - zlib
+    - bzip2
+    - xz
+
+test:
+  commands:
+    - samstat -v
+    # a tiny aligned SAM and a FASTQ: HTML, JSON and MultiQC files must be written
+    - printf '@HD\tVN:1.6\n@SQ\tSN:chr1\tLN:1000\nr1\t0\tchr1\t1\t60\t10M\t*\t0\t0\tACGTACGTAC\tIIIIIIIIII\tNM:i:0\tMD:Z:10\n' > test.sam
+    - samstat --json --multiqc test.sam
+    - test -s test.sam.samstat.html
+    - test -s test.sam.samstat.json
+    - test -s test.sam.samstat_general_mqc.json
+    - printf '@r1\nACGTACGTAC\n+\nIIIIIIIIII\n@r2\nACGTACGTAC\n+\nIIIIIIIIII\n' > test.fq
+    - samstat test.fq
+    - test -s test.fq.samstat.html
+
+about:
+  home: https://github.com/TimoLassmann/samstat
+  license: MIT
+  license_family: MIT
+  license_file: COPYING
+  summary: Quality control for SAM, BAM, CRAM, FASTA and FASTQ files, split by mapping quality.
+  description: |
+    SAMStat summarises sequencing reads and their alignments in one self-contained HTML report:
+    read length, base quality, base composition, mismatch and indel rates along the read and
+    identity to the reference, each split by mapping quality. Short and long reads (Illumina,
+    PacBio, ONT) are supported. It can also write JSON and MultiQC files.
+  doc_url: https://github.com/TimoLassmann/samstat
+  dev_url: https://github.com/TimoLassmann/samstat
+
+extra:
+  identifiers:
+    - biotools:samstat
+    - doi:10.1093/bioinformatics/btad019
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
