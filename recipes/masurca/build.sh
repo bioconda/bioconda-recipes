@@ -44,10 +44,20 @@ ${BINDIR}/masurca -g masurca_config_example.txt
 # scaffolding, FLYE_ASSEMBLY=1). The bundled copy is Flye 2.5, whose launcher
 # requires Python 2.7, and installing it into ${PREFIX}/bin shadowed the flye
 # run dependency. Point MaSuRCA's Flye path at the flye package instead.
+# FLYE_ASSEMBLY=1 passes --kmer-size 21, which only Flye 2.5 accepted, so the
+# flye wrapper drops that option.
 mkdir -p "${PREFIX}/Flye/bin"
-for tool in flye flye-minimap2; do
-	printf '#!/bin/sh\nexec "$(dirname "$0")/../../bin/%s" "$@"\n' "${tool}" > "${PREFIX}/Flye/bin/${tool}"
-	chmod 0755 "${PREFIX}/Flye/bin/${tool}"
+cat > "${PREFIX}/Flye/bin/flye" <<'EOF'
+#!/usr/bin/env bash
+args=(); skip=0
+for a in "$@"; do
+	if [ "${skip}" = 1 ]; then skip=0; continue; fi
+	if [ "${a}" = "--kmer-size" ]; then skip=1; continue; fi
+	args+=("${a}")
 done
+exec "$(dirname "$0")/../../bin/flye" "${args[@]}"
+EOF
+printf '#!/bin/sh\nexec "$(dirname "$0")/../../bin/flye-minimap2" "$@"\n' > "${PREFIX}/Flye/bin/flye-minimap2"
+chmod 0755 "${PREFIX}/Flye/bin/flye" "${PREFIX}/Flye/bin/flye-minimap2"
 
 find "${PREFIX}/bin" -name "*.pl" -exec sed -i '1s|^#!.*perl.*|#!/usr/bin/env perl|' {} +
