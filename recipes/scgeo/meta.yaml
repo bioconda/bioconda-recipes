@@ -1,0 +1,68 @@
+{% set name = "scgeo" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 87928f91cd5ecbe06347e5ea9f290602030e0af2a7f7a3fd831daaf488cea175
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.9
+    - numpy
+    - pandas
+    - anndata
+    - scipy
+    - scikit-learn
+    - matplotlib-base
+    - plotly
+
+test:
+  requires:
+    - pip
+    - packaging
+  imports:
+    - scgeo
+    - scgeo.tl
+    - scgeo.pl
+    - scgeo.pp
+    - scgeo.get
+    - scgeo.data
+    - scgeo.bench
+  source_files:
+    - scripts/smoke_installation.py
+  commands:
+    - python -c "import scgeo; assert scgeo.__version__ == '{{ version }}'; assert callable(scgeo.tl.robust_shift)"
+
+about:
+  home: https://github.com/liuifrec/scgeo
+  license: MIT
+  license_file: LICENSE
+  summary: Geometry-aware analysis of single-cell representations
+  description: >-
+    ScGeo quantifies perturbation-associated geometry in single-cell
+    representations, including sample-aware displacement, representation
+    stability, local geometry, and geometry-dynamics agreement.
+  doc_url: https://github.com/liuifrec/scgeo/blob/main/docs/OVERVIEW.md
+  dev_url: https://github.com/liuifrec/scgeo
+
+extra:
+  recipe-maintainers:
+    - liuifrec
+  identifiers:
+    - doi:10.1093/bioadv/vbag266
