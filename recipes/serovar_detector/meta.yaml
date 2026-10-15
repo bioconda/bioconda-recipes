@@ -1,22 +1,25 @@
 {% set name = "serovar_detector" %}
-{% set version = "1.1.1" %}
+{% set version = "1.1.4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: c0102fa8e571e136e52b65d67c78bc58323ab81fa0b8bf45ca55418724cf76d3
+  sha256: d1a196f84d4ee76df92f8f2da0313bed58d4015081138c2ae5236395bad38705
 
 build:
   number: 0
   noarch: python
   entry_points:
     - serovar_detector = serovar_detector.cli:main
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
+  script:
+    # Upstream bug in 1.1.4: option strings passed to argparse as a list
+    - sed -i 's/add_argument(\["-v", "--version",\]/add_argument("-v", "--version"/' serovar_detector/cli.py
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    {{ pin_subpackage(name, max_pin="x.x") }}
+    {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
@@ -25,7 +28,9 @@ requirements:
     - hatchling
   run:
     - python >=3.8
-    - snakemake >=8.0
+    - snakemake-minimal >=8.0
+    - pandas
+    - peppy
     - kma
     - conda
 
@@ -34,13 +39,15 @@ test:
     - serovar_detector -h
 
 about:
-  home: https://github.com/KasperThystrup/serovar_detector
+  home: "https://github.com/KasperThystrup/serovar_detector"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'A pipeline for detecting and typing serovariants of A. pleuropneumoniae'
-  doc_url: https://github.com/KasperThystrup/serovar_detector
+  summary: "A pipeline for detecting and typing serovariants of A. pleuropneumoniae."
+  dev_url: "https://github.com/KasperThystrup/serovar_detector"
 
 extra:
+  identifiers:
+    - doi:10.1099/mgen.0.001434
   recipe-maintainers:
     - KasperThystrup
-
