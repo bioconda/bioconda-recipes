@@ -1,0 +1,58 @@
+{% set name = "zebrachop" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abachu2005/ZebraCHOP/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 58b8ed7b3772e0ac97bc3d7387b6370def393940d9fee619a080700877a3710e
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - zebrachop-web = frontend.main:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.9
+    - fastapi >=0.104
+    - uvicorn >=0.24
+    - python-multipart >=0.0.6
+    - requests >=2.28
+
+test:
+  imports:
+    - frontend
+    - frontend.main
+  commands:
+    - zebrachop-web --help || true
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/abachu2005/ZebraCHOP
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: CRISPR gRNA design for zebrafish with Ensembl-aware filtering, wrapping the CHOPCHOP engine.
+  description: |
+    ZebraCHOP is a Python 3 frontend and FastAPI web UI that wraps the
+    CHOPCHOP CRISPR gRNA design engine, with Ensembl-aware exon filtering
+    optimised for the zebrafish (Danio rerio) genome. The frontend launches
+    the underlying CHOPCHOP CLI as a subprocess.
+  doc_url: https://github.com/abachu2005/ZebraCHOP#readme
+  dev_url: https://github.com/abachu2005/ZebraCHOP
+
+extra:
+  recipe-maintainers:
+    - abachu2005
