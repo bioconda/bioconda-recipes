@@ -10,11 +10,20 @@ source:
   sha256: 71a7ec466dd2c26c0fae482d48348250f3f8a75ca8c2c263a89c62877a35ebed
 
 build:
-  number: 0
-  skip: True # [py <= 39]
+  number: 1
+  skip: True # [py <= 310]
   run_exports:
     - {{ pin_subpackage('skder', max_pin='x') }}
-    
+  script:
+    - set -euxo pipefail
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+    - mkdir -p ${PREFIX}/bin
+    - export LDFLAGS=
+    - "${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/skDERsum src/skDER/skDERsum.cpp"
+    - "${CXX} -std=c++11 -Wl,-headerpad_max_install_names -o ${PREFIX}/bin/skDERcore src/skDER/skDERcore.cpp"
+    - chmod +x ${PREFIX}/bin/skDERcore
+    - chmod +x ${PREFIX}/bin/skDERsum
+
 requirements:
   build:
      - {{ compiler('cxx') }}
@@ -25,7 +34,7 @@ requirements:
     - pip
     - wget
   run:
-    - python >=3.10
+    - python >=3.11
     - biopython
     - setuptools
     - skani

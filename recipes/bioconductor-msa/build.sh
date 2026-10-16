@@ -1,7 +1,12 @@
 #!/bin/bash
+
+export DISABLE_AUTOBREW=1
+
 mv DESCRIPTION DESCRIPTION.old
+
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
+
 echo -e "CC=$CC
 FC=$FC
 CXX=$CXX
@@ -15,4 +20,4 @@ CXX14=$CXX" > ~/.R/Makevars
 mkdir -p src/ClustalW/src
 touch src/ClustalW/src/config.h
 
-$R CMD INSTALL --build .
+$R CMD INSTALL --build . "${R_ARGS}"
