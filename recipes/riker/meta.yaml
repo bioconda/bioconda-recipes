@@ -18,6 +18,8 @@ build:
   # rpaths -- everything is statically linked), so skip the pass entirely.
   binary_relocation: false
   script:
+    # bindgen (via hts-sys) needs libclang; point it at the build env's copy.
+    - export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
     # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
@@ -40,7 +42,9 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-    - clangdev <22
+    # libclang, not clangdev: clangdev pulls in llvmdev, whose lib/libLLVM.dylib
+    # can replace the one conda-forge's rustc loads, crashing rustc on macOS.
+    - libclang <22
     - cmake
     - make
 
