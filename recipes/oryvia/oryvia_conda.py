@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 
-VERSION = '2026.10.16.1'
+VERSION = '2026.10.17'
 INSTALL_PREFIX = Path(sys.prefix).resolve()
 TEMPLATE = INSTALL_PREFIX / 'share' / 'oryvia'
 MARKER = '.oryvia-workspace.json'
@@ -126,12 +126,44 @@ def environment():
     # select the base environment and lose its packages.
     env['HAP_PYTHON'] = sys.executable
     env['ORYVIA_NO_PAUSE'] = '1'
+    env['ORYVIA_CONDA_PREFIX'] = str(INSTALL_PREFIX)
     return env
 
 
-def run_local(root, script, arguments):
+def run_local(root, script, arguments, cwd=None):
     command = [sys.executable, '-I', '-X', 'utf8', str(root / 'isolated_entry.py'), script, *arguments]
-    return subprocess.call(command, cwd=root, env=environment())
+    return subprocess.call(command, cwd=cwd or root, env=environment())
+
+
+def batch_write_path(value):
+    chosen = Path(value).expanduser().absolute()
+    if (chosen.exists() or chosen.is_symlink()) and linked(chosen):
+        raise RuntimeError('Choose a regular batch output path, not a link: ' + str(chosen))
+    target = chosen.resolve(strict=False)
+    if target == INSTALL_PREFIX or target.is_relative_to(INSTALL_PREFIX):
+        raise RuntimeError('Batch output must stay outside the Conda installation: ' + str(target))
+    # Inputs may share a parent with outputs. The pipeline validates each file
+    # it will write; do not reject or scan unrelated user directory contents.
+    return str(target)
+
+
+def batch_arguments(arguments):
+    forwarded = list(arguments)
+    if forwarded and forwarded[0] == '--':
+        forwarded.pop(0)
+    write_options = ('--directory', '--output', '--script')
+    for index, value in enumerate(forwarded):
+        if value in write_options:
+            if index + 1 >= len(forwarded):
+                raise RuntimeError('A path is required after ' + value)
+            forwarded[index + 1] = batch_write_path(forwarded[index + 1])
+        else:
+            option, separator, path = value.partition('=')
+            if separator and option in write_options:
+                if not path:
+                    raise RuntimeError('A path is required after ' + option)
+                forwarded[index] = option + '=' + batch_write_path(path)
+    return forwarded or ['--help']
 
 
 def parser():
@@ -144,10 +176,13 @@ def parser():
         'stop': 'Stop only the verified server recorded in this workspace.',
         'check': 'Check native Python calculations and optional tools.',
         'self-test': 'Run small synthetic computational checks.',
-        'setup-r': 'Install locked R packages into this workspace; requires native R.'}
+        'setup-r': 'Install locked R packages into this workspace; requires native R.',
+        'batch': 'Run demo, run, template or summarize through the Linux/HPC batch interface.'}
     for name, description in descriptions.items():
         sub = actions.add_parser(name, help=description, description=description)
         sub.add_argument('--workspace', type=Path, help='Working folder; default: ~/ORYVIA/' + VERSION)
+        if name == 'batch':
+            sub.add_argument('batch_args', nargs=argparse.REMAINDER, help='Arguments passed to the batch interface.')
         if name == 'start':
             sub.add_argument('--port', type=int, default=8765, help='Local port, or 0 to choose one automatically.')
             sub.add_argument('--no-browser', action='store_true', help='Print the address without opening a browser.')
@@ -186,6 +221,8 @@ def main(argv=None):
             if args.foreground:
                 extra.append('--foreground')
             return run_local(root, 'start_source.py', extra)
+        if args.action == 'batch':
+            return run_local(root, 'hpc_pipeline.py', batch_arguments(args.batch_args), cwd=Path.cwd())
         if args.action == 'setup-r':
             return run_local(root, 'start_source.py', ['--setup-r'] + (['--offline'] if args.offline else []))
         receipt = root / 'logs' / ('conda_' + args.action.replace('-', '_') + '.json')
