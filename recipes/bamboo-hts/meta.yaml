@@ -1,0 +1,78 @@
+# Submit this file to bioconda-recipes as recipes/bamboo-hts/meta.yaml
+# Update version, sha256, and build number on each release.
+#
+#   1. Tag and push: git tag v0.1.0 && git push origin v0.1.0
+#   2. Wait for PyPI publish (release workflow)
+#   3. sha256sum dist/bamboo-0.1.0.tar.gz  (or curl PyPI sdist)
+#   4. Open PR: https://github.com/bioconda/bioconda-recipes (recipes/bamboo-hts/)
+
+{% set name = "bamboo-hts" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bamboo_hts-{{ version }}.tar.gz
+  sha256: f281221bdc0b7b1275a585f8b32ce81abfc5bd47a2e7ef6186e335781c28480f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bamboo-hts', max_pin="x.x") }}
+  missing_dso_whitelist:
+    - "**/*.so"
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - clangdev >=18,<19  # [linux]
+    - llvm-tools >=18,<19  # [linux]
+    - pkg-config
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - maturin >=1.5,<2
+    - pyarrow >=16
+    - zlib
+    - bzip2
+    - xz
+    - libdeflate
+    - libcurl
+    - openssl  # [not osx]
+    - clangdev >=18,<19  # [osx]
+    - llvm-tools >=18,<19  # [osx]
+    - libclang  # [osx]
+  run:
+    - python >=3.10,<3.13
+    - pyarrow >=16
+
+test:
+  imports:
+    - bamboo
+  commands:
+    - python -c "import bamboo as bm; print(bm.__version__)"
+    - python -c "from bamboo.compat import pysam"
+
+about:
+  home: https://github.com/donncha/bamboo
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: High-performance Python library for HTS data (BAM, CRAM, VCF)
+  description: |
+    Bamboo provides fast, pysam-compatible BAM/CRAM/VCF reading with native
+    Arrow columnar export for modern genomics workflows.
+  dev_url: https://github.com/donncha/bamboo
+  doc_url: https://github.com/donncha/bamboo/blob/main/MIGRATION.md
+
+extra:
+  recipe-maintainers:
+    - dnncha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
