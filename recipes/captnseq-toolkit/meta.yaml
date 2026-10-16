@@ -1,0 +1,58 @@
+{% set name = "captnseq-toolkit" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/98/af/9202efaa207298bf109db5c02216a65670c752ad58d2ea3d8c083dd8632a/captnseq_toolkit-{{ version }}.tar.gz
+  sha256: a23ba1269809f5a4ff9216b6919a65077f1edec7ba9d81265b4892ab10d2c64d
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  entry_points:
+    - captnseq-toolkit = captnseq_toolkit.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - setuptools-scm >=8
+  run:
+    - python >=3.9
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+
+test:
+  imports:
+    - captnseq_toolkit
+    - captnseq_toolkit.cli
+    - captnseq_toolkit.sam2sites
+    - captnseq_toolkit.sites2genes
+    - captnseq_toolkit.essentiality
+  commands:
+    - captnseq-toolkit --version
+    - captnseq-toolkit --help
+    - captnseq-toolkit sam2sites --help
+    - captnseq-toolkit sites2genes --help
+    - captnseq-toolkit essentiality --help
+    - python -c "from captnseq_toolkit import __version__; assert __version__ == '{{ version }}'"
+
+about:
+  home: https://github.com/simonjeanneau/captnseq-toolkit
+  license: MIT
+  license_file: LICENSE
+  summary: Analysis tools for CAPTn-seq transposon-insertion sequencing data
+  dev_url: https://github.com/simonjeanneau/captnseq-toolkit
+
+extra:
+  recipe-maintainers:
+    - brassardfelix
