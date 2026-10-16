@@ -42,9 +42,15 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-    # libclang, not clangdev: clangdev pulls in llvmdev, whose lib/libLLVM.dylib
-    # can replace the one conda-forge's rustc loads, crashing rustc on macOS.
-    - libclang <22
+    # bindgen (via hts-sys) loads libclang, which finds clang's builtin headers
+    # (stddef.h, ...) under lib/clang/<its major version>, so keep it in step
+    # with the clang that ships them: the compiler on osx (conda_build_config.yaml)
+    # and the clang package on linux, where the compiler is gcc. Not 22: bindgen
+    # 0.69 then drops struct fields and rust-htslib fails to compile. Not
+    # clangdev: it pulls in llvmdev, whose lib/libLLVM.dylib can replace the one
+    # conda-forge's rustc loads, crashing rustc on macOS.
+    - libclang 21.*
+    - clang 21.*  # [linux]
     - cmake
     - make
 
