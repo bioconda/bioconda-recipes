@@ -1,0 +1,72 @@
+{% set name = "transcript-transformer" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/transcript_transformer-{{ version }}.tar.gz
+  sha256: 71359605c58caabc997017b381151e154ca62cdc98dc85b6184edc5716a01559
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  entry_points:
+    - ribotie = transcript_transformer.ribotie:main
+    - tis_transformer = transcript_transformer.tis_transformer:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - setuptools >=45
+    - setuptools-scm >=6.2
+    - pip
+    - cuda-version 11.8
+  run:
+    - python >=3.10,<3.13
+    - cuda-version 11.8
+    - pytorch >=2.0 =*cuda*
+    - pytorch-lightning >=2.2.1
+    - tensorboard >=2.16.2
+    - torchmetrics >=1.1.2
+    - performer-pytorch ==1.1.4
+    - local-attention ==1.7.1
+    - h5py >=3.11.0
+    - numpy >=1.26.4
+    - scipy >=1.13.0
+    - pandas >=2.2.2
+    - biobear >=0.23.7
+    - pyarrow >=18.0.0
+    - h5max >=0.3.2
+    - polars >=1.28
+    - tqdm >=4.66.2
+    - pyfaidx >=0.8.1.1
+    - pyranges >=0.1.4
+
+test:
+  imports:
+    - transcript_transformer
+  commands:
+    - pip check
+    - ribotie --help
+    - tis_transformer --help
+  requires:
+    - pip
+
+about:
+  summary: Transformers for Transcripts
+  home: https://github.com/TRISTAN-ORF/TRISTAN
+  license: MIT
+  license_file: LICENCE
+
+extra:
+  recipe-maintainers:
+    - jdcla
+  skip-lints:
+    - should_be_noarch_generic
+    - should_be_noarch_python
+    - missing_run_exports
