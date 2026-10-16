@@ -1,0 +1,65 @@
+{% set name = "oryvia" %}
+{% set version = "2026.10.16.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YueDong0211/ORYVIA/releases/download/v{{ version }}/ORYVIA_Source_{{ version }}.zip
+  sha256: d94d73853742257da1cc566a531c4e7c7e3163e16285b938a11b744b44a31ac0
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
+  entry_points:
+    - oryvia = oryvia_conda:main
+
+requirements:
+  host:
+    - python >=3.12,<3.14
+  run:
+    - python >=3.12,<3.14
+    - numpy ==2.3.5
+    - scipy ==1.16.2
+    - pandas ==3.0.1
+    - matplotlib-base ==3.11.2
+    - openpyxl ==3.1.5
+    - xlrd ==2.0.2
+    - pillow ==12.3.0
+
+test:
+  imports:
+    - oryvia_conda
+  commands:
+    - oryvia --help
+    - oryvia --version
+
+about:
+  home: https://github.com/YueDong0211/ORYVIA
+  license: MIT
+  license_file: LICENSE
+  summary: Phenotype-genotype association and posterior effect workstation
+  description: |
+    ORYVIA aligns phenotype and genotype data, runs association workflows,
+    estimates posterior effects, reviews candidates and exports scientific figures.
+    The browser application uses a separate writable workspace, leaving the
+    installed source template unchanged. Native R, PLINK 2 and Bowtie2 are
+    optional; unavailable engines are reported without substituting another model.
+  dev_url: https://github.com/YueDong0211/ORYVIA
+  doc_url: https://github.com/YueDong0211/ORYVIA/blob/main/README.md
+
+extra:
+  notes: |
+    Start with `oryvia start`; the default workspace is ~/ORYVIA/2026.10.16.1.
+    Use `oryvia start --workspace /writable/path --no-browser` on a headless host.
+    Stop that instance with `oryvia stop --workspace /writable/path`.
+    All analysis data and logs remain outside the Conda installation.
+    Native R, PLINK 2 and Bowtie2 are optional and are not installed by this recipe.
+    `oryvia setup-r --workspace /writable/path` prepares locked R packages in
+    the workspace; native R and source-package build prerequisites are required.
+    `oryvia check --workspace /writable/path` checks the available environment.
+  recipe-maintainers:
+    - YueDong0211
