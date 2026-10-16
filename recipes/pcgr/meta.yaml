@@ -1,0 +1,67 @@
+{% set name = "pcgr" %}
+{% set version = "2.2.5" %}
+{% set sha256 = "d97069ef9bd14377930a639ba336fe986784f2a6f8f6722b31505fb1e0c658ed" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sigven/pcgr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps -v
+  run_exports: {{ pin_subpackage("pcgr", max_pin="x.x") }}
+  entry_points:
+    - pcgr = pcgr.main:cli
+    - cpsr = pcgr.cpsr:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - pandas
+    - scipy
+    - numpy
+    - pybedtools
+    - cyvcf2
+    - pyyaml
+    - pysam
+    - r-pcgrr =={{ version }}
+    - ensembl-vep >=112
+    - vcfanno
+    - samtools
+    - bcftools
+    - lofreq
+    - platypus-variant
+
+test:
+  imports:
+    - pcgr
+  commands:
+    - pcgr --version
+    - cpsr --version
+
+about:
+  home: https://github.com/sigven/pcgr
+  license: MIT
+  license_file: LICENSE
+  summary: Personal Cancer Genome Reporter (PCGR) - variant interpretation for precision cancer medicine.
+  description: |
+    The Personal Cancer Genome Reporter (PCGR) is a stand-alone software
+    package for functional annotation and translation of somatic and
+    germline variants for precision cancer medicine.
+
+    PCGR integrates a range of tools and data resources to provide
+    comprehensive reports on somatic variants (PCGR) and germline
+    predisposition variants (CPSR).
+
+extra:
+  recipe-maintainers:
+    - sigven
