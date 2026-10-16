@@ -1,3 +1,5 @@
+#!/bin/bash
+
 packageName=$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 outdir=$PREFIX/share/$packageName
 

@@ -1,0 +1,53 @@
+{% set name = "afp" %}
+{% set pypi_name = "run-afp" %}
+{% set version = "0.1.2" %}
+
+package:
+  # Conda package name is `afp` to match the python import name. The PyPI
+  # distribution is published as `run-afp` because the bare `afp` name was
+  # already taken on PyPI by an unrelated project.
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/c4/fb/1e5881e7c798c0f5312e9149e9847c88b4a19a81d2f7b13467a59bb08844/run_afp-{{ version }}.tar.gz
+  sha256: fe6eb05039716ee30caa9d65841321c53edeb0ad49d41759d6c62526ed8e48f8
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('afp', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.9
+
+test:
+  imports:
+    - afp
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/conchoecia/afp
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Tiny, dependency-free single-file FASTA/FASTQ reader/writer with transparent gzip/bzip2/zip/zstd decompression.
+  dev_url: https://github.com/conchoecia/afp
+  doc_url: https://github.com/conchoecia/afp
+
+extra:
+  identifiers:
+    - pypi:{{ pypi_name }}
+  recipe-maintainers:
+    - conchoecia

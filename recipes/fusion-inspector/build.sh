@@ -38,5 +38,5 @@ echo "# The FusionInspector Releases 1.1.0 and earlier require TRINITY_HOME to b
 # definition of TRINITY_HOME here, since it works.
 # Define TRINITY_HOME before invoking FusionInspector.
 echo "export TRINITY_HOME=\"${TRINITY_HOME}\"" >> $PREFIX/bin/FusionInspector
-echo "$FusionInspector_INSTALL_PATH/FusionInspector \$@" >> $PREFIX/bin/FusionInspector
+echo "$FusionInspector_INSTALL_PATH/FusionInspector \"\$@\"" >> $PREFIX/bin/FusionInspector
 chmod +x $PREFIX/bin/FusionInspector

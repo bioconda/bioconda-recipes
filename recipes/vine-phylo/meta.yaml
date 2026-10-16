@@ -1,4 +1,4 @@
-{% set version = "0.3.3" %}
+{% set version = "0.3.5" %}
 
 package:
   name: vine-phylo
@@ -6,39 +6,50 @@ package:
 
 source:
   url: https://github.com/CshlSiepelLab/vine/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: fafd718cab214f78c1cb529a16f1f5c908e4dd8f40aeed0d8c90ef4192a68913
+  sha256: 9ec46b057c1cd36fc2dda36f9b93e51a1acdb922caa86bfaba29af99c5c33253
 
 build:
   number: 0
-  skip: true  # [win]
+  skip: True  # [win]
   run_exports:
     - {{ pin_subpackage('vine-phylo', max_pin='x.x') }}
   script:
-    # On linux, conda-forge's libopenblas may not provide an unversioned libopenblas.so
-    # (only libopenblas.so.0). If CMake/FindBLAS (or a dependency's exported link line)
-    # expects the unversioned name, builds can fail with "No rule to make target ...libopenblas.so".
-    # Prefer passing explicit versioned paths rather than mutating $PREFIX/lib with symlinks.
+    # On linux, conda-forge's libopenblas ships only libopenblas.so.0 (no unversioned
+    # libopenblas.so). PHAST's exported CMake target (phast_linalg) baked the unversioned
+    # path from find_package(BLAS) at phast build time, and vine inherits it transitively
+    # when linking phast::phast -- so the link fails with "No rule to make target
+    # ...libopenblas.so" for every program. Provide the unversioned name for the link step.
+    - test -f ${PREFIX}/lib/libopenblas.so || ln -sf libopenblas.so.0 ${PREFIX}/lib/libopenblas.so  # [linux]
+    # This linux build links OpenBLAS, so opt in to vine's OpenBLAS thread limiting
+    # (VINE_ENABLE_OPENBLAS_THREADS) and pass the versioned BLAS/LAPACK paths.
     - export VINE_BLAS_ARGS=""  # [not linux]
-    - export VINE_BLAS_ARGS="-DBLAS_LIBRARIES=${PREFIX}/lib/libopenblas.so.0 -DLAPACK_LIBRARIES=${PREFIX}/lib/libopenblas.so.0"  # [linux]
+    - export VINE_BLAS_ARGS="-DVINE_ENABLE_OPENBLAS_THREADS=ON -DBLAS_LIBRARIES=${PREFIX}/lib/libopenblas.so.0 -DLAPACK_LIBRARIES=${PREFIX}/lib/libopenblas.so.0"  # [linux]
     - export VINE_CODESIGN=OFF  # [osx]
     - cmake -S . -B build
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=${PREFIX}
-      -DPHAST_ROOT=${PREFIX}      
+      -DPHAST_ROOT=${PREFIX}
+      -DCMAKE_C_COMPILER=${CC}
       ${VINE_BLAS_ARGS}
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
+    # Remove the link-time helper symlink so it is not packaged into vine-phylo
+    # (that path belongs to libopenblas). It is only needed during linking above.
+    - rm -f ${PREFIX}/lib/libopenblas.so  # [linux]
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - cmake
     - make
+    - pkg-config
   host:
     - phast
     - pcre
-    - blas
-    - lapack
+    - libopenblas
+    - libblas
+    - liblapack
   run:
     - phast
     
@@ -48,14 +59,18 @@ test:
     - evalTrees --help
     
 about:
-  home: https://github.com/CshlSiepelLab/vine
-  license: BSD-3-Clause
+  home: "https://github.com/CshlSiepelLab/vine"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: "VINE (phylogenetics): Variational Inference with Node Embeddings"
-  dev_url: https://github.com/CshlSiepelLab/vine
+  summary: "VINE (phylogenetics): Variational Inference with Node Embeddings."
+  dev_url: "https://github.com/CshlSiepelLab/vine"
   description: |
     VINE is a tool for Bayesian variational phylogenetic inference.
 
 extra:
   recipe-maintainers:
     - asiepel
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

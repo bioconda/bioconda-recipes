@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "scrnaseq-2.20.0"
+installBiocDataPackage.sh "scrnaseq-2.24.0"
