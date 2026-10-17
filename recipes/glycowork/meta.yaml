@@ -1,0 +1,66 @@
+{% set name = "glycowork" %}
+{% set version = "1.10.1" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 71c8a44cc2fa8d30fe0278053ba7c84c95cad1800b4c6ffc9df8a576b7d56776
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.11
+    - numpy
+    - matplotlib-base
+    - scikit-learn
+    - networkx >=3.0
+    - scipy >=1.16
+    - seaborn
+    - bokeh
+    - pandas >=2.1
+    - drawsvg >=2.0,<3
+    - openpyxl
+    - glycorender >=0.4.2,<0.5
+test:
+  imports:
+    - glycowork
+    - glycowork.glycan_data.loader
+    - glycowork.glycan_data.stats
+    - glycowork.motif.processing
+    - glycowork.motif.graph
+    - glycowork.motif.annotate
+    - glycowork.motif.analysis
+    - glycowork.motif.draw
+    - glycowork.network.biosynthesis
+  commands:
+    - pip check
+    - python -c "from glycowork.motif.processing import canonicalize_iupac; assert canonicalize_iupac('Neu5Ac(a2-3)Gal(b1-4)GlcNAc') == 'Neu5Ac(a2-3)Gal(b1-4)GlcNAc'"
+  requires:
+    - pip
+about:
+  home: https://github.com/BojarLab/glycowork
+  summary: The Python package for glycan data science, from any glycan notation to motif analysis, SNFG drawing and glycomics statistics
+  description: |
+    glycowork processes and analyzes glycan sequences. It reads IUPAC-condensed/extended, WURCS, GlycoCT,
+    GlyTouCan IDs, Oxford, LinearCode and more, and provides motif annotation, SNFG drawing (GlycoDraw),
+    differential glycomics statistics, biosynthetic network construction and curated glycan datasets.
+    Deep learning functionality (glycowork.ml) needs PyTorch and PyTorch Geometric installed separately.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://bojarlab.github.io/glycowork/
+  dev_url: https://github.com/BojarLab/glycowork
+extra:
+  recipe-maintainers:
+    - Bribak
+  identifiers:
+    - doi:10.1093/glycob/cwab067
