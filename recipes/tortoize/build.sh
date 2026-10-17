@@ -21,7 +21,7 @@ cmake -S . -B build -G Ninja \
 	-DBUILD_TESTING=ON \
 	-DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${CONFIG_ARGS}"
+	${CONFIG_ARGS}
 
 cmake --build build --config Release -j "${CPU_COUNT}"
 ctest -V -C Release --test-dir build
