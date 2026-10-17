@@ -7,7 +7,7 @@ import shutil
 import stat
 import sysconfig
 
-VERSION = '2026.10.17'
+VERSION = '2026.10.17.1'
 recipe = Path(os.environ['RECIPE_DIR'])
 source_base = Path(os.environ.get('SRC_DIR', '.')).resolve()
 candidates = [source_base, source_base / 'ORYVIA']
@@ -33,7 +33,8 @@ for forbidden in ('runtime', 'vendor', 'logs', 'runs', 'workspace_data', 'feedba
     path = destination / forbidden
     if path.is_file() or (path.is_dir() and any(path.iterdir())):
         raise RuntimeError('Generated or private content found in source archive: ' + forbidden)
-for required in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'start_source.py', 'isolated_entry.py', 'hpc_pipeline.py', 'static/index.html'):
+for required in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'start_source.py', 'isolated_entry.py', 'hpc_pipeline.py',
+                 'static/index.html', 'validation/check_browser_assets.py', 'validation/browser_assets.lock.json'):
     if not (destination / required).is_file():
         raise RuntimeError('Required release file is missing: ' + required)
 files = {str(path.relative_to(destination)).replace('\\', '/'): hashlib.sha256(path.read_bytes()).hexdigest()

@@ -12,7 +12,7 @@ import subprocess
 import sys
 import tempfile
 
-VERSION = '2026.10.17'
+VERSION = '2026.10.17.1'
 INSTALL_PREFIX = Path(sys.prefix).resolve()
 TEMPLATE = INSTALL_PREFIX / 'share' / 'oryvia'
 MARKER = '.oryvia-workspace.json'

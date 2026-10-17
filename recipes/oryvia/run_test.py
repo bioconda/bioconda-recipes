@@ -12,6 +12,7 @@ import sys
 import tempfile
 import threading
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 
@@ -22,6 +23,19 @@ def snapshot(root):
     return {str(path.relative_to(root)): (path.stat().st_size, path.stat().st_mtime_ns,
                                         hashlib.sha256(path.read_bytes()).hexdigest())
             for path in root.rglob('*') if path.is_file()}
+
+
+def check_browser_assets(root, cwd, env):
+    """Read-only validation using only the package's declared Python runtime."""
+    result = subprocess.run(
+        [sys.executable, '-I', '-X', 'utf8', str(root / 'validation/check_browser_assets.py'), '--root', str(root)],
+        cwd=cwd, env=env, capture_output=True, text=True, encoding='utf8', timeout=60)
+    assert result.returncode == 0, result.stdout[-5000:] + result.stderr[-5000:]
+    report = json.loads(result.stdout)
+    assert report['status'] == 'PASS' and not report['failures'], report
+    assert set(report['versions']) == {'three', 'katex'} and report['font_files_checked'] > 0, report
+    assert 'static/index.html' in report['files'], report
+    return report
 
 
 def main():
@@ -57,10 +71,14 @@ def main():
     completed.append('installed help and version')
     with tempfile.TemporaryDirectory(prefix='oryvia conda 测试 ') as directory:
         outside = Path(directory)
+        template_assets = check_browser_assets(template, outside, env)
         workspace = outside / '研究工作区 with spaces'
         call('init', '--workspace', workspace, cwd=outside)
         assert (workspace / package.MARKER).is_file()
         assert not (workspace / '.venv').exists()
+        workspace_assets = check_browser_assets(workspace, outside, env)
+        assert workspace_assets == template_assets, 'Workspace browser assets differ from the installed template.'
+        completed.append('installed and workspace browser resource closure, versions, licenses and integrity')
         source_file = workspace / 'server.py'
         original = source_file.read_bytes()
         sentinel = workspace / 'user_notes.txt'
@@ -230,6 +248,13 @@ print(json.dumps({"status": "PASS", "matplotlib": matplotlib.__version__, "forma
             assert url != foreign_url and fetch(foreign_url, '/') == b'foreign-listener'
             assert len(fetch(url, '/')) > 1000
             completed.append('real HTTP server, ownership and occupied-port fallback')
+
+            for relative in workspace_assets['files']:
+                assert relative.startswith('static/'), relative
+                served = fetch(url, '/' + urllib.parse.quote(relative[len('static/'):], safe='/'))
+                expected_bytes = (workspace / relative).read_bytes()
+                assert served == expected_bytes, 'HTTP asset differs from the packaged file: ' + relative
+            completed.append('HTTP serves every checked browser script, stylesheet, font and icon unchanged')
 
             repeated = call('start', '--workspace', workspace, '--port', 0, '--no-browser')
             assert 'WORKSTATION_ALREADY_RUNNING=' in repeated.stdout
