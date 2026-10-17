@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Fix macOS linker failure due to libc++ deployment target mismatch and -fatal_warnings
+if [[ "${target_platform}" == osx-* ]]; then
+    export MACOSX_DEPLOYMENT_TARGET="11.3"
+    export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=11.3"
+    export LDFLAGS="${LDFLAGS} -mmacosx-version-min=11.3"
+    export LDFLAGS="${LDFLAGS//-Wl,-fatal_warnings/}"
+fi
+
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
@@ -15,7 +23,7 @@ sed -i.bak '/find_package(LIBCXX/d' subprojects/cpptoml/CMakeLists.txt
 sed -i.bak '/set_libcxx_required_flags/d' subprojects/cpptoml/CMakeLists.txt
 
 CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
-	--prefix "${PREFIX}" --strip -Db_coverage=false build/
+    --prefix "${PREFIX}" --strip -Db_coverage=false build/
 
 cd build
 
