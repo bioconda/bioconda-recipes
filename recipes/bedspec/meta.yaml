@@ -1,0 +1,61 @@
+{% set name = "bedspec" %}
+{% set version = "4.2.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 670a792501c524b15318d581c2cc95cc2964ad783ba8208989abd659f8a14264
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - hatchling
+    - pip
+  run:
+    - python >={{ python_min }}
+    - pybgzf >=0.1.2
+    - superintervals >=1.0.2
+    - typeline >=2.4.2
+    - typing-extensions >=4.12
+  run_constrained:
+    - biopython >=1.88
+    - cyvcf2 >=0.34
+    - fgpyo >=1.5.1
+    - mappy >=2.31
+    - pybedtools >=0.12.1
+    - pybwa >=2.3.2
+    - pysam >=0.24.1
+    - spillsort >=0.1.1
+
+test:
+  imports:
+    - bedspec
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/clintval/bedspec
+  summary: An HTS-specs compliant BED toolkit.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/clintval/bedspec
+  doc_url: https://github.com/clintval/bedspec/blob/{{ version }}/README.md
+
+extra:
+  recipe-maintainers:
+    - clintval
