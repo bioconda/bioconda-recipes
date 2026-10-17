@@ -1,0 +1,24 @@
+diff --git a/src/main.rs b/src/main.rs
+index 13736da..a11ee40 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -740,8 +740,8 @@ pub fn get_cell_barcode(
+     bam_tag: &String,
+ ) -> Option<u32> {
+     match rec.aux(bam_tag.as_bytes()) {
+-        Some(Aux::String(hp)) => {
+-            let cb = hp.to_vec();
++        Ok(Aux::String(hp)) => {
++            let cb = hp.as_bytes().to_vec();
+             let cb_index = cell_barcodes.get(&cb);
+             Some(*cb_index?)
+         }
+@@ -751,7 +751,7 @@ pub fn get_cell_barcode(
+ 
+ pub fn get_umi(rec: &Record) -> Option<Vec<u8>> {
+     match rec.aux(b"UB") {
+-        Some(Aux::String(hp)) => Some(hp.to_vec()),
++        Ok(Aux::String(hp)) => Some(hp.as_bytes().to_vec()),
+         _ => None,
+     }
+ }
