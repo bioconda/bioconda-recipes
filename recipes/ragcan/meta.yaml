@@ -1,0 +1,51 @@
+{% set name = "ragcan" %}
+{% set version = "3.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioforkgithub/ragcan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f1fc064518af953234e142d9fd4db8126c3313bd2571a5bb2281984d9df97dd6
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+  run:
+    - python >=3.8
+    - numpy
+    - diamond >=2.1.8
+
+test:
+  commands:
+    - RaGCAn.py --version
+    - RaGCAn.py --help
+    - run_fast.py --help
+
+about:
+  home: https://github.com/bioforkgithub/ragcan
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Rapid core-genome AAI screen for whether a named prokaryotic genus holds together"
+  description: |
+    RaGCAn builds the core proteome of a set of genomes, computes average
+    amino-acid identity between every pair, and partitions the set by
+    complete-linkage clustering. One bin means the group is coherent. More
+    than one bin is a proposed re-categorisation. It needs one protein
+    search and no phylogeny.
+  doc_url: https://github.com/bioforkgithub/ragcan
+  dev_url: https://github.com/bioforkgithub/ragcan
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.22791638
+  recipe-maintainers:
+    - bioforkgithub
