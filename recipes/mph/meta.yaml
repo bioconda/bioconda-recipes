@@ -1,0 +1,56 @@
+{% set name = "mph" %}
+{% set version = "0.55.1" %}
+{% set sha256 = "4c49ea8d8e08a7e7b132c129650bbafae54e79b8aedd3acf4106b89f1b4a7ad3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiang18/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    # Use Conda compiler, dependency, and linker flags instead of Intel/local paths.
+    - patches/makefile-conda.patch
+    # Materialize Eigen permutation indices before sorting with newer compilers.
+    - patches/reml-mutable-indices.patch
+
+build:
+  number: 0
+  skip: True  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - make
+  host:
+    - eigen >=3.4.0,<4
+    - libgomp
+    - mkl >=2024,<2025
+    - mkl-include
+  run:
+    - libgomp
+    - mkl >=2024,<2025
+
+test:
+  commands:
+    - mph 2>&1 | grep "MINQUE for Partitioning Heritability"
+    - mph 2>&1 | grep "Version {{ version }}"
+
+about:
+  home: https://jiang18.github.io/mph/
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Fast REML estimation of genetic covariance components for partitioning heritability
+  dev_url: https://github.com/jiang18/mph
+  doc_url: https://jiang18.github.io/mph/
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btae298
+  recipe-maintainers:
+    - lyh970817
