@@ -1,0 +1,57 @@
+{% set version = "0.9.1" %}
+{% set sha256 = "1a02be3dba79d2b09ceeb2c80063080b7d01573573f02d0c3ee6695055548256" %}
+
+package:
+  name: proteus-bio
+  version: {{ version }}
+
+source:
+  url: https://github.com/OtoYuki/proteus/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('proteus-bio', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  # Self-contained: BioContainers re-runs these commands in the bare image, without source files.
+  # Two alanines in chains A and B, 4 Å apart.
+  commands:
+    - proteus --version
+    - printf 'ATOM      1  N   ALA A   1       0.000   0.000   0.000  1.00 90.00           N\nATOM      2  CA  ALA A   1       1.458   0.000   0.000  1.00 90.00           C\nATOM      3  C   ALA A   1       2.009   1.420   0.000  1.00 90.00           C\nATOM      4  O   ALA A   1       1.251   2.390   0.000  1.00 90.00           O\nATOM      5  CB  ALA A   1       1.988  -0.773  -1.199  1.00 90.00           C\nATOM      6  N   ALA B   1       4.000  -3.000  -2.000  1.00 90.00           N\nATOM      7  CA  ALA B   1       5.458  -3.000  -2.000  1.00 90.00           C\nATOM      8  C   ALA B   1       6.009  -1.580  -2.000  1.00 90.00           C\nATOM      9  O   ALA B   1       5.251  -0.610  -2.000  1.00 90.00           O\nATOM     10  CB  ALA B   1       4.500  -2.000  -3.000  1.00 90.00           C\nEND\n' > ab.pdb
+    - proteus analyze ab.pdb --json | grep -q '"sequence":"A/A"'
+    - proteus analyze ab.pdb --interface A:B --json | grep -q '"interface_binder":"A"'
+
+about:
+  home: https://github.com/OtoYuki/proteus
+  dev_url: https://github.com/OtoYuki/proteus
+  doc_url: https://github.com/OtoYuki/proteus/blob/v{{ version }}/README.md
+  license: MIT OR Apache-2.0
+  license_family: MIT
+  license_file:
+    - LICENSE-MIT
+    - LICENSE-APACHE
+    - THIRDPARTY.yml
+  summary: Triage of predicted protein structures and designed binders, with every metric checked against its reference implementation.
+  description: |
+    One binary that measures folders of predicted protein models in parallel and writes one row
+    per model to Parquet, CSV or JSON. It covers confidence, DSSP secondary structure,
+    MolProbity-style Ramachandran, covalent geometry and rotamers (reproducing cctbx), SASA, and
+    non-covalent interactions. With --interface it adds binder-target interface metrics for
+    design campaigns: ipSAE, ipAE, LIS and ipTM from the predictor's PAE, plus dSASA, shape
+    complementarity and cross-interface contacts. No Python, no Rosetta.
+
+extra:
+  recipe-maintainers:
+    - OtoYuki
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
