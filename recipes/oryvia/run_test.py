@@ -38,6 +38,17 @@ def check_browser_assets(root, cwd, env):
     return report
 
 
+def check_preview_provenance(root, cwd, env):
+    result = subprocess.run(
+        [sys.executable, '-I', '-X', 'utf8', str(root / 'validation/check_preview_provenance.py'), '--root', str(root)],
+        cwd=cwd, env=env, capture_output=True, text=True, encoding='utf8', timeout=60)
+    assert result.returncode == 0, result.stdout[-5000:] + result.stderr[-5000:]
+    report = json.loads(result.stdout)
+    assert report['status'] == 'PASS' and not report['failures'], report
+    assert report['checks_performed'] > 0 and report['files_read'] > 0, report
+    return report
+
+
 def main():
     executable = shutil.which('oryvia')
     assert executable, 'The Conda console entry point was not installed.'
@@ -72,6 +83,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='oryvia conda 测试 ') as directory:
         outside = Path(directory)
         template_assets = check_browser_assets(template, outside, env)
+        template_preview = check_preview_provenance(template, outside, env)
         workspace = outside / '研究工作区 with spaces'
         call('init', '--workspace', workspace, cwd=outside)
         assert (workspace / package.MARKER).is_file()
@@ -79,6 +91,9 @@ def main():
         workspace_assets = check_browser_assets(workspace, outside, env)
         assert workspace_assets == template_assets, 'Workspace browser assets differ from the installed template.'
         completed.append('installed and workspace browser resource closure, versions, licenses and integrity')
+        workspace_preview = check_preview_provenance(workspace, outside, env)
+        assert workspace_preview == template_preview, 'Workspace preview provenance differs from the installed template.'
+        completed.append('installed and workspace scientific preview provenance and source data')
         source_file = workspace / 'server.py'
         original = source_file.read_bytes()
         sentinel = workspace / 'user_notes.txt'
@@ -293,7 +308,8 @@ print(json.dumps({"status": "PASS", "matplotlib": matplotlib.__version__, "forma
         assert not (workspace / '.venv').exists(), 'No nested environment may be created.'
     assert snapshot(template) == before, 'The installed source template was modified.'
     completed.append('installed source template unchanged')
-    print(json.dumps({'status': 'PASS', 'checks': completed}, indent=2))
+    print(json.dumps({'status': 'PASS', 'checks': completed,
+                      'preview_provenance': {'template': template_preview, 'workspace': workspace_preview}}, indent=2))
 
 
 if __name__ == '__main__':
