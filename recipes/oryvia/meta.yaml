@@ -1,0 +1,69 @@
+{% set name = "oryvia" %}
+{% set version = "2026.10.17.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YueDong0211/ORYVIA/releases/download/v{{ version }}/ORYVIA_Source_{{ version }}.zip
+  sha256: 53c3b477ef18274904fd202e791dd26c5a7fae3e8043b9f2bd5d00a4379346a6
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
+  entry_points:
+    - oryvia = oryvia_conda:main
+
+requirements:
+  host:
+    - python >=3.12,<3.14
+  run:
+    - python >=3.12,<3.14
+    - numpy ==2.3.5
+    - scipy ==1.16.2
+    - pandas ==3.0.1
+    - matplotlib-base ==3.10.8
+    - openpyxl ==3.1.5
+    - xlrd ==2.0.2
+    - pillow ==12.3.0
+
+test:
+  imports:
+    - oryvia_conda
+  commands:
+    - oryvia --help
+    - oryvia --version
+
+about:
+  home: https://yuedong0211.github.io/ORYVIA/
+  license: MIT
+  license_file: LICENSE
+  summary: Phenotype-genotype association and posterior effect workstation
+  description: |
+    ORYVIA aligns phenotype and genotype data, runs association workflows,
+    estimates posterior effects, reviews candidates and exports scientific figures.
+    Its batch interface runs local or manifest-based HPC workflows.
+    The browser application uses a separate writable workspace, leaving the
+    installed source template unchanged. Native R, PLINK 2 and Bowtie2 are
+    optional; unavailable engines are reported without substituting another model.
+  dev_url: https://github.com/YueDong0211/ORYVIA
+  doc_url: https://github.com/YueDong0211/ORYVIA/blob/main/README.md
+
+extra:
+  notes: |
+    Start with `oryvia start`; the default workspace is ~/ORYVIA/2026.10.17.2.
+    Use `oryvia start --workspace /writable/path --no-browser` on a headless host.
+    Stop that instance with `oryvia stop --workspace /writable/path`.
+    Use `oryvia batch --workspace /writable/path run --manifest tasks.json
+    --output /analysis/results --threads 1` for a manifest-based batch run.
+    Slurm and PBS templates are generated on request; no job is auto-submitted.
+    All analysis data and logs remain outside the Conda installation.
+    Native R, PLINK 2 and Bowtie2 are optional and are not installed by this recipe.
+    `oryvia setup-r --workspace /writable/path` prepares locked R packages in
+    the workspace; native R and source-package build prerequisites are required.
+    `oryvia check --workspace /writable/path` checks the available environment.
+  recipe-maintainers:
+    - YueDong0211
