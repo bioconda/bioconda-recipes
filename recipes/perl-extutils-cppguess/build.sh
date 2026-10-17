@@ -1,8 +1,13 @@
 #!/bin/bash
 
-rm -rf t/002_icpp.t
-
 export LC_ALL="en_US.UTF-8"
+# build.sh: drop perl's broken relative --sysroot from compile and shared-link flags;
+# the conda compiler wrappers already know their own sysroot.
+CCCDL=$(perl -MConfig -e '($s=$Config{cccdlflags}) =~ s/\s*--sysroot=\S+//g; print $s')
+LDDL=$(perl -MConfig -e '($s=$Config{lddlflags}) =~ s/\s*--sysroot=\S+//g; print $s')
+export PERL_MM_OPT="CCCDLFLAGS='${CCCDL}' LDDLFLAGS='${LDDL}'"
+
+#rm -f t/002_icpp.t
 
 if [[ -f Build.PL ]]; then
     perl Build.PL
