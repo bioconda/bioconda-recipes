@@ -1,0 +1,57 @@
+{% set name = "spillsort" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6fd8a3cd8093118dda97e9c38f8f581e479dd8e15648acc5939f76070dee8968
+
+build:
+  number: 0
+  skip: True  # [py < 311]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - maturin >=1.15,<2
+    - pip
+  run:
+    - python
+    - typing-extensions >=4.12
+
+test:
+  imports:
+    - spillsort
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/clintval/{{ name }}"
+  summary: "Sort more items than fit in memory: sorted runs spill to disk and merge as they are read."
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - NOTICE
+    - THIRDPARTY.yml
+  dev_url: "https://github.com/clintval/{{ name }}"
+  doc_url: "https://github.com/clintval/{{ name }}/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - clintval
