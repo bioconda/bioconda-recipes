@@ -1,0 +1,58 @@
+{% set name = "FragPipe-SpecLib" %}
+{% set version = "0.1.59" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Nesvilab/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 1789b81b90b4298f1f0b5e6daa27bbc30e46cce136493c3fa8b5c816b87d623f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - fragpipe-speclib=easypqp.main:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - numba ==0.62.1
+    - click ==8.3.1
+    - numpy ==1.26.4
+    - scipy ==1.16.3
+    - scikit-learn ==1.7.2
+    - statsmodels ==0.14.6
+    - pandas ==2.3.3
+    - biopython ==1.86
+    - pyopenms ==3.3.0
+    - matplotlib-base ==3.10.7
+    - seaborn ==0.13.2
+    - tqdm ==4.67.1
+
+test:
+  imports:
+    - easypqp
+  commands:
+    - pip check
+    - fragpipe-speclib --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/Nesvilab/FragPipe-SpecLib
+  summary: 'FragPipe-SpecLib: Simple library generation for FragPipe'
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - wagnerr-umn
