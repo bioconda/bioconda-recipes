@@ -1,0 +1,1 @@
+unset LIBCIFPP_DATA_DIR

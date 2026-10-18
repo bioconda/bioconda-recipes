@@ -1,0 +1,51 @@
+diff --git a/Makefile b/Makefile
+index 5edd6e1..78d946c 100755
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+-CPP := g++
+-CC := gcc
+-LINK := g++
++CPP := ${CXX}
++CC := ${CC}
++LINK := ${CXX}
+ mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ 
+ CSOURCES= $(wildcard src/*.c)  
+@@ -11,12 +11,12 @@ COMMONOBJS= lib/libhts.a lib/libboost_iostreams.a lib/libtcmalloc_minimal.a
+ Warnings=-Wreturn-type -Warray-bounds -Wmaybe-uninitialized -Waddress
+ WarningsAsErrors=$(Warnings) -Werror=return-type -Werror=array-bounds -Werror=address
+ CFLAGS=  $(WarningsAsErrors) -Wno-unused-function
+-CPPFLAGS=  $(WarningsAsErrors) -Wno-unused-function -std=c++11
++CPPFLAGS=  $(WarningsAsErrors) -Wno-unused-function -std=c++14
+ 
+ RELEASE_FLAGS= -O3 -g
+ 
+ # Includes
+-INCLUDES = -Iinc/
++INCLUDES += -Iinc/ -Iinc/htslib -I$(PREFIX)/include
+ #
+ # Common flags
+ COMMONFLAGS += $(INCLUDES)
+@@ -24,7 +24,7 @@ COMMONFLAGS += $(INCLUDES)
+ CXXFLAGS += $(COMMONFLAGS)
+ CFLAGS += $(COMMONFLAGS)
+ CPPFLAGS += $(COMMONFLAGS)
+-COMMONLIBS= -Llib/ -lz -lm -lpthread -lbz2 -lcurl -lcrypto -llzma -fopenmp
++COMMONLIBS += -Llib/ -lz -lm -lpthread -lbz2 -lcurl -lcrypto -llzma -lhts -ldl -fopenmp -L${PREFIX}/lib
+ 
+ #LIBS += $(COMMONLIBS) -ltcmalloc
+ LIBS += $(COMMONLIBS)
+@@ -38,10 +38,10 @@ all: $(TARGET)
+ .SUFFIXES: .c .cpp .o
+ 
+ %.c.o: %.c
+-	$(CC) $(CFLAGS) $(RELEASE_FLAGS) -c $< -o $@
++	$(CC) $(CFLAGS) $(RELEASE_FLAGS) $(INCLUDES) $(LIBS) -c $< -o $@
+ 
+ %.cpp.o: %.cpp
+-	$(CPP) $(CPPFLAGS) $(RELEASE_FLAGS) $(OPENMP) -c $< -o $@
++	$(CPP) $(CPPFLAGS) $(RELEASE_FLAGS) $(OPENMP) $(INCLUDES) $(LIBS) -c $< -o $@
+ 
+ $(TARGET): $(OBJS) Makefile
+ 	$(LINKLINE)

@@ -1,0 +1,55 @@
+{% set name = "taxoniumtools" %}
+{% set version = "2.1.17" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/taxoniumtools-{{ version }}.tar.gz
+    sha256: b977655d0fbecf16da2c0270f20646f6a3b5609e4ed3472b12d36974ddbf3228
+  - url: https://raw.githubusercontent.com/theosanderson/taxonium/master/LICENSE
+    sha256: 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('taxoniumtools', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=42
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - treeswift
+    - alive-progress
+    - biopython <=1.81
+    - pandas
+    - google-api-python-client
+    - protobuf <4
+    - orjson
+    - psutil
+    - docker-py
+
+test:
+  imports:
+    - taxoniumtools
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/theosanderson/taxonium
+  summary: Taxonium is a tool for exploring trees, including those with millions of nodes. This tool generates files compatible with viewing in Taxonium from inputs like Newick and UShER files.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - theosanderson

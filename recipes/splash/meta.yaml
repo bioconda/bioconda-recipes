@@ -1,0 +1,54 @@
+{% set name = "splash" %}
+{% set version = "2.11.0" %}
+
+{% set system = "linux" %}        # [linux]
+{% set system = "mac" %}          # [osx]
+{% set architecture = "x64" %}    # [x86_64]
+{% set architecture = "arm64" %}  # [aarch64 or arm64]
+
+{% set sha256 = "b9cfc47191ef637414b83a953ff149edde54109b31b36a7dc2d597671ebdcf3d" %} # [linux and aarch64]
+{% set sha256 = "9b2387d10ccc85aa70ed64d7d787c3d3a25add78f96be749385cccc1a01b436c" %} # [linux and x86_64]
+{% set sha256 = "59eaaf7b175e520f38f56dc6cfeaf80c894fc3b4c13ece33979f7450f3cec916" %} # [osx and arm64]
+{% set sha256 = "2eb9856a39870d02e1663daa74d7468b730ca5f2b0260e16b712c02b15dc90d4" %} # [osx and x86_64]
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/refresh-bio/SPLASH/releases/download/v{{ version }}/splash-{{ version }}.{{ system }}.{{ architecture }}.tar.gz
+  sha256:  {{ sha256 }}
+
+requirements:
+  host:
+    - python >=3.7
+  run:
+    - python >=3.7
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('splash', max_pin='x') }}
+  script: |
+    mkdir -p ${PREFIX}/bin
+    cp -r * ${PREFIX}/bin/
+
+about:
+  home: https://github.com/refresh-bio/splash
+  summary: "Unsupervised and reference-free unifying framework to discover regulated sequence variation through statistical analysis of k-mer composition in both DNA and RNA sequence."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+
+test:
+  commands:
+    - splash --help
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source
+  identifiers:
+    - doi:10.1038/s41587-024-02381-2  

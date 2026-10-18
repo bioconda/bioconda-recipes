@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-export CFLAGS="$CFLAGS"
-export LDFLAGS+="-L{$PREFIX}/lib $LDFLAGS -lgsl"
-export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
+set -euo pipefail
+
+export CFLAGS="${CFLAGS} -I${PREFIX}/include"
+export CPPFLAGS="-I${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib ${LDFLAGS}"
 
 autoreconf -i
 
-./configure --enable-libgsl --prefix=$PREFIX --with-gsl-prefix=$PREFIX
+./configure --enable-libgsl --prefix="${PREFIX}" --with-gsl-prefix="${PREFIX}"
 
-make 
+make -j${CPU_COUNT} 
 make install
-

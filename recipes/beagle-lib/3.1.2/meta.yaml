@@ -1,0 +1,48 @@
+{% set name = "beagle-lib" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "dd872b484a3a9f0bce369465e60ccf4e4c0cd7bd5ce41499415366019f236275" %}
+
+package:
+  name: {{ name }}
+  version: '{{version}}'
+
+source:
+  url: https://github.com/beagle-dev/beagle-lib/archive/v3.1.2.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - m4
+    - openjdk
+  run:
+    - openjdk
+    - libtool
+
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.so # [linux]
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.jnilib # [osx]
+
+about:
+  home: https://github.com/beagle-dev/beagle-lib
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  summary: general purpose library for evaluating the likelihood of sequence evolution
+    on trees
+  dev_url: https://github.com/beagle-dev/beagle-lib
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

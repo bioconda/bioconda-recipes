@@ -1,4 +1,4 @@
-{% set version = "2.56.1" %}
+{% set version = "3.1.0" %}
 {% set name = "auspice" %}
 
 package:
@@ -7,27 +7,32 @@ package:
 
 source:
   url: https://registry.npmjs.org/{{ name }}/-/{{ name }}-{{ version }}.tgz
-  sha256: d100c0f6cc13ba1f9fe2b7bde5983b0383f523320dcc69a19cf9c86570febf03
+  sha256: 7806b2a1b00de0a0b1b7446e580b15d8d781f1c8ac45ff17c034adb179436d65
 
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     # Auspice is JavaScript, but transitive dependencies have C components that
     # vary across platforms.
-    - "{{ compiler('c') }}"
-    - "{{ compiler('cxx') }}"
-    - nodejs 16.*|18.*|20.*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - python
     - pkg-config
     - yarn 1.*
   host:
-    - icu
+    # Restrict ICU to linux-aarch64 so other platforms avoid inheriting its run_exports pin.
+    - icu  # [linux and aarch64]
   run:
-    - nodejs 16.*|18.*|20.*
+    # This list differs from Auspice's package.json because Auspice CLI source
+    # code is TypeScript, which only later versions of Node.js can run natively.
+    # The "source" file downloaded from NPM is transpiled JS which can be run by
+    # all versions in this list.
+    - nodejs 20.*|22.*|24.*|26.*
 
 test:
   commands:
@@ -35,24 +40,23 @@ test:
     - auspice -v
 
 about:
-  home: https://docs.nextstrain.org/projects/auspice/
-  doc_url: https://docs.nextstrain.org/projects/auspice/
-  dev_url: https://github.com/nextstrain/auspice
-  summary: Auspice is an open-source interactive tool for visualising phylogenomic data
-  license: AGPL-3.0-only
-  license_file: LICENSE.txt
+  home: "https://github.com/nextstrain/auspice"
+  doc_url: "https://docs.nextstrain.org/projects/auspice"
+  dev_url: "https://github.com/nextstrain/auspice"
+  summary: "Auspice is an open-source interactive tool for visualising phylogenomic data."
+  license: "AGPL-3.0-only"
+  license_file: "LICENSE.txt"
   license_family: AGPL
 
 extra:
   identifiers:
     # Generic Nextstrain paper, for lack of specific Auspice one
-    - doi:10.1093/bioinformatics/bty407 
+    - doi:10.1093/bioinformatics/bty407
   additional-platforms:
     - linux-aarch64
     - osx-arm64
   recipe-maintainers:
     - jameshadfield
     - victorlin
-    - tsibley
     - huddlej
     - corneliusroemer

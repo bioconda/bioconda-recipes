@@ -1,63 +1,71 @@
-{% set version = "1.56.0" %}
+{% set version = "1.64.0" %}
 {% set name = "ChIPseqR" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8696d6a783d26d8c6225ec4e3f294110
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ce07f4d4e7dfa814fe43c594f0f96036
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-chipseqr", max_pin="x.x") }}'
+
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
   host:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-hilbertvis >=1.60.0,<1.61.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-shortread >=1.60.0,<1.61.0'
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-hilbertvis >=1.68.0,<1.69.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-shortread >=1.68.0,<1.69.0
     - r-base
     - r-fbasics
     - r-timsac
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-hilbertvis >=1.60.0,<1.61.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - 'bioconductor-shortread >=1.60.0,<1.61.0'
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-hilbertvis >=1.68.0,<1.69.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-shortread >=1.68.0,<1.69.0
     - r-base
     - r-fbasics
     - r-timsac
-  build:
-    - {{ compiler('c') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3.0-or-later'
-  summary: 'Identifying Protein Binding Sites in High-Throughput Sequencing Data'
-  description: 'ChIPseqR identifies protein binding sites from ChIP-seq and nucleosome positioning experiments. The model used to describe binding events was developed to locate nucleosomes but should flexible enough to handle other types of experiments as well.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Identifying Protein Binding Sites in High-Throughput Sequencing Data
+  description: ChIPseqR identifies protein binding sites from ChIP-seq and nucleosome positioning experiments. The model used to describe binding events was developed to locate nucleosomes but should flexible enough to handle other types of experiments as well.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   additional-platforms:
     - linux-aarch64
   identifiers:
-    - biotools:{{ name|lower }}
+    - biotools:chipseqr
+

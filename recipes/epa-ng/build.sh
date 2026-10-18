@@ -7,7 +7,13 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 
-make  
+make build/CMakeCache.txt 
+
+patch -p1 < ${RECIPE_DIR}/genesis.patch
+patch -p1 < ${RECIPE_DIR}/pll_modules.patch
+
+make -j ${CPU_COUNT} run_make 
+
 
 mkdir -p $PREFIX/bin
 

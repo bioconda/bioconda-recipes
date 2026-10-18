@@ -1,17 +1,19 @@
-{% set version = "1.34.0" %}
+{% set version = "1.42.0" %}
 {% set name = "RnaSeqSampleSizeData" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a4edc47422b0be1d83521282c0599440
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 09605564c021bb6c4aafb8e8b1e1d632
+
 build:
   number: 0
   rpaths:
@@ -19,25 +21,29 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-rnaseqsamplesizedata", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: BiocStyle, knitr
 requirements:
   host:
-    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - bioconductor-edger >=4.8.0,<4.9.0
     - r-base
   run:
-    - 'bioconductor-edger >=4.0.0,<4.1.0'
+    - bioconductor-edger >=4.8.0,<4.9.0
     - r-base
     - curl
-    - 'bioconductor-data-packages >=20231203'
+    - bioconductor-data-packages >=20260207
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL (>= 2)
   summary: RnaSeqSampleSizeData
-  description: 'RnaSeqSampleSizeData package provides the read counts and dispersion distribution from real RNA-seq experiments. It can be used by RnaSeqSampleSize package to estimate sample size and power for RNA-seq experiment design.'
+  description: RnaSeqSampleSizeData package provides the read counts and dispersion distribution from real RNA-seq experiments. It can be used by RnaSeqSampleSize package to estimate sample size and power for RNA-seq experiment design.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   parent_recipe:
     name: bioconductor-rnaseqsamplesizedata

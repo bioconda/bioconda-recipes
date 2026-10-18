@@ -1,0 +1,43 @@
+{% set name = "panplexity" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndreaGuarracino/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 69f7e3226892a9fe75034f629f49ee303fd43c27792bed7780f6a6932387742d 
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cmake
+    - make
+    - pkg-config
+    - {{ compiler('c') }}      # For zlib-ng compilation
+    - {{ compiler('cxx') }}    # For C++ dependencies if any
+
+test:
+  commands:
+    - panplexity --help
+
+about:
+  home: https://github.com/AndreaGuarracino/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Find low-complexity regions in pangenome graphs"
+  dev_url: https://github.com/AndreaGuarracino/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino

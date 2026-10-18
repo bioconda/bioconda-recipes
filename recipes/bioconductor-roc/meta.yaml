@@ -1,45 +1,53 @@
-{% set version = "1.78.0" %}
+{% set version = "1.86.0" %}
 {% set name = "ROC" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 2b84dc68639bbe6dbc5e4b9eeb429dbb
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 60d8d355096003dcbd84e4814578fcf3
+
 build:
-  number: 2
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-roc", max_pin="x.x") }}'
+
 # Suggests: rmarkdown, Biobase, BiocStyle
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-knitr
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
     - r-base
     - r-knitr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'utilities for ROC, with microarray focus'
-  description: 'Provide utilities for ROC, with microarray focus.'
+  summary: utilities for ROC, with microarray focus
+  description: Provide utilities for ROC, with microarray focus.
+
 extra:
   additional-platforms:
     - linux-aarch64

@@ -1,0 +1,63 @@
+{% set name = "mSOMA" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "3698d37b9df8681fe412039b6d708e67ddbe2f531918a0971ff2488990634950" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: https://github.com/AkeyLab/mSOMA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('msoma', max_pin='x.x') }}
+  script: |
+      {{ PYTHON }} -m pip install . -vvv
+  entry_points:
+    - msoma = msoma.command_line:msoma
+
+requirements:
+  host:
+    - python >=3.7.1
+    - pip
+    - setuptools
+
+  run:
+    - python >=3.7.1
+    - samtools
+    - r-base
+    - bamutil
+    - numpy >=1.19
+    - pandas >=1.1
+    - scipy >=1.5
+    - statsmodels >=0.12
+    - importlib_resources >=5.4
+    - pysam >=0.19
+    - click >=8.0
+    - bioconductor-survcomp
+    - r-vgam
+    - r-data.table
+    - r-argparse
+    - r-bbmle
+    - r-tidyverse
+    - r-r.utils
+    - bioconductor-biostrings
+    - r-dplyr
+    - bioconductor-qvalue
+
+test:
+  commands:
+    - msoma --help
+
+about:
+  home: https://github.com/AkeyLab/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "mSOMA: Somatic Mutation Detection using a betabinomial null model"
+  dev_url: https://github.com/AkeyLab/{{ name }}
+  doc_url: https://akeylab.github.io/{{ name }}/

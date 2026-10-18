@@ -2,5 +2,11 @@
 set -xeu -o pipefail
 mkdir -p $PREFIX/bin
 
-make -j ${CPU_COUNT} INCLUDE_DIRS="$PREFIX/include" LIBRARY_DIRS="$PREFIX/lib"
-make install
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
+
+make CXX="${CXX}" \
+    INCLUDE_DIRS="$PREFIX/include" \
+    LIBRARY_DIRS="$PREFIX/lib" \
+    LD_FLAGS="-L${PREFIX}/lib -lisal -ldeflate -lhwy -lpthread" \
+    -j"${CPU_COUNT}"
+make install PREFIX="${PREFIX}"

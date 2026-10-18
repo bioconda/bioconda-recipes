@@ -1,17 +1,46 @@
-{% set version = "1.1.alpha19" %}
-{% set sha256 = "9131b45c35ddb927f866385f149cf64af5dffe724234cd4548c22303a992347d" %}
+{% set name = "pplacer" %}
+{% set version = "1.1.alpha23" %}
+{% set sha256 = "4671bff9cb3ac2d4120d2d0d957faadf994eadfcb1c545ae92265cb96d5b542f" %}
 
 package:
   name: pplacer
   version: '{{ version }}'
 
 source:
-  url: https://github.com/matsen/pplacer/releases/download/v{{ version }}/pplacer-linux-v{{ version }}.zip
-  sha256: '{{ sha256 }}'
-
+  - url: https://github.com/matsen/pplacer/archive/refs/tags/v{{version}}.tar.gz  # [linux]
+    sha256: {{ sha256 }}   # [linux]
+    patches:  # [linux]
+      - conda-dynamic-linking.patch  # [linux]
+  - git_url: https://github.com/fhcrc/mcl   # [linux]
+    git_rev: 1f1932b64619e9bd9ecbcb421cb1e3f1eb535e80  # [linux]
+    depth: 1  # [linux]
+    folder: mcl  # [linux]
+    sha256: unused  # [linux]
+  - url: https://github.com/matsen/pplacer/releases/download/v{{ version }}/pplacer-macos-arm64.zip  # [osx and arm64]
+    sha256: d2502e40a95ff06b6fd4c380d682c9727b8413c157a6bfb93a87470f9d6fe9f6  # [osx and arm64]
+    
 build:
-  skip: true   # [osx]
-  number: 2
+  number: 0
+  skip: true  # [osx and x86_64]
+  run_exports:
+    - {{ pin_subpackage(name , max_pin=None) }}
+
+
+requirements:
+  build:
+    - make   # [linux]
+    - {{ compiler('c') }}  # [linux]
+    - {{ stdlib('c') }}  # [linux]
+    - ocaml =4.14.2 # [linux]
+    - opam =2.1.3  # [linux]
+  host:
+    - zlib    # [linux]
+    - sqlite  # [linux]
+    - gsl     # [linux]
+    - libcblas  # [linux]
+  run:
+    - zlib    # [osx]
+    - sqlite  # [osx]
 
 test:
   commands:
@@ -29,5 +58,8 @@ about:
   dev_url: https://github.com/matsen/pplacer/
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
-    - should_be_noarch_generic
+    - uses_vcs_url

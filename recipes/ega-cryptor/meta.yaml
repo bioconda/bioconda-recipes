@@ -1,0 +1,40 @@
+{% set version = "2.0.0" %}
+
+package:
+  name: ega-cryptor
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_compatible('ega-cryptor', max_pin="x.x.x") }}
+
+source:
+  url: https://ega-archive.org/assets/files/EgaCryptor.zip
+  sha256: 402d9d1d5de8beea416d3e8dc8e10c3fd1e7548e4d6e29d503afe1fcbe11ff8a
+
+requirements:
+  build:
+    - unzip
+  run:
+    - openjdk >=8,<12
+    - python >=3.6,<4.0
+
+test:
+  commands:
+    - ega-cryptor -h | grep EgaCryptorApplication > /dev/null 2>&1
+    - ega-cryptor | grep -Eo "v{{ version }}" > /dev/null 2>&1
+
+about:
+  home: https://ega-archive.org/submission/data/file-preparation/egacryptor/
+  summary: EGA Cryptor v2.0.0 is a tool designed to encrypt files compliant with the European Genome-phenome Archive (EGA)
+  license: Apache-2.0
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  description: The EGACryptor v.2.0.0 is a JAVA-based application which enables submitters
+    to produce EGA compliant encrypted files along with files for the encrypted
+    and unencrypted md5sum for each file to be submitted. The application will
+    generate an output folder that will by default mirror the directory structure
+    containing the original files. This output folder can subsequently be uploaded
+    to the EGA FTP staging area via an FTP or Aspera client.
+# Description sourced from the EGA-Cryptor website (https://ega-archive.org/submission/data/file-preparation/egacryptor/)

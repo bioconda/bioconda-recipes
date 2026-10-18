@@ -1,0 +1,76 @@
+diff --git a/Makefile b/Makefile
+index f9c0936..5c63b9f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -171,9 +171,10 @@ HISAT2_REPEAT_CPPS_MAIN = $(REPEAT_CPPS) $(BUILD_CPPS) hisat2_repeat_main.cpp
+ SEARCH_FRAGMENTS = $(wildcard search_*_phase*.c)
+ VERSION = $(shell cat VERSION)
+ 
++ARCH=$(shell uname -m)
+ # Convert BITS=?? to a -m flag
+ BITS=32
+-ifeq (x86_64,$(shell uname -m))
++ifeq (x86_64,$(ARCH))
+ BITS=64
+ endif
+ # ARM is 64-bit (aarch64/arm64) and does not take x86 -m32/-m64 flags; the ABI
+@@ -189,12 +190,14 @@ ifneq (,$(findstring AMD64,$(PROCESSOR_ARCHITEW6432)))
+ endif
+ BITS_FLAG =
+ 
+-ifeq (32,$(BITS))
+-	BITS_FLAG = -m32
+-endif
+-
+-ifeq (64,$(BITS))
+-	BITS_FLAG = -m64
++ifeq (x86_64,$(ARCH))
++	ifeq (32,$(BITS))
++		BITS_FLAG = -m32
++	endif
++	ifeq (64,$(BITS))
++		BITS_FLAG = -m64
++	endif
++	SSE_FLAG=-msse2
+ endif
+ ifeq (1,$(ARM))
+ 	SSE_FLAG =
+diff --git a/alphabet.cpp b/alphabet.cpp
+index be1af7c..96af460 100644
+--- a/alphabet.cpp
++++ b/alphabet.cpp
+@@ -400,7 +400,7 @@ int dnacomp[5] = {
+ 
+ const char *iupacs = "!ACMGRSVTWYHKDBN!acmgrsvtwyhkdbn";
+ 
+-char mask2iupac[16] = {
++int mask2iupac[16] = {
+ 	-1,
+ 	'A', // 0001
+ 	'C', // 0010
+diff --git a/alphabet.h b/alphabet.h
+index 340942e..921d661 100644
+--- a/alphabet.h
++++ b/alphabet.h
+@@ -65,7 +65,7 @@ extern uint8_t dinuc2color[5][5];
+ /// corresponding 2-bit nucleotide
+ extern uint8_t nuccol2nuc[5][5];
+ /// Convert a 4-bit mask into an IUPAC code
+-extern char mask2iupac[16];
++extern int mask2iupac[16];
+ 
+ /// Convert an ascii color to an ascii dna char
+ extern char col2dna[];
+diff --git a/sstring.h b/sstring.h
+index 3ec31f6..648f165 100644
+--- a/sstring.h
++++ b/sstring.h
+@@ -3326,7 +3326,7 @@ public:
+ 	 */
+ 	char toChar(size_t idx) const {
+ 		assert_range((int)this->cs_[idx], 0, 15);
+-		return mask2iupac[(int)this->cs_[idx]];
++		return (char)mask2iupac[(int)this->cs_[idx]];
+ 	}
+ 
+ 	/**

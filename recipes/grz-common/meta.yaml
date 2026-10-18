@@ -1,0 +1,58 @@
+{% set name = "grz-common" %}
+{% set version = "4.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/grz_common-{{ version }}.tar.gz
+  sha256: b612d574b314d228f1483d8bb6c1256c8cd6ebe7f4d4e64806ec6bcaffc7d717
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - boto3 >=1.36,<2
+    - botocore >=1.36,<2
+    - click >=8.2,<9
+    - python-crypt4gh >=1.8.6,<2
+    - cryptography >=50.0.1
+    - packaging >=23,<27
+    - pyyaml >=6.0.2,<7
+    - tqdm >=4.66.5,<5
+    - pydantic >=2.12,<3
+    - pydantic-settings >=2.11.0,<3
+    - platformdirs >=4.3.6,<5
+    - grz-pydantic-models >=4,<5
+    - grz-check-python >=0.3.1
+
+test:
+  imports:
+    - grz_common
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/BfArM-MVH/grz-tools"
+  summary: "Common library for grz applications."
+  license: MIT
+  license_family: MIT
+  dev_url: "https://github.com/BfArM-MVH/grz-tools"
+
+extra:
+  recipe-maintainers:
+    - tedil
+    - Hoeze

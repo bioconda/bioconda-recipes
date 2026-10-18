@@ -1,42 +1,52 @@
-{% set version = "0.6.1" %}
-{% set sha256 = "2c70239e1caf33519b9e99142470bb4dd2f4c69e71f68cee33d6d6a1032d0e33" %}
-
+{% set version = "0.6.2" %}
+{% set sha256 = "f152e684570e3af0c84dc35b1483ad70bce8b82246d5cefd7abcf449e0cfa5fa" %}
 
 package:
   name: genrich
   version: {{ version }}
 
-
 source:
   url: https://github.com/jsh58/Genrich/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - Makefile.patch
 
-
-about:
-  home:
-    https://github.com/jsh58/Genrich
-  license: MIT
-  license_file: LICENSE
-  summary: Detecting sites of genomic enrichment.
-
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('genrich', max_pin="x.x") }}
 
 requirements:
   build:
     - make
-    - {{ compiler('c') }} 
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
-  run:
-    - zlib
-
-
-build:
-  number: 4
-
 
 test:
   commands:
     - which Genrich
     - Genrich -V 2>&1 | grep 'John M. Gaspar'
+    - Genrich -V 2>&1 | grep '0.6.2'
+    # Upstream checks -L only once -t/-o are present, hence the dummy names.
+    # -L -1 is refused by upstream's own guard (ecdb8c4); the first v0.6.2
+    # tag silently wrapped it to 2^64-1. -L 0 is accepted upstream (README:
+    # "-L 0 is ignored"), so it fails on the missing input instead -- which
+    # also proves no downstream -L patch is applied.
+    - Genrich -t in.sam -o out.np -L -1 2>&1 | grep 'Genome length must be a positive int'
+    - Genrich -t in.sam -o out.np -L 0 2>&1 | grep 'cannot open file for reading'
+
+about:
+  home: "https://github.com/jsh58/Genrich"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Detecting sites of genomic enrichment."
+  dev_url: "https://github.com/jsh58/Genrich"
+  doc_url: "https://github.com/jsh58/Genrich/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - usegalaxy-eu:genrich

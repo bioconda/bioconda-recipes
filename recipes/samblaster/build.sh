@@ -1,7 +1,14 @@
 #!/bin/bash
 
-BIN=$PREFIX/bin
-mkdir -p $BIN
+mkdir -p "$PREFIX/bin"
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
 sed -i.bak 's/CPPFLAGS = /CPPFLAGS = $(CXXFLAGS) /' Makefile
-make CPP=$CXX -j${CPU_COUNT}
-cp samblaster $BIN
+rm -rf *.bak
+
+make CPP="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 0755 samblaster "$PREFIX/bin"

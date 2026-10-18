@@ -1,0 +1,47 @@
+{% set name = "biocframe" %}
+{% set version = "0.8.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 30c6d818c00b58eea2711ff5d871710572e3126d33766548c93477feaac30aa9
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python >=3.9
+    - numpy >=1.26.0
+    - biocutils >=0.3.3
+
+test:
+  imports:
+    - biocframe
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/BiocPy/biocframe
+  summary: Flexible dataframe representation to support nested structures.
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - acidgenomics
+    - mjsteinbaugh

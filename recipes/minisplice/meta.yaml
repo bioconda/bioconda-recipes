@@ -1,0 +1,42 @@
+{% set name = "minisplice" %}
+{% set version = "0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lh3/minisplice/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9eb6dd56f60cc3059da50ef5167dda938854bba7247301a3e08da12b00dc2319
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('minisplice', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - zlib
+  host:
+    - zlib
+
+test:
+  commands:
+    - minisplice 2>&1 | grep 'Usage'
+
+about:
+  home: "https://github.com/lh3/minisplice"
+  license: MIT
+  license_family: MIT
+  summary: "minisplice is a command-line tool to estimate the odds-ratio score of canonical donor (GT) and acceptor (AG) splice sites. It is intended to be used with miniprot or minimap2 for improving alignment accuracy especially for distant homologs.."
+  doc_url: "https://github.com/lh3/minisplice/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/lh3/minisplice"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.48550/arXiv.2506.12986

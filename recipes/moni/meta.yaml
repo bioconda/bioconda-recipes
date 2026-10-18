@@ -1,0 +1,54 @@
+{% set name = "moni" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/maxrossi91/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 638cd590e0c91218a9c7c0bf5aac6289d445a5a1b3ad91aa0cf62d7ff57ce0ce 
+
+build:
+  skip: True # [osx]
+  number: 1
+  run_exports:
+      - {{ pin_subpackage(name, max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - git
+  host:
+    - zlib
+    - python
+  run:
+    - zlib
+    - python
+
+test:
+  commands:
+    - moni -h
+    - moni build -h
+    - moni ms -h
+    - moni mems -h
+    - moni extend -h
+
+about:
+  home: https://github.com/maxrossi91/moni
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: 'A Pangenomics Index for Finding MEMs'
+  description: |
+    MONI (Multi) is a Pangenomics Index for Finding Maximal Exact Matches (MEMs).
+    It uses the prefix-free parsing of the text to build the Burrows-Wheeler Transform (BWT) 
+    of the reference genomes, the suffix array (SA) samples at the beginning and at the end 
+    of each run of the BWT, and the threshold positions.
+
+extra:
+  recipe-maintainers:
+    - AndreaGuarracino
+    - maxrossi91

@@ -1,0 +1,55 @@
+{% set name = "US-align" %}
+{% set version = "20241201" %}
+
+package:
+  name: {{ name|lower|replace("-", "") }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pylelab/USalign/archive/609e718d19ee525f9c86a6e6b3b33243775cc011.tar.gz
+  sha256: 65d710c843a7e9ca853ebbd0c44dc1c31731c9721dc28931315216d9aa9b695a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower|replace("-", ""), max_pin=None) }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - make
+
+test:
+  commands:
+    - USalign -h
+
+about:
+  home: https://zhanggroup.org/{{ name }}
+  dev_url: https://github.com/pylelab/{{ name|replace("-", "") }}
+  doc_url: https://zhanggroup.org/{{ name }}/help
+  summary: "Universal structure alignment of monomeric, complex proteins and nucleic acids"
+  description: |
+    US-align (Universal Structural alignment) is a unified protocol
+    to compare 3D structures of different macromolecules (proteins, RNAs and DNAs)
+    in different forms (monomers, oligomers and heterocomplexes)
+    for both pairwise and multiple structure alignments.
+    The core alogrithm of US-align is extended from TM-align and generates optimal structural alignments
+    by maximizing TM-score of compared strucures through heuristic dynamic programming iterations.
+    Large-scale benchmark tests showed that US-align can generate more accurate structural alignments
+    with significantly reduced CPU time, compared to the state-of-the-art methods developed
+    for specific structural alignment tasks.
+    TM-score has values in (0,1] with 1 indicating an identical structure match,
+    where a TM-score ≥0.5 (or 0.45) means the structures share the same global topology for proteins (or RNAs).
+  license: UNKNOWN
+  license_family: OTHER
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128
+  identifiers:
+    - doi:10.1038/s41592-022-01585-1

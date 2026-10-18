@@ -1,0 +1,43 @@
+{% set name = "TE-Aid" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "e11cb4d76c5af72509918072771e26dcc1bc6299fd3368a924f4f126923bd27f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/clemgoub/TE-Aid/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+      - {{ pin_subpackage("te-aid", max_pin="x") }}
+
+requirements:
+  run:
+    - blast >=2.15.0
+    - emboss >=6.6.0
+    - r >=4.2
+    - r-rcpp >=1.0.12
+    - bioconductor-biostrings >=2.70.1
+
+test:
+  commands:
+    - TE-Aid
+
+about:
+  home: https://github.com/clemgoub/TE-Aid/tree/v{version}
+  dev_url: https://github.com/clemgoub/TE-Aid
+  license: MIT
+  license_file: LICENSE
+  summary: "Annotation helper tool for the manual curation of transposable element consensus sequences"
+  description: |
+    TE-Aid is a shell+R program aimed to help the manual curation of transposable 
+    elements (TE). It inputs a TE consensus sequence (fasta format) and requires a 
+    reference genome (in fasta as well). TE-Aid produces 4 figures reporting i) the genomic 
+    hits with divergence to consensus, ii) the genomic coverage of the consensus, 
+    iii) a self dot-plot, and iv) a structure analysis including TIR and LTR suggestions, 
+    open reading frames (ORFs) and TE protein hit annotation.

@@ -1,0 +1,48 @@
+{% set name = 'wipertools' %}
+{% set version = '1.1.5' %}
+{% set sha256 = "3e0b2c5af7120df2085280b76c781a3b97b900cc126c76628e68b35a58a79595" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mazzalab/fastqwiper/archive/refs/tags/v{{ version }}.zip
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('wipertools', max_pin="x.x") }}
+  entry_points:
+    - wipertools = wipertools.main:main
+  script_env:
+    - WIPERTOOLS_VERSION={{version}}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=75.3
+    - coreutils >=8
+  run:
+    - python >=3.10
+    - coreutils >=8
+
+test:
+  imports:
+    - wipertools
+  commands:
+    - wipertools --help
+
+about:
+  home: https://github.com/mazzalab/fastqwiper
+  summary: A suite of programs that drop or fix pesky lines in FASTQ files and that split FASTQ files into chunks or merge them.
+  license: GPL-2.0-or-later
+  license_family: GPL
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - mazzalab
+    - tm4zza

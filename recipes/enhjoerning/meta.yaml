@@ -1,0 +1,50 @@
+{% set name = "enhjoerning" %}
+{% set version = "2.5.2" %}
+{% set sha256 = "d60229092900e1f2edb1f6421f4b05f525988f881e1a37e543de175c1fd66827" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/GeoGenetics/unicorn/releases/download/v{{ version }}/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('enhjoerning', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}  # Specifies the C compiler for the target platform
+    - {{ compiler('cxx') }}  # Needed for genesisC (C++20)
+    - {{ stdlib("c") }}
+    - make                 # The 'make' build tool
+  host:
+    - htslib >=1.10              # The library to link against during compilation
+    - zlib
+    - genesis
+  run:
+    - htslib >=1.10              # The library needed at runtime by the executable
+    - genesis
+
+test:
+  commands:
+    - unicorn 2>&1 | grep "command"
+
+about:
+  home: "https://github.com/GeoGenetics/unicorn"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A tool for computing statistics on short read alignments."
+  dev_url: "https://github.com/GeoGenetics/unicorn"
+  doc_url: "https://github.com/GeoGenetics/unicorn/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - 7pintsofcherrygarcia

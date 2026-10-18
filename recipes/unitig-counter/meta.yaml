@@ -8,24 +8,30 @@ package:
 source:
   git_url: https://github.com/johnlees/{{ name|lower }}.git
   git_rev: v{{ version }}
-  sha256: 086a4a41645a17793f5c1ebc37d7acc9e3a68dded99d0f948315e3cd00df9fc3
+  sha256: unused
 
 build:
-  number: 1
-  skip: True #  [osx]
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - cmake <4
+    - pkg-config
   host:
+    - hdf5 >=1.10.6,<1.11.0
     - zlib
     - pthread-stubs
     - boost-cpp
+    - cppunit
   run:
     - pthread-stubs
+    - boost-cpp 
 
 test:
   commands:
@@ -33,14 +39,17 @@ test:
     - cdbg-ops -h 2>&1 | grep 'cdbg-ops dist'
 
 about:
-   home: https://github.com/johnlees/unitig-counter
-   license: GNU Affero General Public License
-   license_family: AGPL
-   license_file: LICENSE
-   summary: Uses a compressed de Bruijn graph (implemented in GATB) to count unitigs in bacterial populations.
+  home: "https://github.com/johnlees/unitig-counter"
+  license: "GNU Affero General Public License"
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Uses a compressed de Bruijn graph (implemented in GATB) to count unitigs in bacterial populations."
+  dev_url: "https://github.com/johnlees/unitig-counter"
 
 extra:
-   skip-lints:
-     - uses_vcs_url
-   identifiers:
-     - doi:10.1371/journal.pgen.1007758
+  skip-lints:
+    - uses_vcs_url
+  identifiers:
+    - doi:10.1371/journal.pgen.1007758
+  additional-platforms:
+    - linux-aarch64

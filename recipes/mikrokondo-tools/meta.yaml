@@ -1,0 +1,50 @@
+{% set name = "mikrokondo-tools" %}
+{% set version = "0.0.1rc0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/mikrokondo_tools-{{ version }}.tar.gz
+  sha256: 97a6805c4de8acf568ea1be22a91b442a7c780f66d54520e1c9c8af9ef08d7ef
+
+build:
+  entry_points:
+    - mikrokondo-tools = mikrokondo_tools.cli:safe_entry_point
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+  run:
+    - python >=3.8
+    - click
+    - requests
+    - jsonschema
+
+test:
+  imports:
+    - mikrokondo_tools
+  commands:
+    - pip check
+    - mikrokondo-tools --help
+  requires:
+    - pip
+
+about:
+  home: https://pypi.org/project/mikrokondo-tools
+  summary: A collection of utilities to make using the mikrokondo pipeline easier
+  dev_url: https://github.com/DOED-DAAD/mikrokondo-tools
+  license: Apache-2.0
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - mattheww95

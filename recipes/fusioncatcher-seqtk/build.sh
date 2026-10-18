@@ -1,6 +1,7 @@
 #!/bin/bash
 
-make
-
 mkdir -p "${PREFIX}/bin"
-cp seqtk "${PREFIX}/bin/"
+
+make -j"${CPU_COUNT}"
+
+install -v -m 0755 seqtk "${PREFIX}/bin"

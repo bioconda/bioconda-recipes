@@ -1,0 +1,1 @@
+set -e LIBCIFPP_DATA_DIR

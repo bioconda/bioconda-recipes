@@ -1,32 +1,39 @@
-{% set version = "1.01" %} # Remember to update sha256 below
+{% set version = "1.02" %}
 
 package:
   name: cesar
   version: {{ version }}
 
 source:
-  url: https://github.com/hillerlab/CESAR2.0/archive/refs/tags/1.01.tar.gz
-  sha256: c85b9529a10c9123f2ab8665606e2ad8d5a1664caf14df7bd2acd8900b79b8d6
+  url: https://github.com/hillerlab/CESAR2.0/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 62d4615c1a0e5494d4bc7bbda5799bc9f9e04cebc81cd655644bb18d19bed242
 
-    
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('cesar', max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-  run:
-
-
-about:
-  home: https://github.com/hillerlab/CESAR2.0
-  license: MIT license 
-  license_file: LICENSE
-  summary: |
-    CESAR 2.0 is a method to realign coding exons or genes to DNA sequences using a Hidden Markov Model
 
 test:
   commands:
     - cesar -h 2>&1 | cat > /dev/null
+
+about:
+  home: "https://github.com/hillerlab/CESAR2.0"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "CESAR 2.0 is a method to realign coding exons or genes to DNA sequences using a Hidden Markov Model."
+  dev_url: "https://github.com/hillerlab/CESAR2.0"
+
+extra:
+  skip-lints:
+    - compiler_needs_stdlib_c
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

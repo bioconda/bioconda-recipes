@@ -1,49 +1,61 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "SynExtend" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f7ee0b985a06dbd6040329dd264648f5
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 48e649c20b0c5e11e8aeff40757245a3
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-synextend", max_pin="x.x") }}'
+
 # Suggests: BiocStyle, knitr, igraph, markdown, rmarkdown
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-decipher >=2.30.0,<2.31.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - 'bioconductor-decipher >=2.30.0,<2.31.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
-    - r-base
   build:
     - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
     - make
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-decipher >=3.6.0,<3.7.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-decipher >=3.6.0,<3.7.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Tools for Working With Synteny Objects'
-  description: 'Shared order between genomic sequences provide a great deal of information. Synteny objects produced by the R package DECIPHER provides quantitative information about that shared order. SynExtend provides tools for extracting information from Synteny objects.'
+  summary: Tools for Comparative Genomics
+  description: A multitude of tools for comparative genomics, focused on large-scale analyses of biological data. SynExtend includes tools for working with syntenic data, clustering massive network structures, and estimating functional relationships among genes.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

@@ -1,60 +1,68 @@
-{% set version = "2.48.0" %}
+{% set version = "2.56.0" %}
 {% set name = "XDE" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: aaf179de92edd3a7105c0fe20254f3d6
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 7e5b305690090f64f2903f3b73f1964a
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-xde", max_pin="x.x") }}'
+
 # Suggests: MASS, RUnit
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
-    - 'bioconductor-genemeta >=1.74.0,<1.75.0'
-    - 'bioconductor-siggenes >=1.76.0,<1.77.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-genemeta >=1.82.0,<1.83.0
+    - bioconductor-siggenes >=1.84.0,<1.85.0
     - r-base
     - r-gtools
     - r-mvtnorm
     - r-rcolorbrewer
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-biocgenerics >=0.48.0,<0.49.0'
-    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
-    - 'bioconductor-genemeta >=1.74.0,<1.75.0'
-    - 'bioconductor-siggenes >=1.76.0,<1.77.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-genemeta >=1.82.0,<1.83.0
+    - bioconductor-siggenes >=1.84.0,<1.85.0
     - r-base
     - r-gtools
     - r-mvtnorm
     - r-rcolorbrewer
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: LGPL-2
   summary: 'XDE: a Bayesian hierarchical model for cross-study analysis of differential gene expression'
-  description: 'Multi-level model for cross-study detection of differential gene expression.'
+  description: Multi-level model for cross-study detection of differential gene expression.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
+
 extra:
   identifiers:
     - biotools:xde

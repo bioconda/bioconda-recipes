@@ -1,0 +1,55 @@
+{% set name = "radiantkit" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/radiantkit-{{ version }}.tar.gz
+  sha256: 9b12085886c33ce5d3850e9f299501d2c17041278e87b1d7d28dd02446eb7625
+
+build:
+  entry_points:
+    - radiantkit = radiantkit.run:radiant
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >3.12
+    - pip
+    - setuptools
+  run:
+    - scikit-image >=0.19
+    - numpy >=1.20
+    - pandas >=1.1
+    - plotly >=4.13
+    - tifffile ==2024.6.18
+    - joblib >=0.16
+    - czifile >=2019.7.2
+    - nd2reader >=3.3
+    - pims >=0.5
+    - rich >=13
+
+test:
+  imports:
+    - radiantkit
+  commands:
+    - radiantkit --help
+  requires:
+    - pip
+
+about:
+  home: "https://github.com/bicrolab/radiantkit"
+  summary: Radiantkit is a Python package containing tools for full-stack image analysis YFISH images.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ljwharbers

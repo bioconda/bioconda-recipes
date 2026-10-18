@@ -1,42 +1,41 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-pushd metagraph/external-libraries/sdsl-lite
-./install.sh $PWD
-popd
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -Wno-deprecated-declarations -Wno-attributes"
 
-[ ! -d metagraph/build ]  || rm -r metagraph/build
+ARCH=$(uname -m)
+OS=$(uname -s)
+
+# set version manually since we're installing from source and not from a checked out git repo
+echo '#define HTSCODECS_VERSION_TEXT "1.6.4"' > metagraph/external-libraries/htslib/htscodecs/htscodecs/version.h
+
+sed -i.bak 's|Boost_USE_STATIC_LIBS ON|Boost_USE_STATIC_LIBS OFF|' metagraph/CMakeLists.txt
+
+# Add zlib include directory for sshash target
+# Add it right after add_subdirectory(external-libraries/sshash SYSTEM)
+sed -i.bak2 '/add_subdirectory(external-libraries\/sshash SYSTEM)/a\
+target_include_directories(sshash_static PRIVATE external-libraries/zlib)
+' metagraph/CMakeLists.txt
+
+[[ ! -d metagraph/build ]] || rm -rf metagraph/build
 mkdir -p metagraph/build
 cd metagraph/build
-
-if [[ $OSTYPE == linux* ]]; then
-    CMAKE_PLATFORM_FLAGS=""
-    export CXXFLAGS="${CXXFLAGS} -Wno-attributes"
-elif [[ $OSTYPE == darwin* ]]; then
-    CMAKE_PLATFORM_FLAGS="-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-    export CXXFLAGS="${CXXFLAGS} -Wno-suggest-destructor-override -Wno-error=deprecated-copy"
-fi
-
-if [[ "${target_platform}" == "osx-64" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
 
 # needed for setting up python based integration test environment
 export PIP_NO_INDEX=False
 
-CMAKE_PARAMS="-DBUILD_KMC=OFF \
-            -DBOOST_ROOT=${BUILD_PREFIX} \
-            -DJEMALLOC_ROOT=${BUILD_PREFIX} \
-            -DOMP_ROOT=${BUILD_PREFIX} \
-            -DCMAKE_PREFIX_PATH=${PREFIX} \
+CMAKE_PARAMS="-DCMAKE_BUILD_TYPE=Release \
+            -DBOOST_ROOT=${PREFIX} \
             -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
-            -DCMAKE_BUILD_TYPE=Release \
-            ${CMAKE_PLATFORM_FLAGS} \
+            -DCMAKE_INSTALL_PREFIX=${PREFIX} \
             -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=1 \
-            -DCMAKE_INSTALL_PREFIX=${PREFIX}"
+            -DBUILD_KMC=OFF \
+            "
 
-cmake ${CMAKE_PARAMS} ..
+cmake -S .. -B . ${CMAKE_PARAMS}
 
-BUILD_CMD="make VERBOSE=1 -j $(($(getconf _NPROCESSORS_ONLN) - 1)) metagraph"
+BUILD_CMD="make metagraph -j${CPU_COUNT}"
 
 ${BUILD_CMD}
 
@@ -46,15 +45,14 @@ make install
 
 make clean
 
-cmake ${CMAKE_PARAMS} -DCMAKE_DBG_ALPHABET=Protein ..
+cmake -S .. -B . ${CMAKE_PARAMS} -DCMAKE_DBG_ALPHABET=Protein
 
 ${BUILD_CMD}
 
 make install
 
 ### Adding symlink to default DNA binary version
-
 pushd ${PREFIX}/bin
-ln -s metagraph_DNA metagraph
+chmod 0755 metagraph_DNA
+ln -sf metagraph_DNA metagraph
 popd
-

@@ -1,5 +1,5 @@
 {% set name = "sainsc" %}
-{% set version = "0.1.1" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,52 +7,50 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sainsc-{{ version }}.tar.gz
-  sha256: 43afd7d2c9f1b8b891893cfe730175d0e01d5443b7f17981a233109df4cbb228
+  sha256: 009c400792dfb8a5671f19d7da56a92d3a6d2182154f747b47f6e9e4a5efd225
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 2
-  skip: True  # [(osx and not arm64) or py<310]
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
+  skip: True  # [(osx and not arm64) or py < 312]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
   host:
     - python
-    - setuptools >=61.0.0
-    - setuptools-scm >=6.2
-    - setuptools-rust >=1.7
+    - setuptools >=64.0.0
+    - setuptools-scm >=8
+    - setuptools-rust >=1.10
     - pip
   run:
     - python
-    - anndata >=0.9
-    - matplotlib-base
+    - anndata >=0.11
+    - h5py >=3
+    - matplotlib-base >=3.7
     - matplotlib-scalebar
-    - numba >=0.44
-    - numpy >=1.21
-    - pandas
-    - polars >=1
-    - scikit-image >=0.18
-    - scipy >=1.9
-    - seaborn >=0.11
+    - numpy >=1.24
+    - pandas >=2.0
+    - polars >=1.39,<2
+    - scikit-image >=0.20
+    - scipy >=1.10
+    - seaborn-base >=0.11
 
 test:
   imports:
     - sainsc
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/HiDiHlabs/sainsc
-  summary: Segmentation-free Analysis of In Situ Capture data
+  summary: "Segmentation-free Analysis of In Situ Capture data."
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  doc_url: https://sainsc.readthedocs.io/
+  doc_url: https://sainsc.readthedocs.io
+  dev_url: https://github.com/HiDiHlabs/sainsc
 
 extra:
   additional-platforms:

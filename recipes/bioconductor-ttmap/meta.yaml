@@ -1,17 +1,19 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "TTMap" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9fb52b78486eff55cc91ef0f8116633b
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3cf4cbfe89f53b4abbac14cb137e9b36
+
 build:
   number: 0
   rpaths:
@@ -19,20 +21,9 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-ttmap", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: BiocStyle, airway
 requirements:
-  host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - r-base
-    - r-colorramps
-    - r-rgl
-  run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
-    - r-base
-    - r-colorramps
-    - r-rgl
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -40,16 +31,31 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-colorramps
+    - r-rgl
+  run:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-colorramps
+    - r-rgl
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-2
   summary: 'Two-Tier Mapper: a clustering tool based on topological data analysis'
-  description: 'TTMap is a clustering method that groups together samples with the same deviation in comparison to a control group. It is specially useful when the data is small. It is parameter free.'
+  description: TTMap is a clustering method that groups together samples with the same deviation in comparison to a control group. It is specially useful when the data is small. It is parameter free.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
 extra:
   container:
-    extended-base: true
+    extended-base: yes
 

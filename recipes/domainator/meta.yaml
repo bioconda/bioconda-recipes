@@ -1,0 +1,112 @@
+{% set name = "domainator" %}
+{% set version = "0.11.0" %}  
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nebiolabs/domainator/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 87c1383326421c8052883d46c538b033e2270736cbaedc9ccaa26d72ecfd0d51
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - build_projection.py = domainator:build_projection._entrypoint
+    - build_ssn.py = domainator:build_ssn._entrypoint
+    - build_ssn_viewer.py = domainator.build_ssn_viewer:_entrypoint
+    - build_tree.py = domainator:build_tree._entrypoint
+    - clean_sequences.py = domainator:clean_sequences._entrypoint
+    - color_genbank.py = domainator:color_genbank._entrypoint
+    - color_table_to_legend.py = domainator:color_table_to_legend._entrypoint
+    - compare_contigs.py = domainator:compare_contigs._entrypoint
+    - deduplicate_genbank.py = domainator:deduplicate_genbank._entrypoint
+    - domain_search.py = domainator:domain_search._entrypoint
+    - domainate.py = domainator:domainate._entrypoint
+    - domainator_db_download.py = domainator:domainator_db_download._entrypoint
+    - domainator_format_db.py = domainator:domainator_format_db._entrypoint
+    - enum_report.py = domainator:enum_report._entrypoint
+    - extract_domains.py = domainator:extract_domains._entrypoint
+    - extract_peptides.py = domainator:extract_peptides._entrypoint
+    - extract_unannotated.py = domainator:extract_unannotated._entrypoint
+    - filter_domains.py = domainator:filter_domains._entrypoint
+    - find_features.py = domainator:find_features._entrypoint
+    - genbank_to_fasta.py = domainator:genbank_to_fasta._entrypoint
+    - hmmer_build.py = domainator:hmmer_build._entrypoint
+    - infernal_build.py = domainator:infernal_build._entrypoint
+    - kmer_dist.py = domainator:kmer_dist._entrypoint
+    - hmmer_compare.py = domainator:hmmer_compare._entrypoint
+    - hmmer_report.py = domainator:hmmer_report._entrypoint
+    - hmmer_search.py = domainator:hmmer_search._entrypoint
+    - hmmer_select.py = domainator:hmmer_select._entrypoint
+    - matrix_report.py = domainator:matrix_report._entrypoint
+    - partition_seqfile.py = domainator:partition_seqfile._entrypoint
+    - select_by_cds.py = domainator:select_by_cds._entrypoint
+    - select_by_coord.py = domainator:select_by_coord._entrypoint
+    - select_by_contig.py = domainator:select_by_contig._entrypoint
+    - seq_dist.py = domainator:seq_dist._entrypoint
+    - sort_contigs.py = domainator:sort_contigs._entrypoint
+    - structure_dist.py = domainator:structure_dist._entrypoint
+    - structure_domainate.py = domainator:structure_domainate._entrypoint
+    - structure_search.py = domainator:structure_search._entrypoint
+    - structure_to_genbank.py = domainator:structure_to_genbank._entrypoint
+    - summary_report.py = domainator:summary_report._entrypoint
+    - split_by_cluster.py = domainator:split_by_cluster._entrypoint
+    - ssn_navigator.py = domainator:ssn_navigator._entrypoint
+    - transform_matrix.py = domainator:transform_matrix._entrypoint
+    - plot_contigs.py = domainator:plot_contigs._entrypoint
+    - trim_contigs.py = domainator:trim_contigs._entrypoint
+    - domainator_server = domainator.server.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools >=61.0.0
+    - setuptools-rust >=1.7
+  run:
+    - python >=3.10,<3.14
+    - pandas >=2.1.0
+    - seaborn-base >=0.13.0
+    - scipy >=1.11.2
+    - pyhmmer >=0.12.0,<0.13.0
+    - pyinfernal >=0.1.0,<0.2.0
+    - umap-learn >=0.5.4
+    - h5py >=3.9.0
+    - jsonargparse >=4.18.0
+    - flask >=2.3
+    - werkzeug >=2.3
+    - jsonschema >=4.0
+    - psutil >=5.9.6
+    - tqdm >=4.65.0
+    - pyrodigal >=3.0.1
+    - bashplotlib >=0.6.5
+    - requests >=2.31.0
+    - urllib3 >=2.0
+    - cd-hit >=4.8.1,<5.0
+    - diamond >=2.0.0,<3.0
+    - hmmer >=3.3.2,<4.0
+    - usearch >=12.0_beta,<13.0
+
+test:
+  commands:
+    - python -c "import domainator"
+    - domainator_server --help
+    - domainate.py --help
+
+about:
+  home: "https://github.com/nebiolabs/domainator"
+  summary: "A flexible suite for domain-based gene neighborhood and protein analysis."
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  doc_url: "https://github.com/nebiolabs/domainator/README.md"
+  dev_url: "https://github.com/nebiolabs/domainator"
+
+extra:
+  recipe-maintainers:
+    - seanrjohnson

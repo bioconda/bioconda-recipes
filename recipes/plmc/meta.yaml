@@ -1,38 +1,46 @@
 {% set name = "plmc" %}
 {% set version = "20221105" %}
-{% set sha256 = "67c57fb5a771950638bb7e4c1228f105491a27f6e9e2397ccdb6dcc49cd1bd75" %}
+{% set sha256 = "3141129e9c9e9185ffb5abd728e8f9de789e8056e96a92ba6cce38b5d16b67e4" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-
 source:
-  url: https://github.com/debbiemarkslab/{{ name|lower }}/archive/refs/heads/master.zip
+  url: https://github.com/debbiemarkslab/{{ name }}/archive/refs/heads/master.zip
   sha256: {{ sha256 }}
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
-    - openmp # [linux]
-    - clangdev  # [osx]
-    - llvm-openmp  # [osx]
+    - {{ compiler('cxx') }}
+    - clangdev
   host:
-    - openmp # [linux]
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
   run:
-    - openmp # [linux]
     - llvm-openmp  # [osx]
+    - libgomp  # [linux]
 
 test:
   commands:
     - which {{ name }}
 
 about:
-  home: https://github.com/debbiemarkslab/plmc
+  home: "https://github.com/debbiemarkslab/plmc"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'Inference of couplings in proteins and RNAs from sequence variation.'
+  summary: "Inference of couplings in proteins and RNAs from sequence variation."
+  dev_url: "https://github.com/debbiemarkslab/plmc"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

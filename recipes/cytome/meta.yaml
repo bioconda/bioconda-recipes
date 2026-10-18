@@ -1,0 +1,50 @@
+{% set name = "cytome" %}
+{% set version = "0.3.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/c/cytome/cytome-{{ version }}.tar.gz
+  sha256: f99f18666bb540bd5782d76b35e26cc6b55cb18b4bdbf4f24cc54f043b9cb345
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  entry_points:
+    - cytome = cytome.cli.main:main
+  run_exports:
+    - {{ pin_subpackage('cytome', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - numpy >=1.24
+    - scipy >=1.11
+    - pandas >=1.5
+    - lz4 >=4.0
+
+test:
+  imports:
+    - cytome
+  commands:
+    - cytome --help
+
+about:
+  home: https://github.com/genecell/cytome
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Single-file multi-omics data format for single-cell biology"
+  dev_url: https://github.com/genecell/cytome
+  doc_url: https://github.com/genecell/cytome
+
+extra:
+  recipe-maintainers:
+    - genecell

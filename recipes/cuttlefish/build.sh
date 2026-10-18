@@ -1,24 +1,13 @@
-#!/bin/bash
+#!/bin/bash -euo
 
-mkdir build
-cd build
+# Use the portable per-target cargo config (x86-64-v3 / Neoverse-N1 /
+# Apple-A14 baselines) for the conda build, mirroring piscem: explicit even
+# though the tracked config.toml carries the same content, and a guard in
+# case the two ever diverge.
+mv .cargo/config-portable.toml .cargo/config.toml
 
-unamestr=`uname`
-
-if [ "$unamestr" == 'Darwin' ];
-then
-  export MACOSX_DEPLOYMENT_TARGET=10.15
-  export CFLAGS="${CFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
-  export CXXFLAGS="${CXXFLAGS} -fcommon -D_LIBCPP_DISABLE_AVAILABILITY"
-else 
-  # It's dumb and absurd that the KMC build can't find the bzip2 header <bzlib.h>
-  export C_INCLUDE_PATH="$PREFIX/include"
-  export CPLUS_INCLUDE_PATH="$PREFIX/include"
-fi
-
-cmake \
-    -DINSTANCE_COUNT=64 \
-    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-    -DCONDA_BUILD=ON \
-    ..
-make install
+# Build and install the cuttlefish binary from the Rust workspace. The CLI
+# crate carries the `cuttlefish` binary; --locked holds the checked-in
+# Cargo.lock, and --no-track skips cargo's install metadata, which does not
+# belong in a conda package.
+cargo install --locked --no-track --root "${PREFIX}" --path crates/cuttlefish-rs-cli

@@ -1,0 +1,67 @@
+{% set name = "disco" %}
+{% set version = "1.3" %}
+{% set sha256 = "50d311ed8a5111d9a55e49ee74e6c9309af7b4173720731f4db17b87289befb0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abiswas-odu/Disco/releases/download/1.3/Disco{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-Replace-g++-by-CXX.patch
+    - sstr.patch
+    - 0003-Utils-cstdint.patch  # [linux]
+    - 0004-cs2-parser-pr_type-buffer-size.patch
+    - 0005-overlapgraph-erase-iterator-invalidation.patch
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - pkg-config
+  host:
+    - coreutils  # [osx and x86_64]
+    - mpich-mpicxx
+    - zlib
+  run:
+    - coreutils  # [osx and x86_64]
+    - mpich-mpicxx
+    - biopython
+    - bbmap
+
+test:
+  commands:
+    - runDisco.sh -h 2>&1 | grep "runDisco"
+    - runAssembly.sh -h 2>&1 | grep "runDisco"
+    - runECC.sh -h 2>&1 | grep "runDisco"
+    - buildG --help
+    # UCX network transports fail to initialise on CI runners; --help is single-process
+    - export UCX_TLS=self,sm
+    - buildG-MPI --help
+    - buildG-MPIRMA --help
+    - fullsimplify --help
+
+about:
+  home: "https://github.com/abiswas-odu/Disco"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler."
+  dev_url: "https://github.com/abiswas-odu/Disco"
+  doc_url: "https://github.com/abiswas-odu/Disco/blob/{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - usegalaxy-eu:disco
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

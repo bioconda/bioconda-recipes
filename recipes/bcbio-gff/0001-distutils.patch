@@ -1,0 +1,291 @@
+diff --git a/BCBio/GFF/GFFParser.py b/BCBio/GFF/GFFParser.py
+index 9d0b93a..68aca37 100644
+--- a/BCBio/GFF/GFFParser.py
++++ b/BCBio/GFF/GFFParser.py
+@@ -68,7 +68,7 @@ def _gff_line_map(line, params):
+                 out.append(p)
+         return out
+ 
+-    gff3_kw_pat = re.compile("\w+=")
++    gff3_kw_pat = re.compile(r"\w+=")
+     def _split_keyvals(keyval_str):
+         """Split key-value pairs in a GFF2, GTF and GFF3 compatible way.
+ 
+diff --git a/distribute_setup.py b/distribute_setup.py
+index 3553b21..b315ec0 100644
+--- a/distribute_setup.py
++++ b/distribute_setup.py
+@@ -21,8 +21,7 @@ import fnmatch
+ import tempfile
+ import tarfile
+ import optparse
+-
+-from distutils import log
++import logging
+ 
+ try:
+     from site import USER_SITE
+@@ -69,7 +68,7 @@ Description: xxx
+ def _install(tarball, install_args=()):
+     # extracting the tarball
+     tmpdir = tempfile.mkdtemp()
+-    log.warn('Extracting in %s', tmpdir)
++    logging.warning('Extracting in %s', tmpdir)
+     old_wd = os.getcwd()
+     try:
+         os.chdir(tmpdir)
+@@ -80,13 +79,13 @@ def _install(tarball, install_args=()):
+         # going in the directory
+         subdir = os.path.join(tmpdir, os.listdir(tmpdir)[0])
+         os.chdir(subdir)
+-        log.warn('Now working in %s', subdir)
++        logging.warning('Now working in %s', subdir)
+ 
+         # installing
+-        log.warn('Installing Distribute')
++        logging.warning('Installing Distribute')
+         if not _python_cmd('setup.py', 'install', *install_args):
+-            log.warn('Something went wrong during the installation.')
+-            log.warn('See the error message above.')
++            logging.warning('Something went wrong during the installation.')
++            logging.warning('See the error message above.')
+             # exitcode will be 2
+             return 2
+     finally:
+@@ -97,7 +96,7 @@ def _install(tarball, install_args=()):
+ def _build_egg(egg, tarball, to_dir):
+     # extracting the tarball
+     tmpdir = tempfile.mkdtemp()
+-    log.warn('Extracting in %s', tmpdir)
++    logging.warning('Extracting in %s', tmpdir)
+     old_wd = os.getcwd()
+     try:
+         os.chdir(tmpdir)
+@@ -108,17 +107,17 @@ def _build_egg(egg, tarball, to_dir):
+         # going in the directory
+         subdir = os.path.join(tmpdir, os.listdir(tmpdir)[0])
+         os.chdir(subdir)
+-        log.warn('Now working in %s', subdir)
++        logging.warning('Now working in %s', subdir)
+ 
+         # building an egg
+-        log.warn('Building a Distribute egg in %s', to_dir)
++        logging.warning('Building a Distribute egg in %s', to_dir)
+         _python_cmd('setup.py', '-q', 'bdist_egg', '--dist-dir', to_dir)
+ 
+     finally:
+         os.chdir(old_wd)
+         shutil.rmtree(tmpdir)
+     # returning the result
+-    log.warn(egg)
++    logging.warning(egg)
+     if not os.path.exists(egg):
+         raise IOError('Could not build the egg.')
+ 
+@@ -207,7 +206,7 @@ def download_setuptools(version=DEFAULT_VERSION, download_base=DEFAULT_URL,
+     src = dst = None
+     if not os.path.exists(saveto):  # Avoid repeated downloads
+         try:
+-            log.warn("Downloading %s", url)
++            logging.warning("Downloading %s", url)
+             src = urlopen(url)
+             # Read/write all in one block, so we don't create a corrupt file
+             # if the download is interrupted.
+@@ -254,9 +253,9 @@ def _patch_file(path, content):
+     f.close()
+     if existing_content == content:
+         # already patched
+-        log.warn('Already patched.')
++        logging.warning('Already patched.')
+         return False
+-    log.warn('Patching...')
++    logging.warning('Patching...')
+     _rename_path(path)
+     f = open(path, 'w')
+     try:
+@@ -277,14 +276,14 @@ def _same_content(path, content):
+ 
+ def _rename_path(path):
+     new_name = path + '.OLD.%s' % time.time()
+-    log.warn('Renaming %s to %s', path, new_name)
++    logging.warning('Renaming %s to %s', path, new_name)
+     os.rename(path, new_name)
+     return new_name
+ 
+ 
+ def _remove_flat_installation(placeholder):
+     if not os.path.isdir(placeholder):
+-        log.warn('Unkown installation at %s', placeholder)
++        logging.warning('Unkown installation at %s', placeholder)
+         return False
+     found = False
+     for file in os.listdir(placeholder):
+@@ -292,10 +291,10 @@ def _remove_flat_installation(placeholder):
+             found = True
+             break
+     if not found:
+-        log.warn('Could not locate setuptools*.egg-info')
++        logging.warning('Could not locate setuptools*.egg-info')
+         return
+ 
+-    log.warn('Moving elements out of the way...')
++    logging.warning('Moving elements out of the way...')
+     pkg_info = os.path.join(placeholder, file)
+     if os.path.isdir(pkg_info):
+         patched = _patch_egg_dir(pkg_info)
+@@ -303,7 +302,7 @@ def _remove_flat_installation(placeholder):
+         patched = _patch_file(pkg_info, SETUPTOOLS_PKG_INFO)
+ 
+     if not patched:
+-        log.warn('%s already patched.', pkg_info)
++        logging.warning('%s already patched.', pkg_info)
+         return False
+     # now let's move the files out of the way
+     for element in ('setuptools', 'pkg_resources.py', 'site.py'):
+@@ -311,7 +310,7 @@ def _remove_flat_installation(placeholder):
+         if os.path.exists(element):
+             _rename_path(element)
+         else:
+-            log.warn('Could not find the %s element of the '
++            logging.warning('Could not find the %s element of the '
+                      'Setuptools distribution', element)
+     return True
+ 
+@@ -319,28 +318,28 @@ _remove_flat_installation = _no_sandbox(_remove_flat_installation)
+ 
+ 
+ def _after_install(dist):
+-    log.warn('After install bootstrap.')
++    logging.warning('After install bootstrap.')
+     placeholder = dist.get_command_obj('install').install_purelib
+     _create_fake_setuptools_pkg_info(placeholder)
+ 
+ 
+ def _create_fake_setuptools_pkg_info(placeholder):
+     if not placeholder or not os.path.exists(placeholder):
+-        log.warn('Could not find the install location')
++        logging.warning('Could not find the install location')
+         return
+     pyver = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+     setuptools_file = 'setuptools-%s-py%s.egg-info' % \
+             (SETUPTOOLS_FAKED_VERSION, pyver)
+     pkg_info = os.path.join(placeholder, setuptools_file)
+     if os.path.exists(pkg_info):
+-        log.warn('%s already exists', pkg_info)
++        logging.warning('%s already exists', pkg_info)
+         return
+ 
+-    log.warn('Creating %s', pkg_info)
++    logging.warning('Creating %s', pkg_info)
+     try:
+         f = open(pkg_info, 'w')
+     except EnvironmentError:
+-        log.warn("Don't have permissions to write %s, skipping", pkg_info)
++        logging.warning("Don't have permissions to write %s, skipping", pkg_info)
+         return
+     try:
+         f.write(SETUPTOOLS_PKG_INFO)
+@@ -348,7 +347,7 @@ def _create_fake_setuptools_pkg_info(placeholder):
+         f.close()
+ 
+     pth_file = os.path.join(placeholder, 'setuptools.pth')
+-    log.warn('Creating %s', pth_file)
++    logging.warning('Creating %s', pth_file)
+     f = open(pth_file, 'w')
+     try:
+         f.write(os.path.join(os.curdir, setuptools_file))
+@@ -365,7 +364,7 @@ def _patch_egg_dir(path):
+     pkg_info = os.path.join(path, 'EGG-INFO', 'PKG-INFO')
+     if os.path.exists(pkg_info):
+         if _same_content(pkg_info, SETUPTOOLS_PKG_INFO):
+-            log.warn('%s already patched.', pkg_info)
++            logging.warning('%s already patched.', pkg_info)
+             return False
+     _rename_path(path)
+     os.mkdir(path)
+@@ -382,7 +381,7 @@ _patch_egg_dir = _no_sandbox(_patch_egg_dir)
+ 
+ 
+ def _before_install():
+-    log.warn('Before install bootstrap.')
++    logging.warning('Before install bootstrap.')
+     _fake_setuptools()
+ 
+ 
+@@ -405,12 +404,12 @@ def _under_prefix(location):
+ 
+ 
+ def _fake_setuptools():
+-    log.warn('Scanning installed packages')
++    logging.warning('Scanning installed packages')
+     try:
+         import pkg_resources
+     except ImportError:
+         # we're cool
+-        log.warn('Setuptools or Distribute does not seem to be installed.')
++        logging.warning('Setuptools or Distribute does not seem to be installed.')
+         return
+     ws = pkg_resources.working_set
+     try:
+@@ -424,43 +423,43 @@ def _fake_setuptools():
+         )
+ 
+     if setuptools_dist is None:
+-        log.warn('No setuptools distribution found')
++        logging.warning('No setuptools distribution found')
+         return
+     # detecting if it was already faked
+     setuptools_location = setuptools_dist.location
+-    log.warn('Setuptools installation detected at %s', setuptools_location)
++    logging.warning('Setuptools installation detected at %s', setuptools_location)
+ 
+     # if --root or --preix was provided, and if
+     # setuptools is not located in them, we don't patch it
+     if not _under_prefix(setuptools_location):
+-        log.warn('Not patching, --root or --prefix is installing Distribute'
++        logging.warning('Not patching, --root or --prefix is installing Distribute'
+                  ' in another location')
+         return
+ 
+     # let's see if its an egg
+     if not setuptools_location.endswith('.egg'):
+-        log.warn('Non-egg installation')
++        logging.warning('Non-egg installation')
+         res = _remove_flat_installation(setuptools_location)
+         if not res:
+             return
+     else:
+-        log.warn('Egg installation')
++        logging.warning('Egg installation')
+         pkg_info = os.path.join(setuptools_location, 'EGG-INFO', 'PKG-INFO')
+         if (os.path.exists(pkg_info) and
+             _same_content(pkg_info, SETUPTOOLS_PKG_INFO)):
+-            log.warn('Already patched.')
++            logging.warning('Already patched.')
+             return
+-        log.warn('Patching...')
++        logging.warning('Patching...')
+         # let's create a fake egg replacing setuptools one
+         res = _patch_egg_dir(setuptools_location)
+         if not res:
+             return
+-    log.warn('Patching complete.')
++    logging.warning('Patching complete.')
+     _relaunch()
+ 
+ 
+ def _relaunch():
+-    log.warn('Relaunching...')
++    logging.warning('Relaunching...')
+     # we have to relaunch the process
+     # pip marker to avoid a relaunch bug
+     _cmd1 = ['-c', 'install', '--single-version-externally-managed']
+@@ -525,7 +524,7 @@ def _build_install_args(options):
+     install_args = []
+     if options.user_install:
+         if sys.version_info < (2, 6):
+-            log.warn("--user requires Python 2.6 or later")
++            logging.warning("--user requires Python 2.6 or later")
+             raise SystemExit(1)
+         install_args.append('--user')
+     return install_args

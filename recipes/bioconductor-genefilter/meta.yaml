@@ -1,57 +1,66 @@
-{% set version = "1.84.0" %}
+{% set version = "1.92.0" %}
 {% set name = "genefilter" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 15011d1662a58967aeb3e89f1f660e40
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 06c2d7996767eac12666bb4e6e3cd584
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-genefilter", max_pin="x.x") }}'
+
 # Suggests: class, hgu95av2.db, tkWidgets, ALL, ROC, RColorBrewer, BiocStyle, knitr
 requirements:
-  host:
-    - 'bioconductor-annotate >=1.80.0,<1.81.0'
-    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
-    - r-base
-    - r-survival
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-annotate >=1.80.0,<1.81.0'
-    - 'bioconductor-annotationdbi >=1.64.0,<1.65.0'
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-matrixgenerics >=1.14.0,<1.15.0'
-    - r-base
-    - r-survival
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
     - make
+  host:
+    - bioconductor-annotate >=1.88.0,<1.89.0
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - r-base
+    - r-survival
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-annotate >=1.88.0,<1.89.0
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - r-base
+    - r-survival
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
   summary: 'genefilter: methods for filtering genes from high-throughput experiments'
-  description: 'Some basic functions for filtering genes.'
+  description: Some basic functions for filtering genes.
+
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:genefilter
     - doi:10.1038/nmeth.3252

@@ -1,0 +1,62 @@
+{% set name = "hicberg" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/koszullab/hicberg/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0bde749bd9841edd7c4a8984581e9fd78da29a27a014edbdbf098de4e5a97cd3
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - hicberg=hicberg.__main__:cli
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+    - wheel
+
+  run:
+    - python >=3.10
+    - bioframe
+    - biopython
+    - bowtie2
+    - click
+    - cooler
+    - funcy
+    - hicstuff
+    - matplotlib-base
+    - numpy
+    - pandas
+    - pysam
+    - samtools
+    - scikit-learn
+    - scipy
+    - statsmodels
+
+test:
+  imports:
+    - hicberg
+  commands:
+    - hicberg --help
+
+about:
+  home: https://github.com/koszullab/hicberg
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Statistical profiling based tool for contact data (Hi-C, ChIA-PET, Capture-C, etc.) and genomics data reconstruction
+  dev_url: https://github.com/koszullab/hicberg
+
+extra:
+  recipe-maintainers:
+    - axelcournac

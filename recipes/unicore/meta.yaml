@@ -1,0 +1,51 @@
+{% set name = "unicore" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "8fff6acf2278f4a23f9deb11ddaabeb6c82d5ddec6180ac3d56d9efcb2eed5d0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/steineggerlab/unicore/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('unicore', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - openssl
+  run:
+    - foldseek >=10.941cd33
+    - foldmason
+    - mafft
+    - iqtree
+    - fasttree
+    - raxml
+
+test:
+  commands:
+    - unicore help
+
+about:
+  home: https://github.com/steineggerlab/unicore
+  license: GNU-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Universal and efficient core gene phylogeny with Foldseek and ProstT5
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - endixk
+    - pskvins

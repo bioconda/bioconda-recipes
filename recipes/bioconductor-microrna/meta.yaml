@@ -1,45 +1,55 @@
-{% set version = "1.60.0" %}
+{% set version = "1.68.0" %}
 {% set name = "microRNA" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 04b7af542581242a8e6ba5d4f19c14ca
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 34bcf3f773592558db99172476a6266c
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-microrna", max_pin="x.x") }}'
+
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - r-base
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.70.0,<2.71.0'
-    - r-base
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - r-base
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - r-base
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Data and functions for dealing with microRNAs'
-  description: 'Different data resources for microRNAs and some functions for manipulating them.'
+  summary: Data and functions for dealing with microRNAs
+  description: Different data resources for microRNAs and some functions for manipulating them.
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:microrna
     - doi:10.1038/nmeth.3252

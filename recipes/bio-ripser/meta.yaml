@@ -1,0 +1,43 @@
+{% set name = "Ripser" %}
+{% set version = "1.2.1" %}
+{% set sha256 = "4be600591dced310550a78b718f3f4019f11049bad0fbf14eea1f85d835b16e1" %}
+
+package:
+  name: bio-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ name }}/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-master.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bio-ripser', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+
+test:
+  commands:
+    - ripser --help
+    - ripser-debug --help
+    - ripser-coeff --help
+
+about:
+  home: "https://ripser.org"
+  summary: "Ripser: efficient computation of Vietoris–Rips persistence barcodes."
+  license: MIT
+  license_family: MIT
+  license_file: "COPYING.txt"
+  dev_url: "https://github.com/Ripser/ripser"
+  doc_url: "https://github.com/Ripser/ripser/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

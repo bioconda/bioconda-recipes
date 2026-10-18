@@ -1,0 +1,52 @@
+{% set version="202010.02" %}
+
+package:
+  name: sentieon
+  version: {{ version }}
+source:
+  - url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz  #[linux and x86_64]
+    sha256: 6e800532f672b3e5f6cbb9e10ec42cfd5d57c6e5aeaaf385aee13bde8a762b3c  #[linux and x86_64]
+  - url: https://s3.amazonaws.com/sentieon-release/software/arm-sentieon-genomics-{{ version }}.tar.gz  #[linux and aarch64]
+    sha256: 0f0dd2fb61eaf91f61df91086ba6f13617cd2c9869ecc6a10137a53d1327c350  #[linux and aarch64]
+    patches:
+      - sentieon_symlinks.patch
+      - bwa_symlinks.patch
+build:
+  number: 1
+  skip: True  # [not linux]
+  binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage('sentieon', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - libudev
+  host:
+    - zlib
+    - libudev
+  run:
+    - python >=2.7
+    - zlib
+    - libudev
+
+test:
+  commands:
+    - sentieon driver
+    - sentieon driver --help --algo TNscope
+    - sentieon STAR --help  # [linux and x86_64]
+    - sentieon umi --help
+    - sentieon util --help
+
+about:
+  home: https://www.sentieon.com
+  license: Commercial (requires license for use; redistribution allowed)
+  summary: Accelerated performance bioinformatics tools for mapping and variant calling
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  skip-lints:
+    - should_be_noarch_generic  # uses per platform binaries
+    - should_not_be_noarch_source  # uses binaries

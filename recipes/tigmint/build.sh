@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eux -o pipefail
 
+if [[ ${target_platform} =~ linux.* ]]; then
+	export CXXFLAGS="${CXXFLAGS} -fopenmp"
+fi
+
 make -C src
 
 mkdir -p ${PREFIX}/bin/

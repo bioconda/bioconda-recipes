@@ -1,0 +1,75 @@
+{% set name = "orthologer" %}
+{% set version = "3.9.2" %}
+{% set sha256 = "3f81eea19b936c79910e92e6adba514ab57815e470ffc19d758446f6d6a21a57" %}
+
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('orthologer', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+    - pkg-config
+    - rsync
+  host:
+    - python >=3.9,<3.14
+    - bash >=4.1
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - spdlog
+    - boost-cpp
+  run:
+    - boost-cpp
+    - bash >=4.1
+    - python >=3.9,<3.14
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - rsync
+    - wget
+    - blast
+    - mmseqs2
+    - cd-hit
+    - diamond
+    - busco >=5.7.0
+
+test:
+  commands:
+    - ALLOW_RUNAS_ROOT=1 orthologer -h
+
+about:
+  home: "https://orthologer.ezlab.org"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
+  description: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
+
+  dev_url: "https://gitlab.com/ezlab/orthologer_container"
+  doc_url: "https://orthologer.ezlab.org/#on-orthodb-data"
+
+extra:
+  container:
+    # Necessary to allow Orthologer to download files from the internet when used with Singularity
+    # and default bind paths (see also https://github.com/bioconda/bioconda-recipes/issues/11583).
+    # Should be removed again when the base container is fixed. Not yet...
+    extended-base: True
+  identifiers:
+    - biotools:orthologer
+    - doi:10.1093/nar/gkae987
+    - PMID:39535043
+  recipe-maintainers:
+    - ftegenfe

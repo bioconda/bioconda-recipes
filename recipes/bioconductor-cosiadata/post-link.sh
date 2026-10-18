@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "cosiadata-1.2.0"
+installBiocDataPackage.sh "cosiadata-1.10.0"

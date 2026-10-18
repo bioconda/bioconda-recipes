@@ -1,44 +1,45 @@
-{% set version = "1.14.0" %}
+{% set version = "1.24.0" %}
 {% set name = "gscreend" %}
-{% set bioc = "3.17" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 6d79483ce0c766b1779a2dab5614e249
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 0864b8024f0267881b9ab5d79215e5ba
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gscreend", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, testthat, rmarkdown
+# Suggests: knitr, testthat, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-fgarch
     - r-nloptr
   run:
-    - 'bioconductor-biocparallel >=1.34.0,<1.35.0'
-    - 'bioconductor-summarizedexperiment >=1.30.0,<1.31.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-fgarch
     - r-nloptr
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Analysis of pooled genetic screens'
-  description: 'Package for the analysis of pooled genetic screens (e.g. CRISPR-KO). The analysis of such screens is based on the comparison of gRNA abundances before and after a cell proliferation phase. The gscreend packages takes gRNA counts as input and allows detection of genes whose knockout decreases or increases cell proliferation.'
+  summary: Analysis of pooled genetic screens
+  description: Package for the analysis of pooled genetic screens (e.g. CRISPR-KO). The analysis of such screens is based on the comparison of gRNA abundances before and after a cell proliferation phase. The gscreend packages takes gRNA counts as input and allows detection of genes whose knockout decreases or increases cell proliferation.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

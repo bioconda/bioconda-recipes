@@ -1,22 +1,26 @@
-{% set version='0.98.3' %}
+{% set version = "0.98.5" %}
+
 package:
   name: gemma
   version: {{ version }}
 
 # There are no OSX binaries yet, so just build on both platforms
 source:
-  url: https://github.com/genetics-statistics/GEMMA/archive/{{ version }}.tar.gz
-  sha256: 8c27874634269f52a194a41048e70c17e2128563f56bb8ef59338a93147c61ba
+  url: https://github.com/genetics-statistics/GEMMA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3ed336deee29e370f96ec8f1a240f7b62550e57dcd1694245ce7ec8f42241677
 
 build:
   number: 1
+  run_exports:
+    - {{ pin_subpackage('gemma', max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
-    - gsl=1.16
+    - gsl
     - openblas
     - eigen
     - zlib
@@ -28,6 +32,23 @@ test:
     - gemma
 
 about:
-  home: https://github.com/genetics-statistics/GEMMA
-  license: GPLv3
-  summary: Linear mixed models (LMMs) for genome-wide association (GWA)
+  home: "https://github.com/genetics-statistics/GEMMA"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Linear mixed models (LMMs) for genome-wide association (GWA)."
+  dev_url: "https://github.com/genetics-statistics/GEMMA"
+  doc_url: "https://github.com/genetics-statistics/GEMMA/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # src/debug.cpp:108:24: error: no member named '__control' in 'fenv_t'
+    # src/debug.cpp:112:10: error: no member named '__mxcsr' in 'fenv_t'
+    #- osx-arm64
+  identifiers:
+    - usegalaxy-eu:gemma
+    - biotools:gemma_algorithm
+    - doi:10.1038/ng.2310
+  skip-lints:
+    - compiler_needs_stdlib_c
