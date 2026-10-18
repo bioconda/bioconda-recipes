@@ -1,0 +1,44 @@
+{% set name = "kaksturbo" %}
+{% set version = "1.1.0rc10" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+source:
+  url: https://github.com/707728642li/KaKsTurbo/releases/download/v{{ version }}/kaksturbo-{{ version }}-sdist1.tar.gz
+  sha256: 851aea9ca0660777477de262809fd384a693317e51002209331afd354f79bdaa
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('kaksturbo', max_pin='x.x') }}
+  skip: true  # [not linux64 or py<311]
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - sysroot_linux-64 2.17.*
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - __glibc >=2.17
+    - libgcc-ng
+about:
+  home: https://github.com/707728642li/KaKsTurbo
+  summary: Fourteen-model codon averaging with resumable CPU/GPU execution and numerical diagnostics
+  license: GPL-3.0-only
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_NOTICES.md
+    - licenses/OpenBLAS-bundle/LICENSE.txt
+    - licenses/recovered-v1/gcc-runtime/RUNTIME.LIBRARY.EXCEPTION
+test:
+  imports:
+    - kaksturbo
+    - kaksforge
+  source_files:
+    - examples/three_pair_smoke.axt
+extra:
+  recipe-maintainers:
+    - 707728642li
