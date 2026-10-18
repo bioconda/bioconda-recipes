@@ -1,30 +1,51 @@
 package:
   name: basic
-  version: "1.5.1"
+  version: "2.0.0"
 
 source:
-  url: https://github.com/akds/BASIC/archive/v1.5.1.tar.gz
-  sha256: 60c62e994ddb45759eb87f7200f796bbbd3cc2d19a6b6713f2325dab061f60b0
+  url: "https://github.com/akds/BASIC/releases/download/v2.0.0/basic_immune_assembler-2.0.0.tar.gz"
+  sha256: "8261a2f99c8f6b9b6e8cf82ad321530244e00ad8f253469e6adcaa601e53a2ca"
 
 build:
-  number: 1
+  number: 0
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('basic', max_pin='x') }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv"
+  entry_points:
+    - basic-assemble = basic_assembler.cli:main
+    - BASIC.py = basic_assembler.cli:main
+    - basic-references = basic_assembler.reference_builder:main
+    - basic-skill = basic_assembler.skill_cli:main
 
 requirements:
   host:
-    - python
+    - python >=3.10
+    - pip
+    - setuptools >=77
+    - wheel
   run:
-    - python
+    - python >=3.10
     - bowtie2
 
 test:
+  imports:
+    - basic_assembler
+    - basic_assembler.references
   commands:
-    - BASIC.py -h
-    - touch file.txt && BASIC.py -b $(which bowtie2) -SE file.txt -a && rm file.txt result.fasta
+    - basic-assemble --version
+    - BASIC.py --help
+    - basic-references --help
+    - basic-skill --print > /dev/null
+    - bowtie2 --version
 
 about:
-  home: http://ttic.uchicago.edu/~aakhan/BASIC/
-  license: MIT
-  summary: >
-    BASIC is a semi-de novo assembly method for assembling BCR and TCR genes 
-    from single cell RNA-seq data.
+  home: https://github.com/akds/BASIC
+  dev_url: https://github.com/akds/BASIC
+  license: "MIT"
+  license_file: "LICENSE"
+  summary: BCR and TCR assembly from single-cell RNA-seq
+
+extra:
+  notes: >-
+    IgBLAST and its germline databases are optional and installed separately.
