@@ -3,7 +3,7 @@ set -euxo pipefail
 
 mkdir -p "${PREFIX}/bin"
 
-install -m 755 "${SRC_DIR}/Treemmer.py" "${PREFIX}/bin/Treemmer.py"
+install -m 755 "${SRC_DIR}/Treemmer_v${PKG_VERSION}.py" "${PREFIX}/bin/Treemmer.py"
 
 # Wrapper that silences warnings (e.g. ete3 SyntaxWarnings on newer Python)
 cat > "${PREFIX}/bin/treemmer" << 'EOF'
