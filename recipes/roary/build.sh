@@ -5,7 +5,7 @@ rm t/Bio/Roary/External/CheckTools.t
 rm t/Bio/Roary/OrderGenes.t
 
 # Bio::Perl is imported but unused, and is not shipped by perl-bioperl >=1.7.8
-sed -i.bak '/^use Bio::Perl;$/d' lib/Bio/Roary.pm
+perl -i -ne 'print unless /^use Bio::Perl;$/' lib/Bio/Roary.pm
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -26,4 +26,7 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/*
+# Only touch roary's own scripts; $PREFIX/bin also holds files from other packages
+for f in bin/*; do
+    chmod u+rwx "$PREFIX/bin/$(basename "$f")"
+done
