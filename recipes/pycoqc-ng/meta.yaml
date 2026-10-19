@@ -1,0 +1,86 @@
+{% set name = "pycoqc-ng" %}
+{% set pypi_name = "pycoqc_ng" %}
+{% set version = "3.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # PEP 625 normalises the sdist filename to underscores, while the project
+  # name keeps its hyphen.
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ pypi_name }}-{{ version }}.tar.gz
+  sha256: deeeaecde1460f9be39759b7361eac318657f09bdcd78f38f2e0753be88f79e8
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - pycoQC = pycoQC.__main__:main_pycoQC
+    - Fast5_to_seq_summary = pycoQC.__main__:main_Fast5_to_seq_summary
+    - Fastq_to_seq_summary = pycoQC.__main__:main_Fastq_to_seq_summary
+    - Pod5_to_seq_summary = pycoQC.__main__:main_Pod5_to_seq_summary
+    - Bam_to_seq_summary = pycoQC.__main__:main_Bam_to_seq_summary
+    - Barcode_split = pycoQC.__main__:main_Barcode_split
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.9
+    - numpy >=1.24
+    - scipy >=1.10
+    - pandas >=2.0
+    - plotly >=5.16
+    - jinja2 >=3.1
+    - h5py >=3.10
+    - tqdm >=4.66
+    - pysam >=0.22
+    - python-dateutil >=2.8
+    - pod5 >=0.2.4
+
+test:
+  imports:
+    - pycoQC
+    - pycoQC.pycoQC
+    - pycoQC.pycoQC_parse
+    - pycoQC.pycoQC_plot
+    - pycoQC.pycoQC_report
+    - pycoQC.common
+    - pycoQC.Fast5_to_seq_summary
+    - pycoQC.Fastq_to_seq_summary
+    - pycoQC.Pod5_to_seq_summary
+    - pycoQC.Bam_to_seq_summary
+    - pycoQC.Barcode_split
+  commands:
+    - pycoQC --version
+    - pycoQC --help
+    - pycoQC --default_config > /dev/null
+    - Fast5_to_seq_summary --help
+    - Fastq_to_seq_summary --help
+    - Pod5_to_seq_summary --help
+    - Bam_to_seq_summary --help
+    - Barcode_split --help
+
+about:
+  home: https://github.com/duceppemo/pycoqc-ng
+  dev_url: https://github.com/duceppemo/pycoqc-ng
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Interactive QC metrics and plots for Oxford Nanopore sequencing data
+  description: |
+    pycoqc-ng is a maintained continuation of pycoQC. It computes metrics and
+    generates interactive QC plots from Oxford Nanopore sequencing runs,
+    reading the sequencing_summary.txt file produced by Albacore and Guppy as
+    well as FASTQ, unaligned BAM from Dorado, and POD5 input. Reports are
+    self-contained HTML, with an optional machine-readable JSON summary.
+
+extra:
+  recipe-maintainers:
+    - duceppemo
+  identifiers:
+    - doi:10.21105/joss.01236
