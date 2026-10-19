@@ -1,0 +1,85 @@
+{% set name = "bulk-rnaseq-pipeline" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vipin839/rnaseq_pipeline/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5f6e2fe165d49ab31b4d5c4b25f59c7abcfc6849876ae12d8ba2dc41605758bc
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - rnaseq-pipeline = rnaseq_pipeline.cli:main
+    - rnaseq_pipeline = rnaseq_pipeline.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - pyyaml >=5.4
+    # scientific runtime: the whole pipeline in one environment
+    - fastqc >=0.12,<0.13
+    - multiqc >=1.21
+    - fastp >=0.23
+    - hisat2 >=2.2.1
+    - samtools >=1.17
+    - stringtie >=2.2
+    - subread >=2.0.3
+    - sra-tools >=3.0
+    - rseqc >=5.0
+    - pigz
+    - curl
+    - r-base >=4.3
+    - bioconductor-deseq2
+    - bioconductor-apeglm
+    - bioconductor-enhancedvolcano
+    - r-ggplot2
+    - r-ggrepel
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-data.table
+    - r-dplyr
+    - r-tibble
+    - r-readr
+    - r-jsonlite
+
+test:
+  imports:
+    - rnaseq_pipeline
+    - rnaseq_pipeline.cli
+  commands:
+    - rnaseq-pipeline --version
+    - rnaseq_pipeline --help
+    - test -f "$(rnaseq-pipeline --runtime-env tools)"
+    # functional health check: a tiny job through HISAT2, samtools, featureCounts, StringTie, fastp, FastQC
+    # and a DESeq2 dataset in R. Exits non-zero only on FAIL (network/disk warnings are allowed).
+    - HOME="$(mktemp -d)" rnaseq-pipeline --check
+
+about:
+  home: https://github.com/vipin839/rnaseq_pipeline
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Interactive, validated and resumable bulk RNA-seq pipeline (HISAT2, featureCounts, StringTie2, DESeq2)
+  description: |
+    A terminal application that takes bulk RNA-seq reads (SRA, GEO, ENA or local FASTQ) to differential
+    expression results with DESeq2. Every stage validates its outputs independently, checkpoints make
+    interrupted runs resumable, scientific decisions (trimming, strandedness, experimental design) are always
+    confirmed by the user, and each analysis ends with an HTML report and a reproducibility manifest.
+    Single-cell RNA-seq is detected and refused.
+  doc_url: https://github.com/vipin839/rnaseq_pipeline/tree/main/docs
+  dev_url: https://github.com/vipin839/rnaseq_pipeline
+
+extra:
+  recipe-maintainers:
+    - vipin839
