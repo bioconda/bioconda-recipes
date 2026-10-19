@@ -1,21 +1,27 @@
 {% set package = "ucsc-autodtd" %}
 {% set program = "autoDtd" %}
 {% set version = "502" %}
-{% set sha256 = "38e29dbf7c1e6d49aaf358014960c5781fd59aa3b7b406dadc9557c98e895f22" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url:
-    - "https://hgdownload.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-    - "https://hgdownload-euro.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
-  patches:
-    - 0001-include.patch
-    - 0003-common.mk.patch
-    - 0004-straw.patch
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate). A tag archive
+  # carries no submodules, so htslib and its htscodecs come in at the commits the tag pins.
+  - url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{ version }}_base.tar.gz"
+    sha256: "11d48e83b6f40c60e9910fb8bafb8c808ae0c05ef0d5fb0cae08ce0ee581cf1a"
+    folder: kent
+    patches:
+      - 0001-include.patch
+      - 0003-common.mk.patch
+      - 0004-straw.patch
+  - url: "https://github.com/ucscGenomeBrowser/htslib/archive/d66d7fb2e57284afd7bd1ca7f24b26ec7637bab8.tar.gz"
+    sha256: "6d19da1aa98424b2b552b324dd2f2dc41b26325f3ab7e577972d48145e81567a"
+    folder: kent/src/submodules/htslib
+  - url: "https://github.com/samtools/htscodecs/archive/7dd27f4b2bfe0ffdce413337972b3ad68550c3bf.tar.gz"
+    sha256: "2f9d5c5eb87fb3fab17e188b1174e784a95d2eda9f70f35407e13283268c3e99"
+    folder: kent/src/submodules/htslib/htscodecs
 
 build:
   number: 0
@@ -32,9 +38,9 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
     - openssl
     - clangdev  # [osx]
-    - rsync  # [osx]
     - libiconv
     - bzip2
     - liblzma-devel
@@ -46,6 +52,7 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
 
 test:
   commands:

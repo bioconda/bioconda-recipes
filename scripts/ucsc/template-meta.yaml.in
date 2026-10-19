@@ -1,21 +1,27 @@
 {{% set package = "{package}" %}}
 {{% set program = "{program}" %}}
 {{% set version = "{version}" %}}
-{{% set sha256 = "{sha256}" %}}
 
 package:
   name: "{{{{ package }}}}"
   version: "{{{{ version }}}}"
 
 source:
-  url:
-    - "https://hgdownload.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{{{{ version }}}}.src.tgz"
-    - "https://hgdownload-euro.soe.ucsc.edu/admin/exe/userApps.archive/userApps.v{{{{ version }}}}.src.tgz"
-  sha256: "{{{{ sha256 }}}}"
-  patches:
-    - 0001-include.patch
-    - 0003-common.mk.patch
-    - 0004-straw.patch
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate). A tag archive
+  # carries no submodules, so htslib and its htscodecs come in at the commits the tag pins.
+  - url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{{{ version }}}}_base.tar.gz"
+    sha256: "{kent_sha256}"
+    folder: kent
+    patches:
+      - 0001-include.patch
+      - 0003-common.mk.patch
+      - 0004-straw.patch
+  - url: "https://github.com/ucscGenomeBrowser/htslib/archive/{htslib_commit}.tar.gz"
+    sha256: "{htslib_sha256}"
+    folder: kent/src/submodules/htslib
+  - url: "https://github.com/samtools/htscodecs/archive/{htscodecs_commit}.tar.gz"
+    sha256: "{htscodecs_sha256}"
+    folder: kent/src/submodules/htslib/htscodecs
 
 build:
   number: 0
@@ -32,9 +38,9 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
     - openssl
     - clangdev  # [osx]
-    - rsync  # [osx]
     - libiconv
     - bzip2
     - liblzma-devel
@@ -46,6 +52,7 @@ requirements:
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
 
 test:
   commands:

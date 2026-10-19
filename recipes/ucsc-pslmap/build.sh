@@ -8,6 +8,13 @@ export MACHTYPE=$(uname -m)
 # and "make libs" builds topLibs and hgLib in parallel, so hg/cgilib can ar into
 # lib/${MACHTYPE} before lib/makefile has created it.
 mkdir -p "kent/src/lib/${MACHTYPE}" "kent/src/parasol/lib/${MACHTYPE}"
+# The GitHub archives carry no .git, so htslib's Makefile cannot generate htscodecs' version.h;
+# write the line it would have written, from htscodecs' own configure.ac.
+H=kent/src/submodules/htslib/htscodecs
+if [[ ! -e "${H}/htscodecs/version.h" ]]; then
+    v="$(awk '/^AC_INIT\(htscodecs,/ { match($0, /[0-9]+(\.[0-9]+)*/); print substr($0, RSTART, RLENGTH) }' "${H}/configure.ac")"
+    echo "#define HTSCODECS_VERSION_TEXT \"${v}\"" > "${H}/htscodecs/version.h"
+fi
 export INCLUDE_PATH="${PREFIX}/include"
 # htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
 # so ${PREFIX}/include only reaches its compiles via gcc's own CPATH.

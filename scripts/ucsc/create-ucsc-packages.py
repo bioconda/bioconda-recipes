@@ -57,6 +57,8 @@ def parse_footer(fn):
 ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
+SOURCES = {k: ucsc_config[k] for k in (
+    'kent_sha256', 'htslib_commit', 'htslib_sha256', 'htscodecs_commit', 'htscodecs_sha256')}
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
@@ -79,10 +81,21 @@ names = [i for i in t.getnames()
          if i.startswith('./userApps/kent/src')]
 
 
+# Programs built by another program's makefile (PROGS = ...), so no directory carries their name.
+SHARED_DIR = {
+    'hgLoadGap': 'hgGoldGapGl',
+    'hgLoadMafSummary': 'hgLoadMaf',
+    'hgWiggle': 'hgLoadWiggle',
+    'liftOverMerge': 'liftOver',
+    'wigEncode': 'hgLoadWiggle',
+}
+
+
 def program_subdir(program, names):
     """
     Identify the source directory for a program.
     """
+    program = SHARED_DIR.get(program, program)
     hits = [i for i in names if program in i and t.getmember(i).isdir()]
     if len(hits) == 0:
         return
@@ -200,6 +213,7 @@ UNDOCUMENTED = {
     'endsInLf': 'Check that last letter in files is end of line',
     'faToVcf': 'Extract VCF from a multi-sequence FASTA alignment.',
     'hgGoldGapGl': 'Put chromosome .agp and .gl files into browser database.',
+    'hgLoadGap': 'Load gap table from AGP-style file containing only gaps',
     'hgvsToVcf': 'Convert HGVS terms to VCF tab-separated output',
     'matrixClusterColumns': 'Group the columns of a matrix into clusters, and output a matrix with the same number of rows and generally much fewer columns. Combines columns by taking mean.',
     'matrixMarketToTsv': 'Convert matrix file from Matrix Market sparse matrix format to tab-separated-values.',
@@ -376,6 +390,7 @@ for block in all_programs():
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
+                **SOURCES,
                 linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n    - osx-arm64\n',
             )
         )
