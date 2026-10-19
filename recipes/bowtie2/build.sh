@@ -11,11 +11,27 @@ export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak 's|3.0.9|3.2.1|' Makefile
 sed -i.bak 's|-lpthread|-pthread|' Makefile
-sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
 sed -i.bak 's|-O2|-O3|' Makefile
-rm -rf *.bak
 
-LDFLAGS=""
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8-a|' Makefile
+	;;
+    arm64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a|' Makefile
+	;;
+    x86_64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
+	;;
+esac
+rm -f *.bak
+
+if [[ "$(uname -s)" == Darwin ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+else
+	LDFLAGS=""
+fi
+
 make WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1 \
 	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPP="${CXX}" CC="${CC}" \
 	CFLAGS="${CFLAGS}" LDLIBS="-L${PREFIX}/lib -lz -lzstd -pthread"

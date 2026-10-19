@@ -2,42 +2,55 @@
 {% set version = "0.2" %}
 
 package:
-  name: {{ name|lower}}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/johnlees/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: ba0d9ef0db8c634755d194d901db3c3f5481d0fd66005ed273526d7c9a0838e4
+  url: https://github.com/splatlab/mantis/archive/0fb7dbb60e4a38aa21da7c85f98565786af5fe62.tar.gz
+  sha256: f18372be5e7aa84afb3bb595221b64acea025f97f33698bb490047cb2e7b2036
   patches:
-    - 0001-Static-libc.patch
+    #- 0001-Static-libc.patch
+    - 0001-CXX.patch
 
 build:
   number: 4
-  skip: True #  [osx]
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake>=3.9
-    - wget
+    - cmake >=3.9
+    - pkg-config
   host:
+    - openssl
+    - sdsl-lite
     - zlib
   run:
-    - zlib
+    - openssl
+    - sdsl-lite
 
 test:
   commands:
-    - mantis
+    - mantis --version
 
 about:
-   home: https://github.com/splatlab/mantis
-   license: BSD-3-Clause
+   home: "https://github.com/splatlab/mantis"
+   license: "BSD-3-Clause"
    license_family: BSD
    license_file: LICENSE
-   summary: 'Mantis: A Fast, Small, and Exact Large-Scale Sequence-Search Index'
+   summary: "Mantis: A Fast, Small, and Exact Large-Scale Sequence-Search Index."
+   dev_url: "https://github.com/splatlab/mantis"
 
 extra:
-   identifiers:
-     - doi:10.1016/j.cels.2018.05.021
+  identifiers:
+    - doi:10.1016/j.cels.2018.05.021
+    - biotools:mantis_index
+  #additional-platforms:
+    # gqf.c: Error: unknown mnemonic `popcnt' -- `popcnt x0,x0'
+    #- linux-aarch64
+    # missing sdsl-lite
+    #- osx-arm64

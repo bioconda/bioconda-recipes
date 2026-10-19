@@ -15,10 +15,6 @@ else
 	export CFLAGS="${CFLAGS} -O3 -Wno-unused-command-line-argument -L${PREFIX}/lib -lrt"
 fi
 
-case $(uname -m) in
-	arm64|aarch64) cp -rfv ${RECIPE_DIR}/sse2neon.h ${SRC_DIR}/lib/aln/ ;;
-esac
-
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" -DCMAKE_INCLUDE_PATH="${PREFIX}/include" \

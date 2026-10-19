@@ -1,0 +1,82 @@
+{% set name = "varseek" %}
+{% set version = "0.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a3bfd8935c5b932f2047f883bf266a34ed50e68d862019540e6efa4c2c52e153
+
+build:
+  number: 0
+  # Upper bound: numpy is capped below 2.0 upstream and numpy 1.26.x has no
+  # py>=3.13 build, so the test environment cannot be solved there. Drop that
+  # cap in varseek's pyproject.toml and the upper bound can be lifted.
+  # Lower bound: python 3.9 is EOL and htslib's run_export pin conflicts with
+  # the zlib that the py39 test environment resolves.
+  skip: True  # [py < 310 or py > 312]
+  entry_points:
+    - vk = varseek.main:main
+    - varseek = varseek.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools >=64
+    - wheel
+    - htslib
+    - zlib
+  run:
+    - python
+    - numpy >=1.26.4,<2.0.0
+    - pandas >=1.5.3,<3
+    - matplotlib-base >=3.9.0
+    - tqdm >=4.66.4
+    - anndata >=0.8.0
+    - kb-python >=0.29.3
+    - gget >=0.30.0
+    - scipy >=1.13.1
+    - pyfastx >=2.1.0
+    - pysam >=0.22.1
+    - pyarrow >=19.0.1
+    - pydantic >=2.0.0
+
+test:
+  imports:
+    - varseek
+    - varseek.utils
+  commands:
+    - vk --help
+    - varseek --help
+    - vk --version
+    - bam2vcf --help
+    - python -c "from varseek.utils.native import native_available; assert native_available('bam2vcf')"
+  # pip check is omitted deliberately: pyseq-align (pulled in transitively via
+  # kb-python -> ngs-tools) ships install_requires=['cython'] in its wheel metadata,
+  # so pip check fails in any environment containing it. Restore this once
+  # pyseq-align drops that bogus runtime dependency.
+
+about:
+  home: https://github.com/pachterlab/varseek
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: Efficient k-mer-based variant screening of RNA-seq and DNA-seq data.
+  description: |
+    varseek screens RNA-seq and DNA-seq data for known variants by building a
+    variant-aware k-mer reference and pseudoaligning reads against it, avoiding
+    a full alignment to the genome. It provides the vk build, ref, fastqpp,
+    count, clean, denovo and summarize subcommands.
+  dev_url: https://github.com/pachterlab/varseek
+
+extra:
+  recipe-maintainers:
+    - josephrich98

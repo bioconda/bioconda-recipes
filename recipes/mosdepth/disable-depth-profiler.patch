@@ -1,0 +1,27 @@
+--- d4binding/Cargo.toml
++++ d4binding/Cargo.toml
+@@ -7,7 +7,7 @@
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+ [dependencies]
+-d4 = { path = "../d4"}
++d4 = { path = "../d4", default-features = false, features = ["task", "writer", "http_reader"] }
+ d4-framefile = { path = "../d4-framefile"}
+ rayon = "1.3.0"
+
+--- d4/src/d4file/writer.rs
++++ d4/src/d4file/writer.rs
+@@ -1,4 +1,5 @@
+ use d4_framefile::Directory;
++#[cfg(feature = "depth_profiler")]
+ use d4_hts::BamFile;
+ use std::fs::{File, OpenOptions};
+ use std::io::{Result, Write};
+@@ -109,6 +110,7 @@
+     }
+
+     /// Load the chromosome information from a input BAM file
++    #[cfg(feature = "depth_profiler")]
+     pub fn load_chrom_info_from_bam<P: AsRef<Path>>(&mut self, path: P) -> Result<&mut Self> {
+         let bam_file = BamFile::open(path)
+             .map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "Bam Read error"))?;

@@ -1,0 +1,53 @@
+{% set version = "0.3.1" %}
+
+package:
+  name: stampede
+  version: {{ version }}
+
+source:
+  url: https://github.com/mhlangalab/stampede/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 4d3417e57c7ac28e6239f53abf3f5fc6f17b3d9155577c33a21b4b22b5bb1069
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage("stampede", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - hatchling >=1.5.0
+  run:
+    - python >=3.12
+    - adjustText
+    - anndata
+    - matplotlib-base
+    - natsort
+    - numpy
+    - pandas <3      # anndata 0.12 cannot handle string columns
+    - python-igraph  # sc.tl.leiden
+    - scanpy
+    - scikit-learn
+    - scipy
+    - seaborn
+    - statsmodels
+
+test:
+  imports:
+    - stampede
+
+about:
+  home: https://github.com/mhlangalab/stampede
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: 'Process & analyse STAMP data with ease!'
+  doc_url: https://mhlangalab.github.io/stampede/index.html
+
+extra:
+  recipe-maintainers:
+    - nvelthuijs
+    - siebrenf

@@ -9,6 +9,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	export RUSTFLAGS="-C link-arg=-L${PREFIX}/lib"
 fi
 
+export FOLDDISCO_BUILD_VERSION="${PKG_VERSION}"
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust

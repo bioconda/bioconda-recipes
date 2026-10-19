@@ -1,0 +1,50 @@
+{% set name = "conga" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/asylvz/CONGA/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9535c62a1be8d8936aa5124c840084d83d638a9ac249fabcd1dbcd901252d7c4
+
+build:
+  number: 0
+  #skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+
+test:
+  commands:
+    - conga --version
+
+about:
+  home: "https://github.com/asylvz/CONGA"
+  summary: "Copy number variation genotyping in ancient genomes and low-coverage sequencing data."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://github.com/asylvz/CONGA"
+  dev_url: "https://github.com/asylvz/CONGA"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1371/journal.pcbi.1010788
+  recipe-maintainers:
+    - asylvz
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -14,16 +14,7 @@ fi
 
 hictk --version
 
-# Extract test dataset URL and checksum
-url="$(grep -F 'DOWNLOAD' 'cmake/FetchTestDataset.cmake' | sed -E 's/.*DOWNLOAD[[:space:]]+//')"
-checksum="$(grep -F 'EXPECTED_HASH' 'cmake/FetchTestDataset.cmake' | sed 's/.*SHA256=//')"
-
-# Download and extract test datasets
-curl -L "${url}" -o hictk_test_dataset.tar.zst
-echo "$checksum  hictk_test_dataset.tar.zst" > checksum.sha256
-shasum -c checksum.sha256
-
-zstdcat hictk_test_dataset.tar.zst | tar -xf -
+"${RECIPE_DIR}/download_test_dataset.sh"
 
 # Try to install the test suite
 if ! pip install test/integration --only-binary=hictkpy; then
