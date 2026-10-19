@@ -1,0 +1,70 @@
+{% set name = "immunebuilder" %}
+{% set version = "1.2" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 18562dcabc3733e0ce47a9782e73cc0a7f1a876f266e73b5d59872c64374586d
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - ABodyBuilder2 = ImmuneBuilder.ABodyBuilder2:command_line_interface
+    - TCRBuilder2 = ImmuneBuilder.TCRBuilder2:command_line_interface
+    - NanoBodyBuilder2 = ImmuneBuilder.NanoBodyBuilder2:command_line_interface
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - numpy
+    - scipy >=1.6
+    - einops >=0.3
+    - pytorch >=1.8
+    - requests
+    # Imported by ImmuneBuilder, but not declared in its `setup.py`.
+    - anarci
+    - openmm
+    - pdbfixer
+
+test:
+  imports:
+    - ImmuneBuilder
+  commands:
+    - pip check
+    - ABodyBuilder2 --help
+    - NanoBodyBuilder2 --help
+    - TCRBuilder2 --help
+  requires:
+    - python {{ python_min }}
+    - pip
+
+about:
+  home: https://github.com/oxpig/ImmuneBuilder
+  summary: Deep-learning models for predicting the structures of immune proteins
+  description: |
+    ImmuneBuilder predicts the structures of antibodies (ABodyBuilder2),
+    nanobodies (NanoBodyBuilder2) and T-cell receptors (TCRBuilder2).  The
+    trained model weights are downloaded from Zenodo on first use.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: https://github.com/oxpig/ImmuneBuilder
+
+extra:
+  identifiers:
+    - doi:10.1038/s42003-023-04927-7
+  recipe-maintainers:
+    - benjaminhwilliams
+    - chris-r-taylor
