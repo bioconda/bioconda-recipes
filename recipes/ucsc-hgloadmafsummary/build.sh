@@ -45,11 +45,8 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
 
-if [[ "$(uname -m)" == "arm64" ]]; then
-    rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/hgLoadMafSummary .
-    install -v -m 755 hgLoadMafSummary "${PREFIX}/bin"
-else
-    (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    (cd kent/src/hg/makeDb/hgLoadMaf && make CC="${CC}" -j"${CPU_COUNT}")
-    install -v -m 755 bin/hgLoadMafSummary "${PREFIX}/bin"
-fi
+# Built from source on every platform, osx-arm64 included: UCSC's prebuilt osx-arm64 binaries
+# have shipped with invalid code signatures (bioconda/bioconda-recipes#70167).
+(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+(cd kent/src/hg/makeDb/hgLoadMaf && make CC="${CC}" -j"${CPU_COUNT}")
+install -v -m 755 bin/hgLoadMafSummary "${PREFIX}/bin"
