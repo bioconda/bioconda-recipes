@@ -1,0 +1,52 @@
+{% set name = "logan-walker" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # The walker lives in walker/ of the disassembler repository, with its own tag series.
+  url: https://github.com/nekrut/disassembler/archive/refs/tags/logan-walker-v{{ version }}.tar.gz
+  sha256: 2b5986cc380a4c893c591f769de5b6353a8c51a41d9f20b6c3f63b2bbc351438
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    # ring (TLS) and zstd-sys (bundled libzstd) compile C.
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    # 1.0.19 and 1.0.20 clip the last query base, and 1.0.18 cannot be installed with
+    # Python 3.11+. See docs/issue_graphaligner_end_clipping.md in the source.
+    - graphaligner ==1.0.17b
+
+test:
+  commands:
+    - logan-walker --version | grep -q "logan-walker {{ version }}"
+    - GraphAligner --version 2>&1 | grep -q "1.0.17b"
+
+about:
+  home: https://github.com/nekrut/disassembler
+  summary: Reconstruct coding haplotypes from Logan unitig graphs by anchoring a reference CDS and walking the best GraphAligner path.
+  description: |
+    Streams an SRA run's Logan unitigs, anchors a reference coding sequence with shared k-mers,
+    extracts the local de Bruijn subgraph, aligns the reference to it with GraphAligner and
+    walks the best path. Reports one primary haplotype per accession plus intra-host
+    alternative alleles (FASTA, VCF and a long SNV table). Part of the disassembler suite.
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - walker/THIRDPARTY.yml
+  dev_url: https://github.com/nekrut/disassembler
+
+extra:
+  recipe-maintainers:
+    - as042
