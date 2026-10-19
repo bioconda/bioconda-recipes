@@ -1,45 +1,66 @@
 {% set name = "magcluster" %}
-{% set version = "0.2.5" %}
-
+{% set version = "1.0.0" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: bf6c566d14595dbc95cd0a40d3a526bc9a9b45ca1b7e033e6b17b62063fb9972
-
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 63e34f2c6257f5e673152a41d1246d94e9f41cbafc2129d727375031be0f7439
 
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - magcluster = magcluster.cli:app
+  run_exports:
+    - {{ pin_subpackage('magcluster', max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.6
-    - prokka =1.13.4
-    - blast <=2.9
+    - python >=3.10
     - pip
-
+    - setuptools >=61.0
   run:
-    - python >=3.6
-    - clinker-py
-    - pandas
-    - prokka =1.13.4
-    - blast <=2.9
-    
+    - python >=3.10
+    - biopython >=1.80
+    - pyrodigal >=3.0.0
+    - pyhmmer >=0.10.0
+    - pyfamsa >=0.6.0
+    - pandas >=2.0.0
+    - typer >=0.9.0
+    - rich >=13.0.0
+    - pyyaml >=6.0
+    - pygenomeviz >=1.0.0
+    - clinker-py >=0.0.30
+
 test:
+  imports:
+    - magcluster
+    - magcluster.core
+    - magcluster.viz
+    - magcluster.utils
   commands:
-    - magcluster -h
+    - magcluster --help
+    - magcluster run --help
+    - magcluster db --help
 
 about:
-  home: "https://github.com/runjiaji/magcluster"
-  license: "GPL-2.0-or-later"
-  license_family: GPL2
-  summary: "Magnetosome gene cluster identification, annotation and visualization tool"
+  home: "https://github.com/RunJiaJi/MagCluster"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE.txt
+  summary: "Fast, accurate, Prokka-free Magnetosome Gene Cluster (MGC) identification, classification, and visualization"
+  description: |
+    MagCluster is a specialized bioinformatics toolkit for identifying,
+    annotating, and visualizing Magnetosome Gene Clusters (MGCs) in prokaryotic genomes.
+    Version 1.0 removes external Prokka and BLAST dependencies, utilizing native
+    Pyrodigal and PyHMMER with 92 curated HMM profiles and multi-locus synteny slicing.
+  doc_url: "https://github.com/RunJiaJi/MagCluster#readme"
+  dev_url: "https://github.com/RunJiaJi/MagCluster"
 
-# extra:
-#   identifiers:
-#     - 
+extra:
+  recipe-maintainers:
+    - RunJiaJi
