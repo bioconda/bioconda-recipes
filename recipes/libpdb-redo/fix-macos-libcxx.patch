@@ -1,0 +1,55 @@
+--- a/src/BlobFinder.cpp
++++ b/src/BlobFinder.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ #include <pdb-redo/Restraints.hpp>
+ #include <ranges>
++#include <stack>
+ #include <stdexcept>
+
+ namespace pdb_redo
+--- a/src/ShapeFitter.cpp
++++ b/src/ShapeFitter.cpp
+@@ -44,6 +44,8 @@
+ #include <gsl/gsl_multimin.h>
+ #include <gsl/gsl_vector_double.h>
+ #include <memory>
++#include <numbers>
++#include <stack>
+
+ namespace pdb_redo
+ {
+--- a/include/pdb-redo/DistanceMap.hpp
++++ b/include/pdb-redo/DistanceMap.hpp
+@@ -26,6 +26,7 @@
+
+ #pragma once
+
++#include <bit>
+ #include <cif++/cif++.hpp>
+ #include <cif++/symmetry.hpp>
+ #include <cstdint>
+--- a/include/pdb-redo/BondMap.hpp
++++ b/include/pdb-redo/BondMap.hpp
+@@ -188,8 +188,9 @@
+ 	auto begin() const { return iterator(this, bond.begin()); }
+ 	auto end() const { return iterator(this, bond.end()); }
+
+-	auto cbegin() const { return std::make_const_iterator(iterator(this, bond.begin())); }
+-	auto cend() const { return std::make_const_iterator(iterator(this, bond.end())); }
++	// libc++ lacks make_const_iterator; these iterators do not expose mutable bonds.
++	auto cbegin() const { return begin(); }
++	auto cend() const { return end(); }
+
+ 	auto rbegin() const { return std::make_reverse_iterator(iterator(this, bond.end())); }
+ 	auto rend() const { return std::make_reverse_iterator(iterator(this, bond.begin())); }
+--- a/src/Ramachandran.cpp
++++ b/src/Ramachandran.cpp
+@@ -34,6 +34,7 @@
+
+ #include <map>
+ #include <mutex>
++#include <numbers>
+
+ #include <clipper/clipper.h>
+
