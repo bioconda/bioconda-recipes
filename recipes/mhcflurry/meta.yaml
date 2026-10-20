@@ -1,5 +1,5 @@
 {% set name = "mhcflurry" %}
-{% set version = "2.3.14" %}
+{% set version = "2.3.16" %}
 
 package:
   name: {{ name }}
@@ -7,24 +7,26 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 0583c539b8ef456794a336e0dadb83c853f6f3b1e98807065c7a80e6d12e10d1
+  sha256: 6782bd3aa8e3ab2cc6922fe131e572894c33936e088d972efb9e19a9d9bf53fe
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - mhcflurry-downloads = mhcflurry.downloads_command:run
-    - mhcflurry-predict = mhcflurry.predict_command:run
-    - mhcflurry-predict-scan = mhcflurry.predict_scan_command:run
-    - mhcflurry-class1-train-allele-specific-models = mhcflurry.train_allele_specific_models_command:run
-    - mhcflurry-class1-train-pan-allele-models = mhcflurry.train_pan_allele_models_command:run
-    - mhcflurry-class1-train-processing-models = mhcflurry.train_processing_models_command:run
-    - mhcflurry-class1-select-allele-specific-models = mhcflurry.select_allele_specific_models_command:run
-    - mhcflurry-class1-select-pan-allele-models = mhcflurry.select_pan_allele_models_command:run
-    - mhcflurry-class1-select-processing-models = mhcflurry.select_processing_models_command:run
-    - mhcflurry-calibrate-percentile-ranks = mhcflurry.calibrate_percentile_ranks_command:run
-    - mhcflurry-class1-train-presentation-models = mhcflurry.train_presentation_models_command:run
-    - mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
+    - mhcflurry = mhcflurry.cli.main:main
+    - mhcflurry-downloads = mhcflurry.cli.downloads_command:run
+    - mhcflurry-pseudosequences = mhcflurry.pseudosequences:main
+    - mhcflurry-predict = mhcflurry.cli.predict_command:run
+    - mhcflurry-predict-scan = mhcflurry.cli.predict_scan_command:run
+    - mhcflurry-class1-train-allele-specific-models = mhcflurry.cli.train_allele_specific_models_command:run
+    - mhcflurry-class1-train-pan-allele-models = mhcflurry.cli.train_pan_allele_models_command:run
+    - mhcflurry-class1-train-processing-models = mhcflurry.cli.train_processing_models_command:run
+    - mhcflurry-class1-select-allele-specific-models = mhcflurry.cli.select_allele_specific_models_command:run
+    - mhcflurry-class1-select-pan-allele-models = mhcflurry.cli.select_pan_allele_models_command:run
+    - mhcflurry-class1-select-processing-models = mhcflurry.cli.select_processing_models_command:run
+    - mhcflurry-calibrate-percentile-ranks = mhcflurry.cli.calibrate_percentile_ranks_command:run
+    - mhcflurry-class1-train-presentation-models = mhcflurry.cli.train_presentation_models_command:run
+    - _mhcflurry-cluster-worker-entry-point = mhcflurry.cluster_parallelism:worker_entry_point
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -39,9 +41,11 @@ requirements:
     - pandas >=2.0
     - appdirs
     - scikit-learn
-    - mhcgnomes >=3.0.1
+    - mhcgnomes >=3.33.6
     - numpy >=1.22.4
     - pytorch >=2.0.0
+    - threadpoolctl
+    - matplotlib
     - pyyaml
     - tqdm
 
@@ -49,7 +53,9 @@ test:
   imports:
     - mhcflurry
   commands:
+    - mhcflurry --help
     - mhcflurry-downloads --help
+    - mhcflurry-pseudosequences --help
     - mhcflurry-predict --help
     - mhcflurry-predict-scan --help
     - mhcflurry-class1-train-allele-specific-models --help
@@ -60,7 +66,7 @@ test:
     - mhcflurry-class1-select-processing-models --help
     - mhcflurry-calibrate-percentile-ranks --help
     - mhcflurry-class1-train-presentation-models --help
-    - mhcflurry-cluster-worker-entry-point --help
+    - _mhcflurry-cluster-worker-entry-point --help
 
 about:
   home: "https://github.com/openvax/mhcflurry"
