@@ -1,0 +1,61 @@
+{% set name = "pydivsufsort" %}
+{% set version = "0.0.20" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 685a5791fae5e200ce8b7a4e5d515b6153ffde7175331bd0df81a421108ad4df
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+    - make
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+    - cython
+    - numpy
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - pydivsufsort
+  source_files:
+    - tests/test_interface.py
+  requires:
+    - pytest
+  commands:
+    - pytest -v tests/test_interface.py
+
+about:
+  home: https://github.com/louisabraham/pydivsufsort
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Python bindings to libdivsufsort (suffix arrays, BWT) and other string algorithms
+  dev_url: https://github.com/louisabraham/pydivsufsort
+
+extra:
+  recipe-maintainers:
+    - louisabraham
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
