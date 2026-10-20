@@ -1,0 +1,48 @@
+{% set name = "atol-data-broker" %}
+{% set version = "0.1.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AToL-Bioinformatics/data-broker/archive/refs/tags/{{ version }}.tar.gz
+  sha256: d12473892f75bc0f0583dc4f50862538870fa9a3c1c994a54c8e5ac97a3e917d
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  entry_points:
+    - broker = broker.cli:app
+  run_exports:
+    - {{ pin_subpackage('atol-data-broker', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.13,<3.15
+    - setuptools-scm
+  run:
+    - httpx >=0.27.0
+    - lxml >=5.2.0
+    - pydantic-settings >=2.3.0
+    - pydantic >=2.7.0
+    - python >=3.13,<3.15
+    - rich >=13.7.0
+    - tenacity >=8.3.0
+    - typer >=0.12.0
+
+test:
+  commands:
+    - "broker --help | grep 'Usage: broker'"
+
+about:
+  home: "https://github.com/AToL-Bioinformatics/data-broker"
+  license: "MIT"
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Submits metadata to ENA on behalf of Canopy."
+  dev_url: "https://github.com/AToL-Bioinformatics/data-broker"

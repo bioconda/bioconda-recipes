@@ -1,5 +1,5 @@
 {% set name = "riker" %}
-{% set version = "0.2.0" %}
+{% set version = "0.5.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/fulcrumgenomics/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: e1270cbae29f63ad28ac475ced1710ca76c8c4cf6f62e2ac6cf0811a9fadb466
+  sha256: d2b7d622bd53aa90f382c021701bbd5a2189d710e89c92a3fe193d9517537f55
 
 build:
   number: 0
@@ -18,11 +18,15 @@ build:
   # rpaths -- everything is statically linked), so skip the pass entirely.
   binary_relocation: false
   script:
+    # bindgen (via hts-sys) needs libclang; point it at the build env's copy.
+    - export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
     - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
     # x86_64: build a single launcher that embeds x86-64-v1/v2/v4 variants
     # via cargo-multivers (configured by [package.metadata.multivers.x86_64]
-    # in Cargo.toml).
-    - cargo install --locked cargo-multivers                                       # [x86_64]
+    # in Cargo.toml). Floor of 0.12.0: that release carries the fexecve/memfd
+    # fix (ronnychevalier/cargo-multivers#30) without which the launcher exits
+    # 255 under Docker amd64 emulation -- see fulcrumgenomics/riker#32.
+    - cargo install --locked --version '>=0.12.0' cargo-multivers                  # [x86_64]
     - cargo multivers --profile dist --out-dir "${PREFIX}/bin"                     # [x86_64]
     # aarch64: a single portable ARMv8-A binary built with the dist profile.
     # Do NOT use cargo-multivers here -- on non-x86_64 it would expand to every
@@ -38,7 +42,15 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
-    - clangdev <22
+    # bindgen (via hts-sys) loads libclang, which finds clang's builtin headers
+    # (stddef.h, ...) under lib/clang/<its major version>, so keep it in step
+    # with the clang that ships them: the compiler on osx (conda_build_config.yaml)
+    # and the clang package on linux, where the compiler is gcc. Not 22: bindgen
+    # 0.69 then drops struct fields and rust-htslib fails to compile. Not
+    # clangdev: it pulls in llvmdev, whose lib/libLLVM.dylib can replace the one
+    # conda-forge's rustc loads, crashing rustc on macOS.
+    - libclang 21.*
+    - clang 21.*  # [linux]
     - cmake
     - make
 

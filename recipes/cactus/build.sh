@@ -12,38 +12,58 @@ make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DU
 make EXTRA_FLAGS="-O3 -Wall -Wno-unused-function -Wno-misleading-indentation -DUSE_SIMDE -DSIMDE_ENABLE_NATIVE_ALIASES -I${PREFIX}/include -L${PREFIX}/lib" avx2=1 -j"${CPU_COUNT}"
 cd ../../
 
+if [[ "$(uname -m)" == "aarch64" || "$(uname -m)" == "arm64" ]]; then
+	git clone https://github.com/DLTcollab/sse2neon.git
+	cp -f sse2neon/sse2neon.h submodules/abPOA/include/
+	sed -i.bak 's|#include <immintrin.h>|#include "sse2neon.h"|' submodules/abPOA/include/simd_instruction.h
+	rm -f submodules/abPOA/include/*.bak
+fi
+
 cd submodules/FASTGA
-make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
+sed -i.bak 's/-lm -lz/-lm -lz -pthread/g' Makefile
+sed -i.bak 's/-lpthread//g' Makefile
+rm -f *.bak
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
 cd submodules/FASTAN
-sed -i.bak -e 's/-lm -lz/-lm -lpthread -lz/g' Makefile
+sed -i.bak 's/-lm -lz/-lm -pthread -lz/g' Makefile
 rm -f *.bak
-make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}" FasTAN
 ln -f FasTAN "${PREFIX}/bin/"
 cd ../../
 
 cd submodules/alntools
-make CFLAGS="${CFLAGS} -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
+make CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" CC="${CC}" -j"${CPU_COUNT}"
 cd ../../
 
+sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/sonLib/externalTools/quicktree_1.1/Makefile
+rm -f submodules/sonLib/externalTools/quicktree_1.1/*.bak
+sed -i.bak 's/^CFLAGS  += -c -I/override CFLAGS += -c -I/' submodules/paffy/submodules/sonLib/externalTools/quicktree_1.1/Makefile
+rm -f submodules/paffy/submodules/sonLib/externalTools/quicktree_1.1/*.bak
+
 cd submodules/cPecan/externalTools/lastz-distrib-1.03.54/src
-export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include/libxml2"
+sed -i.bak 's/CFLAGS = -O3/override CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE ${VERSION_FLAGS}/g' Makefile
+rm -f *.bak
+export CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib -I${PREFIX}/include/libxml2"
 make CC="${CC}" -j"${CPU_COUNT}"
 cd ../../../../../
 
 sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
-rm -rf *.bak
+rm -f *.bak
 ${PYTHON} -m pip install ./submodules/sonLib . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+# the presence of lib/python*/site-packages/sonlib-*.dist-info/RECORD results in a false positive report of pypi
+# as the source of cactus. Remove it, though if they just used versions we wouldn't have to vendor it!
+rm -f $PREFIX/lib/python*/site-packages/sonlib-*.dist-info/RECORD
 
-make
-mv bin/* ${PREFIX}/bin
+export LDFLAGS="${LDFLAGS} -fopenmp"
+make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -fopenmp -L${PREFIX}/lib"
+install -v -m 0755 bin/* "${PREFIX}/bin"
 
 # cactus-gfa-tools is required but doesn't have tags. They just use exact commits in their scripts
 git clone https://github.com/ComparativeGenomicsToolkit/cactus-gfa-tools.git
 cd cactus-gfa-tools
 git checkout 1121e370880ee187ba2963f0e46e632e0e762cc5
 
-make -j"${CPU_COUNT}"
-
+make CC="${CC}" CFLAGS="${CFLAGS} -Wno-implicit-function-declaration -Wno-int-conversion -O3 -L${PREFIX}/lib" -j"${CPU_COUNT}"
 install -v -m 755 mzgaf2paf pafcoverage rgfa-split paf2lastz pafmask gaf2paf gaf2unstable gaffilter rgfa2paf paf2stable "${PREFIX}/bin"

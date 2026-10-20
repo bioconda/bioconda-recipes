@@ -31,7 +31,7 @@ ls -la $PREFIX/include/ || echo "Could not list include directory"
 echo "======== Setting environment variables ========"
 # Set environment variables to help find zlib and bzip2
 export CFLAGS="${CFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -D_LIBCPP_DISABLE_AVAILABILITY"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CMAKE_LIBRARY_PATH=$PREFIX/lib:$CMAKE_LIBRARY_PATH
 export CMAKE_INCLUDE_PATH=$PREFIX/include:$CMAKE_INCLUDE_PATH
