@@ -16,6 +16,5 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml \
     --previous THIRDPARTY.yml --check-previous
 
 # Build the eidolon binary from the workspace and install it into $PREFIX/bin.
-# Also install the deprecated `rneat` alias shim (warns + forwards to eidolon).
 # --locked uses the committed Cargo.lock for a reproducible build.
-cargo install --no-track --locked --bin eidolon --bin rneat --root "${PREFIX}" --path eidolon
+cargo install --no-track --locked --bin eidolon --root "${PREFIX}" --path eidolon
