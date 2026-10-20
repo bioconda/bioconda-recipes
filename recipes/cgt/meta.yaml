@@ -10,10 +10,12 @@ source:
   sha256: 3a459971ebc8c9f2ddcc05682250a85f15c97b2cafad45ab13cecfe5003db25d
 
 build:
-  number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  number: 1
+  script:
+    - "cargo-bundle-licenses --format yaml --output THIRDPARTY.yml"
+    - "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
   run_exports:
-    - {{ pin_subpackage("cgt", max_pin=None) }}
+    - {{ pin_subpackage("cgt", max_pin="x.x") }}
 
 requirements:
   build:
@@ -26,8 +28,15 @@ test:
     - cgt_bacpop -V
 
 about:
-   home: https://github.com/bacpop/cgt
-   license: Apache-2.0
-   license_family: APACHE
-   license_file: LICENSE.txt
-   summary: Calculate a core genome threshold (cgt) from metagenome data
+  home: "https://github.com/bacpop/cgt"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "Calculate a core genome threshold (cgt) from metagenome data."
+  dev_url: "https://github.com/bacpop/cgt"
+  doc_url: "https://github.com/bacpop/cgt/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
