@@ -1,0 +1,63 @@
+{% set name = "ldak" %}
+{% set version = "6.3" %}
+# Upstream has no tags or releases. This is the last commit on main whose
+# Source_Code and README describe LDAK 6.3, before the 2026-10-08 move to 7.x.
+{% set commit = "995e18753a0a9248244478b051edb25664574dd0" %}
+{% set sha256 = "cc4bf377813051d89ca05a0d2e9d95cbef679abeaf904c7db5c0fc2a816d1737" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dougspeed/LDAK/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # Weightings need upstream's bundled QSopt static library, which ships
+  # prebuilt for x86-64 Linux (libqsopt.linux.a) and x86-64 macOS only.
+  skip: True  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - libblas
+    - liblapack
+    - libgomp
+    - zlib
+    - zstd
+
+test:
+  commands:
+    - ldak 2>&1 | grep "LDAK - Software for obtaining Linkage Disequilibrium Adjusted Kinships"
+    - ldak 2>&1 | grep "Version {{ version.split('.')[0] }} "
+    - ldak --help 2>&1 | grep "Here is a list of main arguments"
+
+about:
+  home: https://dougspeed.com
+  # LDAK is GPL-3.0-or-later (LICENCE.txt, source headers). The linked
+  # libqsopt.linux.a is QSopt, which its authors provide "at no cost for
+  # research or education purposes" (https://www.math.uwaterloo.ca/~bico/qsopt/).
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENCE.txt
+  summary: Heritability estimation, association testing and polygenic prediction from genome-wide SNP data
+  description: |
+    LDAK estimates SNP heritability, heritability enrichments and genetic
+    correlations from individual-level data or summary statistics (SumHer),
+    performs mixed-model and gene-based association testing (LDAK-KVIK,
+    LDAK-GBAT), and constructs polygenic scores (MegaPRS). This build links
+    conda-forge BLAS/LAPACK rather than Intel MKL.
+  dev_url: https://github.com/dougspeed/LDAK
+  doc_url: https://dougspeed.com
+
+extra:
+  identifiers:
+    - doi:10.1016/j.ajhg.2012.10.010
+  recipe-maintainers:
+    - lyh970817
