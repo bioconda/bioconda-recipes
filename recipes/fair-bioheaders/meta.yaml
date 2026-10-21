@@ -1,0 +1,84 @@
+{% set name = "fair-bioheaders" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/fair_bioheaders-{{ version }}.tar.gz
+  sha256: a3193b242ad3f9b6e5c0cf415fb6ed14fa0802118c0b27f63623f75afa898084
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - bioheaders = bioheaders.cli:main
+    - fhr-convert = bioheaders.cli:convert_main
+    - fhr-validate = bioheaders.cli:validate_main
+    - fhr-fasta-strip = bioheaders.cli:fasta_strip_main
+    - fhr-fasta-combine = bioheaders.cli:fasta_combine_main
+    - fhr-fasta-validate = bioheaders.cli:fasta_validate_main
+    - fhr-gfa-strip = bioheaders.cli:gfa_strip_main
+    - fhr-gfa-combine = bioheaders.cli:gfa_combine_main
+    - fhr-gfa-validate = bioheaders.cli:gfa_validate_main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - pip
+    - poetry-core >=1.0.0
+  run:
+    - python >={{ python_min }}
+    - jsonschema-with-format >=4.21.1,<5
+    - pyyaml >=6.0.1,<7
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  imports:
+    - bioheaders
+    - bioheaders.cli
+    - fhr
+  commands:
+    - python -m pip check
+    - bioheaders --version
+    - bioheaders validate --help
+    - bioheaders assess --help
+    - fhr-convert --version
+    - fhr-validate --help
+    - fhr-fasta-combine --help
+    - fhr-fasta-strip --help
+    - fhr-fasta-validate --help
+    - fhr-gfa-combine --help
+    - fhr-gfa-strip --help
+    - fhr-gfa-validate --help
+
+about:
+  home: https://github.com/FAIR-bioHeaders/FAIR-bioHeaders-Tools
+  summary: Validate and convert FAIR-bioHeaders (FHR) metadata in JSON, YAML, JSON-LD, HTML microdata, FASTA and GFA.
+  description: |
+    FAIR-bioHeaders embed provenance metadata in reference genome FASTA and GFA
+    files (the FHR header). These tools convert between JSON, YAML, JSON-LD,
+    HTML microdata and embedded FASTA/GFA headers, validate metadata against
+    the schema, attach and strip headers, and verify the SHA-512/256 file
+    checksum. bioheaders assess checks how FAIR the header of a FASTA, GFF3,
+    VCF, GFA or other text file is.
+    Plain and gzip/bgzip-compressed files are streamed with bounded memory.
+    Formerly published on PyPI as fhr; the fhr-* commands are kept.
+  license: MPL-2.0
+  license_family: MOZILLA
+  license_file: LICENSE
+  doc_url: https://github.com/FAIR-bioHeaders/FHR-Specification
+  dev_url: https://github.com/FAIR-bioHeaders/FAIR-bioHeaders-Tools
+
+extra:
+  recipe-maintainers:
+    - adamjohnwright
+  identifiers:
+    - doi:10.1093/bib/bbae122
+    - doi:10.5281/zenodo.6762547
