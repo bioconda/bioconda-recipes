@@ -1,32 +1,35 @@
+{% set name = "basic" %}
+{% set version = "2.0.1" %}
+
 package:
-  name: basic
-  version: "2.0.1"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/akds/BASIC/releases/download/v2.0.1/basic_immune_assembler-2.0.1.tar.gz"
-  sha256: "7df4ba636530b3c0d546772557e7f4060d9d5b69b42dccf095219ea97a82d454"
+  url: https://github.com/akds/BASIC/releases/download/v{{ version }}/basic_immune_assembler-{{ version }}.tar.gz
+  sha256: 7df4ba636530b3c0d546772557e7f4060d9d5b69b42dccf095219ea97a82d454
 
 build:
   number: 0
   noarch: python
-  run_exports:
-    - {{ pin_subpackage('basic', max_pin='x') }}
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - basic-assemble = basic_assembler.cli:main
     - BASIC.py = basic_assembler.cli:main
     - basic-references = basic_assembler.reference_builder:main
     - basic-skill = basic_assembler.skill_cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.10
-    - pip
     - setuptools >=77
-    - wheel
+    - pip
   run:
     - python >=3.10
     - bowtie2
+    - igblast
 
 test:
   imports:
@@ -40,12 +43,17 @@ test:
     - bowtie2 --version
 
 about:
-  home: https://github.com/akds/BASIC
-  dev_url: https://github.com/akds/BASIC
-  license: "MIT"
-  license_file: "LICENSE"
-  summary: BCR and TCR assembly from single-cell RNA-seq
+  home: "https://github.com/akds/BASIC"
+  dev_url: "https://github.com/akds/BASIC"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "BCR and TCR assembly from single-cell RNA-seq."
+  doc_url: "https://people.cs.uchicago.edu/~aakhan/BASIC"
 
 extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btw631
+    - biotools:basic_assembly
   notes: >-
-    IgBLAST and its germline databases are optional and installed separately.
+    "IgBLAST and its germline databases are optional and installed separately."
