@@ -2,7 +2,7 @@
 {% set version = "5.0.6" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -14,27 +14,27 @@ build:
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
+    - python >=3.9
     - pip
-    - python >=3.5
-    - setuptools <81
+    - setuptools <82
   run:
+    - python >=3.9
+    - setuptools <82
+    - r-base  # Rscript is an undeclared runtime dependency of a number of the rseqc scripts: https://github.com/snakemake-workflows/rna-seq-star-deseq2/pull/91#issuecomment-3253583847
     - bx-python
     - numpy
     - pybigwig
     - pysam
-    - python >=3.5
     - logomaker
-    - r-base  # Rscript is an undeclared runtime dependency of a number of the rseqc scripts: https://github.com/snakemake-workflows/rna-seq-star-deseq2/pull/91#issuecomment-3253583847
 
 test:
   imports:
     - qcmodule
     - qcmodule.SAM
-    - psyco_full
   commands:
     #- read_distribution.py 2>&1 | grep Usage > /dev/null
     #- geneBody_coverage.py 2>&1 | grep Usage > /dev/null
@@ -42,9 +42,9 @@ test:
 
 about:
   home: "https://rseqc.sourceforge.net"
-  license: "GPL-2.0-or-later"
-  summary: 'QC package for RNA-seq data.'
-  license_family: GPL2
+  license: "GPL-3.0-or-later"
+  summary: "Quality control package for RNA-seq data."
+  license_family: GPL3
   license_file: LICENSE
   dev_url: "https://rseqc.sourceforge.net"
   doc_url: "https://rseqc.sourceforge.net/#usage-information"
