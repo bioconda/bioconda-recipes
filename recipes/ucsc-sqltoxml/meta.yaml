@@ -1,20 +1,27 @@
 {% set package = "ucsc-sqltoxml" %}
 {% set program = "sqlToXml" %}
-{% set version = "482" %}
-{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
+{% set version = "502" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
-  patches:
-    - 0001-include.patch
-    - 0002-include.linux.patch  # [linux]
-    - 0003-common.mk.patch
-    - 0004-straw.patch
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate). A tag archive
+  # carries no submodules, so htslib and its htscodecs come in at the commits the tag pins.
+  - url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{ version }}_base.tar.gz"
+    sha256: "11d48e83b6f40c60e9910fb8bafb8c808ae0c05ef0d5fb0cae08ce0ee581cf1a"
+    folder: kent
+    patches:
+      - 0001-include.patch
+      - 0003-common.mk.patch
+      - 0004-straw.patch
+  - url: "https://github.com/ucscGenomeBrowser/htslib/archive/d66d7fb2e57284afd7bd1ca7f24b26ec7637bab8.tar.gz"
+    sha256: "6d19da1aa98424b2b552b324dd2f2dc41b26325f3ab7e577972d48145e81567a"
+    folder: kent/src/submodules/htslib
+  - url: "https://github.com/samtools/htscodecs/archive/7dd27f4b2bfe0ffdce413337972b3ad68550c3bf.tar.gz"
+    sha256: "2f9d5c5eb87fb3fab17e188b1174e784a95d2eda9f70f35407e13283268c3e99"
+    folder: kent/src/submodules/htslib/htscodecs
 
 build:
   number: 0
@@ -25,23 +32,27 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
-    - libopenssl-static
+    - mariadb-connector-c  # [arm64]
+    - openssl
     - clangdev  # [osx]
-    - rsync  # [osx]
     - libiconv
     - bzip2
     - liblzma-devel
     - zlib
+    - libcurl
   run:
+    # gzip called via fork so runtime only
+    - gzip
     - libpng
     - libuuid
     - mysql-connector-c # [not arm64]
-    - libopenssl-static
+    - mariadb-connector-c  # [arm64]
 
 test:
   commands:
@@ -49,9 +60,9 @@ test:
     - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "https://hgdownload.cse.ucsc.edu/admin/exe"
+  home: "https://hgdownload.soe.ucsc.edu/admin/exe"
   license: "Varies; see https://genome.ucsc.edu/license"
-  summary: "Dump out all or part of a relational database to XML, guided."
+  summary: "dump out all or part of a relational database to XML, guided"
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
   doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 

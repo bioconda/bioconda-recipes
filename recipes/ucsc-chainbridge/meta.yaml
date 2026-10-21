@@ -1,46 +1,75 @@
 {% set package = "ucsc-chainbridge" %}
 {% set program = "chainBridge" %}
-{% set version = "377" %}
-{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+{% set version = "502" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
-  patches:
-    - "include.patch"
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate). A tag archive
+  # carries no submodules, so htslib and its htscodecs come in at the commits the tag pins.
+  - url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{ version }}_base.tar.gz"
+    sha256: "11d48e83b6f40c60e9910fb8bafb8c808ae0c05ef0d5fb0cae08ce0ee581cf1a"
+    folder: kent
+    patches:
+      - 0001-include.patch
+      - 0003-common.mk.patch
+      - 0004-straw.patch
+  - url: "https://github.com/ucscGenomeBrowser/htslib/archive/d66d7fb2e57284afd7bd1ca7f24b26ec7637bab8.tar.gz"
+    sha256: "6d19da1aa98424b2b552b324dd2f2dc41b26325f3ab7e577972d48145e81567a"
+    folder: kent/src/submodules/htslib
+  - url: "https://github.com/samtools/htscodecs/archive/7dd27f4b2bfe0ffdce413337972b3ad68550c3bf.tar.gz"
+    sha256: "2f9d5c5eb87fb3fab17e188b1174e784a95d2eda9f70f35407e13283268c3e99"
+    folder: kent/src/submodules/htslib/htscodecs
 
 build:
-  skip: True  # [osx]
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
   host:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
     - openssl
+    - clangdev  # [osx]
+    - libiconv
+    - bzip2
+    - liblzma-devel
     - zlib
-
+    - libcurl
   run:
+    # gzip called via fork so runtime only
+    - gzip
     - libpng
     - libuuid
-    - mysql-connector-c
-    - openssl
-    - zlib
+    - mysql-connector-c # [not arm64]
+    - mariadb-connector-c  # [arm64]
 
 test:
   commands:
-    # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    # just check for existence and exec bit, because the individual packages have no unified behavior
+    - test -x ${PREFIX}/bin/{{ program }}
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.soe.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "Attempt to extend alignments through double-sided gaps of similar size"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

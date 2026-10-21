@@ -3,9 +3,23 @@ set -xe
 
 mkdir -p "${PREFIX}/bin"
 export MACHTYPE="$(uname -m)"
+# kent ships lib/x86_64 and parasol/lib/x86_64 but no dir for any other arch,
+# and "make libs" builds topLibs and hgLib in parallel, so hg/cgilib can ar into
+# lib/${MACHTYPE} before lib/makefile has created it.
+mkdir -p "kent/src/lib/${MACHTYPE}" "kent/src/parasol/lib/${MACHTYPE}"
+# The GitHub archives carry no .git, so htslib's Makefile cannot generate htscodecs' version.h;
+# write the line it would have written, from htscodecs' own configure.ac.
+H=kent/src/submodules/htslib/htscodecs
+if [[ ! -e "${H}/htscodecs/version.h" ]]; then
+    v="$(awk '/^AC_INIT\(htscodecs,/ { match($0, /[0-9]+(\.[0-9]+)*/); print substr($0, RSTART, RLENGTH) }' "${H}/configure.ac")"
+    echo "#define HTSCODECS_VERSION_TEXT \"${v}\"" > "${H}/htscodecs/version.h"
+fi
 export BINDIR="$(pwd)/bin"
 mkdir -p "$(pwd)/bin"
 export INCLUDE_PATH="${PREFIX}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${PREFIX}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
@@ -31,11 +45,8 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
 fi
 
-if [[ "$(uname -m)" == "arm64" ]]; then
-    rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/catDir .
-    install -v -m 755 catDir "${PREFIX}/bin"
-else
-    (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    (cd kent/src/utils/catDir && make CC="${CC}" -j"${CPU_COUNT}")
-    install -v -m 755 bin/catDir "${PREFIX}/bin"
-fi
+# Built from source on every platform: UCSC's prebuilt osx-arm64 binaries have shipped with
+# invalid code signatures (bioconda/bioconda-recipes#70167).
+(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+(cd kent/src/utils/catDir && make CC="${CC}" -j"${CPU_COUNT}")
+install -v -m 755 bin/catDir "${PREFIX}/bin"

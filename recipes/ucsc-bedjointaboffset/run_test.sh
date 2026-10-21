@@ -1,2 +1,2 @@
 #!/bin/bash
-bedJoinTabOffset 2> /dev/null || [[ $? == 1 ]]
+bedJoinTabOffset 2> /dev/null || [[ "$?" == 255 ]]

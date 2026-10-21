@@ -1,41 +1,26 @@
 {% set package = "ucsc-expmatrixtobarchartbed" %}
 {% set program = "expMatrixToBarchartBed" %}
-{% set version = "469" %}
-{% set sha256 = "3f95b26ccca854c965c05773481c269f2a0e6fb1906ae8a7fe2437c6ad543963" %}
+{% set version = "502" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
-  patches:
-    - "include.patch"
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate)
+  url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{ version }}_base.tar.gz"
+  sha256: "11d48e83b6f40c60e9910fb8bafb8c808ae0c05ef0d5fb0cae08ce0ee581cf1a"
+  folder: kent
 
 build:
-  skip: True  # [osx]
-  number: 1
+  noarch: generic
+  number: 0
   run_exports:
     - {{ pin_subpackage(package, max_pin=None) }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-  host:
-    - libpng
-    - libuuid
-    - mysql-connector-c
-    - libopenssl-static
-    - zlib
-
   run:
-    - libpng
-    - libuuid
-    - mysql-connector-c
-    - libopenssl-static
-    - python
-    - zlib
+    - python >=3.10
 
 test:
   commands:
@@ -43,18 +28,16 @@ test:
 
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
+  home: "https://hgdownload.soe.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
   summary: "
 Generate a barChart bed6+5 file from a matrix, meta data, and
 coordinates.
 "
   dev_url: "https://github.com/ucscGenomeBrowser/kent"
-  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/master/README"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{ version }}_base/README"
 
 extra:
   identifiers:
     - biotools:UCSC_Genome_Browser_Utilities
     - doi:10.1093/bib/bbs038
-  additional-platforms:
-    - linux-aarch64

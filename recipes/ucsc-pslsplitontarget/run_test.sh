@@ -1,2 +1,2 @@
 #!/bin/bash
-pslSplitOnTarget 2>/dev/null || [[ "$?" == 255 ]]
+pslSplitOnTarget 2> /dev/null || [[ "$?" == 255 ]]

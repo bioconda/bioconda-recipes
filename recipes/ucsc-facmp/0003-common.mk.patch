@@ -1,5 +1,3 @@
-diff --git a/kent/src/inc/common.mk b/kent/src/inc/common.mk
-index 11447d2..82d3815 100644
 --- a/kent/src/inc/common.mk
 +++ b/kent/src/inc/common.mk
 @@ -1,7 +1,7 @@
@@ -9,10 +7,10 @@ index 11447d2..82d3815 100644
  # allow the somewhat more modern C syntax, e.g. 'for (int i=5; i<10, i++)'
 -CFLAGS += -std=c99
 +CFLAGS += -std=c11
- 
- # This is required to get the cgiLoader.mk compile target to work.  for some
- # reason, make's %.o: %.c overrides the rule below, cause the compiles to fail
-@@ -11,7 +11,7 @@ CFLAGS += -std=c99
+ # Several long-standing idioms in the tree alias memory through incompatible
+ # types (e.g. the dlList sentinel trick in lib/dlist.c, which overlays
+ # struct dlNode on struct dlList).  -fstrict-aliasing (on at -O2 and above, but
+@@ -17,7 +17,7 @@
  GNUMAKEFLAGS += -r
  
  # add additional library paths
@@ -21,16 +19,16 @@ index 11447d2..82d3815 100644
  
  # to build on sundance: CC=gcc -mcpu=v9 -m64
  ifeq (${COPT},)
-@@ -28,7 +28,7 @@ ifneq (,$(findstring -,$(MACHTYPE)))
+@@ -34,7 +34,7 @@
  endif
  
  HG_DEFS=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_GNU_SOURCE -DMACHTYPE_${MACHTYPE}
--HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/htslib
-+HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/htslib -I$(PREFIX)/include
+-HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/submodules/htslib
++HG_INC+=-I../inc -I../../inc -I../../../inc -I../../../../inc -I../../../../../inc -I$(kentSrc)/submodules/htslib -I$(PREFIX)/include
  
  # to check for Mac OSX Darwin specifics:
  UNAME_S := $(shell uname -s)
-@@ -40,7 +40,7 @@ HOSTNAME = $(shell uname -n)
+@@ -46,7 +46,7 @@
  # Semi-static builds, normally done in Docker
  #
  # use make SEMI_STATIC=yes to enable
@@ -39,7 +37,7 @@ index 11447d2..82d3815 100644
  # These use static libraries except for -ldl, -lm, and -lc
  # which must be dynamic.
  #
-@@ -63,8 +63,8 @@ else
+@@ -69,8 +69,8 @@
  endif
  
  ifeq (${ZLIB},)
@@ -50,7 +48,7 @@ index 11447d2..82d3815 100644
    else
      ZLIB=-lz
    endif
-@@ -72,23 +72,23 @@ endif
+@@ -78,23 +78,23 @@
  
  # for Darwin (Mac OSX), use static libs when they can be found
  ifeq ($(UNAME_S),Darwin)
@@ -80,7 +78,7 @@ index 11447d2..82d3815 100644
      endif
    endif
    ifneq ($(wildcard /opt/local/lib/libfreetype.a),)
-@@ -115,14 +115,14 @@ ifeq ($(UNAME_S),Darwin)
+@@ -121,14 +121,14 @@
        CRYPTOLIB = /opt/local/libexec/openssl3/lib/libcrypto.a
      endif
    endif
@@ -101,7 +99,7 @@ index 11447d2..82d3815 100644
      endif
    endif
  endif
-@@ -194,7 +194,7 @@ ifneq (${CONDA_BUILD},1)
+@@ -200,7 +200,7 @@
  endif
  
  ifeq (${PTHREADLIB},)
@@ -110,7 +108,7 @@ index 11447d2..82d3815 100644
  endif
  
  ifneq ($(UNAME_S),Darwin)
-@@ -284,8 +284,8 @@ ifneq ($(MAKECMDGOALS),clean)
+@@ -290,8 +290,8 @@
    endif
  
    ifeq (${MYSQLINC},)
@@ -121,7 +119,7 @@ index 11447d2..82d3815 100644
      endif
    endif
    ifeq (${MYSQLINC},)
-@@ -309,8 +309,8 @@ ifneq ($(MAKECMDGOALS),clean)
+@@ -315,8 +315,8 @@
      endif
    endif
    ifeq (${MYSQLLIBS},)
@@ -132,7 +130,7 @@ index 11447d2..82d3815 100644
      endif
    endif
      # last resort, hoping the compiler can find it in standard locations
-@@ -334,7 +334,7 @@ endif
+@@ -340,7 +340,7 @@
  
  ifeq (${BZ2LIB},)
    ifneq ($(wildcard /lib64/libbz2.a),)
@@ -141,3 +139,16 @@ index 11447d2..82d3815 100644
     else
      BZ2LIB=-lbz2
     endif
+@@ -379,7 +379,11 @@
+ else
+    L+=-lcurl -llzma
+    ifeq (${CONDA_BUILD},1)
+-       L+=${PREFIX}/lib/libssl.so ${PREFIX}/lib/libcrypto.so
++       ifeq ($(shell uname -s),Darwin)
++          L+=${PREFIX}/lib/libssl.dylib ${PREFIX}/lib/libcrypto.dylib
++       else
++          L+=${PREFIX}/lib/libssl.so ${PREFIX}/lib/libcrypto.so
++       endif
+    else
+        ifneq (${SSLLIB},)
+           L+=${SSLLIB}

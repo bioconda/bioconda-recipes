@@ -1,0 +1,40 @@
+{{% set package = "{package}" %}}
+{{% set program = "{program}" %}}
+{{% set version = "{version}" %}}
+
+package:
+  name: "{{{{ package }}}}"
+  version: "{{{{ version }}}}"
+
+source:
+  # GitHub, not hgdownload (the macOS builders reject hgdownload's certificate)
+  url: "https://github.com/ucscGenomeBrowser/kent/archive/refs/tags/v{{{{ version }}}}_base.tar.gz"
+  sha256: "{kent_sha256}"
+  folder: kent
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{{{ pin_subpackage(package, max_pin=None) }}}}
+
+requirements:
+  run:
+    - python >=3.10
+
+test:
+  commands:
+    - {{{{ program }}}} --help > /dev/null
+
+
+about:
+  home: "https://hgdownload.soe.ucsc.edu/admin/exe"
+  license: "Varies; see https://genome.ucsc.edu/license"
+  summary: "{summary}"
+  dev_url: "https://github.com/ucscGenomeBrowser/kent"
+  doc_url: "https://github.com/ucscGenomeBrowser/kent/blob/v{{{{ version }}}}_base/README"
+
+extra:
+  identifiers:
+    - biotools:UCSC_Genome_Browser_Utilities
+    - doi:10.1093/bib/bbs038

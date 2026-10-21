@@ -57,6 +57,8 @@ def parse_footer(fn):
 ucsc_config = yaml.safe_load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
 SHA256 = ucsc_config['sha256']
+SOURCES = {k: ucsc_config[k] for k in (
+    'kent_sha256', 'htslib_commit', 'htslib_sha256', 'htscodecs_commit', 'htscodecs_sha256')}
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
@@ -79,10 +81,21 @@ names = [i for i in t.getnames()
          if i.startswith('./userApps/kent/src')]
 
 
+# Programs built by another program's makefile (PROGS = ...), so no directory carries their name.
+SHARED_DIR = {
+    'hgLoadGap': 'hgGoldGapGl',
+    'hgLoadMafSummary': 'hgLoadMaf',
+    'hgWiggle': 'hgLoadWiggle',
+    'liftOverMerge': 'liftOver',
+    'wigEncode': 'hgLoadWiggle',
+}
+
+
 def program_subdir(program, names):
     """
     Identify the source directory for a program.
     """
+    program = SHARED_DIR.get(program, program)
     hits = [i for i in names if program in i and t.getmember(i).isdir()]
     if len(hits) == 0:
         return
@@ -189,6 +202,29 @@ manual_descriptions = {
         """),
 }
 
+# Programs UCSC ships in admin/exe but does not document in FOOTER, so they never
+# appear in the parsed program list. Their descriptions cannot be refreshed from
+# upstream and are maintained here.
+UNDOCUMENTED = {
+    'chainBridge': 'Attempt to extend alignments through double-sided gaps of similar size',
+    'chainCleaner': 'Remove chain-breaking alignments from chains that break nested chains.',
+    'chainScore': 'Score chains.',
+    'clusterGenes': 'Cluster genes from genePred tracks',
+    'endsInLf': 'Check that last letter in files is end of line',
+    'faToVcf': 'Extract VCF from a multi-sequence FASTA alignment.',
+    'hgGoldGapGl': 'Put chromosome .agp and .gl files into browser database.',
+    'hgLoadGap': 'Load gap table from AGP-style file containing only gaps',
+    'hgvsToVcf': 'Convert HGVS terms to VCF tab-separated output',
+    'matrixClusterColumns': 'Group the columns of a matrix into clusters, and output a matrix with the same number of rows and generally much fewer columns. Combines columns by taking mean.',
+    'matrixMarketToTsv': 'Convert matrix file from Matrix Market sparse matrix format to tab-separated-values.',
+    'matrixNormalize': "Normalize a matrix somehow - make it's columns or rows all sum to one or have vector length one.",
+    'matrixToBarChartBed': 'Attach a labeled expression matrix to a bed file joining.',
+    'pslProtToRnaCoords': 'Convert protein alignments to RNA coordinates.',
+    'pslSortAcc': 'Sort pslSort .psl output file by accession.',
+    'pslSpliceJunctions': 'Extract splice junctions from a PSL file.',
+    'pslSplitOnTarget': 'Split psl files into one per target.',
+}
+
 # programs listed in FOOTER that should not be considered a "ucsc utility"
 SKIP = [
     'sizeof',
@@ -200,12 +236,9 @@ SKIP = [
 
 # A list of programs which have problems to build on linux-aarch64
 SKIP_AARCH64 = [
-    'pslCDnaFilter', # https://github.com/bioconda/bioconda-recipes/pull/49297
-    'pslCheck',      # https://github.com/bioconda/bioconda-recipes/pull/50193
     'bedCoverage',
     'bedExtendRanges',
     'bedItemOverlapCount',
-    'bedToGenePred',
     'checkCoverageGaps',
     'checkTableCoords',
     'chromGraphFromBin',
@@ -213,23 +246,14 @@ SKIP_AARCH64 = [
     'dbTrash',
     'estOrient',
     'featureBits',
-    'gapToLift',
-    'genePredCheck',
     'genePredFilter',
     'genePredHisto',
     'genePredSingleCover',
-    'genePredToBed',
-    'genePredToBigGenePred',
-    'genePredToFakePsl',
-    'genePredToGtf',
     'genePredToMafFrames',
     'genePredToProt',
     'getRna',
     'getRnaPred',
-    'gff3ToGenePred',
-    'gtfToGenePred',
     'hgFindSpec',
-    'hgGcPercent',
     'hgLoadBed',
     'hgLoadChain',
     'hgLoadMaf',
@@ -242,7 +266,6 @@ SKIP_AARCH64 = [
     'hubCheck',
     'hubPublicCheck',
     'ldHgGene',
-    'liftOver',
     'liftUp',
     'mafCoverage',
     'mafFetch',
@@ -257,10 +280,8 @@ SKIP_AARCH64 = [
     'overlapSelect',
     'positionalTblCheck',
     'pslLiftSubrangeBlat',
-    'pslToBigPsl',
     'raSqlQuery',
     'tdbQuery',
-    'transMapPslToGenePred',
     'validateFiles'
 ]
 
@@ -283,24 +304,33 @@ custom_build_scripts = {
     'paraNodeStatus': 'template-build-parasol.sh',
     'parasol': 'template-build-parasol.sh',
     'paraTestJob': 'template-build-parasol.sh',
-    'bedJoinTabOffset': 'template-build-cp-short.sh',
     'webSync': 'template-build-cp-short.sh',
 }
 
 custom_tests = {
+    # faToVcf prints usage and exits 1 rather than kent's usual 255
+    'faToVcf': 'template-run_test-exit1.sh',
     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
-    'bedJoinTabOffset': 'template-run_test-exit1.sh',
     'webSync': 'template-run_test-exit1.sh',
 }
 
 custom_meta = {
-    'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
-    'bedJoinTabOffset': 'template-meta-with-python.yaml',
-    'webSync': 'template-meta-with-python.yaml',
+    'expMatrixToBarchartBed': 'template-meta-with-python.yaml.in',
+    'webSync': 'template-meta-with-python.yaml.in',
 }
 
 
-for block in parse_footer('FOOTER'):
+def all_programs():
+    """
+    Yield parse_footer() blocks for every program to build a recipe for: those
+    documented in FOOTER, followed by the undocumented ones.
+    """
+    yield from parse_footer('FOOTER')
+    for program, description in UNDOCUMENTED.items():
+        yield [program, (program, description)]
+
+
+for block in all_programs():
     sys.stderr.write('.')
     # If len == 2, then a description was parsed.
     if len(block) == 2:
@@ -351,7 +381,7 @@ for block in parse_footer('FOOTER'):
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         _template = open(
-            custom_meta.get(program, 'template-meta.yaml')
+            custom_meta.get(program, 'template-meta.yaml.in')
         ).read()
         fout.write(
             _template.format(
@@ -360,6 +390,7 @@ for block in parse_footer('FOOTER'):
                 summary=description,
                 version=VERSION,
                 sha256=SHA256,
+                **SOURCES,
                 linux_aarch64='' if program in SKIP_AARCH64 else 'additional-platforms:\n    - linux-aarch64\n    - osx-arm64\n',
             )
         )
@@ -386,6 +417,9 @@ for block in parse_footer('FOOTER'):
             )
         )
 
-    shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
+    # Recipes on a custom meta template carry their own patch list; don't
+    # drop the standard patches into them.
+    if program not in custom_meta:
+        shutil.copytree('patches', recipe_dir, dirs_exist_ok=True)
 
 sys.stderr.write('\n')

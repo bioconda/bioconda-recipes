@@ -1,19 +1,33 @@
 #!/bin/bash
+
 set -xe
 
 mkdir -p "${PREFIX}/bin"
-export MACHTYPE="$(uname -m)"
-export BINDIR="$(pwd)/bin"
-mkdir -p "$(pwd)/bin"
+export MACHTYPE=$(uname -m)
+# kent ships lib/x86_64 and parasol/lib/x86_64 but no dir for any other arch,
+# and "make libs" builds topLibs and hgLib in parallel, so hg/cgilib can ar into
+# lib/${MACHTYPE} before lib/makefile has created it.
+mkdir -p "kent/src/lib/${MACHTYPE}" "kent/src/parasol/lib/${MACHTYPE}"
+# The GitHub archives carry no .git, so htslib's Makefile cannot generate htscodecs' version.h;
+# write the line it would have written, from htscodecs' own configure.ac.
+H=kent/src/submodules/htslib/htscodecs
+if [[ ! -e "${H}/htscodecs/version.h" ]]; then
+    v="$(awk '/^AC_INIT\(htscodecs,/ { match($0, /[0-9]+(\.[0-9]+)*/); print substr($0, RSTART, RLENGTH) }' "${H}/configure.ac")"
+    echo "#define HTSCODECS_VERSION_TEXT \"${v}\"" > "${H}/htscodecs/version.h"
+fi
 export INCLUDE_PATH="${PREFIX}/include"
+# htslib's Makefile assigns CPPFLAGS/CFLAGS outright, discarding the environment,
+# so ${PREFIX}/include only reaches its compiles via gcc's own CPATH.
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CFLAGS="${CFLAGS} -O3"
 export COPT="${COPT} ${CFLAGS}"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
+export BINDIR=$(pwd)/bin
 export L="${LDFLAGS}"
-
+mkdir -p "${BINDIR}"
 sed -i.bak 's|g++|$(CXX)|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|-g|-g -O3|' kent/src/optimalLeaf/makefile
 sed -i.bak 's|ar rcus|$(AR) rcs|' kent/src/optimalLeaf/makefile
@@ -26,16 +40,11 @@ rm -rf kent/src/optimalLeaf/*.bak
 rm -rf kent/src/jkOwnLib/*.bak
 rm -rf kent/src/hg/lib/straw/*.bak
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-    export CFLAGS="${CFLAGS} -Wno-unused-command-line-argument"
-fi
-
-if [[ "$(uname -m)" == "arm64" ]]; then
-    rsync -aP rsync://hgdownload.cse.ucsc.edu/genome/admin/exe/macOSX.arm64/pslMap .
-    install -v -m 755 pslMap "${PREFIX}/bin"
-else
-    (cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
-    (cd kent/src/utils/pslMap && make CC="${CC}" -j"${CPU_COUNT}")
-    install -v -m 755 bin/pslMap "${PREFIX}/bin"
-fi
+# CFLAGS must stay out of the make argument list: a command-line variable
+# overrides the makefile, so common.mk's "CFLAGS += -std=c11" would be dropped
+# and kent's unprototyped declarations fail under the compiler's default -std.
+(cd kent/src && make libs PTHREADLIB=1 CC="${CC}" CXX="${CXX}" -j"${CPU_COUNT}")
+(cd kent/src/utils/stringify && make CC="${CC}" -j"${CPU_COUNT}")
+(cd kent/src/utils/pslMap && make CC="${CC}" -j"${CPU_COUNT}")
+cp bin/pslMap "${PREFIX}/bin"
+chmod 0755 "${PREFIX}/bin/pslMap"
