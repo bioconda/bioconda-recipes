@@ -13,7 +13,7 @@ source:
 build:
   skip: True  # [py>=311 or py2k]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('tf-comb', max_pin="x") }}
 
@@ -26,7 +26,7 @@ requirements:
     - setuptools
     - wheel
     - cython
-    - numpy
+    - numpy <2
     - pip
   run:
     - python
@@ -51,6 +51,9 @@ requirements:
 test:
   imports:
     - tfcomb
+    - tfcomb.counting
+  commands:
+    - python -c "import numpy as np; from tfcomb.counting import rolling_mean; np.testing.assert_allclose(rolling_mean(np.array([1., 2., 3.]), 3), [1.5, 2., 2.5])"
 
 about:
   summary: "Transcription Factor Co-Occurrence using Market Basket analysis"

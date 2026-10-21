@@ -4,16 +4,26 @@ set -euxo pipefail
 # Arrange ncbi-vdb files in a form that NCBI C++ tookit
 # build can consume them.
 VDB=$SRC_DIR/vdb
-mkdir $VDB
+mkdir "$VDB"
 if [[ $(uname) = Linux ]] ; then
-   mkdir -p $VDB/linux/release/x86_64/lib
-   cp -R $PREFIX/lib64/lib* $VDB/linux/release/x86_64/lib
+   VDB_LIB="$VDB/linux/release/x86_64/lib"
 else
-   mkdir -p $VDB/mac/release/x86_64/lib
-   cp -R $PREFIX/lib64/lib* $VDB/mac/release/x86_64/lib
+   VDB_LIB="$VDB/mac/release/x86_64/lib"
 fi
-mkdir $VDB/interfaces
-cp -R $PREFIX/include/ncbi-vdb/* $VDB/interfaces
+mkdir -p "$VDB_LIB"
+cp -R "$PREFIX"/lib/libncbi-* "$VDB_LIB/"
+mkdir "$VDB/interfaces"
+# ncbi-vdb 3.4 installs its interfaces directly under include/.
+if [[ -d "$PREFIX/include/ncbi-vdb" ]]; then
+    VDB_INCLUDE="$PREFIX/include/ncbi-vdb"
+else
+    VDB_INCLUDE="$PREFIX/include"
+fi
+for interface in align cc cloud csra csra2 ext insdc kapp kdb kfc kfg kfs klib kns kproc krypto ktst ncbi ngs os sra vdb vfs; do
+    if [[ -d "$VDB_INCLUDE/$interface" ]]; then
+        cp -R "$VDB_INCLUDE/$interface" "$VDB/interfaces/"
+    fi
+done
 
 
 # Build Magic-BLAST

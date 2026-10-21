@@ -1,0 +1,61 @@
+--- a/NAMESPACE
++++ b/NAMESPACE
+@@ -63,7 +63,6 @@
+ importFrom(matrixStats,rowSds)
+ importFrom(methods,as)
+ importFrom(plyranges,bind_ranges)
+-importFrom(plyranges,filter)
+ importFrom(rlang,.data)
+ importFrom(rtracklayer,import)
+ importFrom(stats,ks.test)
+--- a/R/ExtractTranscriptomeSequence.R
++++ b/R/ExtractTranscriptomeSequence.R
+@@ -39,7 +39,7 @@
+ #'
+ #' @importFrom S4Vectors elementMetadata
+ #' @importFrom Seqinfo seqnames
+-#' @importFrom plyranges filter
++#' @importFrom dplyr filter
+ #' @importFrom utils write.table read.table
+ #' @importFrom dplyr filter
+ #' @importFrom rlang .data
+@@ -56,7 +56,7 @@
+         return("Please provide a genome GTF file via the genome_gtf parameter.")
+     } else {
+         gtf <- import(genome_gtf)
+-        gtf <- with(gtf, plyranges::filter(gtf, type == RNA_fragment))
++        gtf <- with(gtf, dplyr::filter(gtf, type == RNA_fragment))
+         gtf_transcripts <- gtf[(elementMetadata(gtf)[,
+                                         "transcript_id"] %in% transcript_list)]
+         input_bed <- paste0(exome_prefix, ".bed")
+--- a/R/GenomeMappingToChainFile.R
++++ b/R/GenomeMappingToChainFile.R
+@@ -87,7 +87,7 @@
+         }
+     }
+     gtf <- import(genome_gtf)
+-    gtf <- with(gtf, plyranges::filter(gtf, type == RNA_fragment))
++    gtf <- with(gtf, dplyr::filter(gtf, type == RNA_fragment))
+     gtf_transcripts <- gtf[(elementMetadata(gtf)[,"transcript_id"] %in%
+         transcript_list)]
+     if (verbose == TRUE) {
+@@ -108,7 +108,7 @@
+             if (verbose == TRUE) {
+                 print(paste("Chromosome", chr,"strand", str, "starting"))
+             }
+-            gtf_hold <- gtf_transcripts %>% plyranges::filter(
++            gtf_hold <- gtf_transcripts %>% dplyr::filter(
+                 strand == str,
+                 seqnames == chr)
+             # in case of chromosomes without data on one strand
+--- a/R/processCapRout.R
++++ b/R/processCapRout.R
+@@ -101,7 +101,7 @@
+             corresponds to the folded CapR transcripts.")
+     }
+     gtf <- import(genome_gtf)
+-    gtf <- with(gtf, plyranges::filter(gtf, type == RNA_fragment))
++    gtf <- with(gtf, dplyr::filter(gtf, type == RNA_fragment))
+     # write bedgraph file for each transcript
+     # create bedGraph for each structure separately
+     bg_shell <- as.data.frame(matrix(NA, ncol = 4, nrow = sum(chr_size$V2)))

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-make CC="${CC}" CXX="${CXX}" prefix="${PREFIX}" install
+# LAST 490's bundled C sources use K&R function definitions, removed in C23.
+make CC="${CC}" CXX="${CXX}" CFLAGS="${CFLAGS} -std=gnu11" prefix="${PREFIX}" install
