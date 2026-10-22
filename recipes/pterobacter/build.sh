@@ -24,7 +24,8 @@ if [[ "${target_platform}" == osx-* ]]; then
         ${LDFLAGS:-} -pthread -o native-diagnostic
     otool -L "$PREFIX/bin/ptero"
     otool -L native-diagnostic
-    xcrun lldb --batch -o run -o 'thread backtrace all' -- ./native-diagnostic \
+    ./native-diagnostic tests/fixtures/anim/identical.r.fa tests/fixtures/anim/identical.q.fa native-direct || true
+    env -u SDKROOT xcrun --sdk macosx lldb --batch -o run -o 'thread backtrace all' -- ./native-diagnostic \
         tests/fixtures/anim/identical.r.fa tests/fixtures/anim/identical.q.fa native-probe || true
 fi
 
