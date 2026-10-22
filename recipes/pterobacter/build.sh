@@ -24,4 +24,4 @@ trap 'rm -rf "$smoke_bin"' EXIT
 ln -s "$PREFIX/bin/ptero" "$smoke_bin/ptero"
 ln -s "$PREFIX/bin/pterobacter" "$smoke_bin/pterobacter"
 TEROBACTER_INSTALLED_BIN="$smoke_bin" \
-  cargo test --locked --test installed_smoke -- --ignored --test-threads=1
+  cargo test --locked --test installed_smoke -- --ignored --test-threads=1 --nocapture
