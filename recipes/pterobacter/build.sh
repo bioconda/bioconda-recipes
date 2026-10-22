@@ -11,21 +11,15 @@ fi
 export CARGO_BUILD_JOBS="${CPU_COUNT}"
 # Build for the selected Conda platform, without host-specific CPU tuning.
 export CXXFLAGS="${CXXFLAGS:-} -std=c++17"
+if [[ "${target_platform}" == "osx-arm64" ]]; then
+    # Match the string ABI of Conda's Clang-built Darwin ARM libc++. Its
+    # headers select this layout for Clang but not for GNU C++.
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT"
+fi
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 # Exercise atomic activation and refusal paths after the Linux syscall patch.
 cargo test --locked --lib cli::database::install::tests -- --test-threads=1
 cargo install -v --locked --no-track --root "$PREFIX" --path . --bin ptero --bin pterobacter
-
-# Temporary Mac diagnostic; the installed smoke test remains the acceptance gate.
-if [[ "${target_platform}" == osx-* ]]; then
-    native_archives=(target/"${CARGO_BUILD_TARGET}"/release/build/pterobacter-*/out/libtero_anim.a)
-    test "${#native_archives[@]}" -eq 1
-    "${CXX}" ${CXXFLAGS} "${RECIPE_DIR}/native-diagnostic.cc" "${native_archives[0]}" \
-        ${LDFLAGS:-} -pthread -o native-diagnostic
-    otool -L "$PREFIX/bin/ptero"
-    otool -L native-diagnostic
-    python3 "${RECIPE_DIR}/debug-native.py"
-fi
 
 # The upstream smoke test exercises both installed commands and embedded ANIm
 # using synthetic inputs, with no reference download or analysis tools on PATH.
