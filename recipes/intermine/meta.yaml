@@ -1,27 +1,28 @@
 {% set name = "intermine" %}
 {% set version = "1.14.0" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "4bdf96e067f5b3958b2c17ffb3a3bec306515a49cd819d1b3c67fd29e80a5193" %}
 
 package:
-  version: '{{ version }}'
-  name: '{{ name|lower }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.org/packages/source/i/intermine/intermine-{{ version }}.tar.gz
+  sha256: 4bdf96e067f5b3958b2c17ffb3a3bec306515a49cd819d1b3c67fd29e80a5193
 
 build:
-  noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python
+    - python >=3
     - pip
+    - setuptools
   run:
-    - python
+    - python >=3
     - requests
     - lxml
 
@@ -31,14 +32,9 @@ test:
     - intermine.lists
 
 about:
-  dev_url: ''
-  description: InterMine Webservice Client:A Python API to access bioinformatics data warehouses powered by the InterMine platform.
-  license: GNU Library or Lesser General Public License (LGPL) or BSD License
+  description: "InterMine Webservice Client:A Python API to access bioinformatics data warehouses powered by the InterMine platform."
+  license: "LGPL-3.0-only AND BSD-2-Clause"
   license_family: LGPL
-  summary: InterMine WebService client
-  home: http://www.intermine.org
-  license_file: 'LICENSE-LGPL'
-  doc_url: ''
-
-extra:
-  recipe-maintainers: ''
+  summary: "InterMine WebService client."
+  home: "http://www.intermine.org"
+  license_file: "LICENSE-LGPL"
