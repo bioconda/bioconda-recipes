@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "tximportdata-1.34.0"
+installBiocDataPackage.sh "tximportdata-1.38.0"

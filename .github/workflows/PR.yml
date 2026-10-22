@@ -18,7 +18,7 @@ jobs:
       - name: Fetch commits through the merge base
         uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
-          base-ref: ${{ env.GITHUB_BASE_REF }}
+          base-ref: ${{ github.base_ref }}
           head-ref: ${{ github.sha }}
           fallback-base-ref: master
           fallback-fetch-all: true
@@ -65,7 +65,7 @@ jobs:
           conda config --show-sources
           python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
           echo '============'
-          bioconda-utils lint --loglevel debug --full-report --git-range origin/"$GITHUB_BASE_REF" HEAD
+          bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF" HEAD
           conda clean -y --all
 
   build-linux:
@@ -102,7 +102,7 @@ jobs:
       - name: Fetch commits through the merge base
         uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
-          base-ref: ${{ env.GITHUB_BASE_REF }}
+          base-ref: ${{ github.base_ref }}
           head-ref: ${{ github.sha }}
           fallback-base-ref: master
           fallback-fetch-all: true
@@ -206,7 +206,7 @@ jobs:
         uses: fulcrumgenomics/fetch-through-merge-base@v1
         continue-on-error: true
         with:
-          base-ref: ${{ env.GITHUB_BASE_REF }}
+          base-ref: ${{ github.base_ref }}
           head-ref: ${{ github.sha }}
           fallback-base-ref: master
           fallback-fetch-all: true
@@ -275,7 +275,7 @@ jobs:
               rm -rf /tmp/artifacts
               mkdir -p /tmp/artifacts/packages
               cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-              find -name .cache | xargs rm -rf || true
+              find . -name .cache | xargs rm -rf || true
               for n in index.html channeldata.json linux-64 osx-64 noarch; do
                 cp -rv $n /tmp/artifacts/packages || true
               done

@@ -1,0 +1,68 @@
+{% set name = "hyphaeon-core" %}
+{% set version = "0.3.0" %}
+{% set tag = name ~ "-v" ~ version %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # PyPI publishes wheels only (no sdist): the package is a maturin/PyO3
+  # extension whose Cargo.toml is a member of the monorepo Cargo workspace
+  # rooted at rust/Cargo.toml, so a self-contained sdist cannot be produced
+  # from the aeon-core/ directory alone. Build from the full monorepo tag.
+  url: https://github.com/veg/HyphAeon/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: 061ae2c8ab2c3f64cae8b7c47502a8c7ccd613383f208bc5eebdce5e578ac5ed
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - make
+    - cmake
+    - pkg-config
+  host:
+    - python
+    - pip
+    - maturin >=1.5,<2
+  run:
+    - python >=3.8
+    - pytorch >=2.0.0
+    - biopython >=1.80
+    - numpy >=1.22.0
+    - scipy >=1.9.0
+    - pandas >=1.5.0
+    - psutil >=5.9.0
+    - huggingface_hub >=0.20.0
+    - safetensors >=0.4.0
+
+test:
+  imports:
+    - aeon_core
+    - aeon_core._native
+
+about:
+  home: https://github.com/veg/HyphAeon
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Aeon-Core: Shared bioinformatics infrastructure for Aeon-family packages"
+  description: |
+    Aeon-Core provides shared model, dataset, inference, weights, stats, and IO
+    infrastructure used by both HyphAeon (selection inference) and ChronAeon
+    (molecular clock dating) packages.
+  doc_url: https://github.com/veg/HyphAeon#readme
+  dev_url: https://github.com/veg/HyphAeon
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - d-callan

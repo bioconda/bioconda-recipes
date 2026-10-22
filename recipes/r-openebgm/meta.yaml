@@ -1,0 +1,86 @@
+{% set version = '0.9.1' %}
+{% set posix = 'm2-' if win else '' %}
+
+package:
+  name: r-openebgm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/openEBGM_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/openEBGM/openEBGM_{{ version }}.tar.gz
+  sha256: 728dc9a93f7c68ef451425e97c3233cbd1b6eb7cf77ea94d663524f636ed05a7
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  missing_dso_whitelist:
+    - '*/R.dll'        # [win]
+    - '*/Rblas.dll'    # [win]
+    - '*/Rlapack.dll'  # [win]
+
+requirements:
+  build:
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-data.table >=1.10.0
+    - r-ggplot2 >=2.2.1
+  run:
+    - r-base
+    - r-data.table >=1.10.0
+    - r-ggplot2 >=2.2.1
+
+test:
+  commands:
+    - $R -e "library('openEBGM')"           # [not win]
+    - "\"%R%\" -e \"library('openEBGM')\""  # [win]
+
+about:
+  home: https://journal.r-project.org/archive/2017/RJ-2017-063/index.html
+  license: GPL-2 | GPL-3
+  summary: An implementation of DuMouchel's (1999) <doi:10.1080/00031305.1999.10474456> Bayesian
+    data mining method for the market basket problem. Calculates Empirical Bayes Geometric
+    Mean (EBGM) and posterior quantile scores using the Gamma-Poisson Shrinker (GPS)
+    model to find unusually large cell counts in large, sparse contingency tables. Can
+    be used to find unusually high reporting rates of adverse events associated with
+    products. In general, can be used to mine any database where the co-occurrence of
+    two variables or items is of interest. Also calculates relative and proportional
+    reporting ratios. Builds on the work of the 'PhViD' package, from which much of
+    the code is derived. Some of the added features include stratification to adjust
+    for confounding variables and data squashing to improve computational efficiency.
+    Includes an implementation of the EM algorithm for hyperparameter estimation loosely
+    derived from the 'mederrRank' package.
+  license_family: GPL3
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+
+# Package: openEBGM
+# Title: EBGM Disproportionality Scores for Adverse Event Data Mining
+# Version: 0.9.1
+# Authors@R: c( person("John", "Ihrie", email = "John.Ihrie@fda.hhs.gov", role = c("cre", "aut")), person("Travis", "Canida", email = "Travis.Canida@fda.hhs.gov", role = "aut"), person("Ismail", "Ahmed", role = "ctb", comment = "author of 'PhViD' package (derived code)"), person("Antoine", "Poncet", role = "ctb", comment = "author of 'PhViD'"), person("Sergio", "Venturini", role = "ctb", comment = "author of 'mederrRank' package (derived code)"), person("Jessica", "Myers", role = "ctb", comment = "author of 'mederrRank'"))
+# Maintainer: John Ihrie <John.Ihrie@fda.hhs.gov>
+# Description: An implementation of DuMouchel's (1999) <doi:10.1080/00031305.1999.10474456> Bayesian data mining method for the market basket problem. Calculates Empirical Bayes Geometric Mean (EBGM) and posterior quantile scores using the Gamma-Poisson Shrinker (GPS) model to find unusually large cell counts in large, sparse contingency tables. Can be used to find unusually high reporting rates of adverse events associated with products. In general, can be used to mine any database where the co-occurrence of two variables or items is of interest. Also calculates relative and proportional reporting ratios. Builds on the work of the 'PhViD' package, from which much of the code is derived. Some of the added features include stratification to adjust for confounding variables and data squashing to improve computational efficiency. Includes an implementation of the EM algorithm for hyperparameter estimation loosely derived from the 'mederrRank' package.
+# Depends: R (>= 3.2.3)
+# License: GPL-2 | GPL-3
+# URL: https://journal.r-project.org/archive/2017/RJ-2017-063/index.html
+# LazyData: TRUE
+# RoxygenNote: 7.2.3
+# Imports: data.table (>= 1.10.0), ggplot2 (>= 2.2.1), stats (>= 3.2.3)
+# Suggests: DEoptim (>= 2.2), dplyr (>= 0.5.0), knitr (>= 1.15.1), rmarkdown (>= 1.2), testthat (>= 1.0.2), tidyr (>= 0.6.0)
+# VignetteBuilder: knitr
+# Encoding: UTF-8
+# NeedsCompilation: no
+# Packaged: 2023-09-14 18:50:09 UTC; John.Ihrie
+# Author: John Ihrie [cre, aut], Travis Canida [aut], Ismail Ahmed [ctb] (author of 'PhViD' package (derived code)), Antoine Poncet [ctb] (author of 'PhViD'), Sergio Venturini [ctb] (author of 'mederrRank' package (derived code)), Jessica Myers [ctb] (author of 'mederrRank')
+# Repository: CRAN
+# Date/Publication: 2023-09-14 22:40:02 UTC

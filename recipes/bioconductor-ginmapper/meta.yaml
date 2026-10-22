@@ -1,0 +1,60 @@
+{% set version = "1.6.0" %}
+{% set name = "ginmappeR" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 289ece20c2494ac2e04900e2e3eb26df
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ginmapper", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: RUnit, BiocGenerics, markdown, knitr
+requirements:
+  host:
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-uniprot.ws >=2.50.0,<2.51.0
+    - r-base
+    - r-cachem
+    - r-httr
+    - r-jsonlite
+    - r-memoise
+    - r-rentrez
+    - r-rvest
+    - r-xml
+  run:
+    - bioconductor-keggrest >=1.50.0,<1.51.0
+    - bioconductor-uniprot.ws >=2.50.0,<2.51.0
+    - r-base
+    - r-cachem
+    - r-httr
+    - r-jsonlite
+    - r-memoise
+    - r-rentrez
+    - r-rvest
+    - r-xml
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  summary: Gene Identifier Mapper
+  description: 'Provides functionalities to translate gene or protein identifiers between state-of-art biological databases: CARD (<https://card.mcmaster.ca/>), NCBI Protein, Nucleotide and Gene (<https://www.ncbi.nlm.nih.gov/>), UniProt (<https://www.uniprot.org/>) and KEGG (<https://www.kegg.jp>). Also offers complementary functionality like NCBI identical proteins or UniProt similar genes clusters retrieval.'
+  license_file: LICENSE
+

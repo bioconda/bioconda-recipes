@@ -1,0 +1,54 @@
+{% set name = "vardictrust" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/palakpsheth/VarDictRust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8e3f01cf36e6d07d5556d9e072d680e56c4ac3e90cf0e3066f0e1c87258eac19
+
+build:
+  number: 0
+  binary_relocation: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - vardictrust --version
+    - vardictrust --help
+
+about:
+  home: https://github.com/palakpsheth/VarDictRust
+  license: MIT AND GPL-2.0-or-later
+  license_family: GPL2
+  license_file:
+    - LICENSE
+    - LICENSE-3RD-PARTY
+    - THIRDPARTY.yml
+  summary: "Fast, memory-safe, idiomatic Rust rewrite of VarDictJava v1.8.3"
+  description: |
+    VarDictRust is an ultra-fast, memory-safe, idiomatic-Rust variant caller
+    producing 100% parity against VarDictJava v1.8.3 across germline, somatic,
+    and amplicon sequencing assays, scaling to deep whole-genome sequencing (WGS).
+  doc_url: https://github.com/palakpsheth/VarDictRust
+  dev_url: https://github.com/palakpsheth/VarDictRust
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - palakpsheth
+  identifiers:
+    - doi:10.1093/nar/gkw227
+    - biotools:vardict

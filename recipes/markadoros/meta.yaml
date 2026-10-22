@@ -1,0 +1,58 @@
+{% set version = "1.2.1" %}
+
+package:
+  name: markadoros
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/m/markadoros/markadoros-{{ version }}.tar.gz
+  sha256: a739be55ed1a67b2b90ee9ffa1cf0385c7560c256fb97bfa38a6c1d5d7c721db
+
+build:
+  entry_points:
+    - markadoros = markadoros:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("markadoros", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - hatchling
+    - pip
+  run:
+    - python >=3.11
+    - biopython >=1.86
+    - click >=8.3.1
+    - python-isal >=1.8.0
+    - jsonschema >=4.26.0
+    - loguru >=0.7.3
+    - pandas >=2.3.3
+    - polars >=1.39.3
+    - pymmseqs >=1.1.0
+    - pysam >=0.23.3
+    - requests >=2.33.1
+    - hifiasm >=0.21.0
+    - mmseqs2 >=18.8cc5c
+    - spades >=4.0.0
+
+test:
+  imports:
+    - markadoros
+  commands:
+    - markadoros --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/sanger-tol/markadoros/
+  summary: Markadoros is a tool for the identification and assembly of barcode genes in raw sequencing data.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - prototaxites

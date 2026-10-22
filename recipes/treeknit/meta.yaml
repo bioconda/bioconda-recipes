@@ -1,0 +1,60 @@
+{% set name = "treeknit" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-x86_64-unknown-linux-gnu   # [linux64]
+    sha256: c40ac9cc97d567a160a20dd21b551a336d2bd60616a9a7edb6b1e50c80916236                                            # [linux64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-aarch64-unknown-linux-gnu  # [aarch64]
+    sha256: 37e22cd3a020f509ed086de2c8826217bf274306a9a2a8e75ec840f41a698b06                                            # [aarch64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-x86_64-apple-darwin        # [osx and x86_64]
+    sha256: 834dd2b255fbd397719c587ebc4f5e01b0917dbf67dba0ff71f51c05d03192e8                                            # [osx and x86_64]
+  - url: https://github.com/neherlab/treeknit/releases/download/{{ version }}/{{ name }}-aarch64-apple-darwin       # [osx and arm64]
+    sha256: 9a9e129b44ca70ab76f7938fe6b5f1afd037508b76a14b414e9094d1685f2db2                                            # [osx and arm64]
+  - url: https://raw.githubusercontent.com/neherlab/treeknit/{{ version }}/LICENSE
+    sha256: 4f443e243379f60aa3249c3c8f4b41fde9f661eb5468a8fb089637e5b1131127
+
+build:
+  number: 0
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    # unwinding library of the glibc builds, which load libgcc_s.so.1
+    - libgcc  # [linux]
+
+test:
+  commands:
+    - treeknit --version
+    - treeknit --help
+
+about:
+  home: "https://github.com/neherlab/treeknit"
+  dev_url: "https://github.com/neherlab/treeknit"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Inference of reassortment from segment trees"
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pcbi.1010394
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  autobump:
+    enable: false
+  recipe-maintainers:
+    - ivan-aksamentov
+    - rneher
+    - PierreBarrat
+  skip-lints:
+    # repackaged binary
+    - should_be_noarch_generic
+    # libgcc is the runtime library of the repackaged binaries, no compiler runs
+    - should_use_compilers

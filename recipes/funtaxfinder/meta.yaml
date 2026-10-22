@@ -1,0 +1,53 @@
+{% set name = "funtaxfinder" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Zhoufengwu/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b1c158722a2fac8fec6eeecd360f0380e5cad8d1552330dc32ad8ff489b92c70
+
+
+build:
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=69
+    - wheel
+  run:
+    - python >=3.10
+    - pandas
+    - picrust2 >=2.6.3
+
+test:
+  imports:
+    - funtaxfinder
+  commands:
+    - funtaxfinder --help
+    - funtaxfinder --version
+
+about:
+  home: https://github.com/Zhoufengwu/funtaxfinder
+  dev_url: https://github.com/Zhoufengwu/funtaxfinder
+  doc_url: https://github.com/Zhoufengwu/funtaxfinder#readme
+  license: MIT
+  license_file: LICENSE
+  summary: Screen functional microbial ASVs from PICRUSt2 KO predictions
+  description: |
+    FunTaxFinder screens ASVs according to selected KEGG Orthology identifiers
+    from PICRUSt2 per-sequence prediction tables. It produces matched ASV
+    abundance tables, KO hit matrices, taxonomy annotations, optional
+    rank-specific subsets, and optional FAPROTAX cross-validation.
+
+extra:
+  recipe-maintainers:
+    - Zhoufengwu

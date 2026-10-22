@@ -1,13 +1,18 @@
-{% set version = "1.66.0" %}
+{% set version = "1.70.0" %}
 {% set name = "MEDME" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: MEDME allows the prediction of absolute and relative methylation levels based on measures obtained by MeDIP-microarray experiments
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Modelling Experimental Data from MeDIP Enrichment
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: f368198d631d195a74f56e8318993015
 
 build:
   number: 0
@@ -15,6 +20,37 @@ build:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-medme", max_pin="x.x") }}'
+
+# Suggests: BSgenome.Hsapiens.UCSC.hg18, BSgenome.Mmusculus.UCSC.mm9
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - r-base
+    - r-drc
+    - r-mass
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - r-base
+    - r-drc
+    - r-mass
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Modelling Experimental Data from MeDIP Enrichment
+  description: MEDME allows the prediction of absolute and relative methylation levels based on measures obtained by MeDIP-microarray experiments
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   identifiers:
@@ -24,38 +60,4 @@ extra:
     name: bioconductor-medme
     path: recipes/bioconductor-medme
     version: 1.40.0
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: BSgenome.Hsapiens.UCSC.hg18, BSgenome.Mmusculus.UCSC.mm9
-requirements:
-  build:
-    - {{ compiler('c') }}
-    - make
-  host:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - r-base
-    - r-drc
-    - r-mass
-    - libblas
-    - liblapack
-  run:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - r-base
-    - r-drc
-    - r-mass
-
-source:
-  md5: 83044db7ff26673430e82547931cb89e
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
-test:
-  commands:
-    - $R -e "library('{{ name }}')"
 

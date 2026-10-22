@@ -3,11 +3,13 @@
 mkdir -p $PREFIX/bin
 
 cp psQTL_prep.py $PREFIX/bin/psQTL_prep.py
-cp psQTL_prep.py $PREFIX/bin/psQTL_prep
+ln -s $PREFIX/bin/psQTL_prep.py $PREFIX/bin/psQTL_prep
 cp psQTL_proc.py $PREFIX/bin/psQTL_proc.py
-cp psQTL_proc.py $PREFIX/bin/psQTL_proc
+ln -s $PREFIX/bin/psQTL_proc.py $PREFIX/bin/psQTL_proc
 cp psQTL_post.py $PREFIX/bin/psQTL_post.py
-cp psQTL_post.py $PREFIX/bin/psQTL_post
+ln -s $PREFIX/bin/psQTL_post.py $PREFIX/bin/psQTL_post
+cp psQTL_view.py $PREFIX/bin/psQTL_view.py
+ln -s $PREFIX/bin/psQTL_view.py $PREFIX/bin/psQTL_view
 cp _version.py $PREFIX/bin/_version.py
 
 mkdir -p $PREFIX/bin/modules
@@ -23,3 +25,4 @@ cp utilities/windowed_splsda.R $PREFIX/bin/utilities/windowed_splsda.R
 chmod a+x $PREFIX/bin/psQTL_prep
 chmod a+x $PREFIX/bin/psQTL_proc
 chmod a+x $PREFIX/bin/psQTL_post
+chmod a+x $PREFIX/bin/psQTL_view

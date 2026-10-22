@@ -7,44 +7,46 @@ import subprocess
 DEFAULT_XMS = "-Xms512m"
 DEFAULT_XMX = "-Xmx2g"
 
-def has_memory_opts(args):
-    """Check if any -Xms or -Xmx options are already passed."""
-    return any(arg.startswith("-Xms") or arg.startswith("-Xmx") for arg in args)
+BIN_DIR = os.path.dirname(os.path.realpath(__file__))
+PREFIX = os.path.dirname(BIN_DIR)
+JAVA_PATH = os.path.join(BIN_DIR, "java")
+JAR_PATH = os.path.join(PREFIX, "share", "kcftools", "kcftools.jar")
 
-def get_heap_opts():
-    """Get heap size options from env var if available."""
+def split_jvm_opts(args):
+    jvm_opts, app_args = [], []
+    for arg in args:
+        if arg.startswith("-Xms") or arg.startswith("-Xmx"):
+            jvm_opts.append(arg)
+        else:
+            app_args.append(arg)
+    return jvm_opts, app_args
+
+
+def default_heap_opts():
     heap_size = os.environ.get("KCFTOOLS_HEAP_SIZE")
     if heap_size:
-        return [DEFAULT_XMS, f"-Xmx{heap_size}"]
-    else:
-        return [DEFAULT_XMS, DEFAULT_XMX]
+        return [DEFAULT_XMS, "-Xmx{}".format(heap_size)]
+    return [DEFAULT_XMS, DEFAULT_XMX]
+
 
 def main():
-    conda_prefix = os.environ.get("CONDA_PREFIX", "")
-    if not conda_prefix:
-        print("Error: CONDA_PREFIX is not set. Are you running inside a conda environment?", file=sys.stderr)
-        sys.exit(1)
+    if not os.access(JAVA_PATH, os.X_OK):
+        sys.exit("Error: no executable java at {}.".format(JAVA_PATH))
 
-    jar_path = os.path.join(conda_prefix, "share", "kcftools", "kcftools.jar")
-    if not os.path.isfile(jar_path):
-        print(f"Error: Could not find kcftools.jar at {jar_path}", file=sys.stderr)
-        sys.exit(1)
+    if not os.path.isfile(JAR_PATH):
+        sys.exit("Error: could not find kcftools.jar at {}".format(JAR_PATH))
 
-    java_cmd = ["java"]
+    jvm_opts, app_args = split_jvm_opts(sys.argv[1:])
+    if not jvm_opts:
+        jvm_opts = default_heap_opts()
 
-    if not has_memory_opts(sys.argv[1:]):
-        java_cmd.extend(get_heap_opts())
+    java_cmd = [JAVA_PATH] + jvm_opts + ["-jar", JAR_PATH] + app_args
 
-    java_cmd.extend(["-jar", jar_path])
-    java_cmd.extend(sys.argv[1:])
+    rc = subprocess.call(java_cmd)
 
-    try:
-        result = subprocess.run(java_cmd)
-        sys.exit(result.returncode)
-    except FileNotFoundError:
-        print("Error: Java is not installed or not available in PATH.", file=sys.stderr)
-        sys.exit(1)
+    # flip dead child negative return code
+    sys.exit(128 - rc if rc < 0 else rc)
+
 
 if __name__ == "__main__":
     main()
-#EOF

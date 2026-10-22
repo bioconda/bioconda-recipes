@@ -1,0 +1,57 @@
+{% set name = "bgc-prophet" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/HUST-NingKang-Lab/BGC-Prophet/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c04a118b75ff7babe2b2618a175696758218046f823692054c6dd80967919e3a
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - bgc_prophet = bgc_prophet.main:main
+  run_exports:
+    - {{ pin_subpackage("bgc-prophet", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - pytorch
+    - python-lmdb
+    - pandas
+    - numpy
+    - tqdm
+    - scikit-learn
+    - matplotlib-base
+    - fair-esm
+    - biopython
+
+test:
+  imports:
+    - bgc_prophet
+    - bgc_prophet.command
+    - bgc_prophet.train
+  commands:
+    - bgc_prophet --help
+    - bgc_prophet pipeline --help
+
+about:
+  home: https://github.com/HUST-NingKang-Lab/BGC-Prophet
+  summary: >-
+    Deep learning tool for identifying and classifying Biosynthetic Gene
+    Clusters (BGCs) using language processing neural networks.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - maxibor

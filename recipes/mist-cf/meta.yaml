@@ -1,0 +1,69 @@
+{% set name = "mist-cf" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samgoldman97/mist-cf/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ca78169e386ba2df2fba51fe2794b77a20dc2623231ec030e938079869a6a4d4
+  patches:
+    - mist-cf-packaging-and-compat.patch
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools
+  run:
+    - python >=3.9
+    - sirius-csifingerid >=5.8.6,<6
+    - pytorch
+    - pytorch-lightning >=2
+    - ray-tune >=2.49.1
+    - rdkit
+    - numpy
+    - pandas
+    - scikit-learn
+    - joblib
+    - matplotlib-base
+    - seaborn
+    - pathos
+    - multiprocess
+    - tqdm
+    - pyyaml
+    - cairosvg
+
+test:
+  imports:
+    - mist_cf
+    - mist_cf.common
+    - mist_cf.decomp
+
+about:
+  home: https://github.com/samgoldman97/mist-cf
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: MIST-CF - predicting MS1 precursor chemical formula from MS/MS data
+  description: |
+    MIST-CF predicts the chemical formula of an MS1 precursor from its MS/MS
+    spectrum, using formula transformers over subformula assignments.
+
+    Model weights are not included and must be installed separately.
+  dev_url: https://github.com/samgoldman97/mist-cf
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1021/acs.jcim.3c01082
