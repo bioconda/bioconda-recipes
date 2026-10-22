@@ -11,12 +11,14 @@ fi
 export CARGO_BUILD_JOBS="${CPU_COUNT}"
 # Build for the selected Conda platform, without host-specific CPU tuning.
 export CXXFLAGS="${CXXFLAGS:-} -std=c++17"
-if [[ "${target_platform}" == "osx-arm64" ]]; then
-    # Match the string ABI of Conda's Clang-built Darwin ARM libc++. Its
-    # headers select this layout for Clang but not for GNU C++.
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT"
+if [[ "${target_platform}" == osx-* ]]; then
+    # Upstream selects the runtime and Darwin ARM ABI for this GNU toolchain.
+    export PTERO_CXX_STDLIB=c++
 fi
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+cargo fetch --locked
+python scripts/bundle_licenses.py --distribution THIRDPARTY.yml
+# Exercise runtime selection as well as the installed native smoke test below.
+cargo test --locked --test native_compiler -- --test-threads=1
 # Exercise atomic activation and refusal paths after the Linux syscall patch.
 cargo test --locked --lib cli::database::install::tests -- --test-threads=1
 cargo install -v --locked --no-track --root "$PREFIX" --path . --bin ptero --bin pterobacter
