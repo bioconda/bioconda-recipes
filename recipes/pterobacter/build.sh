@@ -19,7 +19,7 @@ cargo fetch --locked
 python scripts/bundle_licenses.py --distribution THIRDPARTY.yml
 # Exercise runtime selection as well as the installed native smoke test below.
 cargo test --locked --test native_compiler -- --test-threads=1
-# Exercise atomic activation and refusal paths after the Linux syscall patch.
+# Exercise atomic activation and refusal paths.
 cargo test --locked --lib cli::database::install::tests -- --test-threads=1
 cargo install -v --locked --no-track --root "$PREFIX" --path . --bin ptero --bin pterobacter
 
