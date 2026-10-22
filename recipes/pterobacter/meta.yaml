@@ -1,0 +1,60 @@
+{% set name = "pterobacter" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mbhall88/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 90946a76e2ed5a937ffc88060900076ec999dcbcaa5daea2f04a01ff7b85bdfa
+  patches:
+    - conda-macos-libcxx.patch  # [osx]
+
+build:
+  number: 0
+  skip: true  # [not (linux or osx)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - liblzma-devel
+    - libcxx  # [osx]
+
+test:
+  commands:
+    - ptero --version
+    - pterobacter --version
+    - ptero --help
+    - pterobacter --help
+    - ptero database install --help
+    - test ! -e "$PREFIX/bin/pterobacter-dev"
+
+about:
+  home: https://github.com/mbhall88/pterobacter
+  dev_url: https://github.com/mbhall88/pterobacter
+  doc_url: https://mbhall88.github.io/pterobacter/
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - LICENSE-GPL-3.0.txt
+    - THIRD-PARTY-LICENSES.md
+    - THIRD-PARTY-NOTICES.txt
+    - THIRDPARTY.json
+    - THIRDPARTY.yml
+  summary: Classify Enterobacter isolate assemblies with ANI, MLST and genomovar matching
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mbhall88
