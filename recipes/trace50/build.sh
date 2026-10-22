@@ -6,8 +6,3 @@ set -ex
 # repo-root rust/Cargo.toml, which the tarball provides.
 cd trace50
 ${PYTHON} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
-
-# mulled-build does not stage test.files inside the biocontainer, so the
-# smoke-test alignment ships inside the package itself.
-mkdir -p "${PREFIX}/share/trace50"
-cp "${RECIPE_DIR}/demo_outbreak.fasta" "${PREFIX}/share/trace50/"
