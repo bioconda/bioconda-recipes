@@ -12,6 +12,8 @@ export CARGO_BUILD_JOBS="${CPU_COUNT}"
 # Build for the selected Conda platform, without host-specific CPU tuning.
 export CXXFLAGS="${CXXFLAGS:-} -std=c++17"
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+# Exercise atomic activation and refusal paths after the Linux syscall patch.
+cargo test --locked --lib cli::database::install::tests -- --test-threads=1
 cargo install -v --locked --no-track --root "$PREFIX" --path . --bin ptero --bin pterobacter
 
 # The upstream smoke test exercises both installed commands and embedded ANIm
