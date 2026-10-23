@@ -1,5 +1,7 @@
 {% set name = "fair-bioheaders" %}
 {% set version = "0.8.1" %}
+# pyld >=3.3 (the jsonld extra) requires Python >=3.11 on conda-forge.
+{% set python_min = "3.11" %}
 
 package:
   name: {{ name }}
@@ -10,7 +12,7 @@ source:
   sha256: 79590b83beaf77dd248add185431aeb1b468c5df78873181f7883f0ac5dab3ab
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
@@ -23,6 +25,9 @@ build:
     - fhr-gfa-strip = bioheaders.cli:gfa_strip_main
     - fhr-gfa-combine = bioheaders.cli:gfa_combine_main
     - fhr-gfa-validate = bioheaders.cli:gfa_validate_main
+    - fhr-gff3-strip = bioheaders.cli:gff3_strip_main
+    - fhr-gff3-combine = bioheaders.cli:gff3_combine_main
+    - fhr-gff3-validate = bioheaders.cli:gff3_validate_main
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -35,6 +40,7 @@ requirements:
     - python >={{ python_min }}
     - jsonschema-with-format >=4.21.1,<5
     - pyyaml >=6.0.1,<7
+    - pyld >=3.3
 
 test:
   requires:
@@ -57,28 +63,43 @@ test:
     - fhr-gfa-combine --help
     - fhr-gfa-strip --help
     - fhr-gfa-validate --help
+    - fhr-gff3-combine --help
+    - fhr-gff3-strip --help
+    - fhr-gff3-validate --help
+    # Functional check: validate metadata, combine it with a FASTA file and verify the checksum.
+    - printf '{"schema":"https://w3id.org/fair-bioheaders/fhr/v0.4.0","schemaVersion":"2.0","genome":"test","taxon":{"name":"Homo sapiens","uri":"https://identifiers.org/taxonomy:9606"},"version":"1","metadataAuthor":[{"name":"A"}],"assemblyAuthor":[{"name":"B"}],"dateCreated":"2024-01-01","masking":"unknown","checksum":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}' > test.fhr.json
+    - printf '>s1\nACGT\n' > test.fasta
+    - bioheaders validate test.fhr.json
+    - bioheaders combine test.fhr.json test.fasta -o test.fhr.fasta
+    - bioheaders verify test.fhr.fasta
+    # Non-canonical JSON-LD (the record inside @graph) is read through pyld.
+    - bioheaders convert test.fhr.json test.fhr.jsonld
+    - python -c "import json;d=json.load(open('test.fhr.jsonld'));c=d.pop('@context');json.dump({'@context':c,'@graph':[d]},open('graph.jsonld','w'))"
+    - bioheaders validate graph.jsonld
 
 about:
   home: https://github.com/FAIR-bioHeaders/FAIR-bioHeaders-Tools
-  summary: Validate and convert FAIR-bioHeaders (FHR) metadata in JSON, YAML, JSON-LD, HTML microdata, FASTA and GFA.
+  summary: Validate and convert FAIR-bioHeaders metadata for genome FASTA and GFA (FHR), protein FASTA (FHP) and GFF3 (FHGFF3).
   description: |
     FAIR-bioHeaders embed provenance metadata in reference genome FASTA and GFA
     files (the FHR header). These tools convert between JSON, YAML, JSON-LD,
     HTML microdata and embedded FASTA/GFA headers, validate metadata against
     the schema, attach and strip headers, and verify the SHA-512/256 file
-    checksum. bioheaders assess checks how FAIR the header of a FASTA, GFF3,
-    VCF, GFA or other text file is.
+    checksum. They also read, write and verify the draft headers for protein
+    FASTA (FHP) and GFF3 annotations (FHGFF3). bioheaders assess checks how
+    FAIR the header of a FASTA, GFF3, VCF, GFA or other text file is.
     Plain and gzip/bgzip-compressed files are streamed with bounded memory.
     Formerly published on PyPI as fhr; the fhr-* commands are kept.
   license: MPL-2.0
   license_family: MOZILLA
   license_file: LICENSE
-  doc_url: https://github.com/FAIR-bioHeaders/FHR-Specification
+  doc_url: https://fhref.org/FAIR-bioHeaders-Specification/
   dev_url: https://github.com/FAIR-bioHeaders/FAIR-bioHeaders-Tools
 
 extra:
   recipe-maintainers:
     - adamjohnwright
   identifiers:
+    - biotools:fair-bioheaders
     - doi:10.1093/bib/bbae122
     - doi:10.5281/zenodo.6762547
