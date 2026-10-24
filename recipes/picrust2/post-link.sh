@@ -3,7 +3,7 @@
 FN="v2.6.4.tar.gz"
 TARBALL_DIR="picrust2-2.6.4"
 URL="https://github.com/picrust/picrust2/archive/v2.6.4.tar.gz"
-SHA256="e3b5df5920b5a15317c7519d3d185fa69af9bba52c3e0a313528d6de10414032"
+SHA256="b982acc67114027951d3a7fec8eee9619ee2af3c15051a5cdf4fee5ee62af697"
 
 # Create staging area.
 STAGING=$PREFIX/staging
