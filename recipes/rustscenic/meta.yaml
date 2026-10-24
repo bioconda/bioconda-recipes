@@ -1,0 +1,63 @@
+{% set name = "rustscenic" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/e3/08/55541d00f13c8400575c28b1d380a86a39e1fb72bf2f202386e6580e449c/rustscenic-{{ version }}.tar.gz
+  sha256: a15ce6610f17ced1dafc86f3be080bf37a695b498e3f0b6db42177eb33ccf00d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: |
+    export CARGO_BUILD_JOBS="${CPU_COUNT}"
+    cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    export MATURIN_PEP517_ARGS="--locked"
+    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - maturin >=1.5,<2
+  run:
+    - python >=3.10,<3.14
+    - numpy >=1.21
+    - pandas >=1.5
+    - pyarrow >=10
+    - scipy >=1.8
+    - anndata >=0.10
+
+test:
+  imports:
+    - rustscenic
+    - rustscenic._rustscenic
+  commands:
+    - rustscenic --version | grep -Fx "rustscenic {{ version }}"
+
+about:
+  home: https://github.com/Ekin-Kahraman/rustscenic
+  dev_url: https://github.com/Ekin-Kahraman/rustscenic
+  doc_url: https://ekin-kahraman.github.io/rustscenic/
+  license: Apache-2.0
+  license_file:
+    - LICENSE
+    - NOTICE
+    - THIRDPARTY.yml
+  summary: Rust and PyO3 implementation of SCENIC-style regulatory network analysis
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Ekin-Kahraman
