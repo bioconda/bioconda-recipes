@@ -1,0 +1,84 @@
+{% set name = "oggi" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/liushuotong/oggi/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 68b8ffe5daff921186ca48c7585a349351ff53e92cf18b0770b92a0fe0e31373
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+  entry_points:
+    - oggi = oggi:main
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >={{ python_min }}
+    - setuptools
+    - numpy
+    - scipy
+    - pandas
+    - biopython
+    - scikit-learn >=1.4,<2
+    - networkx >=3,<4
+    - hdbscan >=0.8.40,<0.9
+    - diamond
+    - hmmer
+    - cd-hit
+    - mmseqs2
+    - mcl
+    - busco
+    - mafft
+    - trimal
+    - iqtree >=2
+    - orthofinder
+    - mcscanx
+    - wgdi
+    - agat
+
+test:
+  imports:
+    - oggi
+    - cluster_engine
+    - orthofinder_hog
+  commands:
+    - oggi --version
+    - oggi --help
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/liushuotong/oggi
+  summary: Orthologous-Gene-Group Inference toolkit for plant pangenome analyses
+  description: |
+    OGGI integrates gene-family identification, synteny evidence,
+    orthology-aware clustering, BUSCO species-tree construction, and wrappers
+    for common plant pangenome analysis tools.
+  license: BSD-2-Clause AND GPL-3.0-only AND GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - orthofinder_hog/LICENSE
+    - THIRD_PARTY_NOTICES.md
+  dev_url: https://github.com/liushuotong/oggi
+  doc_url: https://github.com/liushuotong/oggi#readme
+
+extra:
+  skip-lints:
+    - uses_setuptools
+  recipe-maintainers:
+    - liushuotong
