@@ -11,16 +11,20 @@ source:
   sha256: 96e1b3a2fec84bbd0781d4d3235e33003cd4eb28944a433868ba446b956abcdb
 
 build:
-  number: 4
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-  script: $R CMD INSTALL --build . $R_ARGS
+  script:
+    - export DISABLE_AUTOBREW=1
+    - export LC_ALL=C
+    - $R CMD INSTALL --build . ${R_ARGS}
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cross-r-base {{ r_base }}    # [build_platform != target_platform]
