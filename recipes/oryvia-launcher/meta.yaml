@@ -1,0 +1,56 @@
+{% set name = "oryvia-launcher" %}
+{% set version = "2026.10.24.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/YueDong0211/ORYVIA-launcher/archive/refs/tags/v2026.10.24.3.tar.gz
+  sha256: 6d490e5fd64f4e4e2efd6e47724cf8d575a9ceb11df9b29e44f441e5922ea267
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - oryvia = oryvia_launcher:main
+    - oryvia-launcher = oryvia_launcher:main
+
+requirements:
+  host:
+    - python >=3.12,<3.14
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.12,<3.14
+
+test:
+  imports:
+    - oryvia_launcher
+  source_files:
+    - tests/test_launcher.py
+  commands:
+    - oryvia --version
+    - oryvia-launcher --help
+    - python -m unittest discover -s tests -v
+
+about:
+  home: https://github.com/YueDong0211/ORYVIA-launcher
+  license: MIT
+  license_file: LICENSE
+  summary: Launcher for a separately authorized ORYVIA Unix workstation
+  description: |
+    This MIT-licensed standard-library launcher verifies and registers an
+    authorized ORYVIA Unix package, then invokes its explicit environment
+    setup, start, stop and check commands. The scientific ORYVIA application
+    is proprietary and supplied separately under authorization. This package
+    contains no scientific analysis engine, private archive or research data;
+    installing this launcher alone does not install the scientific application.
+  dev_url: https://github.com/YueDong0211/ORYVIA-launcher
+  doc_url: https://github.com/YueDong0211/ORYVIA-launcher/blob/v2026.10.24.3/README.md
+
+extra:
+  recipe-maintainers:
+    - YueDong0211
