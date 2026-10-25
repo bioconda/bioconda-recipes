@@ -1,5 +1,5 @@
 {% set name = "varnet" %}
-{% set version = "1.5.3" %}
+{% set version = "1.5.4" %}
 {% set python_min = "3.10" %}
 
 package:
@@ -8,10 +8,7 @@ package:
 
 source:
   url: https://github.com/skandlab/VarNet/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b97c5acf60ad16d5061b23ad34f6d5210bbf6667393872fdd56ee1876eb554ba
-  patches:
-    # Stray `if` line in the v1.5.3 tag; fixed upstream on master after tagging.
-    - fix-indels-predict-syntax.patch
+  sha256: 8010e412039cd0994493f6f37e79ff73d7a0c5f0d4a19557ac81bc5350043008
 
 build:
   number: 0
@@ -37,6 +34,9 @@ requirements:
     - pybedtools >=0.8.1
     # predict.py shells out to `bedtools sort` when writing the final VCF.
     - bedtools
+    # download_resources.sh downloads with curl and checks files with md5sum.
+    - curl
+    - coreutils
 
 test:
   requires:
@@ -44,6 +44,9 @@ test:
   commands:
     - varnet-predict --help
     - varnet-filter --help
+    - varnet-predict --version
+    - varnet-filter --version
+    - test -x $PREFIX/bin/varnet-download-resources
     # predict.py shells out to this when writing the final VCF
     - bedtools --version
 
@@ -55,6 +58,7 @@ about:
 
 extra:
   notes: |
-    VarNet installs two commands: `varnet-filter` and `varnet-predict`.
+    VarNet installs three commands: `varnet-filter`, `varnet-predict` and `varnet-download-resources`.
     Run the filter step first to find candidate variants, then predict to generate VCF output.
+    For tumor-only mode, run `varnet-download-resources <folder>` once and pass the folder with `--resource_dir`.
     See https://github.com/skandlab/VarNet for full usage instructions.
