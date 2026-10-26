@@ -7,10 +7,8 @@ mkdir -p "${PREFIX}/bin"
 export CFLAGS="${CFLAGS} -O3 -I$PREFIX/include"
 export LDFLAGS="${LDFLAGS} -L$PREFIX/lib"
 
-sed -i.bak -e 's/ -static//' Makefile
-sed -i.bak -e 's/-lpthread/-pthread/' Makefile
-rm -f *.bak
-
-make -j"${CPU_COUNT}"
+# Link dynamically against the htslib/zlib provided by the host environment
+# instead of the upstream default of a fully static build.
+make -j"${CPU_COUNT}" STATIC=0
 
 install -v -m 755 sdm "${PREFIX}/bin"
