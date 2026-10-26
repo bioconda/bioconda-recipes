@@ -1,0 +1,70 @@
+{% set name = "hashbrown" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/HashBrown/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 03b1a7e60df4f4f0232d686347595f4e82ed2b89dcb3b5953afa4bb296f68c13
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - psutil >=5.9
+    - jinja2 >=3.1
+    - matplotlib-base >=3.7
+    - flye >=2.9
+    - shasta >=0.11
+    - medaka >=2.0
+    - porechop >=0.2.4
+    - filtlong >=0.2.1
+    - seqtk >=1.4
+    - skesa >=2.5
+    - spades >=3.15
+    - fastp >=0.23
+    - bwa >=0.7.17
+    - polypolish >=0.6
+    - pypolca >=0.3
+    - samtools >=1.17
+    - minimap2 >=2.26
+    - quast >=5.2
+    - mosdepth >=0.3
+    - seqkit >=2.5
+    - mummer4 >=4.0.0rc1
+    - gnuplot >=5.4
+    - bandage >=0.8.1
+    - weasyprint >=60
+    # The deeper report modules (pycoQC-ng, dnaapler, Merqury, mash, CheckM2, BUSCO, Bakta, MLST,
+    # MOB-suite, AMRFinderPlus, abricate, ConFindr, GenomeScope2, ...) are optional by design:
+    # auto-detected on the PATH and reported as skipped otherwise. See the wiki's Usage page.
+
+test:
+  commands:
+    - hashbrown --help
+    - hashbrown --version
+
+about:
+  home: https://github.com/duceppemo/HashBrown
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Long-read, short-read and hybrid bacterial genome assembly pipeline
+  dev_url: https://github.com/duceppemo/HashBrown
+  doc_url: https://github.com/duceppemo/HashBrown/wiki
+
+extra:
+  recipe-maintainers:
+    - duceppemo
