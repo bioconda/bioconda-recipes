@@ -1,0 +1,69 @@
+{% set name = "disassembler" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nekrut/disassembler/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 93cfe96405b6f83783cef676435b7e30af73a5002795b3d79a5ea24640bbed01
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - disassembler = disassembler.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.11
+    - biopython
+    - requests
+    - zstandard
+    - numpy
+    - pandas
+    # Binaries the subcommands shell out to.
+    - logan-walker >=0.1.0,<0.2
+    - kmer-diversity-sieve >=0.1.0,<0.2
+    - mafft
+    - fasttree
+
+test:
+  imports:
+    - disassembler
+    - disassembler.cli
+  commands:
+    - disassembler --version | grep -q "disassembler {{ version }}"
+    - disassembler --help
+    # The walker and sieve subcommands resolve their binaries from PATH.
+    - disassembler walker --version | grep -q "logan-walker"
+    - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
+
+about:
+  home: https://github.com/nekrut/disassembler
+  summary: Reconstruct coding haplotypes of a target gene from planetary sequence indexes (Logan, kmindex, LexicMap).
+  description: |
+    Reconstructs in-frame coding haplotypes across many SRA runs from the Logan assemblies.
+    The kmindex route harvests candidate accessions from a kmindex query, stratifies them by
+    score and walks each accession's unitig graph with logan-walker. The LexicMap route tiles
+    LexicMap hits against Logan contigs into a codon-checked cohort. Both routes can thin
+    near-duplicates with kmer-diversity-sieve and end in a reference-guided codon alignment
+    (MAFFT) and a FastTree phylogeny.
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - NOTICE
+  dev_url: https://github.com/nekrut/disassembler
+
+extra:
+  recipe-maintainers:
+    - as042
