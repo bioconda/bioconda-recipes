@@ -4,6 +4,12 @@ set -xe
 
 mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include" "${PREFIX}/man/man1"
 
+# The command-line CFLAGS below replaces the Makefile's -O3, so add it back.
+# On Linux the compiler activation also puts -O2 in CPPFLAGS, which the
+# Makefile places after CFLAGS; drop it so -O3 is the last -O.
+export CFLAGS="${CFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS//-O2/}"
+
 make \
     CC="${CC}" \
     CFLAGS="${CFLAGS}" \
