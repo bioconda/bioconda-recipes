@@ -1,0 +1,58 @@
+{% set name = "fadu" %}
+{% set version = "1.10.0" %}
+{% set sha256 = "14744e3ba8a30fedbf9ccedb23b55b9bb80aa56626dbe12babcc7194290bdcdd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/IGS/FADU/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # The bundled Julia depot holds precompiled caches; don't let conda patch prefixes inside them
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+# Manifest.toml upstream is generated with Julia v1.12, so build against 1.12.
+# Precompiled caches are only valid for the exact Julia build they were made with,
+# so pin the runtime Julia to the build-time version.
+requirements:
+  build:
+    - git
+  host:
+    - julia 1.12.*
+  run:
+    - {{ pin_compatible('julia', max_pin='x.x.x') }}
+
+test:
+  commands:
+    - fadu --help
+    - fadu --version 2>&1 | grep {{ version }}
+    - FADU_CMD=fadu bash "${PREFIX}/share/fadu/test/run_test.sh"
+
+about:
+  home: https://igs.github.io/FADU/
+  dev_url: https://github.com/IGS/FADU
+  doc_url: https://igs.github.io/FADU/
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "Feature Aggregate Depth Utility: quantification of prokaryotic RNA-Seq that accounts for overlapping and operonic genes."
+  description: |
+    FADU is a quantification tool designed specifically for prokaryotic RNA-Seq
+    analyses, with the purpose of quantifying operonic genes while minimizing the
+    pitfalls associated with improperly assigning fragment counts from ambiguous
+    transcripts. It generates fractional counts of alignments that map to the
+    non-overlapping portions of features in a GFF3 annotation.
+
+extra:
+  recipe-maintainers:
+    - adkinsrs
+  skip-lints:
+    # The bundled Julia depot contains platform-specific precompiled package images
+    - should_be_noarch_generic

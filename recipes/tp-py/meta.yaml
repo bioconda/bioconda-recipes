@@ -1,0 +1,58 @@
+{% set name = "tp-py" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "5fd72d7bbd6939111791419cb15125109ccc62cee0d165d2afef3e15cf86804a" %}
+{% set python_min = "3.9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Dunning-Hotopp-Lab/Direct_RNA_Sequencing/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  # pyproject.toml installs tp.py into bin/ via setuptools "script-files"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.20
+    - pandas >=2.0
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - tp
+  commands:
+    - tp.py --help
+    - tp.py --version
+
+about:
+  home: https://github.com/Dunning-Hotopp-Lab/Direct_RNA_Sequencing
+  dev_url: https://github.com/Dunning-Hotopp-Lab/Direct_RNA_Sequencing
+  doc_url: https://github.com/Dunning-Hotopp-Lab/Direct_RNA_Sequencing/blob/v{{ version }}/README.md
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file: LICENSE
+  summary: "TP (Transcript Prediction): predict transcripts from candidate start/stop sites in direct RNA sequencing reads."
+  description: |
+    TP predicts transcripts by finding candidate transcript start/stop sites from
+    changes in read depth across distinct regions of a position-sorted BED file of
+    direct RNA sequencing reads, then filters alternative transcripts that could use
+    various start/stop combinations. Outputs candidate and predicted transcripts in
+    BED format, and predicted transcripts in GFF3 format.
+
+extra:
+  recipe-maintainers:
+    - adkinsrs
