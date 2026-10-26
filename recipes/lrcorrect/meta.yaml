@@ -1,0 +1,44 @@
+{% set name = "lrcorrect" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gbouras13/lrcorrect/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 73a6aa59edd398985cbc0b0722304257bc5b5821e449a60b7e31fdaeef7a4c05
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - lrcorrect --version
+    - lrcorrect --help
+
+about:
+  home: https://github.com/gbouras13/lrcorrect
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast, deterministic self-correction of small long-read sets (plasmids, small genomes)
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
