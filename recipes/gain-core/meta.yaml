@@ -63,15 +63,17 @@ requirements:
     - tqdm >=4.66
 
 test:
-  files:
-    - entry_point_walk.py
   requires:
     - python {{ python_min }}
     - pip
   commands:
     # hatch-vcs falls back to 0.0.0.dev0 when it cannot read the version.
     - python -c "import importlib.metadata as m; v = m.version('{{ name }}'); assert v == '{{ version }}', v"
-    - python entry_point_walk.py {{ name }}
+    # Load every console script and gain.* plugin the installed metadata
+    # declares, so a run dependency missing from this recipe fails here.
+    - python -c "from importlib.metadata import distribution as d; eps = [e for e in d('{{ name }}').entry_points if e.group == 'console_scripts' or e.group.startswith('gain.')]; [e.load() for e in eps]; assert eps; print(len(eps), 'entry points loaded')"
+    - grr_manage --help
+    - annotate_vcf --help
     - pip check
 
 about:
