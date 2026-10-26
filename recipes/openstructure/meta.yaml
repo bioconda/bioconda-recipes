@@ -18,10 +18,12 @@ source:
     - 0003-fft-c2c-odd-tolerance.patch
 
 build:
-  number: 1
+  number: 2
   # CircleCI 1h timeout on linux-aarch64: https://github.com/bioconda/bioconda-recipes/issues/58217
   # -> Build two Python versions (3.12 + 3.13) only
-  skip: True  # [(py < 312 and aarch64) or (py > 313 and aarch64) or (py < 311 and arm64)]
+  # macOS CI currently selects the 10.9 SDK, which this recipe cannot build against
+  # (bioconda/bioconda-recipes#70401); macOS keeps build 1. Remove `or osx` on next update.
+  skip: True  # [(py < 312 and aarch64) or (py > 313 and aarch64) or (py < 311 and arm64) or osx]
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
@@ -36,8 +38,10 @@ requirements:
     - wget
   host:
     - python {{ python }}
-    - libboost-devel
-    - libboost-python-devel
+    # Match the Boost that current conda-forge rdkit builds against, so the two can share an
+    # environment. Drop the pin once bioconda's global pinning reaches 1.90.
+    - libboost-devel >=1.90,<1.91
+    - libboost-python-devel >=1.90,<1.91
     - eigen
     - fftw
     - libpng
