@@ -1,0 +1,50 @@
+{% set name = "bonefish" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DylanCosto/bonefish/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 98fea115e84246742e60dcd4133a59b806df4150497d5435b72451029355fe91
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - make
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - bonefish --version
+    - bonefish --help
+
+about:
+  home: https://github.com/DylanCosto/bonefish
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast aligner for Oxford Nanopore DNA, direct RNA and cDNA reads, with minimap2-level accuracy.
+  description: |
+    bonefish aligns Oxford Nanopore reads (FASTQ, FASTA or dorado BAM) to a reference and
+    writes SAM, PAF or a coordinate-sorted, indexed BAM. Genomic DNA uses minimap2's lr:hq
+    seeding and scoring with cheaper chaining and alignment, validated against GIAB truth sets;
+    direct RNA and cDNA (-x rna, -x cdna) use minimap2's spliced presets with faster intron
+    alignment, validated against minimap2, GENCODE and simulated reads.
+  dev_url: https://github.com/DylanCosto/bonefish
+  doc_url: https://github.com/DylanCosto/bonefish/blob/main/docs/tutorial.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
