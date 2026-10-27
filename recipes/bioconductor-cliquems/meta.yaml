@@ -13,28 +13,32 @@ source:
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
   md5: c015d39daf9895c5c07fde4cc93103b0
+  patches:
+    # igraph >= 2.0 fixes (osenan/cliqueMS#11, #12) and C++14 for RcppArmadillo >= 15.2.6
+    - cliquems-fixes.patch
 
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-cliquems", max_pin="x.x") }}'
 
-# Suggests: BiocParallel, knitr, rmarkdown, testthat, CAMERA
-# SystemRequirements: C++11
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
   host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-camera >=1.66.0,<1.67.0
     - bioconductor-msnbase >=2.36.0,<2.37.0
     - bioconductor-xcms >=4.8.0,<4.9.0
     - r-base
     - r-bh
     - r-coop
-    - r-igraph
+    - r-igraph >=2.1.0
     - r-matrixstats
     - r-rcpp >=0.12.15
     - r-rcpparmadillo
@@ -44,12 +48,14 @@ requirements:
     - zlib
     - liblzma-devel
   run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-camera >=1.66.0,<1.67.0
     - bioconductor-msnbase >=2.36.0,<2.37.0
     - bioconductor-xcms >=4.8.0,<4.9.0
     - r-base
     - r-bh
     - r-coop
-    - r-igraph
+    - r-igraph >=2.1.0
     - r-matrixstats
     - r-rcpp >=0.12.15
     - r-rcpparmadillo
