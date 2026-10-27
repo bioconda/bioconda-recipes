@@ -1,87 +1,60 @@
 {% set name = "pyopenms" %}
-{% set version = "3.4.1" %}  # if ends with 'dev' it is considered a development release and pulled from GitHub
+{% set version = "3.6.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-{% if 'dev' in version %}
+{% if "dev" in version %}
 
 source:
   git_url: https://github.com/OpenMS/OpenMS.git
-  git_rev: release/{{ version }}
+  git_rev: develop
   md5: unused
 {% else %}
 
 source:
-  # Remove trailing zeros for major releases
-  {% set version_parts = version.split('.') %}
-  {% if version_parts|length == 3 and version_parts[2] == '0' %}
-    {% set short_version = version_parts[0] ~ '.' ~ version_parts[1] %}
-  {% else %}
-    {% set short_version = version %}
-  {% endif %}
-  url: https://github.com/OpenMS/OpenMS/releases/download/release%2F{{ version }}/OpenMS-{{ short_version }}.tar.gz
-  md5: 8d0b4d1d333f069959f7d5ff1c77a90f
+  url: https://github.com/OpenMS/OpenMS/releases/download/v{{ version }}/OpenMS-{{ version }}.tar.gz
+  sha256: 70c7f7afff938634b5e87a7c9f71856a4469ae0e45d66dd50655460dbf6d6535
+  patches:
+    # libopenms does not install BrukerTimsFile.h.
+    - 0001-bind_format-include-BrukerTimsFile.h-only-with-WITH_OPENTIMS.patch
 {% endif %}
 
 build:
   number: 0
-  skip: True  # [py < 39]
+  skip: true  # [py < 311]
   run_exports:
-    - {{ pin_subpackage("pyopenms", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - ninja
-    - cmake
-    - autoconf
-    - automake
-    - libtool
-    - pkg-config
-    - qt6-main
-    - sysroot_linux-64 =2.17  # [linux]
+    - cmake >=3.24
   host:
     - python
-    - pip
-    - cython <3.1
-    - eigen >=3.4.0
-    - libopenms >={{ version }}
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - libsvm
-    - coinmp
-    - yaml-cpp
-    - doxygen >=1.8.13
-    - xerces-c
-    - boost-cpp
-    - autowrap >=0.22.11
+    - nanobind >=3.1,<4
     - numpy >=2.0
-    - pandas
-    - matplotlib-base
-    - sysroot_linux-64 =2.17  # [linux]
-    - icu >=75.1,<76.0a0
-    - pytest
-    - zlib
-  run:  # run_exports in libopenms should take care of the libraries. But it does not because of bugs. So copy everthing again and again
+    - pandas >=3
+    - matplotlib-base >=3.5
+    - libopenms =={{ version }}
+    - libarrow =23=*_cpu
+    - libboost-headers
+    - eigen >=3.4.0
+  run:
     - python
-    - libopenms >={{ version }}
-    - libgomp  # [linux]
-    - llvm-openmp  # [osx]
-    - libsvm
-    - xerces-c
-    - boost-cpp
-    - eigen >=3.4.0
+    - libopenms =={{ version }}
     - numpy >=2.0
-    - pandas
-    - matplotlib-base
-    - sysroot_linux-64 =2.17  # [linux]
+    - pandas >=3
+    - matplotlib-base >=3.5
 
 test:
+  imports:
+    - pyopenms
   commands:
-    - python -c "import pyopenms; print(pyopenms.__version__)"
-    # We cant use the PYTHON variable since it does not exist on the biocontainer?!
-    # TODO run the full test suite?
+    - python -c "import pyopenms as oms; assert oms.__version__ == '{{ version }}', oms.__version__; print(oms.__version__)"
+    - python -c "import pyopenms as oms; n = oms.ModificationsDB().getNumberOfModifications(); assert n > 100, n; print(n)"
 
 about:
   home: "https://github.com/OpenMS/OpenMS"
@@ -93,12 +66,15 @@ about:
   doc_url: "https://openms.readthedocs.io/en/latest"
 
 extra:
+  recipe-maintainers:
+    - timosachsenberg
+    - jonasscheid
   additional-platforms:
-    - linux-aarch64
-{% if 'dev' in version %}
-  skip-lints:
-    - uses_vcs_url
-{% endif %}
+    - osx-arm64
   identifiers:
     - biotools:openms
     - doi:10.1038/s41592-024-02197-7
+{% if "dev" in version %}
+  skip-lints:
+    - uses_vcs_url
+{% endif %}

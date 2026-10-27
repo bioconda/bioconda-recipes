@@ -1,4 +1,4 @@
-{% set version = "1.5" %}
+{% set version = "1.7" %}
 
 package:
   name: unifrac-binaries
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/biocore/unifrac-binaries/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 566cae407e4bb0f94dbc712cc367177ac24bd894254ded39f1157f7d2837ff1b
+  sha256: 59196d84ce0fca5a4aef4dccbfdf3a6785da964cb03596f1715e2a4dd835542e
 
 build:
   number: 0
@@ -17,29 +17,26 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - libcxx-devel # [osx]
-    - llvm-openmp # [osx]
+    - {{ stdlib("c") }}
+    - llvm-openmp >=20.1.8  # [osx]
+    - libgomp      # [linux]
     - hdf5 =*=nompi*
     - hdf5-static =*=nompi*
-    - lz4
-    - zlib # [linux]
-    - libcblas
-    - blas-devel
-    - liblapacke
     - make
-    - curl
+    - curl         # [linux]
   host:
+    - {{ stdlib("c") }}
     - lz4
-    - zlib # [linux]
-    - libcblas
-    - liblapacke
-    - libaec # [linux]
+    - zlib
+    - scikit-bio-binaries
+    - libaec
   run:
     - lz4
-    - zlib # [linux]
-    - libcblas
-    - liblapacke
-    - libaec # [linux]
+    - llvm-openmp >=20.1.8 # [osx]
+    - libgomp      # [linux]
+    - zlib
+    - scikit-bio-binaries
+    - libaec
 
 test:
   commands:

@@ -1,41 +1,41 @@
 {% set name = "orthologer" %}
-{% set version = "3.7.1" %}
-{% set sha256 = "49a6239431548e50f973e4399260e93bba76aa2272657f8c5ea5c5d732c89c19" %}
+{% set version = "3.9.2" %}
+{% set sha256 = "9f04eaecb3cd430959648c047502ff5d69ecf7b48a359c676fc2ed59a1f62ffa" %}
+
 
 package:
   name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-  run_exports:
-    - {{ pin_subpackage('orthologer', max_pin="x") }}
-
 source:
   url: https://data.orthodb.org/current/download/software/orthologer_{{ version }}.tgz
   sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('orthologer', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
+    - pkg-config
+    - rsync
   host:
+    - python >=3.9,<3.14
     - bash >=4.1
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - rsync
-    - wget
-    - bash >=4.1
-    - python >=3.4,<3.12
     - spdlog
-    - ete3
     - boost-cpp
   run:
     - boost-cpp
     - bash >=4.1
-    - python >=3.4,<3.12
+    - python >=3.9,<3.14
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - rsync
@@ -44,10 +44,7 @@ requirements:
     - mmseqs2
     - cd-hit
     - diamond
-    - biopython
-    - numpy
     - busco >=5.7.0
-    - ete3
 
 test:
   commands:
@@ -60,6 +57,7 @@ about:
   license_file: LICENSE
   summary: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
   description: "Ortholog detection for comparative genomics and fast functional annotation behind OrthoDB and BUSCO."
+
   dev_url: "https://gitlab.com/ezlab/orthologer_container"
   doc_url: "https://orthologer.ezlab.org/#on-orthodb-data"
 

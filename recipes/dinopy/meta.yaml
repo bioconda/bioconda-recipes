@@ -1,39 +1,54 @@
+{% set name = "dinopy" %}
 {% set version = "3.0.0" %}
 
 package:
-  name: dinopy
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/e3/fd/06182a3e21bd400c172ef973512a070968c039a0f18f41c54c933fcafef9/dinopy-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/dinopy-{{ version }}.tar.gz
   sha256: 9b2238c20c946a7ea34b979fec4dd182f3474958e9a03075dfbbb464e9d84028
 
 build:
   number: 2
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"  # [osx]
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage("dinopy", max_pin="x") }}
+    - {{ pin_subpackage('dinopy', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - python
-    - setuptools
-    - cython >=3.0.0
-    - numpy =1.21
+    - pip
+    - setuptools-scm
+    - cython <3.1
+    - numpy =1.26.4
   run:
     - python
-    - numpy =1.21 # dinopy compiles against the numpy ABI, hence we need to pin it to an exact version and cannot rely on run_exports, which pins to anything below the next major release.
+    - numpy =1.26.4  # dinopy compiles against the numpy ABI, hence we need to pin it to an exact version and cannot rely on run_exports, which pins to anything below the next major release.
 
 test:
   imports:
     - dinopy
 
 about:
-  home: https://bitbucket.org/HenningTimm/dinopy
+  home: "https://bitbucket.org/HenningTimm/dinopy"
   license: MIT
-  summary: 'DNA input and output library for Python and Cython. Includes reader and writer for FASTA and FASTQ files, support for samtools faidx files, and generators for solid and gapped q-grams (k-mers).'
+  license_family: MIT
+  license_file: "LICENSE.rst"
+  summary: "DNA input and output library for Python and Cython. Includes reader and writer for FASTA and FASTQ files, support for samtools faidx files, and generators for solid and gapped q-grams (k-mers)."
+  dev_url: "https://bitbucket.org/HenningTimm/dinopy"
+  doc_url: "https://dinopy.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
