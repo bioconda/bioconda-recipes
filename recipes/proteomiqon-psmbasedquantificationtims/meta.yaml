@@ -1,0 +1,47 @@
+{% set name = "proteomiqon-psmbasedquantificationtims" %}
+{% set version = "0.0.13" %}
+{% set sha256 = "afb788a825402b264b7a989eb09a323e297779cd6e8bc2eea39d3426bed2d3a3" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PSMBasedQuantificationTIMs/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
+    - grep -q "PSMBasedQuantificationTIMs/ProteomIQon.PSMBasedQuantificationTIMs.dll" "$PREFIX/bin/proteomiqon-psmbasedquantificationtims"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: PSM-based quantification for trapped ion mobility spectrometry data
+  description: >-
+    ProteomIQon.PSMBasedQuantificationTIMs performs PSM-based peptide ion
+    quantification for mass spectrometry data with ion mobility information.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/
+
+
