@@ -14,9 +14,7 @@ source:
     - 0002-cmake.patch
 
 build:
-  number: 6
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+  number: 7
 
 requirements:
   build:
@@ -25,19 +23,53 @@ requirements:
     - {{ stdlib('c') }}
     - make
     - cmake
-    - pkg-config
-    - clangdev  # [osx]
-    - llvmlite  # [osx]
-    - python <3.11
-    - pytest
-  host:
-    - zlib
-  run:
-    - python >=3
 
 test:
   commands:
     - kmc --help  # [not aarch64]
+
+outputs:
+  - name: {{ name }}
+    script: build_kmc.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - make
+        - cmake
+        - pkg-config
+        - clangdev  # [osx]
+        - llvmlite  # [osx]
+      host:
+        - zlib
+
+  - name: py-kmc-api
+    script: build_py.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('py-kmc-api', max_pin="x") }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - make
+        - cmake
+        - clangdev  # [osx]
+        - llvmlite  # [osx]
+      host:
+        - python
+        - pybind11
+        - zlib
+      run:
+        - python
+    test:
+      imports:
+        - py_kmc_api
 
 about:
   home: "https://github.com/refresh-bio/kmc"

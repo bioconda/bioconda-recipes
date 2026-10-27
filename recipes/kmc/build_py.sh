@@ -42,13 +42,26 @@ else
 	export CONFIG_ARGS=""
 fi
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+# The vendored pybind11 predates Python 3.11; build against the packaged one.
+rm -rf py_kmc_api/libs/pybind11/include
+ln -s "${PREFIX}/include" py_kmc_api/libs/pybind11/include
+
+# The work directory is reused across Python variants; start from a clean CMake cache.
+rm -rf build-py
+
+cmake -S . -B build-py -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DKMC_BUILD_PYTHON_API=ON \
+	-DPython_EXECUTABLE="${PYTHON}" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build --clean-first --target install -j "${CPU_COUNT}"
+cmake --build build-py --target py_kmc_api -j "${CPU_COUNT}"
+
+ext_suffix=$(${PYTHON} -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
+install -d "${SP_DIR}" "${PREFIX}/bin"
+install -m 755 "$(find build-py -name 'py_kmc_api*.so' | head -n 1)" "${SP_DIR}/py_kmc_api${ext_suffix}"
+install -m 755 py_kmc_api/py_kmc_dump.py "${PREFIX}/bin/py_kmc_dump.py"
