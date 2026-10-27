@@ -2,7 +2,7 @@
 {% set version = "3.2.4" %}
 
 package:
-  name: {{ name }}-split
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -15,52 +15,25 @@ source:
 
 build:
   number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
-outputs:
-  - name: {{ name }}
-    script: build_kmc.sh
-    build:
-      run_exports:
-        - {{ pin_subpackage(name, max_pin="x") }}
-    requirements:
-      build:
-        - {{ compiler('cxx') }}
-        - {{ compiler('c') }}
-        - {{ stdlib('c') }}
-        - make
-        - cmake
-        - pkg-config
-        - clangdev  # [osx]
-        - llvmlite  # [osx]
-      host:
-        - zlib
-    test:
-      commands:
-        - kmc --help  # [not aarch64]
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+    - cmake
+    - pkg-config
+    - clangdev  # [osx]
+    - llvmlite  # [osx]
+  host:
+    - zlib
 
-  - name: py-kmc-api
-    script: build_py.sh
-    build:
-      run_exports:
-        - {{ pin_subpackage('py-kmc-api', max_pin="x") }}
-    requirements:
-      build:
-        - {{ compiler('cxx') }}
-        - {{ compiler('c') }}
-        - {{ stdlib('c') }}
-        - make
-        - cmake
-        - clangdev  # [osx]
-        - llvmlite  # [osx]
-      host:
-        - python
-        - pybind11
-        - zlib
-      run:
-        - python
-    test:
-      imports:
-        - py_kmc_api
+test:
+  commands:
+    - kmc --help  # [not aarch64]
 
 about:
   home: "https://github.com/refresh-bio/kmc"
