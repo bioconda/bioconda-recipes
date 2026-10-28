@@ -1,11 +1,11 @@
 #!/bin/bash
 
-set -xeuo
+set -xeuo pipefail
 
 # cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 export PATH=$PREFIX/bin:$PATH
 
-export RUSTUP_TOOLCHAIN=nightly
+export RUSTC_BOOTSTRAP=1
 
-RUST_BACKTRACE=1 cargo install --verbose --path . --root $PREFIX --no-track
+RUST_BACKTRACE=1 cargo install --verbose --locked --path . --root $PREFIX --no-track
