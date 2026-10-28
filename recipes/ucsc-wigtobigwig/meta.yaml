@@ -1,18 +1,18 @@
 {% set package = "ucsc-wigtobigwig" %}
 {% set program = "wigToBigWig" %}
-{% set version = "472" %}
-{% set sha256 = "26d126c51d0ba3165519b116b6461af8bfd938505f6c0871cb325a7ab82368f2" %}
+{% set version = "482" %}
+{% set sha256 = "745d0f0a980e9f863373b0b0a6ad7961a1d0f53a9d7c446e92fc28fc4909431a" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: {{ package }}
+  version: {{ version }}
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
-  sha256: "{{ sha256 }}"
+  url: https://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz
+  sha256: {{ sha256 }}
   patches:
-    - include.patch  # [linux]
-    - include.macos.patch  # [osx]
+    - include.patch
+    - include.linux.patch  # [linux]
 
 build:
   number: 1
@@ -26,14 +26,17 @@ requirements:
   host:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
     - libopenssl-static
     - clangdev  # [osx]
+    - rsync  # [osx]
     - zlib
+    - bzip2
+    - liblzma-devel
   run:
     - libpng
     - libuuid
-    - mysql-connector-c
+    - mysql-connector-c  # [not arm64]
     - libopenssl-static
 
 test:
@@ -54,3 +57,4 @@ extra:
     - doi:10.1093/bib/bbs038
   additional-platforms:
     - linux-aarch64
+    - osx-arm64

@@ -1,27 +1,29 @@
-{% set version = "1.0.7" %}
+{% set version = "1.1.0" %}
 {% set name = "rust-ncbitaxonomy" %}
-{% set sha256 = "fc78c0db6b2bac71db449f2da44740f08c192362a5dae516834d8f37fdacd801" %}
+{% set sha256 = "961d38b3cec148fe839bc62e177afb50f78a1ea2765a1e7ab7173948321cd203" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
-
-build:
-  number: 5
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://github.com/pvanheus/ncbitaxonomy/archive/{{ version }}.tar.gz"
-  sha256: "{{ sha256 }}"
+  url: https://github.com/pvanheus/ncbitaxonomy/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root ${PREFIX} --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   host:
-    - sqlite
-  run:
     - sqlite
 
 test:
@@ -31,14 +33,20 @@ test:
     - taxonomy_filter_fastq --help | grep FASTQ
 
 about:
-  home: https://github.com/pvanheus/ncbitaxonomy
+  home: "https://github.com/pvanheus/ncbitaxonomy"
   doc_url: "https://docs.rs/crate/ncbitaxonomy/{{ version }}"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: |
-    A Rust crate for working with a local copy of the NCBI Taxonomy database, which provides utilities for taxonomic filtering.
+  summary: "Tools and a Rust crate for working with the NCBI Taxonomy database."
+  description: >
+    This package provides some tools for working with (querying, converting) the NCBI Taxonomy database as well as filtering based on the NCBI Taxonomy and output of tools such as kraken2 and centrifuge.
 
 extra:
+  recipe-maintainers:
+    - pvanheus
   additional-platforms:
     - linux-aarch64
     - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

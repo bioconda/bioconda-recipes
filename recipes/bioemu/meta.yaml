@@ -1,0 +1,61 @@
+{% set version = "1.4.1" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: bioemu
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/b/bioemu/bioemu-{{ version }}.tar.gz
+  sha256: a2c4ba8e58aa04fd9192af03a0daeb1938bbf69aacb48727ab789db7ce3b3d71
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('bioemu', max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - setuptools
+    - wheel
+    - pip
+  run:
+    - bio >=1.5.9
+    - dm-tree
+    - dm-haiku >=0.0.12
+    - fire >=0.7.0
+    - huggingface_hub
+    - hydra-core
+    - jax >=0.4.35,<0.11
+    - mdtraj >=1.9.9
+    - modelcif >=0.7
+    - python >={{ python_min }}
+    - pytorch >=2.6.0
+    - stackprinter
+    - torch-geometric >=2.6.1
+    - typer
+
+test:
+  imports:
+    - bioemu
+  requires:
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/microsoft/bioemu
+  summary: Biomolecular emulator for scalable emulation of protein equilibrium ensembles with generative deep learning
+  license: Apache-2.0 AND MIT
+  license_file:
+    - LICENSE
+    - NOTICE.md
+
+extra:
+  identifiers:
+    - biotools:bioemu
+    - doi:10.1126/science.adv9817
+    - doi:10.1101/2024.12.05.626885v2
+  recipe-maintainers:
+    - awvwgk

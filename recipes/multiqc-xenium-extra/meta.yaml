@@ -1,0 +1,45 @@
+{% set name = "multiqc-xenium-extra" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MultiQC/xenium-extra/archive/v{{ version }}.tar.gz
+  sha256: bf4c0aa5f269521ceed3328e799f75042a6c314189b8315a5194f02f8b52ca9b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('multiqc-xenium-extra', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+  run:
+    - python >=3.9
+    - multiqc >=1.32
+    - polars-lts-cpu
+    - scipy >=1.8.0
+    - scanpy >=1.9.0
+
+test:
+  imports:
+    - multiqc_xenium_extra
+
+about:
+  home: https://seqera.io/multiqc
+  license: MIT
+  license_file: LICENSE
+  summary: MultiQC plugin for extra Xenium spatial transcriptomics analysis
+  doc_url: https://docs.seqera.io/multiqc/modules/xenium
+  dev_url: https://github.com/MultiQC/xenium-extra
+
+extra:
+  recipe-maintainers:
+    - ewels

@@ -1,38 +1,41 @@
-{% set name = "repeatmasker" %}
-{% set version = "4.1.7p1" %}
-{% set sha256 = "15222b39178f19c116282437190b64c5ba68f62b0f2044b3bbcbda5e02748993" %}
+{% set name = "RepeatMasker" %}
+{% set version = "4.2.4" %}
+{% set sha256 = "7407b42909c64b7ae080efb737f3f725327be81ace1ec0cd9dc13c4a503885d7" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://www.repeatmasker.org/RepeatMasker/RepeatMasker-4.1.7-p1.tar.gz
+  url: https://www.repeatmasker.org/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage('repeatmasker', max_pin='x') }}
+    - {{ pin_subpackage('repeatmasker', max_pin="x") }}
 
 requirements:
   host:
     - perl
-    - rmblast
+    - rmblast >=2.17.0
     - h5py
+    - trf # required for config
+    - famdb # required for config
   run:
-    - rmblast
+    - rmblast >=2.17.0
     - hmmer
     - trf
     - perl
     - h5py
     - gzip  # [osx]
     - wget
+    - famdb
 
 test:
   commands:
-  - RepeatMasker | grep "RepeatMasker - Mask repetitive DNA" > /dev/null
+    - RepeatMasker | grep "RepeatMasker - Mask repetitive DNA" > /dev/null
 
 about:
   home: "https://www.repeatmasker.org/RepeatMasker"
@@ -45,3 +48,6 @@ extra:
   identifiers:
     - biotools:repeatmasker
     - usegalaxy-eu:repeatmasker_wrapper
+  recipe-maintainers:
+    - mencian
+    - TobyBaril

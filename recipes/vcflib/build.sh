@@ -1,54 +1,72 @@
 #!/bin/bash
 set -ex
 
-OS=$(uname)
+cp -f "${RECIPE_DIR}/vcflib.pc.in" "${SRC_DIR}"
+
+sed -i.bak -e 's|-fPIC|-fPIC -Wno-int-conversion -Wno-deprecated-declarations -Wno-absolute-value -Wno-unused-comparison|' CMakeLists.txt
+rm -f *.bak
+
+export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Iwfa2 -I\$(INC_DIR)"
+export CFLAGS="${CFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+
+OS=$(uname -s)
 ARCH=$(uname -m)
 
-if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
-	echo $(pwd)/zig-macos-x86_64-*
-	export PATH="$(pwd)/zig-macos-x86_64-0.10.1:${PATH}"
-elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	echo $(pwd)/zig-macos-aarch64-*
-	export PATH="$(pwd)/zig-macos-aarch64-0.10.1:${PATH}"
-else
-	echo $(pwd)/zig-linux-${ARCH}-*
-	export PATH="$(pwd)/zig-linux-${ARCH}-0.10.1:${PATH}"
-fi
+sed -i.bak 's|HTSCODECS_VERSION_TEXT|HTSCODECS_VERSION|' contrib/tabixpp/htslib/htscodecs/htscodecs/htscodecs.c
+rm -f contrib/tabixpp/htslib/htscodecs/htscodecs/*.bak
 
-export INCLUDES="-I${PREFIX}/include -I. -Ihtslib -Itabixpp -Iwfa2 -I\$(INC_DIR)"
-export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Ltabixpp -Lwfa2"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -lhts -ltabixpp -lpthread -lz -lm -llzma -lbz2 -fopenmp -lwfa2"
-export CXXFLAGS="${CXXFLAGS} -O3 -D_FILE_OFFSET_BITS=64 -I${PREFIX}/include"
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	echo $(pwd)/zig-x86_64-macos-*
+	export PATH="$(pwd)/zig-x86_64-macos-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-x86_64-macos-0.15.1:${PATH}"
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	echo $(pwd)/zig-aarch64-macos-*
+	export PATH="$(pwd)/zig-aarch64-macos-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-aarch64-macos-0.15.1:${PATH}"
+else
+	echo $(pwd)/zig-${ARCH}-linux-*
+	export PATH="$(pwd)/zig-${ARCH}-linux-0.15.1/lib:${PATH}"
+	export PATH="$(pwd)/zig-${ARCH}-linux-0.15.1:${PATH}"
+fi
 
 sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64/' contrib/smithwaterman/Makefile
 sed -i.bak 's/CFLAGS/CXXFLAGS/g' contrib/smithwaterman/Makefile
-
 sed -i.bak 's/$</$< $(LDFLAGS)/g' contrib/smithwaterman/Makefile
 sed -i.bak 's/ld/$(LD)/' contrib/smithwaterman/Makefile
 sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' contrib/filevercmp/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/multichoose/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' contrib/intervaltree/Makefile
 
+rm -rf contrib/filevercmp/*.bak
+rm -rf contrib/multichoose/*.bak
+rm -rf contrib/smithwaterman/*.bak
+rm -rf contrib/intervaltree/*.bak
+
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
-if [[ `uname` == "Darwin" ]]; then
+if [[ "${OS}" == "Darwin" ]]; then
+	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib -Lwfa2"
+	export LDFLAGS="${LDFLAGS} -lhts -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp -lwfa2"
+	export CXXFLAGS="${CXXFLAGS}"
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DWFA_GITMODULE=OFF"
 	sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' contrib/smithwaterman/Makefile
 	sed -i.bak 's/-std=c++0x/-std=c++17 -stdlib=libc++/g' contrib/intervaltree/Makefile
-	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
-	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+	rm -rf contrib/smithwaterman/*.bak
+	rm -rf contrib/intervaltree/*.bak
 else
-        export CONFIG_ARGS=""
+	export LIBPATH="-L${PREFIX}/lib -L. -Lhtslib"
+	export LDFLAGS="${LDFLAGS} -lhts -pthread -lz -lm -llzma -lbz2 -lcurl -fopenmp"
+ 	export CONFIG_ARGS="-DWFA_GITMODULE=ON"
 fi
 
-pkg-config --list-all
-
-cmake -S . -B build \
-	-DZIG=ON -DOPENMP=ON -DWFA_GITMODULE=OFF \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DBUILD_SHARED_LIBS=ON \
-	-DCMAKE_INSTALL_LIBDIR=lib \
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DOPENMP=ON -DZIG=ON -DBUILD_SHARED_LIBS=ON \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 
-cmake --build build/ --target install -j "${CPU_COUNT}" -v
+cmake --build build --clean-first --target install -j "${CPU_COUNT}"

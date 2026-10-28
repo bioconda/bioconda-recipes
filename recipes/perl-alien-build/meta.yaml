@@ -1,23 +1,23 @@
 {% set name = "perl-alien-build" %}
-{% set version = "2.53" %}
-{% set sha256 = "fcc4391eb099b5e8c87b526fa6ebaf0b5eccee66f63653f786026120a42a0f5c" %}
+{% set version = "2.88" %}
+{% set sha256 = "c14346bace2b50cae62f1ee70a907f4c7383fabf90b034272ee52a5b1345fbba" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Build-2.53.tar.gz
+  url: https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Build-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   run_exports:
-    weak:
-      - {{ name }} ={{ version }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - autoconf  # [not win]
     - automake  # [not win]
@@ -25,6 +25,8 @@ requirements:
     - m2-automake-wrapper  # [win]
     - make  # [not win]
     - m2-make  # [win]
+    - libtool
+    - pkg-config
   host:
     - perl
     - perl-path-tiny
@@ -107,6 +109,12 @@ test:
     - Alien::Util
 
 about:
-  home: https://metacpan.org/pod/Alien::Build
-  license: perl_5
-  summary: 'Build external dependencies for use in CPAN'
+  home: "https://metacpan.org/pod/Alien::Build"
+  license: "perl_5"
+  summary: "Build external dependencies for use in CPAN."
+  doc_url: "https://metacpan.org/pod/Alien::Build"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
