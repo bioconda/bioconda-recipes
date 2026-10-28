@@ -1,5 +1,5 @@
 {% set name = "trimap" %}
-{% set version = "1.0.15" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,22 +7,27 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/trimap-{{ version }}.tar.gz
-  sha256: 8a87c24c9984dc1c80b6d0aab9f6099980725fc8d4419d7667b4b0e99024e0c3
+  sha256: 909b9652a5bee76c7fbf6b65d6c9c32b3041207f89e1280a6793ad84938002c9
 
 build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools
   run:
-    - python-annoy >=1.11
-    - numba >=0.34
+    - python-annoy >=1.17.3
+    - numpy >=1.23
+    - numba >=0.57
     - python
-    - scikit-learn >=0.16
+    - scikit-learn >=1.2
+    - pytorch >=2.1
 
 test:
   imports:

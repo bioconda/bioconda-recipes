@@ -1,13 +1,18 @@
-{% set version = "1.38.0" %}
+{% set version = "1.42.0" %}
 {% set name = "nethet" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Package nethet is an implementation of statistical solid methodology enabling the analysis of network heterogeneity from high-dimensional data. It combines several implementations of recent statistical innovations useful for estimation and comparison of networks in a heterogeneous, high-dimensional setting. In particular, we provide code for formal two-sample testing in Gaussian graphical models (differential network and GGM-GSA; Stadler and Mukherjee, 2013, 2014) and make a novel network-based clustering algorithm available (mixed graphical lasso, Stadler and Mukherjee, 2013).
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
-  summary: A bioconductor package for high-dimensional exploration of biological network heterogeneity
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 1efdaecbc764bfc420f7a7f63fecc08f
 
 build:
   number: 0
@@ -16,18 +21,14 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-nethet", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: knitr, xtable, BiocStyle, testthat
 requirements:
   build:
     - {{ compiler('c') }}
     - make
   host:
-    - bioconductor-limma >=3.62.0,<3.63.0
-    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-multtest >=2.66.0,<2.67.0
     - r-base
     - r-compquadform
     - r-genenet
@@ -43,9 +44,11 @@ requirements:
     - r-network
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-limma >=3.62.0,<3.63.0
-    - bioconductor-multtest >=2.62.0,<2.63.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-multtest >=2.66.0,<2.67.0
     - r-base
     - r-compquadform
     - r-genenet
@@ -60,15 +63,14 @@ requirements:
     - r-mvtnorm
     - r-network
 
-source:
-  md5: 4775425acafec422168d1e53f9102d2e
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-2
+  summary: A bioconductor package for high-dimensional exploration of biological network heterogeneity
+  description: Package nethet is an implementation of statistical solid methodology enabling the analysis of network heterogeneity from high-dimensional data. It combines several implementations of recent statistical innovations useful for estimation and comparison of networks in a heterogeneous, high-dimensional setting. In particular, we provide code for formal two-sample testing in Gaussian graphical models (differential network and GGM-GSA; Stadler and Mukherjee, 2013, 2014) and make a novel network-based clustering algorithm available (mixed graphical lasso, Stadler and Mukherjee, 2013).
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 

@@ -5,19 +5,22 @@ package:
   version: {{ version }}
 
 source:
-  url: http://sourceforge.net/projects/kmer/files/ATAC-r2008.tar.bz2
-  md5: e23ef1d41836b29332b70271b7c9eb74
+  url: http://sourceforge.net/projects/kmer/files/ATAC-r{{ version }}.tar.bz2
+  sha256: 5d40130105b0fe757e510e00a999a5b18e7fe399e7b6785f2d3145df9ea17d38
+  patches:
+    - Makefile.patch
 
 build:
-  number: 7
+  number: 8
   run_exports:
-    - {{ pin_subpackage("atac", max_pin=None) }}  
-    
+    - {{ pin_subpackage('atac', max_pin=None) }}
+
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - python
     - perl
@@ -31,12 +34,14 @@ test:
     - atac.pl 2>&1 | grep 'atac.pl'
 
 about:
-  home: 'http://kmer.sourceforge.net/wiki/index.php/Overview_of_the_ATAC_process'
-  license: "GPL"
-  summary: "ATAC is a computational process for comparative mapping between two genome assemblies, or between two different genomes"
+  home: "https://sourceforge.net/projects/kmer"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "ATAC is a computational process for comparative mapping between two genome assemblies, or between two different genomes."
 
 extra:
   identifiers:
     - biotools:atac
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
