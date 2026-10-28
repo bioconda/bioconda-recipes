@@ -1,29 +1,31 @@
-{% set name = "CellBender" %}
-{% set version = "0.3.2" %}
+{% set name = "cellbender" %}
+{% set version = "0.4.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/broadinstitute/CellBender/archive/v{{ version }}.tar.gz
-  sha256: 3bd4bf77c82a5817bb09ac3db236e9795e3e71c99cbe34c8baef04272a7d1717
+  sha256: 4e25735f04047fffee68e7082c0471f89ffe0ac28a9f2a90481098503e07b40a
 
 build:
   number: 0
   noarch: python
   entry_points:
     - cellbender = cellbender.base_cli:main
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('cellbender', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python 3.7
+    - python >=3.10
     - pip
+    - setuptools >=61.2
+    - setuptools-git-versioning >=2.0
   run:
-    - python 3.7
+    - python >=3.10
     - numpy
     - scipy
     - pytables
@@ -31,24 +33,23 @@ requirements:
     - pyro-ppl >=1.8.4
     - pytorch
     - matplotlib-base
-    - anndata >=0.7
-    - loompy
+    - anndata >=0.9
     - ipython
-    - jupyter
-    - jupyter_contrib_nbextensions
-    - notebook <7.0.0
-    - nbconvert <7.0.0
+    - ipykernel
+    - nbconvert
+    - lxml-html-clean
     - psutil
+    - dill >0.3.1
 
 test:
   imports:
     - cellbender
   commands:
-    - "cellbender --help"
+    - cellbender --help
 
 about:
   home: "https://github.com/broadinstitute/CellBender"
-  summary: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing (scRNA-seq) data"
+  summary: "A software package for eliminating technical artifacts from high-throughput single-cell RNA sequencing (scRNA-seq) data."
   license: "BSD-3-Clause"
   license_family: BSD
   license_file: LICENSE

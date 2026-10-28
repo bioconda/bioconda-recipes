@@ -9,6 +9,10 @@ set -euxo pipefail
 
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib:/Library/Developer/CommandLineTools/usr/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"
+fi
+
 # Bundle third-party license texts for the package (bioconda policy for Rust).
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
