@@ -1,23 +1,31 @@
+
 #!/usr/bin/env bash
 set -euo pipefail
 
 INSTALL_DIR="${PREFIX}/share/nanoporetk"
 
-echo "[INFO] Installing nanoporeTK"
-echo "[INFO] Source:  ${SRC_DIR}"
-echo "[INFO] Target:  ${INSTALL_DIR}"
+mkdir -p "${INSTALL_DIR}" "${PREFIX}/bin"
 
-mkdir -p "${INSTALL_DIR}"
-mkdir -p "${PREFIX}/bin"
+# Install the main executable.
+install -m 0755 \
+  "${SRC_DIR}/nanoporeTK" \
+  "${INSTALL_DIR}/nanoporeTK"
 
-# Install the complete nanoporeTK tree.
-cp -R . "${INSTALL_DIR}/"
+# Install only directories required at runtime.
+for dir in config helpers lib modules; do
+  cp -R "${SRC_DIR}/${dir}" "${INSTALL_DIR}/"
+done
 
-# Ensure the real entrypoint is executable.
-chmod 0755 "${INSTALL_DIR}/nanoporeTK"
+# Preserve version information.
+install -m 0644 \
+  "${SRC_DIR}/VERSION" \
+  "${INSTALL_DIR}/VERSION"
 
-echo "[INFO] Creating command wrapper: ${PREFIX}/bin/nanoporeTK"
+install -m 0644 \
+  "${SRC_DIR}/RELEASE_DATE" \
+  "${INSTALL_DIR}/RELEASE_DATE"
 
+# Create a command wrapper on PATH.
 cat > "${PREFIX}/bin/nanoporeTK" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -29,5 +37,3 @@ exec "${NANOPORETK_ROOT}/nanoporeTK" "$@"
 EOF
 
 chmod 0755 "${PREFIX}/bin/nanoporeTK"
-
-echo "[INFO] nanoporeTK installation complete"
