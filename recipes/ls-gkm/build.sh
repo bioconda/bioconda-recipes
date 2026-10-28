@@ -3,7 +3,8 @@
 mkdir -p ${PREFIX}/bin
 
 sed -i.bak 's|-lpthread|-pthread|' src/Makefile
-rm -rf src/*.bak
+sed -i.bak "s|-lz|-L${PREFIX}/lib -lz|" src/Makefile
+rm -f src/*.bak
 
 cd src
 
