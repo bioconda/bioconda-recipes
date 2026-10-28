@@ -25,7 +25,7 @@ case $(uname -m) in
 	sed -i.bak 's|-O3|-O3 -march=armv8.4-a|' src/Makefile.in
 	;;
     x86_64)
-	sed -i.bak 's|-O3|-O3 -march=x86-64-v3|' src/Makefile.in
+	sed -i.bak 's|-O3 -march=x86-64-v3|-O3|' src/configure
 	;;
 esac
 rm -f src/*.bak
@@ -36,9 +36,6 @@ case $(uname -m) in
 	;;
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
-	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
 	;;
 esac
 
