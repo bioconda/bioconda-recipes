@@ -1,0 +1,46 @@
+{% set name = "SerotypeFinder" %}
+{% set version = "2.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://bitbucket.org/genomicepidemiology/{{ name|lower }}/get/{{ version }}.tar.gz
+  sha256: c6e13a3ef91c2f137bad99925a6b64e31330b768a4d8214bb767a51b3ea11446
+  patches:
+    - database_path.patch
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('serotypefinder', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+  run:
+    - biopython >=1.79
+    - blast >=2.8.1
+    - cgecore >=1.5.5
+    - kma
+    - python >=3.8
+    - tabulate >=0.8.9
+    - git
+
+test:
+  commands:
+    - serotypefinder --help
+
+about:
+  home: https://bitbucket.org/genomicepidemiology/serotypefinder
+  license: Apache-2.0
+  license_family: APACHE
+  summary: "SerotypeFinder identifies the serotype in total or partial sequenced isolates of E. coli."
+
+extra:
+  identifiers:
+    - doi:10.1128/JCM.00008-1
+  recipe-maintainers:
+    - rpetit3

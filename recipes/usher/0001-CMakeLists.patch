@@ -1,0 +1,73 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d7f70be..6f27bcc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ 
+-cmake_minimum_required (VERSION 3.8) 
++cmake_minimum_required (VERSION 3.8)
+ cmake_policy(SET CMP0069 NEW)
+ project(usher)
+ if(NOT CMAKE_BUILD_TYPE)
+@@ -18,17 +18,17 @@ message(STATUS "${usher_VERSION}")
+ 
+ configure_file(src/version.hpp.in version.hpp)
+ 
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations") 
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -I${PREFIX}/include -fcommon -Wall -pipe -g -ggdb3 -Wno-unused-function  -Wno-deprecated-declarations -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-variable")
+ #-DDEBUG_PARSIMONY_SCORE_CHANGE_CORRECT -fsanitize=address -DCHECK_PAR_MAIN  -DEASY_DEBUG -DSTOP_ON_ERROR  -DDETAILED_MERGER_CHECK -O0
+ set(CMAKE_CXX_FLAGS_DEBUG "  -fno-eliminate-unused-debug-symbols -O0")
+ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3")
+ set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 ")
+-set(CMAKE_INCLUDE_CURRENT_DIR ON) 
++set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ 
+-if(DEFINED Protobuf_PATH) 
+-    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH}) 
++if(DEFINED Protobuf_PATH)
++    find_package(Protobuf REQUIRED HINTS ${Protobuf_PATH})
+ else()
+-    find_package(Protobuf REQUIRED) 
++    find_package(Protobuf REQUIRED)
+ endif()
+ 
+ # Print version messages
+@@ -43,14 +43,14 @@ include(${TBB_DIR}/cmake/TBBBuild.cmake)
+ tbb_build(TBB_ROOT ${TBB_DIR} CONFIG_DIR TBB_DIR MAKE_ARGS tbb_cpf=1)
+ find_package(TBB REQUIRED tbbmalloc tbbmalloc_proxy tbb_preview)
+ 
+-FIND_PACKAGE(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
++find_package(Boost COMPONENTS program_options iostreams filesystem date_time REQUIRED)
+ 
+-#find_package(OpenMP REQUIRED)
++find_package(OpenMP REQUIRED)
+ 
+-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+-AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators) 
+-AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree) 
+-AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place) 
++include_directories(${Boost_INCLUDE_DIRS})
++AUX_SOURCE_DIRECTORY(src/matOptimize/Profitable_Moves_Enumerators New_Profitable_Moves_Enumerators)
++AUX_SOURCE_DIRECTORY(src/matOptimize/apply_move patch_tree)
++AUX_SOURCE_DIRECTORY(src/check_samples_place check_samples_place)
+ file(GLOB MATUTIL_SRCS "src/matUtils/*.cpp" "src/matUtils/*.hpp")
+ file(GLOB RIPPLES_SRCS "src/ripples/*.cpp" "src/ripples/*.hpp")
+ file(GLOB USHER_SAMPLED_SRCS "src/usher-sampled/static_tree_mapper/*" "src/usher-sampled/*.cpp" "src/usher-sampled/*.hpp")
+@@ -58,12 +58,12 @@ file(GLOB RIPPLES_FAST_SRCS "src/ripples/ripples_fast/*.cpp" "src/ripples/ripple
+ file(GLOB RIPPLES_UTILS_SRCS "src/ripples/util/*.cpp" "src/ripples/util/*.hpp")
+ 
+ set_source_files_properties(src/mutation_annotated_tree.cpp PROPERTIES COMPILE_FLAGS -O3)
+-set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O0)
+-#set_source_files_properties(src/matOptimize/Profitable_Moves_Enumerators/range_tree.cpp PROPERTIES COMPILE_FLAGS -O0)
++set_source_files_properties(src/usher-sampled/wait_debug.cpp PROPERTIES COMPILE_FLAGS -O3)
++#set_source_files_properties(src/matOptimize/Profitable_Moves_Enumerators/range_tree.cpp PROPERTIES COMPILE_FLAGS -O3)
+ 
+-#set_source_files_properties(src/matOptimize/detailed_mutations_store.cpp PROPERTIES COMPILE_FLAGS -O0)
+-#set_source_files_properties(src/matOptimize/detailed_mutations_load.cpp PROPERTIES COMPILE_FLAGS -O0)
+-#set_source_files_properties(src/matOptimize/serializer_test.cpp PROPERTIES COMPILE_FLAGS -O0)
++#set_source_files_properties(src/matOptimize/detailed_mutations_store.cpp PROPERTIES COMPILE_FLAGS -O3)
++#set_source_files_properties(src/matOptimize/detailed_mutations_load.cpp PROPERTIES COMPILE_FLAGS -O3)
++#set_source_files_properties(src/matOptimize/serializer_test.cpp PROPERTIES COMPILE_FLAGS -O3)
+ find_package(ZLIB)
+ if(DEFINED Protobuf_PATH)
+     add_executable(usher

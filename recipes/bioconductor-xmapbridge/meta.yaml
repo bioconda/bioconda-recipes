@@ -1,21 +1,23 @@
-{% set version = "1.42.0" %}
+{% set version = "1.68.0" %}
 {% set name = "xmapbridge" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 2189c4291651059f7c79c3f563427579
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 18843b2f9aaad8373bb230e3e0a66a57
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-xmapbridge", max_pin="x.x") }}'
   noarch: generic
 # Suggests: RUnit, RColorBrewer
 requirements:
@@ -25,11 +27,13 @@ requirements:
     - r-base
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: LGPL-3
-  summary: 'xmapBridge can plot graphs in the X:Map genome browser. This package exports plotting files in a suitable format.'
+  summary: Export plotting files to the xmapBridge for visualisation in X:Map
+  description: xmapBridge can plot graphs in the X:Map genome browser. This package exports plotting files in a suitable format.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
 extra:
   identifiers:
     - biotools:xmapbridge

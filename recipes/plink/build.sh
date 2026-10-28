@@ -1,32 +1,20 @@
 #!/bin/bash
+set -xe
 
-cd 1.9/
-mkdir -p ${PREFIX}/bin ${PREFIX}/share/doc
+cd 1.9
 
-for f in plink_common.h pigz.c dose2plink.c; do
-  sed -i.bak -e 's,"\.\./zlib-1.2.11/zlib.h",<zlib.h>,g' "$f"
-done
+# The source tarball carries the SIMD Everywhere headers in 2.0/simde, which
+# the non-x86 builds need.
+export CFLAGS="${CFLAGS} ${CPPFLAGS} -Wall -O2 -I../2.0/simde"
+export CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -Wall -O2 -I../2.0/simde"
 
-if [[ -z "${OSX_ARCH}" ]]; then
-  ## Linux 64 bits only: long int is 64, printf format is ld not lld.
-  for f in *.c *.h; do
-    sed -i.bak -e 's/define PRId64 "lld"/define PRId64 "ld"/g;s/define PRIu64 "llu"/define PRIu64 "lu"/g' "$f"
-  done
+args=(CC="${CC}" CXX="${CXX}" ZLIB="-L${PREFIX}/lib -lz")
+if [[ "$(uname)" != "Darwin" ]]; then
+  # OpenBLAS ships LAPACK, so a single -lopenblas replaces the ATLAS default.
+  args+=(BLASFLAGS="-L${PREFIX}/lib -lopenblas" LDFLAGS="${LDFLAGS} -lm -lpthread -ldl")
 fi
 
-ZLIB="-L${PREFIX}/lib -lz"
-export LDFLAGS="-L${PREFIX}/lib"
+make -j"${CPU_COUNT}" "${args[@]}"
 
-# Build using Makefile.std as recommended in the README
-## NO OSX ARCH
-if [[ -z "${OSX_ARCH}" ]]; then
-  export CFLAGS="-pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fPIC -fexceptions -fstack-protector --param=ssp-buffer-size=4 -std=gnu++11 -Wno-long-long -O3 -I${PREFIX}/include"
-  make CFLAGS="${CFLAGS}" BLASFLAGS="${LDFLAGS} -lopenblas" ZLIB="${ZLIB}" -f Makefile.std plink
-## OSX ARCH
-else
-  export CFLAGS="-pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fPIC -fexceptions -fstack-protector --param=ssp-buffer-size=4 -O3 -I${PREFIX}/include"
-  make CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" ZLIB="${ZLIB}" -f Makefile.std plink
-fi
-
-install -m775 plink ${PREFIX}/bin/
-install -m644 ../LICENSE README.md ${PREFIX}/share/doc/
+mkdir -p "${PREFIX}/bin"
+install -m 755 plink "${PREFIX}/bin/"

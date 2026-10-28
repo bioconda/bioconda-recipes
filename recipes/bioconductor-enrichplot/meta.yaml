@@ -1,65 +1,80 @@
-{% set version = "1.4.0" %}
+{% set version = "1.30.5" %}
 {% set name = "enrichplot" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 3842cd6f24eede4adb94dad3374f50a1
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  sha256: 6bb0e8e0b324b6fb58adf99e41d1de45410ac58e54ab71fba6aad6242eef8689
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-enrichplot", max_pin="x.x") }}'
   noarch: generic
-# Suggests: clusterProfiler, dplyr, knitr, org.Hs.eg.db, prettydoc
+
+# Suggests: clusterProfiler, dplyr, europepmc, ggarchery, ggupset, glue, knitr, rmarkdown, org.Hs.eg.db, prettydoc, tibble, tidyr, ggforce, ggHoriPlot, AnnotationDbi, ggplotify, ggridges, grDevices, gridExtra, ggstar, scales, ggtreeExtra
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
-    - 'bioconductor-dose >=3.10.0,<3.11.0'
-    - 'bioconductor-gosemsim >=2.10.0,<2.11.0'
+    - bioconductor-dose >=4.4.0,<4.5.0
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-gosemsim >=2.36.0,<2.37.0
+    - r-aplot >=0.2.1
     - r-base
-    - r-cowplot
-    - r-europepmc
-    - r-ggplot2
-    - r-ggplotify
-    - r-ggraph
-    - r-ggridges
-    - r-gridextra
+    - r-ggfun >=0.1.7
+    - r-ggnewscale
+    - r-ggplot2 >=3.5.0
+    - r-ggrepel >=0.9.0
+    - r-ggtangle >=0.0.9
     - r-igraph
+    - r-plyr
     - r-purrr
     - r-rcolorbrewer
     - r-reshape2
-    - r-upsetr
+    - r-rlang
+    - r-scatterpie
+    - r-tidydr
+    - r-yulab.utils >=0.1.6
   run:
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
-    - 'bioconductor-dose >=3.10.0,<3.11.0'
-    - 'bioconductor-gosemsim >=2.10.0,<2.11.0'
+    - bioconductor-dose >=4.4.0,<4.5.0
+    - bioconductor-ggtree >=4.0.0,<4.1.0
+    - bioconductor-gosemsim >=2.36.0,<2.37.0
+    - r-aplot >=0.2.1
     - r-base
-    - r-cowplot
-    - r-europepmc
-    - r-ggplot2
-    - r-ggplotify
-    - r-ggraph
-    - r-ggridges
-    - r-gridextra
+    - r-ggfun >=0.1.7
+    - r-ggnewscale
+    - r-ggplot2 >=3.5.0
+    - r-ggrepel >=0.9.0
+    - r-ggtangle >=0.0.9
     - r-igraph
+    - r-plyr
     - r-purrr
     - r-rcolorbrewer
     - r-reshape2
-    - r-upsetr
+    - r-rlang
+    - r-scatterpie
+    - r-tidydr
+    - r-yulab.utils >=0.1.6
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'The ''enrichplot'' package implements several visualization methods for interpreting functional enrichment results obtained from ORA or GSEA analysis. All the visualization methods are developed based on ''ggplot2'' graphics.'
+  summary: Visualization of Functional Enrichment Result
+  description: The 'enrichplot' package implements several visualization methods for interpreting functional enrichment results obtained from ORA or GSEA analysis. It is mainly designed to work with the 'clusterProfiler' package suite. All the visualization methods are developed based on 'ggplot2' graphics.
+
 extra:
   parent_recipe:
     name: bioconductor-enrichplot

@@ -1,21 +1,23 @@
-{% set version = "0.99.0" %}
+{% set version = "0.99.1" %}
 {% set name = "AHCytoBands" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 87b801fe5699cae422a661711272c0a2
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3dd85d02e7ed3fca4c7898b5e395edeb
 build:
-  number: 2
+  number: 6
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ahcytobands", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,11 +25,13 @@ requirements:
   run:
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Supplies AnnotationHub with CytoBand information from UCSC. There is a track for each major organism. Giemsa-stained bands are commonly used to decorate chromosomal overviews in visualizations of genomic data.'
+  summary: CytoBands for AnnotationHub
+  description: Supplies AnnotationHub with CytoBand information from UCSC. There is a track for each major organism. Giemsa-stained bands are commonly used to decorate chromosomal overviews in visualizations of genomic data.
 

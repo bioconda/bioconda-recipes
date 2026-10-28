@@ -1,16 +1,24 @@
 #!/bin/bash
+set -ex
 
-mkdir percobuild && cd percobuild
-cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DXML_SUPPORT=ON -DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" $SRC_DIR
-make && make install
-cd ..
+# Build only the core percolator + qvality binaries.
+#
+# The XSD/Xerces-C based converters (sqt2pin, msgf2pin, tandem2pin) are
+# intentionally not built. Upstream removed the XML/XSD code path from the core
+# ("Remove XML/XSD support (incompatible with modern C++)",
+# percolator/percolator#399) and the remaining converter XSD path does not
+# compile against modern xerces-c. Skipping it keeps this package free of the
+# xerces-c / xsd dependency. The core percolator/qvality tab-delimited
+# (PIN/POUT) interface is unaffected.
 
-mkdir converterbuild && cd converterbuild 
-cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX -DBOOST_LIBRARYDIR=$PREFIX/lib -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH=$PREFIX $SRC_DIR/src/converters
-make && make install
-cd ..
+cmake -S . -B percobuild \
+    -DTARGET_ARCH="$(uname -m)" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+    -DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" \
+    -DCMAKE_CXX_COMPILER="$CXX"
+cmake --build percobuild --target install -j"${CPU_COUNT}" -v
 
-mkdir $PREFIX/testdata
-cp $SRC_DIR/src/converters/data/converters/sqt2pin/target.sqt $PREFIX/testdata/target.sqt
-cp $SRC_DIR/data/percolator/tab/percolatorTab $PREFIX/testdata/percolatorTab
-
+# Install the tab-delimited PIN test input used by the package test.
+mkdir -p "$PREFIX/testdata"
+cp -f "$SRC_DIR/data/percolator/tab/percolatorTab" "$PREFIX/testdata/percolatorTab"

@@ -1,37 +1,41 @@
-{% set version = "3.4.6" %}
+{% set version = "3.12.0" %}
 {% set name = "TxDb.Sscrofa.UCSC.susScr11.refGene" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 21086add466ed6fff7ee756927614bb3
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: a6c5a2c402ad904a2f55099e391d18de
 build:
-  number: 1
+  number: 9
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-txdb.sscrofa.ucsc.susscr11.refgene", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
-    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
-    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+  summary: Annotation package for TxDb object(s)
+  description: Exposes an annotation databases generated from UCSC by exposing these as TxDb objects
 

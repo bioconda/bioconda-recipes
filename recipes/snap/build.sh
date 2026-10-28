@@ -1,25 +1,25 @@
-#!/bin/sh
-make
-mkdir -p $PREFIX/bin
+#!/bin/bash
+set -ex
+
+mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
-cp -p snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl $PREFIX/share/snap/bin
-cp -pr HMM ${PREFIX}/share/snap
-cp -pr DNA ${PREFIX}/share/snap
 
-cat <<EOF >> ${PREFIX}/bin/snap
-#!/bin/sh
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
 
-SNAPDIR=${PREFIX}/share/snap
-NAME=\`basename \$0\`
+make CC="${CC}" -j"${CPU_COUNT}"
 
-ZOE=\$SNAPDIR
-export ZOE
-
-\${SNAPDIR}/bin/\$NAME \$@
-EOF
-chmod a+x ${PREFIX}/bin/snap
-
-for NAME in fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl ; do
-  ln -s ${PREFIX}/bin/snap ${PREFIX}/bin/${NAME}
+for perl_script in gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl; do
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${perl_script}
 done
+rm -rf *.bak
+
+install -v -m 0755 snap fathom forge gff3_to_zff.pl hmm-assembler.pl zff2gff3.pl $PREFIX/share/snap/bin
+cp -prf HMM ${PREFIX}/share/snap
+cp -prf DNA ${PREFIX}/share/snap
+cp -prf DATA ${PREFIX}/share/snap
+
+ln -sf $PREFIX/share/snap/bin/* ${PREFIX}/bin/

@@ -1,0 +1,59 @@
+{% set name = "pyhalcyon" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: e84740fd2f319ae2cdc017c0ba5eba284bc4aa13df95debea9a35f04e4cc7aa7
+  patches:
+    - patch
+
+build:
+  number: 0
+  entry_points:
+    - halcyon = halcyon.console:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - poetry
+  run:
+    - biopython >=1.75
+    - click >=7.1.2
+    - click-help-colors >=0.8
+    - h5py >=2.10.0
+    - logzero >=1.5.0
+    - more-itertools >=8.4.0
+    - numpy <1.17
+    - python >=3.7
+    - requests >=2.24.0
+    - tensorflow <1.15.0
+    - ujson >=1.35
+
+test:
+  imports:
+    - halcyon
+    - halcyon.infer
+    - halcyon.ml
+    - halcyon.ml.net
+    - halcyon.ml.net.decoder
+    - halcyon.models
+  commands:
+    - halcyon --help
+
+about:
+  home: https://pypi.org/project/pyhalcyon
+  license: GPLv3
+  summary: "Halcyon: an accurate basecaller exploiting an encoder-decoder model with monotonic attention"
+  doc_url: https://github.com/relastle/halcyon
+  dev_url: https://github.com/relastle/halcyon
+
+extra:
+  recipe-maintainers:
+    - relastle

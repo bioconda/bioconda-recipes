@@ -1,21 +1,23 @@
-{% set version = "1.22.0" %}
+{% set version = "1.48.0" %}
 {% set name = "IlluminaDataTestFiles" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 546621b97e6be804d7e9db2262d4469e
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ca1d2b1cc594a3ab2693e6122632b2d5
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-illuminadatatestfiles", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,11 +25,13 @@ requirements:
   run:
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Example data for Illumina microarray output files, for testing purposes'
+  summary: Illumina microarray files (IDAT) for testing
+  description: Example data for Illumina microarray output files, for testing purposes
 

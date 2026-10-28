@@ -1,0 +1,51 @@
+{% set name = "crisprbact" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "ccdd268519cb2e5e29caa96e03233583ccff49e07c299b9600d87cd4bd6b5a7e" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - crisprbact = crisprbact.cli:main
+  script: "{{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10,<4
+    - hatchling
+  run:
+    - python >=3.10,<4
+    - biopython >=1.79,<2.0
+    - click >=8.0,<9.0
+    - numpy >=1.21,<3.0
+    - pandas >=1.3
+    - tqdm >=4.40
+    - matplotlib-base >=3.5
+
+test:
+  imports:
+    - crisprbact
+  commands:
+    - crisprbact --help
+
+about:
+  home: "https://gitlab.pasteur.fr/dbikard/crisprbact"
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "Tools to design and analyse CRISPRi experiments"
+
+extra:
+  recipe-maintainers:
+    - rplanel

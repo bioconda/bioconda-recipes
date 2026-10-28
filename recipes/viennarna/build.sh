@@ -1,24 +1,31 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options="--disable-openmp 
-                          LDFLAGS=-Wl,-headerpad_max_install_names"
+    export LDFLAGS="${LDFLAGS:-} -Wl,-headerpad_max_install_names"
 fi
 
+export PERL="${PREFIX}/bin/perl"
+export PYTHON="${PYTHON}"
+
 ## Configure and make
-./configure --prefix=$PREFIX \
+./configure --prefix="${PREFIX}" \
             --with-kinwalker \
             --with-cluster \
             --disable-lto \
             --without-doc \
-            --without-tutorial \
-            --without-tutorial-pdf \
-            ${extra_config_options} \
-            &&\
-make -j${CPU_COUNT}
+            --without-cla \
+            --without-rnaxplorer \
+            --disable-silent-rules
+
+make -j"${CPU_COUNT}"
 
 ## Install
 make install
+
+"${PERL}" -MRNA -e 'print "perl ok\n"'
+"${PYTHON}" -c 'import RNA; print("python ok")'

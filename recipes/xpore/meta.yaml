@@ -1,0 +1,58 @@
+{% set name = "xpore" %}
+{% set version = "2.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 8a068adcc91f0fd9eb8588ba0e73b183792278e67175db3c5b3dd9dcf58c13c8
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage("xpore", max_pin="x.x") }} # not semver, breaking API change in 2.2
+  
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools >=61.0
+  run:
+    - h5py >=2.10.0
+    - numpy >=1.18.0
+    - pandas >=0.25.3
+    - pyensembl >=1.8.5
+    - python
+    - pyyaml
+    - scipy >=1.4.1
+    - ujson >=4.0.1
+
+test:
+  imports:
+    - xpore
+    - xpore.diffmod
+    - xpore.scripts
+    - xpore.utils
+  commands:
+    - xpore --help
+
+about:
+  home: "https://github.com/GoekeLab/xpore"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "xpore is a python package for Nanopore data analysis of differential RNA modifications."
+  doc_url: https://xpore.readthedocs.io/en/latest/
+  dev_url: https://github.com/GoekeLab/xpore.git
+
+extra:
+  recipe-maintainers:
+    - artbio
+  identifiers:
+    - doi:10.1101/2020.06.18.160010
+    - biotools:xpore

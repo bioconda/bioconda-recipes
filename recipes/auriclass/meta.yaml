@@ -1,0 +1,52 @@
+{% set name = "AuriClass" %}
+{% set version = "0.5.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RIVM-bioinformatics/auriclass/archive/v{{ version }}.tar.gz
+  sha256: 10ff5421fc968097ff64812be5b248bf14e6c5b9a086ef0156e3de1cc4c2902b
+
+build:
+  noarch: python
+  entry_points:
+    - auriclass = auriclass.main:main
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('auriclass', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+  run:
+    - python >=3.10
+    - mash >=2
+    - mypy
+    - pandas >=2
+    - pandas-stubs
+    - pyfastx
+    - pytest
+    - pip
+
+
+test:
+  imports:
+    - auriclass
+  commands:
+    - auriclass --help
+
+about:
+  home: https://rivm-bioinformatics.github.io/auriclass/
+  summary: "AuriClass is a tool for quickly predicting the clade of a Candida auris genome."
+  dev_url: https://github.com/RIVM-bioinformatics/auriclass
+  license: GNU Affero General Public v3
+  license_family: AGPL
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - boasvdp
+    - ids-bioinformatics

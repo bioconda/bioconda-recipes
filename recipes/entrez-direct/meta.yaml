@@ -1,74 +1,53 @@
-{% set version = "11.0" %}
-{% set date = "20190322" %}
-{% set sha256 = "8296ea52598a3589f61eba688ca94251d01166b132bfbb590b8ee2d7a56d6979" %}
+{% set name = "entrez-direct" %}
+{% set version = "26.0" %}
+{% set date = "20260719" %}
+{% set sha256 = "e1e4a9372753741f9c4c1884ca5f7c702ee3f4b8777c07a9dba7fd3966eafa60" %}
 
 package:
-  name: entrez-direct
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-
-source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
-  sha256: {{ sha256 }}
-  patches:
-  - xtract.patch
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  host:
-  - perl
-  - perl-html-parser
-  - perl-html-tagset
-  - perl-html-tree
-  - perl-http-cookies
-  - perl-http-date
-  - perl-http-message
-  - perl-http-negotiate
-  - perl-io-socket-ssl
-  - perl-lwp-mediatypes
-  - perl-lwp-protocol-https
-  - perl-net-http
-  - perl-uri
-  - perl-www-robotrules
-  - perl-mozilla-ca
-  - perl-xml-simple
-
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('go') }}
+    - go-licenses
   run:
-  - perl
-  - perl-html-parser
-  - perl-html-tagset
-  - perl-html-tree
-  - perl-http-cookies
-  - perl-http-date
-  - perl-http-message
-  - perl-http-negotiate
-  - perl-io-socket-ssl
-  - perl-lwp-mediatypes
-  - perl-lwp-protocol-https
-  - perl-net-http
-  - perl-uri
-  - perl-www-robotrules
-  - perl-mozilla-ca
-  - perl-xml-simple
+    - wget
 
 test:
   commands:
     - efetch --help
     - epost --help
     - efilter --help
-    - eproxy --help
     - einfo --help
     - esearch --help
-    - econtact --help
     - elink --help
-    - espell --help
-    - enotify --help
     - esummary --help
-    - entrez-phrase-search --help
+    - rchive -version
+    - transmute -version
     - xtract -version
 
 about:
-  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
-  license: PUBLIC DOMAIN
-  summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+  home: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+  license: "Public Domain"
+  summary: "Entrez Direct (EDirect) - Access to NCBI's Entrez databases"
+  description: |
+    Entrez Direct (EDirect) provides access to Entrez, the NCBI's suite of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a Unix terminal window. Search terms are entered as command-line arguments. Individual operations are connected with Unix pipes to construct multi-step queries. Selected records can then be retrieved in a variety of formats.
+  doc_url: "https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:entrez

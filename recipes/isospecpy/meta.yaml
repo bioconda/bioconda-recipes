@@ -1,0 +1,46 @@
+{% set name = "isospecpy" %}
+{% set version = "2.2.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/IsoSpecPy-{{ version }}.tar.gz
+  sha256: ca838870d31c4879f7e8d0ff782876858888532b6eb0d501fb9650bf5395578e
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 2
+  run_exports:
+      - {{ pin_subpackage('isospecpy', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - cffi
+    - pip
+  run:
+    - python
+    - cffi
+
+test:
+  imports:
+    - IsoSpecPy
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: http://matteolacki.github.io/IsoSpec/
+  summary: Python interface to IsoSpec++ isotopic envelope calculator library
+  license: BSD-3-Clause
+  license_file: debian/copyright
+
+extra:
+  recipe-maintainers:
+    - hechth

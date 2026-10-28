@@ -1,0 +1,45 @@
+{% set name = "merqury" %}
+{% set version = "1.4.1" %}
+{% set sha256 = "4340ccf1523f30d9f58697ec501555db8dd8d21c9231b6c104e0b883c21fcecb" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/marbl/{{name}}/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("merqury", max_pin='x.x') }}  
+
+requirements:
+  run:
+    - meryl >=1.4.1
+    - openjdk  >=11.0.1
+    - r-base  >=4
+    - r-argparse  >=2.0.1
+    - r-ggplot2  >=3.3.2
+    - r-scales  >=1.1.1
+    - bedtools  >=2.29.2
+    - samtools  >=1.22
+    - mscorefonts
+    - gawk
+    - sed
+
+test:
+  commands:
+    - merqury.sh 2>&1 | grep Usage
+
+about:
+  home: https://github.com/marbl/{{ name }}
+  license: PUBLIC DOMAIN
+  license_file: LICENSE
+  summary: Evaluate genome assemblies with k-mers and more.
+  description: >
+    Often, genome assembly projects have illumina whole genome sequencing reads available for the assembled individual.
+    The k-mer spectrum of this read set can be used for independently evaluating assembly quality without the need of a high quality reference.
+    Merqury provides a set of tools for this purpose.

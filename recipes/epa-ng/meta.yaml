@@ -1,22 +1,29 @@
+{% set name = "epa-ng" %}
 package:
-  name: epa-ng
-  version: "0.3.5"
+  name: {{name}}
+  version: "0.3.8"
 
 build:
-  number: 0
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
 
 source:
-  url: https://github.com/Pbdas/epa-ng/archive/v0.3.5.tar.gz
-  sha256: 0aa2aa9ffad0d713c42ea43330798a4d701ece883ced617da07218b7c697df41
+  url: https://github.com/Pbdas/epa-ng/archive/v0.3.8.tar.gz
+  sha256: d1db23919f49cfad202b18623e5eb30c3d6cedcc1705b944221daea8131cbb74
+  patches:
+    - cmake.patch
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
     - libtool
     - flex
-    - bison
+    - bison 3.4
     - m4
-    - cmake
+    - cmake <4
     - automake
     - autoconf
     - llvm-openmp # [osx]
@@ -24,6 +31,7 @@ requirements:
     - zlib
     - llvm-openmp # [osx]
   run:
+    - zlib
     - llvm-openmp # [osx]
 test:
   commands:
@@ -35,5 +43,9 @@ about:
   summary: Massively parallel phylogenetic placement of genetic sequences
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
   identifiers:
     - doi:10.1093/sysbio/syy054

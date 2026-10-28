@@ -1,75 +1,71 @@
-{% set version = "2.2.6" %}
+{% set version = "3.12.1" %}
 {% set name = "Cardinal" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f4dd2c9ae659f7fdb6df6075bb89ccd1
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 930835dcfd0f45d89ffb5f8582f835c9
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, testthat, knitr, rmarkdown
+  run_exports: '{{ pin_subpackage("bioconductor-cardinal", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, testthat, knitr, rmarkdown, emmeans, lme4, lmerTest
 requirements:
   host:
-    - 'bioconductor-biobase >=2.44.0,<2.45.0'
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
-    - 'bioconductor-matter >=1.10.0,<1.11.0'
-    - 'bioconductor-protgenerics >=1.16.0,<1.17.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-cardinalio >=1.8.0,<1.9.0
+    - bioconductor-ebimage >=4.52.0,<4.53.0
+    - bioconductor-matter >=2.12.0,<2.13.0
+    - bioconductor-protgenerics >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
-    - r-dplyr
     - r-irlba
-    - r-lattice
-    - r-magrittr
     - r-matrix
-    - r-mclust
     - r-nlme
-    - r-signal
-    - r-sp
-    - r-viridislite
   run:
-    - 'bioconductor-biobase >=2.44.0,<2.45.0'
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
-    - 'bioconductor-matter >=1.10.0,<1.11.0'
-    - 'bioconductor-protgenerics >=1.16.0,<1.17.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-cardinalio >=1.8.0,<1.9.0
+    - bioconductor-ebimage >=4.52.0,<4.53.0
+    - bioconductor-matter >=2.12.0,<2.13.0
+    - bioconductor-protgenerics >=1.42.0,<1.43.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
-    - r-dplyr
     - r-irlba
-    - r-lattice
-    - r-magrittr
     - r-matrix
-    - r-mclust
     - r-nlme
-    - r-signal
-    - r-sp
-    - r-viridislite
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: Artistic-2.0
-  summary: 'Implements statistical & computational tools for analyzing mass spectrometry imaging datasets, including methods for efficient pre-processing, spatial segmentation, and classification.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0 | file LICENSE
+  summary: A mass spectrometry imaging toolbox for statistical analysis
+  description: Implements statistical & computational tools for analyzing mass spectrometry imaging datasets, including methods for efficient pre-processing, spatial segmentation, and classification.
+  license_file: LICENSE
+
 extra:
   identifiers:
     - biotools:cardinal
+    - usegalaxy-eu:cardinal_segmentations
   parent_recipe:
     name: bioconductor-cardinal
     path: recipes/bioconductor-cardinal

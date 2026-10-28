@@ -1,0 +1,56 @@
+{% set name = "methylpy" %}
+{% set version = "1.4.7" %}
+{% set sha256 = "bbd9ab01cd7b6bba9b96b94aed2e1deee5af405d743eef4f031eb8b846ae8156" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('methylpy', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+    - gsl
+  run:
+    - python
+    - numpy >=1.6.1
+    - pysam >=0.5.3
+    - scipy >=0.10.0
+    - bowtie
+    - bowtie2
+    - minimap2
+    - cutadapt >=1.9
+    - samtools >=1.3
+    - openjdk
+    - gsl
+    - picard >=2.10.8
+    - ucsc-wigtobigwig
+
+test:
+  imports:
+    - methylpy
+  commands:
+    - methylpy -h
+
+about:
+  home: https://github.com/yupenghe/methylpy
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE.txt
+  summary: "Bisulfite sequencing data processing and differential methylation analysis"
+  doc_url: "https://github.com/yupenghe/methylpy/blob/methylpy/tutorial/tutorial.md"
+
+extra:
+  identifiers:
+    - doi:10.1038/nature14465

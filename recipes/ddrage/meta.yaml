@@ -1,17 +1,20 @@
-{% set version = "1.6.3" %}
+{% set version = "1.8.1" %}
 
 package:
   name: ddrage
   version: {{ version }}
 
 source:
-  url: https://bitbucket.org/genomeinformatics/rage/get/{{ version }}.tar.gz
-  sha256: 97e8079a59ea0038f35ea8d348b4619f846863a22275b6e168ea712362aebdfc
+  url: https://files.pythonhosted.org/packages/f8/bf/a3156beda9476a3ed69d1fd049465f70cad5f3df1de0a0efeb55c401f0e3/ddrage-{{ version }}.tar.gz
+  sha256: a08962227144a8de0d47b8dbfb51aaf692660d5a7c519a11561b91c6217186ac
 
 
 build:
-  skip: True # [py2k]
+  noarch: python
   number: 0
+  run_exports:
+    - {{ pin_subpackage("ddrage", max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
     - rage = ddrage.__main__:main
     - ddrage = ddrage.__main__:main
@@ -24,20 +27,14 @@ build:
 
 requirements:
   host:
-    - python
-    - setuptools
-    - numpy
-    - numba
-    - matplotlib
-    - scipy
-    - pyyaml
-
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - numpy
     - numba
-    - matplotlib
-    - scipy
+    - matplotlib-base
+    - scipy >=1.4.1
     - pyyaml
     - dinopy
     - seaborn

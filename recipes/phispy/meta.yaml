@@ -1,0 +1,60 @@
+{% set name = "phispy" %}
+{% set ucname = "PhiSpy" %}
+{% set version = "5.0.10" %}
+{% set sha256 = "8329fa472b84e150b3ef59b9388830f238dc69b290af2a1ea95567dde29ec6f8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - pkg-config
+  host:
+    - pip
+    - python
+    - setuptools
+    - wheel
+    - numpy
+  run:
+    - biopython
+    - numpy
+    - python
+    - hmmer
+    - scikit-learn
+    - bcbio-gff
+
+test:
+  imports:
+    - PhiSpyModules
+  commands:
+    - PhiSpy.py -v
+
+about:
+  home: "https://github.com/linsalrob/PhiSpy"
+  license: MIT
+  license_family: MIT
+  summary: "Prophage finder using multiple metrics"
+  doc_url: "https://github.com/linsalrob/PhiSpy/blob/master/README.md"
+  dev_url: "https://github.com/linsalrob/PhiSpy"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - linsalrob
+  identifiers:
+    - doi:10.5281/zenodo.3475717

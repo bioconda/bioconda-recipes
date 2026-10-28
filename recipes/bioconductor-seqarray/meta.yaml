@@ -1,48 +1,69 @@
-{% set version = "1.24.2" %}
+{% set version = "1.50.1" %}
 {% set name = "SeqArray" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ad853ee096353334f3870d7a7e38d510
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 6d877256b5a647d853a6afeee14cd0a1
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: Biobase, BiocGenerics, BiocParallel, RUnit, Rcpp, SNPRelate, digest, crayon, knitr, Rsamtools, VariantAnnotation
+  run_exports: '{{ pin_subpackage("bioconductor-seqarray", max_pin="x.x") }}'
+
+# Suggests: Biobase, BiocGenerics, BiocParallel, RUnit, Rcpp, SNPRelate, crayon, knitr, markdown, rmarkdown, Rsamtools, VariantAnnotation
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
-    - 'bioconductor-gdsfmt >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
-    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
-    - 'bioconductor-iranges >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
-    - r-base
-  run:
-    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
-    - 'bioconductor-gdsfmt >=1.20.0,<1.21.0'
-    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
-    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
-    - 'bioconductor-iranges >=2.18.0,<2.19.0'
-    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
-    - r-base
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-gdsfmt >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-digest
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-gdsfmt >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - r-base
+    - r-digest
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Data management of large-scale whole-genome sequencing variant calls with thousands of individuals: genotypic data (e.g., SNVs, indels and structural variation calls) and annotations in SeqArray files are stored in an array-oriented and compressed manner, with efficient data access using the R programming language.'
+  summary: Data management of large-scale whole-genome sequence variant calls using GDS files
+  description: 'Data management of large-scale whole-genome sequencing variant calls with thousands of individuals: genotypic data (e.g., SNVs, indels and structural variation calls) and annotations in SeqArray GDS files are stored in an array-oriented and compressed manner, with efficient data access using the R programming language.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:seqarray
 

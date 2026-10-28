@@ -1,47 +1,58 @@
-{% set version = "1.20.0" %}
+{% set version = "1.46.0" %}
 {% set name = "shinyMethyl" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 4ce2a8ab4a4cd25c1d9d222ff8aa4147
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: e69e2edf57a08a016efb3bad517c2450
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-shinymethyl", max_pin="x.x") }}'
   noarch: generic
-# Suggests: shinyMethylData, minfiData, BiocStyle, RUnit, digest, knitr
+
+# Suggests: shinyMethylData, minfiData, BiocStyle, knitr, testthat
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.30.0,<1.31.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - bioconductor-minfi >=1.56.0,<1.57.0
     - r-base
-    - r-matrixstats
+    - r-htmltools
     - r-rcolorbrewer
-    - 'r-shiny >=0.13.2'
+    - r-shiny
   run:
-    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
-    - 'bioconductor-illuminahumanmethylation450kmanifest >=0.4.0,<0.5.0'
-    - 'bioconductor-minfi >=1.30.0,<1.31.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-matrixgenerics >=1.22.0,<1.23.0
+    - bioconductor-minfi >=1.56.0,<1.57.0
     - r-base
-    - r-matrixstats
+    - r-htmltools
     - r-rcolorbrewer
-    - 'r-shiny >=0.13.2'
+    - r-shiny
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Interactive tool for visualizing Illumina methylation array data. Both the 450k and EPIC array are supported.'
+  summary: Interactive visualization for Illumina methylation arrays
+  description: Interactive tool for visualizing Illumina methylation array data. Both the 450k and EPIC array are supported.
+
 extra:
   identifiers:
     - biotools:shinymethyl

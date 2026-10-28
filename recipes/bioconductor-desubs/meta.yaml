@@ -1,32 +1,36 @@
-{% set version = "1.10.0" %}
+{% set version = "1.36.0" %}
 {% set name = "DEsubs" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3401c12e1b7b956a302c894862bbff72
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ccc9e6069827b24bb3c9ab20f0f674a3
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-desubs", max_pin="x.x") }}'
   noarch: generic
-# Suggests: RUnit, BiocGenerics, knitr
+
+# Suggests: RUnit, BiocGenerics, knitr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-deseq >=1.36.0,<1.37.0'
-    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
-    - 'bioconductor-ebseq >=1.24.0,<1.25.0'
-    - 'bioconductor-edger >=3.26.0,<3.27.0'
-    - 'bioconductor-graph >=1.62.0,<1.63.0'
-    - 'bioconductor-limma >=3.40.0,<3.41.0'
-    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-ebseq >=2.8.0,<2.9.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
     - r-base
     - r-circlize
     - r-ggplot2
@@ -37,13 +41,12 @@ requirements:
     - r-nbpseq
     - r-pheatmap
   run:
-    - 'bioconductor-deseq >=1.36.0,<1.37.0'
-    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
-    - 'bioconductor-ebseq >=1.24.0,<1.25.0'
-    - 'bioconductor-edger >=3.26.0,<3.27.0'
-    - 'bioconductor-graph >=1.62.0,<1.63.0'
-    - 'bioconductor-limma >=3.40.0,<3.41.0'
-    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-ebseq >=2.8.0,<2.9.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
     - r-base
     - r-circlize
     - r-ggplot2
@@ -53,11 +56,15 @@ requirements:
     - r-matrix
     - r-nbpseq
     - r-pheatmap
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'DEsubs is a network-based systems biology package that extracts disease-perturbed subpathways within a pathway network as recorded by RNA-seq experiments. It contains an extensive and customizable framework covering a broad range of operation modes at all stages of the subpathway analysis, enabling a case-specific approach. The operation modes refer to the pathway network construction and processing, the subpathway extraction, visualization and enrichment analysis with regard to various biological and pharmacological features. Its capabilities render it a tool-guide for both the modeler and experimentalist for the identification of more robust systems-level biomarkers for complex diseases.'
+  summary: 'DEsubs: an R package for flexible identification of differentially expressed subpathways using RNA-seq expression experiments'
+  description: DEsubs is a network-based systems biology package that extracts disease-perturbed subpathways within a pathway network as recorded by RNA-seq experiments. It contains an extensive and customizable framework covering a broad range of operation modes at all stages of the subpathway analysis, enabling a case-specific approach. The operation modes refer to the pathway network construction and processing, the subpathway extraction, visualization and enrichment analysis with regard to various biological and pharmacological features. Its capabilities render it a tool-guide for both the modeler and experimentalist for the identification of more robust systems-level biomarkers for complex diseases.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

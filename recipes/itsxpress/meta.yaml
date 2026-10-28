@@ -1,35 +1,37 @@
 {% set name = "itsxpress" %}
-{% set version = "1.7.2" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "1f3359d416e1b840be5aead25915b152456b1201c2fc9a9665162d4442887665" %}
+{% set version = "2.2.0" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://github.com/USDA-ARS-GBRU/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: cab733df4b0913644e5a62dd1380ee117fe5bac3418c7f6c813d76325f810e26
 
 build:
   number: 0
+  noarch: python
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
-    - itsxpress=itsxpress.main:main
-  script: python -m pip install --no-deps --ignore-installed .
-  skip: True # [py27]
+    - itsxpress = itsxpress.main:main
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.8
+    - setuptools
+    - setuptools-scm >=8
   run:
-    - pip
-    - python
-    - biopython >=1.60
-    - hmmer >=3.1
-    - bbmap
-    - vsearch
+    - python >=3.8
+    - biopython >=1.79
+    - hmmer >=3.1b2
+    - vsearch >=2.21.1
+    - pyzstd
 
 test:
   imports:
@@ -38,17 +40,20 @@ test:
     - itsxpress --help
 
 about:
-  home: http://github.com/usda-ars-gbru/itsxpress
-  license: 'CC0 1.0'
+  home: "https://github.com/usda-ars-gbru/itsxpress"
+  license: "CC0-1.0"
   license_family: 'PUBLIC-DOMAIN'
-  # license_file: ''
-  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files'
-
+  license_file: "LICENSE.txt"
+  summary: 'ITSxpress: Software to rapidly trim the Internally Transcribed Spacer (ITS) region from FASTQ files.'
+  dev_url: "https://github.com/usda-ars-gbru/itsxpress"
+  doc_url: "https://itsxpress.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - arivers
+    - seina001
   identifiers:
     - biotools:ITSxpress
+    - doi:10.1128/spectrum.00601-24
     - doi:10.5281/zenodo.1304349
     - doi:10.12688/f1000research.15704.1

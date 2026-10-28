@@ -1,7 +1,8 @@
-{% set snpeff_ver = "v4_3t" %}
+{% set snpeff_ver = "5_4c" %}
 # NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
-{% set version = "4.3.1t" %}
-{% set sha256 = "d55a7389a78312947c1e7dadf5e6897b42d3c6e942e7c1b8ec68bb35d2ae2244" %}
+# Please update recipes/snpsift as well!
+{% set version = "5.4.0c" %}
+{% set sha256 = "3b06a1e1f939e7ebd5433387f088c1d3d1e0a7d472d63f39161b1fe9f00adf33" %}
 
 about:
   home: 'http://snpeff.sourceforge.net/'
@@ -13,20 +14,24 @@ package:
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
   noarch: generic
+  run_exports:
+    - {{ pin_compatible('snpeff', max_pin="x.x") }}
 
 source:
-  url: https://downloads.sourceforge.net/project/snpeff/snpEff_{{ snpeff_ver }}_core.zip
+  url: https://snpeff-public.s3.amazonaws.com/versions/snpEff_v{{ snpeff_ver }}_core.zip
   sha256: {{ sha256 }}
 
 requirements:
   run:
-    - openjdk
+    - openjdk >=21
     - zlib
+    - python
 
 test:
   commands:
+    - snpEff -help --dry-run
     - snpEff -version
 
 extra:

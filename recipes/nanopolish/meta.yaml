@@ -1,43 +1,44 @@
 {% set name = "nanopolish" %}
-{% set version = "0.11.1" %}
+{% set version = "0.14.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-
 source:
-  url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: c78f8b91e1b66f79cf6239f6cb84592d4b4acc75044d1120978efba5f98a193d
+  git_url: https://github.com/jts/nanopolish.git
+  git_rev: v{{ version }}
+  sha256: unused
   patches:
     - nanopolish.patch
 
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
 requirements:
   build:
-    - {{ compiler('cxx') }}  # [linux64]
-    - gcc                    # [osx]
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
   host:
-    - fast5 0.6.5
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - htslib
-    - hdf5
+    - hdf5 =1.14.3
     - eigen
-    - ncurses
-    - bzip2
-    - openmp
-    - libcurl
+    - tar
+    - unzip
+    - wget
+    - zlib
   run:
-    - python
-    - hdf5
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     - biopython
-    - bwa
-    - eigen
-    - ncurses
-    - libdeflate
-    - openmp
-    - libgcc                # [osx]
-    - libcurl
+    - python
+    - ont_vbz_hdf_plugin =1.0.12
 
 test:
   commands:
@@ -45,11 +46,18 @@ test:
     - nanopolish --version
 
 about:
-  home: https://github.com/jts/nanopolish
+  home: "https://github.com/jts/nanopolish"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'Signal-level algorithms for MinION data.'
+  summary: "Signal-level algorithms for MinION data."
+  dev_url: "https://github.com/jts/nanopolish"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   skip-lints:
-    - should_use_compilers
+    - uses_vcs_url
+  identifiers:
+    - usegalaxy-eu:nanopolish_eventalign

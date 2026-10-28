@@ -1,24 +1,32 @@
 #!/bin/bash
+set -x
 
-mkdir -p $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-if [ $PY3K -eq 1 ]
-then
-    2to3 --write \
-	hisat2_extract_exons.py \
-	hisat2_extract_snps_haplotypes_UCSC.py \
-	hisat2_extract_splice_sites.py \
-	hisat2-build hisat2-inspect \
-	hisat2_simulate_reads.py \
-	hisat2_extract_snps_haplotypes_VCF.py \
-	hisatgenotype_build_genome.py \
-	hisatgenotype_extract_reads.py \
-	hisatgenotype_extract_vars.py \
-	hisatgenotype_hla_cyp.py \
-	hisatgenotype_locus.py \
-	hisatgenotype.py
-fi
+git clone --recursive https://github.com/simd-everywhere/simde-no-tests simde
 
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+esac
+
+mkdir -p "${PREFIX}/bin"
+
+# The patch does not move the VERSION file on OSX. Let's make sure it's moved.
+mv VERSION{,.txt} || true
+
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+	-j"${CPU_COUNT}"
+
+# copy binaries and python scripts
 for i in \
     hisat2 \
     hisat2-align-l \
@@ -29,34 +37,7 @@ for i in \
     hisat2-inspect \
     hisat2-inspect-l \
     hisat2-inspect-s \
-    hisat2_extract_exons.py \
-    hisat2_extract_snps_haplotypes_UCSC.py \
-    hisat2_extract_snps_haplotypes_VCF.py \
-    hisat2_extract_splice_sites.py \
-    hisat2_simulate_reads.py \
-    hisatgenotype_build_genome.py \
-    hisatgenotype_extract_reads.py \
-    hisatgenotype_extract_vars.py \
-    hisatgenotype_hla_cyp.py \
-    hisatgenotype_locus.py \
-    hisatgenotype.py;
+    *.py
 do
-    echo $i
-    cp $i $PREFIX/bin
-    chmod +x $PREFIX/bin/$i
+    install -v -m 0755 "${i}" "${PREFIX}/bin"
 done
-
-for i in \
-    hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-    hisatgenotype_modules/hisatgenotype_convert_codis.py \
-    hisatgenotype_modules/hisatgenotype_extract_codis_data.py \
-    hisatgenotype_modules/hisatgenotype_extract_cyp_data.py \
-    hisatgenotype_modules/hisatgenotype_gene_typing.py \
-    hisatgenotype_modules/hisatgenotype_typing_common.py ;
-do
-   echo $i
-   cp $i $PREFIX/lib/python${PY_VER}/site-packages
-done
-
-cp -r example $PREFIX/bin
-

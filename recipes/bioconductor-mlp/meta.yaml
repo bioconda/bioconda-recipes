@@ -1,49 +1,49 @@
-{% set version = "1.32.0" %}
+{% set version = "1.58.0" %}
 {% set name = "MLP" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0f025c2156526df2dd6c926f3f9b7820
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 45c13ec8ad80e1f3453b8da6f8ba3539
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mlp", max_pin="x.x") }}'
   noarch: generic
-# Suggests: GO.db, org.Hs.eg.db, org.Mm.eg.db, org.Rn.eg.db, org.Cf.eg.db, KEGG.db, annotate, Rgraphviz, GOstats, limma, mouse4302.db, reactome.db
+
+# Suggests: GO.db, org.Hs.eg.db, org.Mm.eg.db, org.Rn.eg.db, org.Cf.eg.db, org.Mmu.eg.db, KEGGREST, annotate, Rgraphviz, GOstats, graph, limma, mouse4302.db, reactome.db
 requirements:
   host:
-    - 'bioconductor-affy >=1.62.0,<1.63.0'
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
-    - r-gdata
-    - r-gmodels
     - r-gplots
-    - r-gtools
-    - r-plotrix
   run:
-    - 'bioconductor-affy >=1.62.0,<1.63.0'
-    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
-    - r-gdata
-    - r-gmodels
     - r-gplots
-    - r-gtools
-    - r-plotrix
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Mean Log P Analysis'
+  summary: Mean Log P Analysis
+  description: Pathway analysis based on p-values associated to genes from a genes expression analysis of interest. Utility functions enable to extract pathways from the Gene Ontology Biological Process (GOBP), Molecular Function (GOMF) and Cellular Component (GOCC), Kyoto Encyclopedia of Genes of Genomes (KEGG) and Reactome databases. Methodology, and helper functions to display the results as a table, barplot of pathway significance, Gene Ontology graph and pathway significance are available.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:mlp
