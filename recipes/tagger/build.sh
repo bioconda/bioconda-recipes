@@ -1,8 +1,13 @@
 #!/bin/bash
-PYTHON_INCLUDE_DIR=$($PYTHON -c 'import distutils.sysconfig, sys; sys.stdout.write(distutils.sysconfig.get_python_inc())')
-export CFLAGS="-fpic -Wall -O3 -std=c++11 -I$PYTHON_INCLUDE_DIR -I${PREFIX}/include -L${PREFIX}/lib"
-export LFLAGS="-fpic -shared -L${PREFIX}/lib -lboost_regex"
-sed -i.bak -e 's/^CFLAGS =.*//g' makefile
-sed -i.bak -e 's/^LFLAGS =.*//g' makefile
-make
-mv tagcorpus ${PREFIX}/bin/
+
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/lib"
+
+make CXX="${CXX}" -j"${CPU_COUNT}"
+
+install -v -m 755 tagcorpus tagger_swig.py "${PREFIX}/bin"
+install -v -m 755 libtagger.a libtagger.so _tagger_swig.so "${PREFIX}/lib"

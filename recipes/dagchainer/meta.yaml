@@ -1,23 +1,27 @@
-{% set version = "r120920" %}
+{% set name = "dagchainer" %}
+{% set version = "2020.11.11" %}
 
 package:
-  name: dagchainer
+  name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 4
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
   ignore_run_exports_from:
     - perl-data-dumper
     - perl-storable
 
 source:
-  url: https://github.com/kullrich/dagchainer/archive/{{ version }}.tar.gz
-  sha256: 95fbc06aae75483ac4267d210ba62388978c13dd48a41af6f1b5ec4f40bdd9b0
+  url: https://github.com/kullrich/dagchainer/archive/v{{ version }}.tar.gz
+  sha256: cb0b711f36e12a5c5b69e69305d0703112ef1260fe00fc37c9fdc944259d300f
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
     - perl-data-dumper
     - perl-getopt-long
@@ -43,6 +47,9 @@ test:
     - dagchainer 2>&1 | grep dagchainer
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1093/bioinformatics/bth397
 
