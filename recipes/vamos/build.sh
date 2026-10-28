@@ -1,13 +1,12 @@
 #!/bin/bash
-
 set -xe
 
-mkdir -p $PREFIX/bin
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+mkdir -p "${PREFIX}/bin"
+export CFLAGS="${CFLAGS} -O3 -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
 
-cd src && make -j ${CPU_COUNT} CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -fPIE "  CXX="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS} -fPIE" && cd ..
+cd src
+make CC="${CC} ${CFLAGS} ${LDFLAGS} -fPIE" CXX="${CXX} ${CXXFLAGS} ${LDFLAGS} -fPIE" -j"${CPU_COUNT}"
 
-cp src/vamos $PREFIX/bin
-
+install -v -m 0755 vamos ${PREFIX}/bin
