@@ -1,8 +1,8 @@
 #!/bin/bash
 
 python -m pip install --no-deps --ignore-installed .
-# gatk CreateSequenceDictionary -R $PREFIX/share/tbprofiler/tbdb.fasta
-# samtools faidx $PREFIX/share/tbprofiler/tbdb.fasta
-bwa index $PREFIX/share/tbprofiler/tbdb.fasta
-# this downloads Mycobacterium_tuberculosis_h37rv DB to $PREFIX/share/snpeff-SNPEFF_VERSION/data
-snpEff download Mycobacterium_tuberculosis_h37rv
+cd db
+samtools  dict who_v2+/genome.fasta -o who_v2+/genome.dict
+samtools faidx who_v2+/genome.fasta
+bwa index who_v2+/genome.fasta
+python ../tb-profiler load_library who_v2+ --force

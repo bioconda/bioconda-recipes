@@ -1,32 +1,34 @@
-{% set version = "3_0_9992" %}
+{% set version = "3_0_25292_c9a6a18" %}
 
 package:
   name: proteowizard
   version: {{ version }}
 
 source:
-  url: http://teamcity.labkey.org/guestAuth/repository/download/bt81/365914:id/pwiz-src-{{ version }}.tar.bz2
-  sha256: 87d4d091133178b7efa106ed36f5dc34b333af57ee1c4eb41648e088f9f36082
+  url: https://mc-tca-01.s3.us-west-2.amazonaws.com/ProteoWizard/bt81/3705508/pwiz-src-without-v-{{ version }}.tar.bz2
+  sha256: 107b31123f76d0c82f1905de1217ad51ec3754cfca9d33579c4f83f84b4cafe7
 
 build:
-  number: 3
-  script: bash -c "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared executables && cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
-  skip: True # [osx]
+  number: 0
+  script: "mkdir $PREFIX/bin && ln -s $CXX $BUILD_PREFIX/bin/g++ && ./quickbuild.sh -j{{ CPU_COUNT }} --cxx=$CXX address-model=64 runtime-link=shared executables && ls build-linux-x86_64/gcc-release-x86_64/ && cp build-linux-x86_64/gcc-release-x86_64/* /$PREFIX/bin"
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('proteowizard', max_pin=None) }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-  run:
 
 
 about:
   home: https://proteowizard.sourceforge.net
-  license: Apache 2.0
-  summary: Tools for dealing with mass spectrometry files (e.g., mzML, mzXML, mzIdentML, MGF)
+  license: "Apache 2.0"
+  license_family: APACHE
+  summary: "Tools for dealing with mass spectrometry files (e.g., mzML, mzXML, mzIdentML, MGF)."
 
 test:
   commands:
-    - msconvert --help
+    - LC_ALL=C LANG=C msconvert --help
 
 extra:
   identifiers:

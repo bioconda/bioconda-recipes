@@ -1,17 +1,19 @@
-{% set version = "1.62.0" %}
+{% set version = "1.70.0" %}
 {% set name = "flowMeans" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 5cbb796502f09bf65cae60e4f0f53c1f
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 68531dbc1954fc34c0b8fa8205a585ca
+
 build:
   number: 0
   rpaths:
@@ -19,19 +21,8 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-flowmeans", max_pin="x.x") }}'
   noarch: generic
+
 requirements:
-  host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-flowcore >=2.14.0,<2.15.0'
-    - r-base
-    - r-feature
-    - r-rrcov
-  run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-flowcore >=2.14.0,<2.15.0'
-    - r-base
-    - r-feature
-    - r-rrcov
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -39,15 +30,30 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
+    - r-base
+    - r-feature
+    - r-rrcov
+  run:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
+    - r-base
+    - r-feature
+    - r-rrcov
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Non-parametric Flow Cytometry Data Gating'
+  summary: Non-parametric Flow Cytometry Data Gating
   description: 'Identifies cell populations in Flow Cytometry data using non-parametric clustering and segmented-regression-based change point detection. Note: R 2.11.0 or newer is required.'
+
 extra:
   container:
-    extended-base: true
+    extended-base: yes
 

@@ -3,15 +3,17 @@
 {% set sha256 = "90f75bc4727e6dfb5f402d9f70cf4a606d9639f72d21e07461279d3f3f06b918" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/EddyRivasLab/{{ name }}/archive/refs/tags/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -19,6 +21,14 @@ requirements:
     - {{ compiler('c') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
+  host:
+    - gsl
+    - openmpi
+  run:
+    - openmpi
 
 test:
   commands:
@@ -46,9 +56,14 @@ test:
     - esl-weight -h
 
 about:
-  home: https://github.com/EddyRivasLab/easel
+  home: "https://github.com/EddyRivasLab/easel"
   license: BSD
   license_family: BSD
   license_file: LICENSE
   summary: "Easel is an ANSI C code library for computational analysis of biological sequences using probabilistic models."
-  dev_url: https://github.com/EddyRivasLab/easel
+  dev_url: "https://github.com/EddyRivasLab/easel"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

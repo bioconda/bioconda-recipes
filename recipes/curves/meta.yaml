@@ -1,5 +1,5 @@
 {% set name = "curves" %}
-{% set version = "3.0.2" %}
+{% set version = "3.0.3" %}
 
 package:
   name: '{{ name|lower }}'
@@ -18,6 +18,9 @@ source:
 
 build:
   number: 2
+  # skip: true  # [osx]
+  ignore_run_exports:
+    - libnetcdf
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
 
@@ -27,19 +30,17 @@ requirements:
     - {{ compiler('fortran') }}
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - make
   host:
-    - python
-    - libnetcdf
+    - libnetcdf >=4.9.3,<5
     - netcdf-fortran
     - ambertools >=22.0
   run:
-    - python 3.8.*  # [py38]
-    - python 3.9.*  # [py39]
-    - python 3.10.*  # [py310]
-    - libnetcdf
+    - libnetcdf >=4.9.3,<5
     - netcdf-fortran
     - ambertools >=22.0
+    - libcxx  # [osx]
 
 test:
   files:
@@ -53,10 +54,5 @@ about:
   description: "Curves+ is a revised version of the Curves approach for analysing the structure of nucleic acids. It respects the international conventions for nucleic acid analysis, runs much faster and provides new data."
 
 extra:
-  skip: true  # [py2k or py3k]
-  # Define build matrix for multiple Python versions
-  build:
-    python:
-      - 3.8
-      - 3.9
-      - 3.10
+  recipe-maintainers:
+    - RubenChM
