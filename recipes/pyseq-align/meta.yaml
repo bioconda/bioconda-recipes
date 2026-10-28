@@ -2,25 +2,31 @@
 {% set version = "1.0.2" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "d9d450269d492c9a83ea9b795b14347140f12153ea93e2e5ed409606c5ac9e4d"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d9d450269d492c9a83ea9b795b14347140f12153ea93e2e5ed409606c5ac9e4d
 
 build:
-  number: 5
-  skip: True  # [py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  number: 6
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|g' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
   host:
-    - pip
     - python
+    - pip
+    - setuptools >=42
     - cython
   run:
     - python
@@ -32,12 +38,16 @@ test:
 
 about:
   home: "https://github.com/Lioscro/pyseq-align"
-  license: "MIT"
-  license_family: "MIT"
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: "Python interface for the seq-align C library"
+  summary: "Python interface for the seq-align C library."
   dev_url: "https://github.com/Lioscro/pyseq-align"
+  doc_url: "https://github.com/Lioscro/pyseq-align/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - Maarten-vd-Sande

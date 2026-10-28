@@ -1,5 +1,5 @@
-{% set version = "2.1.1" %}
-{% set sha256 = "cc7cd65ddafd6b9e69975292bee0583bdf64918e8d5c7ddd98ae41a20d3f8b73" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "4f62e74e753ff01eb0df336a139ed1cee6b7df6984baede31f5c1c879d621a2f" %}
 
 package:
   name: swipe
@@ -10,11 +10,14 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 5
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('swipe', max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
   host:
     - openmpi
@@ -27,16 +30,24 @@ test:
     - swipe -h | grep "T. Rognes (2011) Faster Smith-Waterman database searches"
 
 about:
-  home: http://dna.uio.no/swipe
-  license: AGPL-3.0
-  license_family: GPL
+  home: "https://github.com/torognes/swipe"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: COPYING
-  summary: Tool for performing rapid local alignment searches in amino acid or nucleotide
+  summary: "Smith-Waterman database searches with inter-sequence SIMD parallelisation."
+  description: |
+    Tool for performing rapid local alignment searches in amino acid or nucleotide
     sequence databases. It is a highly optimized implementation of the Smith-Waterman
     algoritm using SIMD parallel computing technology available on common CPUs.
-  dev_url: https://github.com/torognes/swipe
+  dev_url: "https://github.com/torognes/swipe"
+  doc_url: "https://github.com/torognes/swipe/blob/v{{ version }}/README"
 
 extra:
   identifiers:
     - biotools:swipe
     - doi:10.1186/1471-2105-12-221
+  # aarch64/arm64 cannot build even with sse2neon.h and replacing #include <x86intrin.h> in swipe.h
+  # https://github.com/torognes/swipe/issues/36
+  #additional-platforms:
+    #- linux-aarch64
+    #- osx-arm64

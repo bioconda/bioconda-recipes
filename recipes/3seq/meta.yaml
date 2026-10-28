@@ -3,25 +3,26 @@
 {% set sha256 = "c76b1b7d172fdc7521265a7fda07b8e5122701a918168f03bce84f1921c3caa1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 5
-  run_exports:
-    - {{ pin_subpackage("3seq", max_pin="x") }}  
 
 source:
   url: https://gitlab.com/lamhm/{{ name|lower }}/-/archive/v{{ version }}/3seq-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  number: 6
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
   build:
-    - make
+    - ninja
     - cmake
     - {{ compiler('cxx') }}
   host:
     - wget
+    - tar
     - coreutils
 
 test:
@@ -29,11 +30,15 @@ test:
     - 3seq -h
 
 about:
-  home: https://mol.ax/software/3seq/
-  license: CC-BY-NC-SA-4.0
-  license_file: LICENSE.md
-  summary: '3SEQ tests all sequence triplets in an alignment for a mosaic recombination signal.'
+  home: "https://mol.ax/software/3seq"
+  license: "CC-BY-NC-SA-4.0"
+  license_file: "LICENSE.md"
+  summary: "3SEQ tests all sequence triplets in an alignment for a mosaic recombination signal."
+  dev_url: "https://gitlab.com/lamhm/3seq"
+  doc_url: "https://mol.ax/software/3seq"
 
 extra:
   additional-platforms:
-    - linux-aarch64
+    # text file bin/3seq is busy
+    #- linux-aarch64
+    - osx-arm64

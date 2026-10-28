@@ -1,35 +1,46 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
+# Create necessary directories
 mkdir -p "$PREFIX/bin"
-chmod u+x bin/*
-cp -r bin/* "$PREFIX/bin"
+mkdir -p "$PREFIX/share/sipros/scripts"
+mkdir -p "$PREFIX/share/sipros/configTemplates"
 
-cp -r EnsembleScripts "$PREFIX"
+# Copy tools and set permissions
+chmod u+x tools/*
+cp -r tools/configGenerator \
+      tools/raxport \
+      tools/percolator \
+      tools/sipros \
+      tools/aerithFeatureExtractor \
+      "$PREFIX/bin"
 
-cp -r V4Scripts "$PREFIX"
+# Copy scripts and configuration templates
+cp script33/* "$PREFIX/share/sipros/scripts/"
+cp configTemplates/* "$PREFIX/share/sipros/configTemplates/"
 
-cp -r configTemplates "$PREFIX"
+# Copy the license file
+cp LICENSE "$PREFIX/share/sipros/LICENSE"
 
-for script in sipros_prepare_protein_database.py sipros_psm_tabulating.py sipros_ensemble_filtering.py sipros_peptides_assembling.py; do
-    baseName=$(basename $script .py)
-    sed -i '1i#!/usr/bin/env python\n' "$PREFIX/EnsembleScripts/$script"
-    ln -s "$PREFIX/EnsembleScripts/$script" "$PREFIX/bin/EnsembleScripts_$baseName"
-done
+# Generate workflow configuration
+cat << EOF > "$PREFIX/share/sipros/workflow.cfg"
+[Paths]
+configGenerator=$PREFIX/bin/configGenerator
+raxport=$PREFIX/bin/raxport
+sipros=$PREFIX/bin/sipros
+feature_extractor=$PREFIX/bin/aerithFeatureExtractor
+filter=$PREFIX/bin/percolator
+assembly=$PREFIX/bin/philosopher
+EOF
 
-for script in sipros_peptides_filtering.py sipros_peptides_assembling.py ClusterSip.py; do
-    baseName=$(basename $script .py)
-    sed -i '1i#!/usr/bin/env python\n' "$PREFIX/V4Scripts/$script"
-    ln -s "$PREFIX/V4Scripts/$script" "$PREFIX/bin/V4Scripts_$baseName"
-done
+# Create the siproswf script
+cat << EOF > "$PREFIX/bin/siproswf"
+#!/usr/bin/env bash
+python "$PREFIX/share/sipros/scripts/main.py" "\$@"
+EOF
+chmod u+x "$PREFIX/bin/siproswf"
 
-for script in refineProteinFDR.R getSpectraCountInEachFT.R makeDBforLabelSearch.R getLabelPCTinEachFT.R; do
-    baseName=$(basename $script .R)
-    sed -i '1i#!/usr/bin/env Rscript\n' "$PREFIX/V4Scripts/$script"
-    ln -s "$PREFIX/V4Scripts/$script" "$PREFIX/bin/V4Scripts_$baseName"
-done
-
-cp "$RECIPE_DIR"/Raxport.sh "$PREFIX/bin/Raxport"
-cp "$RECIPE_DIR"/copyConfigTemplate.sh "$PREFIX/bin/copyConfigTemplate"
-chmod u+x $PREFIX/bin/*
+# Create the link of extractPro.sh
+ln -s "$PREFIX/share/sipros/scripts/extractPro.sh" "$PREFIX/bin/extractPro"
+chmod u+x "$PREFIX/bin/extractPro"
