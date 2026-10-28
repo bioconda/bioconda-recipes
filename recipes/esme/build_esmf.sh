@@ -2,6 +2,11 @@
 
 set -ex
 
+# CUDA stubs only for MVAPICH (resolves libmpi.so deps in ESMF linking)
+if [[ "${mpi}" == mvapich* ]]; then
+  source ${RECIPE_DIR}/mvapich_cuda_stub.sh
+fi
+
 export ESMF_F90=mpif90
 export ESMF_CXX=mpicxx
 export ESMF_C=mpicc
@@ -31,11 +36,18 @@ export ESMF_PNETCDF=pnetcdf-config
 export ESMF_LAPACK_LIBS=-lopenblas \
 export ESMF_LAPACK_LIBPATH="${PREFIX}"/lib
 export ESMF_F90COMPILEOPTS="-fallow-argument-mismatch"
+export ESMF_CXXCOMPILEOPTS="$ESMF_CXXCOMPILEOPTS -include cstdint"
 
-cd esme_esmf
+cd "${SRC_DIR}/esme_esmf"
 
 make -j ${CPU_COUNT}
 
 make install
 
-export ESMFMKFILE=${PREFIX}/lib/libO/Linux.gfortran.64.${ESMF_COMM}.default/esmf.mk
+echo "_________________________________________________________"
+
+find ${PREFIX} -name esmf.mk
+
+echo "_________________________________________________________"
+
+export ESMFMKFILE=${PREFIX}/lib/esmf.mk

@@ -1,49 +1,53 @@
 {% set name = "kraken2" %}
-{% set version = "2.14" %}
-{% set sha256 = "75ffbf82bd13232ec8d39990f48454c6f7d98ceb589af80a60c7e9ed046e7f18" %}
+{% set version = "2.17.2" %}
+{% set sha256 = "84ff95cd6d8a4c9e93ab6bf1d9b3892099baaefb0277bcf2edc3eb4948566035" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DerrickWood/kraken2/archive/v{{ version }}.tar.gz
+  url: https://github.com/DerrickWood/kraken2/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - Makefile.patch
+    - 0001-src-Makefile.patch
 
 build:
   number: 0
-  run_exports: 
+  run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - make
   host:
     - perl
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
+    - gperftools
     - wget
     - tar
     - rsync
     - zlib
   run:
+    - python
     - libgomp      # [linux]
     - llvm-openmp  # [osx]
+    - gperftools
     - blast
     - perl
     - wget
     - tar
     - rsync
-    - python
 
 test:
   commands:
-    - kraken2 --version
-    - kraken2-build --version
-    - kraken2-inspect --version
+    - kraken2 --version | grep -F "{{ version }}"
+    - kraken2-build --version | grep -F "{{ version }}"
+    - kraken2-inspect --version | grep -F "{{ version }}"
+    - k2 --version | grep -F "{{ version }}"
     - k2 --help
 
 about:
@@ -53,13 +57,12 @@ about:
   license_family: GPL3
   license_file: LICENSE
   summary: "Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies."
-  doc_url: "https://github.com/DerrickWood/kraken2/blob/v{{ version }}/docs/MANUAL.markdown"
+  doc_url: "https://github.com/DerrickWood/kraken2/blob/{{ version }}/docs/MANUAL.markdown"
 
 extra:
   additional-platforms:
     - linux-aarch64
-    # osx-arm64 requires blast and its dependencies
-    # - osx-arm64
+    - osx-arm64
   identifiers:
     - biotools:kraken2
     - usegalaxy-eu:kraken2

@@ -1,36 +1,39 @@
 {% set name = "phate" %}
-{% set version = "1.0.11" %}
-{% set sha256 = "10162e9edd09ce5d0e667b0767e96eed6bda5ee877667202ffff0a578ab5076d" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "4605f33b8ca625e8fe9b6a9552a7113f60f86afd816ba9495559494f1e1b2e26" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "{{ sha256 }}"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
     - pip
-    - python >=3.5
+    - python >=3.9
+    - setuptools
   run:
+    - python >=3.9
     - deprecated
     - future
     - graphtools >=1.5.3
     - matplotlib-base >=3.0
-    - numpy >=1.16.0
-    - python >=3.5
-    - scikit-learn >=0.20.0
-    - scipy >=1.1.0
+    - numpy >=1.20.0
+    - scikit-learn >=1.5.0
+    - scipy >=1.7.0
     - scprep >=0.11.1
     - s_gd2 >=1.5
-    - tasklogger >=1.0
+    - tasklogger >=1.2
 
 test:
   imports:
@@ -38,12 +41,12 @@ test:
 
 about:
   home: "https://github.com/KrishnaswamyLab/PHATE"
-  license: GPL-2.0
+  license: "GPL-2.0-only"
   license_family: GPL
   license_file: LICENSE
   summary: "PHATE (Potential of Heat-diffusion for Affinity-based Transition Embedding) is a tool for visualizing high dimensional data."
-  doc_url: https://phate.readthedocs.io
-  dev_url: https://github.com/KrishnaswamyLab/PHATE
+  doc_url: "https://phate.readthedocs.io"
+  dev_url: "https://github.com/KrishnaswamyLab/PHATE"
 
 extra:
   identifiers:
