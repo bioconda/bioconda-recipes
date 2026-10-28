@@ -1,0 +1,59 @@
+{% set version = "0.13.1" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: peppr
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/peppr/peppr-{{ version }}.tar.gz
+  sha256: 23d8f0b7ce72f2e5f323493f99583be341bd4ab25c12c1b5a72ac2b3e01eca74
+
+build:
+  entry_points:
+    - peppr = peppr.cli:cli
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("peppr", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - hatchling
+    - hatch-vcs ==0.4
+    - pip
+  run:
+    - python >={{ python_min }}
+    - biotite >=1.6
+    - packaging >=24
+    - numpy >=1.25
+    - pandas >=2.0.0
+    - rdkit >=2025.03.5
+    - click >=8.0.0
+
+test:
+  imports:
+    - peppr
+  commands:
+    - python -m pip check
+    - peppr --help
+  requires:
+    - pip
+
+about:
+  home: https://peppr.proximabio.com
+  dev_url: https://github.com/aivant/peppr
+  doc_url: https://peppr.proximabio.com
+  license: MIT
+  license_file: LICENSE.txt
+  summary: It's a package for evaluation of predicted poses, right?
+  description: |
+    `peppr` is a *Python* package for evaluation of molecular structure poses,
+    created by any structure prediction tool, against corresponding reference structures,
+    that represent the perfect *ground truth* for that structure.
+
+extra:
+  recipe-maintainers:
+    - eunos-1128
