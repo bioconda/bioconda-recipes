@@ -21,6 +21,8 @@ jobs:
           fallback-fetch-all: true
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Perform lint
         run: |
@@ -31,7 +33,7 @@ jobs:
           px conda config --show-sources
           px bioconda-utils diagnostics
           echo '============'
-          px bioconda-utils lint --loglevel debug --git-range origin/"$GITHUB_BASE_REF"...HEAD
+          px bioconda-utils lint --cache "$BIOCONDA_UTILS_CACHE" --loglevel debug --git-range origin/"$GITHUB_BASE_REF"...HEAD
           px conda clean -y --all
 
   build-linux:
@@ -71,6 +73,8 @@ jobs:
           fallback-fetch-all: true
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Build and test
         run: |
@@ -85,7 +89,8 @@ jobs:
           done
 
           px bioconda-utils build recipes config.yml \
-            --docker --mulled-build-and-test \
+            --cache "$BIOCONDA_UTILS_CACHE" \
+            --docker --container-cache "$BIOCONDA_UTILS_CONTAINER_CACHE" --mulled-build-and-test \
             --git-range origin/"$GITHUB_BASE_REF"...HEAD
 
       - name: Prepare artifacts
@@ -152,6 +157,8 @@ jobs:
           sudo chmod +x /usr/local/bin/gtar;
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Build and Test
         run: |
@@ -165,7 +172,7 @@ jobs:
 
           # SDK setup and build must share one shell: run_conda_forge_build_setup
           # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
-          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --git-range origin/\"$GITHUB_BASE_REF\"...HEAD"
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --cache \"$BIOCONDA_UTILS_CACHE\" --git-range origin/\"$GITHUB_BASE_REF\"...HEAD"
 
       - name: Prepare artifacts
         run: |
@@ -198,12 +205,14 @@ jobs:
       - name: Fetch commits through the merge base
         uses: fulcrumgenomics/fetch-through-merge-base@v1
         with:
-          base-ref: ${{ env.GITHUB_BASE_REF }}
+          base-ref: ${{ github.base_ref }}
           head-ref: ${{ github.sha }}
           fallback-base-ref: master
           fallback-fetch-all: true
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Build and test
         run: |
@@ -218,7 +227,8 @@ jobs:
           done
 
           px bioconda-utils build recipes config.yml \
-            --docker --mulled-build-and-test \
+            --cache "$BIOCONDA_UTILS_CACHE" \
+            --docker --container-cache "$BIOCONDA_UTILS_CONTAINER_CACHE" --mulled-build-and-test \
             --platform linux-aarch64 \
             --git-range origin/"$GITHUB_BASE_REF"...HEAD
 

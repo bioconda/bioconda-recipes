@@ -44,6 +44,8 @@ jobs:
       # action's utils-ref default, so bulk can run a different version
       # than master.
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Initialize mulled image records
         run: mkdir -p /tmp/mulled-images && touch /tmp/mulled-images/EMPTY
@@ -63,8 +65,9 @@ jobs:
           px bioconda-utils diagnostics
           echo '============'
           px bioconda-utils build recipes config.yml \
+            --cache "$BIOCONDA_UTILS_CACHE" \
             --worker-offset ${{ matrix.worker }} --n-workers 3 \
-            --docker --mulled-build-and-test --anaconda-upload --container-upload-target biocontainers \
+            --docker --container-cache "$BIOCONDA_UTILS_CONTAINER_CACHE" --mulled-build-and-test --anaconda-upload --container-upload-target biocontainers \
             --platform ${{ matrix.platform.package_subdir }} \
             --image-records-dir /tmp/mulled-images \
             --lint --record-build-failures --skiplist-leaves \
@@ -99,6 +102,8 @@ jobs:
           git config user.email BiocondaBot@users.noreply.github.com
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Build and upload
         env:
@@ -114,7 +119,7 @@ jobs:
           echo '============'
           # SDK setup and build must share one shell: run_conda_forge_build_setup
           # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
-          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --worker-offset ${{ matrix.runner }} --n-workers 3 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --cache \"$BIOCONDA_UTILS_CACHE\" --worker-offset ${{ matrix.runner }} --n-workers 3 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
           pixi run conda clean -y --all
 
   build-osx-arm:
@@ -138,6 +143,8 @@ jobs:
           git config user.email BiocondaBot@users.noreply.github.com
 
       - uses: ./.github/actions/setup-bioconda-utils
+        with:
+          cache: 'true'
 
       - name: Build and upload
         env:
@@ -153,7 +160,7 @@ jobs:
           echo '============'
           # SDK setup and build must share one shell: run_conda_forge_build_setup
           # (from conda-forge-ci-setup in the pixi env) only exports into its own shell
-          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --worker-offset ${{ matrix.runner }} --n-workers 1 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
+          pixi run bash -lc "set -e; run_conda_forge_build_setup; bioconda-utils build recipes config.yml --cache \"$BIOCONDA_UTILS_CACHE\" --worker-offset ${{ matrix.runner }} --n-workers 1 --lint --anaconda-upload --record-build-failures --skiplist-leaves --exclude bioconda-repodata-patches"
           pixi run conda clean -y --all
 
   publish-mulled-manifests:
