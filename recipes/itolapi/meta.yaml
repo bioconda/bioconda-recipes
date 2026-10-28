@@ -1,38 +1,46 @@
 {% set name = "itolapi" %}
-{% set version = "4.1.5" %}
+{% set version = "4.1.6" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8ce2f6c0560b4b3898913a61a821667ea62aca330aad008e4c71fe98ec26c874
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2d124a244abbdf227801aad6a61bc9e466177001edd164fd731f3e18f008f00d
 
 build:
-  noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - itol = itolapi.itol:cli
+    - itolexport = itolapi.itolexport:cli
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
+    - setuptools
   run:
-    - python >=3.6
+    - python >=3.7
     - requests >=2.0,<3.0
 
 test:
   imports:
     - itolapi
+  commands:
+    - itol --help
+    - itolexport --help
 
 about:
-  home: https://github.com/albertyw/itolapi
-  license: MIT License
+  home: "https://github.com/albertyw/itolapi"
+  license: MIT
   license_family: MIT
-  summary: API for interacting with itol.embl.de
+  summary: "API for interacting with itol.embl.de."
   description: "iTOL Python API for the Interactive Tree of Life (iTOL). Created by Albert Wang (git at albertyw.com) With Complements to: `iTOL (Interactive Tree of Life). This iTOL API allows local software to upload trees to iTOL using itol.py and export uploaded trees using itolexport.py using direct Python calls or through shell.  An active internet connection to the iTOL website is required."
+  dev_url: "https://github.com/albertyw/itolapi"
 
 extra:
   recipe-maintainers:

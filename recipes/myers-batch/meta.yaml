@@ -1,0 +1,47 @@
+{% set name = "myers-batch" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name | lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/myers_batch-{{ version }}.tar.gz"
+  sha256: "616cbea1b57132018b1521ddd3943493081a916ac138b1c612815c531e1316d1"
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('myers-batch', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - myers_batch
+  commands:
+    - python -c "import myers_batch; print(myers_batch.simd_backend())"
+
+about:
+  home: "https://github.com/bmouler/myers-batch"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: "LICENSE"
+  summary: "Batched infix edit distance: bit-parallel Myers for aarch64 NEON and x86-64 AVX2."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - pentamorfico

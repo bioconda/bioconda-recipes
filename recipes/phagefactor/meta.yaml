@@ -1,0 +1,57 @@
+{% set name = "phagefactor" %}
+{% set version = "1.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/TMs-code/phagefactor/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 785aa09719efec5656a040e9027998c8f22965fe9a449cebe40af6d49e97793e
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.11
+    - snakemake-minimal >=8.20
+    - snakemake-executor-plugin-slurm >=1.2
+    - pharokka
+    - phold
+    - foldseek
+    - pandas
+    - biopython
+    - openpyxl
+    - pyyaml
+    - requests
+
+test:
+  commands:
+    - phagefactor --version
+    - phagefactor --help
+    - d=$(mktemp -d) && phagefactor init "$d/test_project" && test -f "$d/test_project/config/config.yaml"
+
+about:
+  home: https://github.com/TMs-code/phagefactor
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Structure-guided annotation and curation of phage and prophage proteins (pharokka + phold + FoldSeek)
+  description: |
+    phageFACTor annotates phage genomes or proteins with pharokka and phold,
+    searches the remaining hypothetical proteins with FoldSeek (3Di) against
+    AlphaFold DB and PDB, and reconciles the evidence into one curated table,
+    GenBank and interactive HTML report (Snakemake workflow, local or SLURM).
+    Databases are not included: run `phagefactor databases <dir>` after
+    installing. Phynteny runs in its own environment:
+    `phagefactor install-envs --phynteny`.
+  dev_url: https://github.com/TMs-code/phagefactor
+  doc_url: https://github.com/TMs-code/phagefactor/tree/master/docs
+
+extra:
+  recipe-maintainers:
+    - TMs-code

@@ -1,51 +1,53 @@
-{% set version = '1.6.11' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = "1.6.11" %}
+{% set posix = "m2-" if win else '' %}
+{% set native = "m2w64-" if win else '' %}
 
 package:
   name: r-rphast
   version: {{ version|replace("-", "_") }}
 
 source:
-  url:
-    - http://compgen.cshl.edu/rphast/downloads/rphast_{{ version }}.tar.gz
+  url: http://compgen.cshl.edu/rphast/downloads/rphast_{{ version }}.tar.gz
   sha256: bda02d6d1129c01c625927321b341791dfee3e470aaad00dc74a2a705a94e5c7
   patches:
     - 0001-fix-lapack-interfaces.patch
 
 build:
-  number: 0
+  number: 1
+  # Error in library("rphast") : ‘rphast’ is not a valid installed package
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports:
-    - {{ pin_subpackage('r-rphast', max_pin="x.x") }}
+    - {{ pin_subpackage('r-rphast', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{posix}}autoconf
-    - {{posix}}automake
-    - {{posix}}pkg-config
-    - {{posix}}make
+    - {{ posix }}autoconf
+    - {{ posix }}automake
+    - {{ posix }}pkg-config
+    - {{ posix }}make
   host:
     - r-base >=3.6.3
     - pcre
     - liblapack
-    - blis >=0.9.0           # [x86]
+    - blis >=0.9.0  # [x86_64]
   run:
     - r-base >=3.6.3
     - pcre
     - liblapack
-    - blis >=0.9.0           # [x86]
+    - blis >=0.9.0  # [x86_64]
 
 test:
   commands:
     - $R -e "library('rphast')"
 
 about:
-  home: http://compgen.cshl.edu/rphast
-  license: BSD_3_clause + file LICENSE
+  home: "https://github.com/CshlSiepelLab/RPHAST"
+  license: "BSD-3-Clause"
+  license_family: BSD
   summary: Provides an R interface to the 'PHAST'(<http://compgen.cshl.edu/phast/>) software
     (Phylogenetic Analysis with Space/Time Models).  It can be used for many types of
     analysis in comparative and evolutionary genomics, such as estimating models of
@@ -53,6 +55,10 @@ about:
     and predicting elements based on conservation or custom phylogenetic hidden Markov
     models.  It can also perform many basic operations on multiple sequence alignments
     and phylogenetic trees.
-  license_family: BSD
+  dev_url: "https://github.com/CshlSiepelLab/RPHAST"
+  doc_url: "http://compgen.cshl.edu/phast"
+
+extra:
   additional-platforms:
     - linux-aarch64
+    #- osx-arm64
