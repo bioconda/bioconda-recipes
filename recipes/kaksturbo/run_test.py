@@ -1,9 +1,11 @@
 import csv,json,subprocess
 from pathlib import Path
 def run(*args):
- r=subprocess.run(['kaksturbo',*args],text=True,capture_output=True,check=True)
+ r=subprocess.run(['kaksturbo',*args],text=True,capture_output=True)
+ if r.returncode:
+  raise RuntimeError(f"kaksturbo {args!r} exited {r.returncode}; stdout={r.stdout!r}; stderr={r.stderr!r}")
  return r.stdout
-assert 'KaKsTurbo 1.1.0rc10' in run('--version')
+assert run('--version').strip() == 'KaKsTurbo 1.1.0'
 assert 'resume' in run('--help')
 assert json.loads(run('doctor','--backend','cpu','--json'))['PASS']
 assert json.loads(run('validate','--input','examples/three_pair_smoke.axt','--json'))['pairs']==3
