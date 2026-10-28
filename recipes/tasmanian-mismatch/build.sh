@@ -5,33 +5,37 @@ export CARGO_PROFILE_RELEASE_LTO=false
 
 TARGET="${TARGET:-${HOST:-}}"
 if [[ -z "$TARGET" ]]; then
-  echo "ERROR: TARGET/HOST not set"
-  exit 1
+    echo "ERROR: TARGET/HOST not set"
+    exit 1
 fi
+
+echo "TARGET=$TARGET"
+echo "HOST=${HOST:-<unset>}"
+
 target_env="${TARGET//[-.]/_}"
 
-# Only set toolchain vars if they exist (avoid exporting empty strings)
+# Only set toolchain vars if they exist
 if [[ -n "${CC:-}" ]]; then
-  export "CC_${target_env}=${CC}"
+    export "CC_${target_env}=${CC}"
 fi
 if [[ -n "${CXX:-}" ]]; then
-  export "CXX_${target_env}=${CXX}"
+    export "CXX_${target_env}=${CXX}"
 fi
 if [[ -n "${AR:-}" ]]; then
-  export "AR_${target_env}=${AR}"
+    export "AR_${target_env}=${AR}"
 fi
 if [[ -n "${RANLIB:-}" ]]; then
-  export "RANLIB_${target_env}=${RANLIB}"
+    export "RANLIB_${target_env}=${RANLIB}"
 fi
 
 if [[ -n "${CFLAGS:-}" ]]; then
-  export "CFLAGS_${target_env}=${CFLAGS}"
+    export "CFLAGS_${target_env}=${CFLAGS}"
 fi
 if [[ -n "${CXXFLAGS:-}" ]]; then
-  export "CXXFLAGS_${target_env}=${CXXFLAGS}"
+    export "CXXFLAGS_${target_env}=${CXXFLAGS}"
 fi
 if [[ -n "${LDFLAGS:-}" ]]; then
-  export "LDFLAGS_${target_env}=${LDFLAGS}"
+    export "LDFLAGS_${target_env}=${LDFLAGS}"
 fi
 
 if [[ "$(uname -m)" == "aarch64" ]]; then
