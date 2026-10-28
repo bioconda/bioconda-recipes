@@ -1,19 +1,26 @@
 {% set name = "ultraplex" %}
-{% set version = "1.2.9" %}
+{% set version = "1.2.10" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 7b1efa09a421590907c7e5177eb9e4837deade89c237b961bcf2f7edfa9f2e90
+  url: https://github.com/ulelab/ultraplex/archive/{{ version }}.tar.gz
+  sha256: 8f8769cad0c54c194b936fc3668c8adc370022830bf484d8d50182821598fad2
 
 build:
-  number: 3
-  skip: True  # [py < 37 or py > 39]
-  script: 
-    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --use-pep517 -vvv"
+  number: 0
+  skip: True  # [py > 39]
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-conversion"
+    - sed -i.bak 's|find_packages|find_namespace_packages|' setup.py
+    - rm -rf *.bak
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   entry_points:
     - ultraplex = ultraplex.__main__:main
   run_exports:
@@ -26,14 +33,13 @@ requirements:
     - pip
     - python
     - cython
-    - setuptools-scm >8
+    - setuptools-scm
   run:
     - python
     - xopen >=1.0.0
     - dnaio >=0.5.0
     - pigz
     - multiprocess
-    - setuptools_scm >8
 
 test:
   imports:
@@ -42,13 +48,18 @@ test:
     - ultraplex --help
 
 about:
-  home: "https://github.com/ulelab/ultraplex.git"
+  home: "https://github.com/ulelab/ultraplex"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "fastq demultiplexer"
+  summary: "An all-in-one software package for processing and demultiplexing fastq files."
+  dev_url: "https://github.com/ulelab/ultraplex"
+  doc_url: "https://github.com/ulelab/ultraplex/blob/{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
     - Delayed-Gitification
     - CharlotteAnne
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

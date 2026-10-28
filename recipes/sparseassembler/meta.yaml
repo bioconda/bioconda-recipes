@@ -5,30 +5,37 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 10
-  script: |
-    mkdir -p "${PREFIX}/bin"
-    "${CXX}" ${CPPFLAGS} ${CXXFLAGS} -O3 -o SparseAssembler *.cpp
-    mv SparseAssembler "${PREFIX}/bin/"
-
 source:
   url: https://github.com/yechengxi/SparseAssembler/archive/7ce06016160de6dc0e245530689cefed8d5db19f.tar.gz
   md5: e9c6b25a8f9983badff01094615596f0
 
+build:
+  number: 11
+  script:
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - mkdir -p "${PREFIX}/bin"
+    - ${CXX} ${CPPFLAGS} ${CXXFLAGS} -O3 -o SparseAssembler *.cpp
+    - install -v -m 0755 SparseAssembler "${PREFIX}/bin"
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin=None) }}
+
 requirements:
   build:
     - {{ compiler('cxx') }}
-  host:
-  run:
 
 test:
   commands:
     - SparseAssembler | grep -qF 'Error! Genome size not given.'
 
 about:
-  home: https://github.com/yechengxi/SparseAssembler
-  summary: A sparse k-mer graph based, memory-efficient genome assembler
-  license: GPL-3.0
-  license_family: GPL
+  home: "https://github.com/yechengxi/SparseAssembler"
+  summary: "A sparse k-mer graph based, memory-efficient genome assembler."
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
+  dev_url: "https://github.com/yechengxi/SparseAssembler"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

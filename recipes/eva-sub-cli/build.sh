@@ -6,7 +6,7 @@ EVA_SUB_CLI="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
 mkdir -p ${EVA_SUB_CLI}
 
 # Install eva-sub-cli
-$PYTHON -m pip install .
+$PYTHON -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
 echo "Done with eva-sub-cli"
 
 cd ${EVA_SUB_CLI}
