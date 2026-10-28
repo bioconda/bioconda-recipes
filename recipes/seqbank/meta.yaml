@@ -1,0 +1,62 @@
+{% set name = "seqbank" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5d3ac23cf2cd71a71f08b560a2680675fe9b2012e4c71a2503a588de8ddc4246
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - seqbank = seqbank.main:app
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - hatchling
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - attrs >=23.1.0
+    - biopython >=1.81
+    - h5py >=3.9.0
+    - joblib >=1.3.2
+    - python-kaleido >=1.0.0,<2
+    - python-lmdb >=1.7
+    - numpy >=1.22.0
+    - pandas >=2.0.0
+    - plotly >=6.1.1
+    - pyfastx >=1.1.0
+    - requests >=2.31.0
+    - rich >=10.16.1
+    - typer >=0.9.0
+
+test:
+  imports:
+    - seqbank
+  commands:
+    - seqbank --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/rbturnbull/seqbank
+  dev_url: https://github.com/rbturnbull/seqbank
+  doc_url: https://rbturnbull.github.io/seqbank/
+  summary: A database to quickly read and write DNA sequence data in numerical form.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - rbturnbull
