@@ -10,14 +10,29 @@ export LC_ALL="en_US.UTF-8"
 
 # configure
 cd ${RM_DIR}
-perl ./configure -libdir "${RM_DIR}/Libraries" -trf_prgm "${PREFIX}/bin/trf" \
-	-rmblast_dir "${PREFIX}/bin" -hmmer_dir "${PREFIX}/bin" \
-	-abblast_dir "${PREFIX}/bin" -crossmatch_dir "${PREFIX}/bin" \
-	-default_search_engine rmblast
 
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
+# configure with the famdb dir
+perl ./configure \
+	-trf_prgm "${PREFIX}/bin/trf" \
+	-rmblast_dir "${PREFIX}/bin" \
+	-hmmer_dir "${PREFIX}/bin" \
+	-abblast_dir "${PREFIX}/bin" \
+	-crossmatch_dir "${PREFIX}/bin" \
+	-default_search_engine rmblast \
+	-famdb_dir "${famdb_dir}"
+
+# BELOW NOT NEEDED FOR 4.2.4
 # Delete huge Dfam file, will be downloaded by post-link.sh
 # Do it now only, because configure needs the full version
-echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
+#echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
 
 # ----- add tools within the bin ------
 
@@ -27,13 +42,13 @@ ln -sf ${RM_DIR}/RepeatMasker ${PREFIX}/bin/RepeatMasker
 
 # add other tools
 RM_OTHER_PROGRAMS="DupMasker ProcessRepeats RepeatProteinMask"
-for name in ${RM_OTHER_PROGRAMS} ; do
-  ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
+for name in ${RM_OTHER_PROGRAMS}; do
+	ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
 
 # add all utils
-for name in ${RM_DIR}/util/* ; do
-  ln -sf $name ${PREFIX}/bin/$(basename $name)
+for name in ${RM_DIR}/util/*; do
+	ln -sf $name ${PREFIX}/bin/$(basename $name)
 done
 
 # Fix perl shebang
@@ -45,5 +60,5 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
 
-rm -rf ${RM_DIR}/util/*.bak
-rm -rf ${RM_DIR}/*.bak
+rm -f ${RM_DIR}/util/*.bak
+rm -f ${RM_DIR}/*.bak

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "derfinderdata-2.24.0"
+installBiocDataPackage.sh "derfinderdata-2.28.0"
