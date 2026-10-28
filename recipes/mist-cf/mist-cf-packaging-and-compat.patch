@@ -1,0 +1,249 @@
+MIST-CF 1.0.0 patches for the bioconda recipe. Not submitted upstream.
+
+# 1/4  setup.cfg: set version and license; find_namespace: so src/mist_cf is packaged
+
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -1,15 +1,15 @@
+ [metadata]
+ name = mist_cf
+-version = <version number: 0.0.1
+-#license = <license name, e.g. MIT>
++version = 1.0.0
++license = MIT
+ description = FORmula Estimation with Spectrum Transformers
+ long_description = file: README.md
+ author = Samuel Goldman
+ #author_email = 
+ classifiers=
+ 
+ [options]
+-packages = find:
++packages = find_namespace:
+ package_dir =
+     =src
+ include_package_data = True
+
+# 2/4  pytorch-lightning 2: relocated Logger and seed_everything
+
+--- a/src/mist_cf/common/misc_utils.py
++++ b/src/mist_cf/common/misc_utils.py
+@@ -12,8 +12,8 @@
+ import yaml
+ import pytorch_lightning as pl
+ from pytorch_lightning.utilities import rank_zero_only
+-from pytorch_lightning.loggers import LightningLoggerBase
+-from pytorch_lightning.loggers.base import rank_zero_experiment
++from pytorch_lightning.loggers.logger import Logger
++from pytorch_lightning.loggers.logger import rank_zero_experiment
+ 
+ 
+ def get_data_dir(dataset_name: str) -> Path:
+@@ -28,7 +28,7 @@
+     return Path("data/") / dataset_name
+ 
+ 
+-class ConsoleLogger(LightningLoggerBase):
++class ConsoleLogger(Logger):
+     """Custom console logger class"""
+ 
+     def __init__(self):
+@@ -78,7 +78,7 @@
+ 
+     """
+     # Seed everything
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Define default root dir
+     setup_logger(save_dir, debug=kwargs["debug"])
+--- a/src/mist_cf/fast_form_score/fast_form_hyperopt.py
++++ b/src/mist_cf/fast_form_score/fast_form_hyperopt.py
+@@ -40,7 +40,7 @@
+ 
+     kwargs = copy.deepcopy(base_args)
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Get dataset
+     # Load smiles dataset and split into 3 subsets
+--- a/src/mist_cf/fast_form_score/predict.py
++++ b/src/mist_cf/fast_form_score/predict.py
+@@ -60,7 +60,7 @@
+     common.setup_logger(
+         kwargs["save_dir"], log_name=f"ffn_pred.log", debug=kwargs["debug"]
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/fast_form_score/train.py
++++ b/src/mist_cf/fast_form_score/train.py
+@@ -63,7 +63,7 @@
+ 
+     save_dir = kwargs.get("save_dir")
+     common.setup_logger(save_dir, log_name="ffn_train.log", debug=kwargs["debug"])
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/ffn_score/ffn_hyperopt.py
++++ b/src/mist_cf/ffn_score/ffn_hyperopt.py
+@@ -44,7 +44,7 @@
+     kwargs["instrument_info"] = not kwargs["no_instrument_info"]
+     kwargs["ion_info"] = not kwargs["no_ion_info"]
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Get dataset
+     # Load smiles dataset and split into 3 subsets
+--- a/src/mist_cf/ffn_score/predict.py
++++ b/src/mist_cf/ffn_score/predict.py
+@@ -77,7 +77,7 @@
+     common.setup_logger(
+         kwargs["save_dir"], log_name=f"ffn_pred.log", debug=kwargs["debug"]
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/ffn_score/train.py
++++ b/src/mist_cf/ffn_score/train.py
+@@ -151,7 +151,7 @@
+     save_dir.mkdir(exist_ok=True)
+ 
+     common.setup_logger(save_dir, log_name="ffn_train.log", debug=kwargs["debug"])
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/mist_cf_score/mist_cf_hyperopt.py
++++ b/src/mist_cf/mist_cf_score/mist_cf_hyperopt.py
+@@ -47,7 +47,7 @@
+ 
+     kwargs.update(config)
+     save_dir = kwargs["save_dir"]
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Get dataset
+     # Load smiles dataset and split into 3 subsets
+--- a/src/mist_cf/mist_cf_score/predict.py
++++ b/src/mist_cf/mist_cf_score/predict.py
+@@ -84,7 +84,7 @@
+     common.setup_logger(
+         kwargs["save_dir"], log_name=f"mist_cf_pred.log", debug=kwargs["debug"]
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/mist_cf_score/predict_mgf.py
++++ b/src/mist_cf/mist_cf_score/predict_mgf.py
+@@ -182,7 +182,7 @@
+     common.setup_logger(
+         kwargs["save_dir"], log_name=f"mist_cf_pred.log", debug=kwargs["debug"]
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     subform_dir = save_dir / "subform_assigns"
+     subform_dir.mkdir(exist_ok=True)
+--- a/src/mist_cf/mist_cf_score/train.py
++++ b/src/mist_cf/mist_cf_score/train.py
+@@ -170,7 +170,7 @@
+ 
+     save_dir = kwargs["save_dir"]
+     common.setup_logger(save_dir, log_name="mist_cf_train.log", debug=kwargs["debug"])
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/nn_utils/base_hyperopt.py
++++ b/src/mist_cf/nn_utils/base_hyperopt.py
+@@ -63,7 +63,7 @@
+     common.setup_logger(save_dir,
+                         log_name="hyperopt.log",
+                         debug=kwargs.get('debug', False))
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     shared_args = gen_shared_data(kwargs)
+ 
+--- a/src/mist_cf/xformer_score/predict.py
++++ b/src/mist_cf/xformer_score/predict.py
+@@ -77,7 +77,7 @@
+     common.setup_logger(
+         kwargs["save_dir"], log_name=f"ffn_pred.log", debug=kwargs["debug"]
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/xformer_score/train.py
++++ b/src/mist_cf/xformer_score/train.py
+@@ -137,7 +137,7 @@
+     save_dir.mkdir(exist_ok=True)
+ 
+     common.setup_logger(save_dir, log_name="ffn_train.log", debug=kwargs["debug"])
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Dump args
+     yaml_args = yaml.dump(kwargs, indent=2, default_flow_style=False)
+--- a/src/mist_cf/xformer_score/xformer_hyperopt.py
++++ b/src/mist_cf/xformer_score/xformer_hyperopt.py
+@@ -97,7 +97,7 @@
+     kwargs["instrument_info"] = not kwargs["no_instrument_info"]
+     kwargs["ion_info"] = not kwargs["no_ion_info"]
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Get dataset
+     # Load smiles dataset and split into 3 subsets
+
+# 3/4  pandas 3: keep the spec column in the fast-filter top-k
+
+--- a/src/mist_cf/fast_form_score/fast_form_model.py
++++ b/src/mist_cf/fast_form_score/fast_form_model.py
+@@ -226,6 +226,7 @@
+ 
+     # Subset to top k
+     topk_fn = lambda x: x.nlargest(fast_num, ['scores'])
+-    new_df = out_df.groupby(['spec']).apply(topk_fn).reset_index(drop=True)
++    groups = [topk_fn(group) for _, group in out_df.groupby(['spec'])]
++    new_df = (pd.concat(groups) if groups else out_df).reset_index(drop=True)
+     return new_df
+ 
+
+# 4/4  find sirius on PATH or in the environment when SIRIUS_PATH is unset
+
+--- a/src/mist_cf/decomp/sirius_decomp.py
++++ b/src/mist_cf/decomp/sirius_decomp.py
+@@ -14,10 +14,16 @@
+ import pandas as pd
+ import os
+ import re
++import shutil
++import sys
+ 
+ import mist_cf.common as common
+ 
+-SIRIUS_LOC = Path(os.getenv("SIRIUS_PATH"))
++SIRIUS_LOC = Path(
++    os.getenv("SIRIUS_PATH")
++    or shutil.which("sirius")
++    or Path(sys.prefix) / "bin" / "sirius"
++)
+ ROUND_FACTOR = 4
+ EL_STR_DEFAULT = 'C[0-]N[0-]O[0-]H[0-]S[0-5]P[0-3]I[0-1]Cl[0-1]F[0-1]Br[0-1]'

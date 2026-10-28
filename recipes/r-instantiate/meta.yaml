@@ -1,4 +1,4 @@
-{% set version = '0.2.3' %}
+{% set version = '0.2.4' %}
 {% set posix = 'm2-' if win else '' %}
 
 package:
@@ -9,32 +9,24 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/instantiate_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/instantiate/instantiate_{{ version }}.tar.gz
-  sha256: dff964c58ca82684cfe0f9fcbe3cee683294329cdc42e83a1ecdf0121b40cdd7
+  sha256: f51cd9d4d7c855b2092323a44c82be8b0eaa386f3ebe218ff7cf3f9a28d1af88
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  missing_dso_whitelist:
-    - '*/R.dll'        # [win]
-    - '*/Rblas.dll'    # [win]
-    - '*/Rlapack.dll'  # [win]
+  run_exports:
+    - {{ pin_subpackage("r-instantiate", max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}              # [not win]
-    - {{ compiler('m2w64_c') }}        # [win]
-    - {{ posix }}filesystem        # [win]
-    - {{ posix }}sed               # [win]
-    - {{ posix }}grep              # [win]
+    - {{ stdlib('c') }}
     - {{ posix }}autoconf
     - {{ posix }}automake          # [not win]
-    - {{ posix }}automake-wrapper  # [win]
     - pkg-config
     - {{ posix }}make
-    - {{ posix }}coreutils         # [win]
-    - {{ posix }}zip               # [win]
     - cross-r-base {{ r_base }}    # [build_platform != target_platform]
   host:
     - r-base
@@ -50,12 +42,14 @@ requirements:
 test:
   commands:
     - $R -e "library('instantiate')"           # [not win]
-    - "\"%R%\" -e \"library('instantiate')\""  # [win]
 
 about:
-  home: https://wlandau.github.io/instantiate/, https://github.com/wlandau/instantiate
+  home: https://wlandau.github.io/instantiate/
+  dev_url: https://github.com/wlandau/instantiate
   license: MIT
-  summary: Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled
+  summary: "pre-compiled CmdStan models in R packages"
+  description: |
+    Similar to 'rstantools' for 'rstan', the 'instantiate' package builds pre-compiled
     'CmdStan' models into CRAN-ready statistical modeling R packages. The models compile
     once during installation, the executables live inside the file systems of their
     respective packages, and users have the full power and convenience of 'cmdstanr'
