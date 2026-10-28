@@ -1,0 +1,65 @@
+{% set version = "0.2.1" %}
+
+package:
+  name: dot-explorer
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/d/dot-explorer/dot_explorer-{{ version }}.tar.gz
+  sha256: 578fd52cd11ae5a8768527a9780ad14d8064ffe4d0d7bfdab5d4a1ddba041bcc
+
+build:
+  entry_points:
+    - dot-explorer-app = dot_explorer.launch:main
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('dot-explorer', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.12,<3.15
+    - maturin >=1.0,<2.0
+    - pip
+  run:
+    - python >=3.12,<3.15
+    - matplotlib-base >=3.5
+    - numpy >=1.21
+    - pyfaidx
+    - scipy >=1.10
+    - shiny
+    - sourmash >=4.8
+
+test:
+  imports:
+    - dot_explorer
+  commands:
+    - pip check
+    - dot-explorer-app --help
+    - dot-explorer-app --version
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/adamtaranto/dot-explorer
+  summary: A Python library for making fast dot-plot comparisons of DNA sequences powered by Rust.
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  dev_url: https://github.com/adamtaranto/dot-explorer
+  doc_url: https://adamtaranto.github.io/dot-explorer/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Adamtaranto
+  authors:
+    - Adamtaranto

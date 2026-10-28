@@ -5,7 +5,7 @@ set -ex
 export CC=mpicc
 export FC=mpifort
 
-cd esme_pio
+cd "${SRC_DIR}/esme_pio"
 
 autoreconf -i
 
