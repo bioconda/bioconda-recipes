@@ -1,0 +1,63 @@
+{% set name = "RBPBench" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "4f93861d4cabbfab7edcd7f2516ce0d1b7f63c2a8d84bc110b605f099e1b4cc2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/michauhl/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  noarch: python
+  script: $PYTHON -m pip install . --ignore-installed --no-deps -vv
+  run_exports:
+    - {{ pin_subpackage('rbpbench', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python <3.12
+    - pip
+  run:
+    - python <3.12
+    - logomaker
+    - markdown
+    - meme >=5.0
+    - scipy
+    - plotly
+    - textdistance
+    - venn
+    - matplotlib-venn
+    - infernal
+    - bedtools
+    - upsetplot >=0.9
+    - packaging
+    - scikit-learn
+    - goatools
+    - pybigwig
+
+test:
+  commands:
+    - rbpbench -h
+
+about:
+  home: https://github.com/michauhl/RBPBench
+  license: MIT
+  license_file: LICENSE
+  summary: |
+    RBPBench is a multi-function tool to evaluate CLIP-seq and other related genomic region 
+    data using a comprehensive collection of known RNA-binding protein (RBP) binding motifs. 
+    RBPBench can be used for a variety of purposes, from RBP motif search (database or 
+    user-supplied RBP motifs) in genomic regions, over motif enrichment and co-occurrence 
+    analysis, in-depth comparisons over multiple datasets via sequence and genomic annotation 
+    statistics, to benchmarking CLIP-seq peak caller methods as well as comparisons across 
+    cell types and CLIP-seq protocols. RBPBench supports both sequence and structure motifs, 
+    as well as regular expressions (sequence and structure patterns). Moreover, users can 
+    easily provide their own motif collections.
+
+extra:
+  identifiers:
+    - biotools:rbpbench

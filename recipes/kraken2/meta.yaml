@@ -1,48 +1,70 @@
 {% set name = "kraken2" %}
-{% set version = "2.1.0" %}
-{% set sha256 = "c2a3f6acd3fff0e298aff41a486700e8984854e47226c9595d528f44b01f71b2" %}
+{% set version = "2.17.2" %}
+{% set sha256 = "84ff95cd6d8a4c9e93ab6bf1d9b3892099baaefb0277bcf2edc3eb4948566035" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/DerrickWood/kraken2/archive/v{{ version }}.tar.gz
+  url: https://github.com/DerrickWood/kraken2/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    - Makefile.patch
+    - 0001-src-Makefile.patch
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
+    - {{ stdlib('c') }}
+    - make
   host:
     - perl
+    - libgomp      # [linux]
     - llvm-openmp  # [osx]
-  run:
-    - perl
-    - blast
-    - llvm-openmp  # [osx]
-    - rsync
+    - gperftools
     - wget
     - tar
-    - _openmp_mutex * *_gnu  # [linux]
+    - rsync
+    - zlib
+  run:
+    - python
+    - libgomp      # [linux]
+    - llvm-openmp  # [osx]
+    - gperftools
+    - blast
+    - perl
+    - wget
+    - tar
+    - rsync
+
 test:
   commands:
-    - kraken2 --version
-    - kraken2-build --version
-    - kraken2-inspect --version
+    - kraken2 --version | grep -F "{{ version }}"
+    - kraken2-build --version | grep -F "{{ version }}"
+    - kraken2-inspect --version | grep -F "{{ version }}"
+    - k2 --version | grep -F "{{ version }}"
+    - k2 --help
 
 about:
-  home: https://ccb.jhu.edu/software/kraken2/
-  license: GPLv3
+  home: "https://ccb.jhu.edu/software/kraken2"
+  dev_url: "https://github.com/DerrickWood/kraken2"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+  summary: "Kraken2 is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies."
+  doc_url: "https://github.com/DerrickWood/kraken2/blob/{{ version }}/docs/MANUAL.markdown"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:kraken2
+    - usegalaxy-eu:kraken2
     - doi:10.1186/gb-2014-15-3-r46
+    - doi:10.1186/s13059-019-1891-0

@@ -1,38 +1,50 @@
 {% set name = "perl-json-create" %}
-{% set version = "0.24" %}
-{% set sha256 = "63ea971483595d54aaad76e9e2e49f1262ea0849866a1e70a52ed42420e2117d" %}
+{% set version = "0.36" %}
+{% set sha256 = "3adb7e599e328397c5b9c00d6b1320a4c0b42217a0df4257d574b6021673cc49" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/B/BK/BKB/JSON-Create-0.24.tar.gz
+  url: https://cpan.metacpan.org/authors/id/B/BK/BKB/JSON-Create-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - perl
     - perl-carp
     - perl-extutils-makemaker
-    - perl-json-parse
     - perl-unicode-utf8
-
+    - perl-json-parse >=0.60
+    - perl-file-spec
+    - perl-file-temp
   run:
     - perl
     - perl-carp
-    - perl-json-parse
-    - perl-unicode-utf8
+    - perl-json-parse >=0.60
+    - perl-unicode-utf8 >=0.62
 
 test:
   imports:
     - JSON::Create
 
 about:
-  home: http://metacpan.org/pod/JSON::Create
-  license: perl_5
-  summary: 'fast, minimal, UTF-8-only serialization of data to JSON'
+  home: "https://metacpan.org/pod/JSON::Create"
+  license: "Perl_5"
+  summary: 'Fast, minimal, UTF-8-only serialization of data to JSON.'
+  doc_url: "https://metacpan.org/pod/JSON::Create"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

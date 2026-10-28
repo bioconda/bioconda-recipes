@@ -1,68 +1,67 @@
-{% set version = "0.8.2" %}
+{% set version = "0.11.0" %}
 
 package:
   name: galaxy-ml
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/G/Galaxy-ML/Galaxy-ML-{{ version }}.tar.gz
-  sha256: 018bab54a3e1ddd8e53758af8a705df0207451c5f07aa326f1b505b5629bbdd8
-  patches:
-    - 0001-Do-not-package-separate-docs-package.patch
+  url: https://pypi.io/packages/source/G/Galaxy-ML/galaxy_ml-{{ version }}.tar.gz
+  sha256: 9155c5682413bd0aa47ce6112bee559bf49e2ae82ad30cb535401e049174b9d8
 
 build:
-  number: 2
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
-  # Skip OSX since tests fail (without any error message at all!).
-  # Skipping py>=38 because there are no Py3.8 builds of pinned down dependencies
-  # (scikit-learn 0.21.3, xgboost 0.80, tensorflow 1.15.0).
-  skip: True  # [py<30 or py>=38]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('galaxy-ml', max_pin="x.x") }}
+  script: |
+      cython -3 galaxy_ml/externals/selene_sdk/sequences/_sequence.pyx
+      cython -3 galaxy_ml/externals/selene_sdk/targets/_genomic_features.pyx
+      {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vvv
+  skip: True  # [osx]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - python
-    - cython
+    - python 3.12.*
+    - cython >=3.3,<4
     - pip
-    - setuptools
-    - numpy >=1.17
+    - setuptools >=84
+    - wheel >=0.48
+    - numpy >=2.4,<2.5
   run:
-    - python
-    - pyfaidx
-    - pytabix
+    - python >=3.12,<3.13
+    - pyfaidx >=0.9,<0.10
+    - pytabix ==0.1
     - tabix
-    - readme_renderer >=24.0
-    - numpy >=1.17
-    - scipy >=1.3
-    - joblib
-    - asteval >=0.9
-    - pandas <0.26
-    - scikit-learn ==0.21.3
-    - xgboost <=0.80
-    - mlxtend <0.18
-    - skrebate <0.7
-    - imbalanced-learn <0.6
-    - tensorflow ==1.15.0
-    - tensorflow-estimator ==1.15.1
-    - keras ==2.3.1
-    # For training on GPU, install the following libraries manually
-    # - cudatoolkit==10.0.130
-    # - cudnn==7.6.0
-    - plotly ==4.3
-    - pydot >=1.4
-    - psutil >=5.6
-    - requests >=2.22.0
-    - matplotlib-base
-    - graphviz >=2.38
-    - pillow >=6.0
+    - htslib
+    - scipy >=1.18,<1.19
+    - numpy >=2.4,<2.5
+    - joblib >=1.6,<1.7
+    - asteval >=1.0,<1.1
+    - pandas >=3.0,<3.1
+    - scikit-learn >=1.9,<2
+    - xgboost >=3.4,<4
+    - mlxtend >=0.25,<0.26
+    - "skrebate >=1!0.8.4,<1!0.9"
+    - imbalanced-learn >=0.14,<0.15
+    - keras >=3.15,<3.16
+    - keras-preprocessing >=1.1,<1.2
+    - tensorflow >=2.21,<2.22
+    - plotly >=7.1,<8
+    - matplotlib-base >=3.10,<3.11
+    - scikit-optimize >=0.10,<0.11
+    - h5py >=3.14,<3.15
+    - six >=1.17,<2
+    - bleach >=6.4,<7
+
 
 test:
   imports:
     - galaxy_ml
     # tensorflow can't be tested in docker at the moment
-    #- galaxy_ml.keras_galaxy_models
+    - galaxy_ml.keras_galaxy_models
     - galaxy_ml.iraps_classifier
     - galaxy_ml.model_persist
     - galaxy_ml.model_validations
@@ -82,3 +81,7 @@ about:
 extra:
   recipe-maintainers:
     - qiagu
+    - qchiujunhao
+    - anuprulez
+    - IvoLeist
+    - bgruening

@@ -1,0 +1,52 @@
+{% set name = "breakinator" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jheinz27/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 71eeb2f88d8c5a0d447773091be199690ae286b66585fc09673b94ae4a51e75a
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("breakinator", max_pin="x") }}
+
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+    - pkg-config
+  host:
+    - htslib
+    - zlib
+    - xz
+    - openssl
+    - libcurl
+  run:
+    - htslib
+    - zlib
+    - xz
+    - openssl
+    - libcurl
+
+test:
+  commands:
+    - breakinator --help
+    - breakinator --version
+    - breakinator --help 2>&1 | grep -q -- "--threads"
+
+about:
+  home: https://github.com/jheinz27/breakinator
+  license: MIT
+  summary: "Detection of foldback and chimeric read artifacts in SAM/BAM/CRAM and PAF files"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

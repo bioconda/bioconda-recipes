@@ -1,0 +1,46 @@
+{% set name = "snakemake-storage-plugin-zenodo" %}
+{% set version = "0.1.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/snakemake_storage_plugin_zenodo-{{ version }}.tar.gz
+  sha256: d4dbaa221ff1bd03c8f612428edd3a7c713f4f773b818abc1a2fcc85cc23742d
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - poetry-core
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.14.4,<2.0.0
+    - snakemake-interface-storage-plugins >=4.1.0,<5.0.0
+    - requests >=2.31.0,<3.0.0
+
+test:
+  # We do not test the import as the plugin needs snakemake for importing, but adding
+  # it would create a circular dependency.
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/snakemake/snakemake-storage-plugin-zenodo
+  summary: A Snakemake storage plugin for reading from and writing to zenodo.org
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - koesterlab

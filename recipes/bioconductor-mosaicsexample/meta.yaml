@@ -1,21 +1,23 @@
-{% set version = "1.26.0" %}
+{% set version = "1.48.0" %}
 {% set name = "mosaicsExample" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e1ba6d797da3d71ba8ce895d206916a8
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: d932c88ee7e7e6a61afd95a7ba89dd5a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-mosaicsexample", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
@@ -23,13 +25,14 @@ requirements:
   run:
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Example data for the mosaics package, which implements MOSAiCS and MOSAiCS-HMM, a statistical framework to analyze one-sample or two-sample ChIP-seq data for transcription factor binding and histone modification'
-  description: 'Data for the mosaics package, consisting of (1) chromosome 22 ChIP and control sample data from a ChIP-seq experiment of STAT1 binding and H3K4me3 modification in MCF7 cell line from ENCODE database (HG19) and (2) chromosome 21 ChIP and control sample data from a ChIP-seq experiment of STAT1 binding, with mappability, GC content, and sequence ambiguity scores of human genome HG18.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Example data for the mosaics package, which implements MOSAiCS and MOSAiCS-HMM, a statistical framework to analyze one-sample or two-sample ChIP-seq data for transcription factor binding and histone modification
+  description: Data for the mosaics package, consisting of (1) chromosome 22 ChIP and control sample data from a ChIP-seq experiment of STAT1 binding and H3K4me3 modification in MCF7 cell line from ENCODE database (HG19) and (2) chromosome 21 ChIP and control sample data from a ChIP-seq experiment of STAT1 binding, with mappability, GC content, and sequence ambiguity scores of human genome HG18.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

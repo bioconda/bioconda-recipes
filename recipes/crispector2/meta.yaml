@@ -1,0 +1,56 @@
+{% set version = "2.1.2" %}
+
+package:
+  name: crispector2
+  version: "{{ version }}"
+
+build:
+  number: 0
+  entry_points:
+    - crispector = crispector2.cli:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage('crispector2', max_pin="x") }}
+
+source:
+  url: https://github.com/theAguy/crispector2/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1c624fda975f293b5acab8b2c6afe98cacaaa77a79dc54c923b18c08fa1942cc
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - biopython >=1.74, <=1.79 # Bio.SubsMat
+    - fastp
+    - python-edlib
+    - click >=7.0
+    - pyyaml >=5.1.2
+    - matplotlib-base >=3.1.2
+    - scipy >=1.2.1
+    - numpy >=1.12.1
+    - seaborn >=0.9.0
+    - plotly >=4.3.0
+    - pandas >=0.24.2
+    - statsmodels
+    - jinja2
+    - tqdm >=4.66.0
+    - mpmath
+
+test:
+  commands:
+    - crispector -h
+
+about:
+  home: https://github.com/theAguy/crispector2
+  # The license forbids redistribution, but the author has granted an exception, see
+  # https://github.com/bioconda/bioconda-recipes/pull/21129#issuecomment-605051102
+  license: free to academic and non-for-profit research work, non-commercial use, see LICENSE file
+  license_file: LICENSE
+  summary: "Accurate estimation of off-target editing activity from comparative NGS data"
+
+extra:
+  recipe-maintainers:
+    - theAguy

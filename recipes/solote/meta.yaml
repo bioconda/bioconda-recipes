@@ -1,0 +1,36 @@
+{% set version = "1.09" %} # Remember to update sha256 below
+
+package:
+  name: solote
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('solote', max_pin='x.x') }}
+  script: mkdir -p $PREFIX/bin ;  chmod a+x *.py ; mv *.py $PREFIX/bin
+
+source:
+  url: https://github.com/bvaldebenitom/SoloTE/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 3812abd39022d78e124d6282d1a10057cda8de7b52a492d2b4fd00e93b2ae40f
+
+requirements:
+  run:
+    - python ==3.10
+    - samtools ==1.17
+    - pysam
+    - bedtools ==2.31.0
+    - r-base ==4.3.0
+    - pandas
+
+about:
+  home: https://github.com/bvaldebenitom/SoloTE
+  license: GPL 3
+  license_file: LICENSE
+  summary: |
+    A conversion utility is conveniently packaged with SoloTE, in order to tranform the RepeatMasker out file to the BED format required by SoloTE
+
+test:
+  commands:
+    - python $PREFIX/bin/SoloTE_pipeline.py --help > /dev/null 

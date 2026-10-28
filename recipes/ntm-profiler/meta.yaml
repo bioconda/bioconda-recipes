@@ -1,0 +1,49 @@
+{% set name = "ntm-profiler" %}
+{% set version = "0.8.2" %}
+{% set sha256 = "e98ba0156ee04732a3bf53baf5af10a0e5b0d680fb04056bb765a9181e3e392e" %}
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+source:
+  url: https://github.com/jodyphelan/NTM-Profiler/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('ntm-profiler', max_pin="x") }}
+
+requirements:
+  host:
+    - flit
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - pathogen-profiler >=5.3.0
+    - packaging
+    - pydantic >=2.6
+    - rich-argparse
+    - tqdm
+    - jinja2
+    - sourmash >=4.8.3
+    - sylph
+
+test:
+  imports:
+    - ntm_profiler
+  commands:
+    - ntm-profiler -h
+    - ntm-profiler update_db -h
+    - ntm-profiler profile -h
+
+about:
+  home: https://github.com/jodyphelan/NTM-Profiler
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Profiling tool for NTM to detect species and resistance from WGS data

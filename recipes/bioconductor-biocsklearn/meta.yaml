@@ -1,60 +1,45 @@
-{% set version = "1.10.3" %}
+{% set version = "1.32.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 20332e5683d23dea4619777b07d3bbb8
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 2bbe5be26f6b8b7b380f3ec0f517b850
 build:
-  number: 1
-  skip: True # [py3k]
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, restfulSE, HDF5Array, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-biocsklearn", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: testthat, HDF5Array, BiocStyle, rmarkdown, knitr
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-basilisk >=1.0.0,<1.1.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
-    - r-knitr
-    - r-rcpp
     - r-reticulate
-    - libblas
-    - liblapack
-    - python
-    - numpy
-    - pandas
-    - h5py
-    - scikit-learn
+    - python >=2.7
   run:
-    - 'bioconductor-basilisk >=1.0.0,<1.1.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
-    - r-knitr
-    - r-rcpp
     - r-reticulate
-    - python
-    - numpy
-    - pandas
-    - h5py
-    - scikit-learn
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - python >=2.7
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'interface to python sklearn via Rstudio reticulate'
-  description: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
+  summary: interface to python sklearn via Rstudio reticulate
+  description: This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.
 

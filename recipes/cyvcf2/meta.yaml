@@ -1,53 +1,68 @@
 {% set name = "cyvcf2" %}
-{% set version = "0.20.9" %}
-{% set sha256hash = "5e4751c6f6ef6adbcdea2ff6b725c173b56b906576fc3bafde2d591a3d53b67e" %}
+{% set version = "0.34.0" %}
+{% set sha256 = "e9dc163719a722ce3057361a055faf0e923cbd778273881fff3ad7c1250f1ac0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/cyvcf2/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
-  patches:
-    # Link to htslib shipped by conda
-    - patches/setup.py.patch
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/cyvcf2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  skip: True  # [py < 37]
+  script:
+    - export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration -Wno-int-conversion"
+    - export DYLD_LIBRARY_PATH="${BUILD_PREFIX}/lib:${DYLD_LIBRARY_PATH}"  # [osx]
+    - export CYVCF2_HTSLIB_MODE=EXTERNAL
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - cyvcf2 = cyvcf2.__main__:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler("c") }}
+    - {{ stdlib("c") }}
+    - cmake >=3.20
+    - make
+    - pkg-config
   host:
     - python
-    - setuptools
+    - pip
+    - scikit-build-core >=0.11
     - cython
-    - numpy
-    - zlib
-    - libcurl
-    # cyvcf2 can only link to the htslib version
-    # specified in conda_build_config.yaml
-    - htslib
-    - openssl
-
+    - htslib >=1.10
+    - numpy >=2.0.0  # [py >= 39]
+    - numpy  # [py < 39]
   run:
     - python
-    - numpy
-    - zlib
     - coloredlogs
     - click
-    - libcurl
-    # htslib version fixed by conda_build_config.yaml
-    - htslib
-    - openssl
-    - pathlib2  # [py<34]
+    - {{ pin_compatible('numpy') }}
 
 test:
   imports:
     - cyvcf2
+  commands:
+    - cyvcf2 --help
 
 about:
-  home: https://github.com/brentp/cyvcf2
-  summary: A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files
+  home: "https://github.com/brentp/cyvcf2"
+  summary: "A cython wrapper around htslib built for fast parsing of Variant Call Format (VCF) files."
   license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://brentp.github.io/cyvcf2"
+  dev_url: "https://github.com/brentp/cyvcf2"
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx057
+    - biotools:cyvcf2
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

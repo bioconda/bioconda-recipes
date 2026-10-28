@@ -1,44 +1,52 @@
-{% set version = "1.16.0" %}
+{% set version = "1.38.0" %}
 {% set name = "IHW" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9109d818bbdb24cc64fb60ef7e27a131
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ccb08a6b6886e8dc90fc05b9428b436f
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ihw", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: ggplot2, dplyr, gridExtra, scales, DESeq2, airway, testthat, Matrix, BiocStyle, knitr, rmarkdown, devtools
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
-    - 'bioconductor-lpsymphony >=1.16.0,<1.17.0'
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-lpsymphony >=1.38.0,<1.39.0
     - r-base
     - r-fdrtool
     - r-slam
   run:
-    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
-    - 'bioconductor-lpsymphony >=1.16.0,<1.17.0'
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-lpsymphony >=1.38.0,<1.39.0
     - r-base
     - r-fdrtool
     - r-slam
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Independent Hypothesis Weighting'
-  description: 'Independent hypothesis weighting (IHW) is a multiple testing procedure that increases power compared to the method of Benjamini and Hochberg by assigning data-driven weights to each hypothesis. The input to IHW is a two-column table of p-values and covariates. The covariate can be any continuous-valued or categorical variable that is thought to be informative on the statistical properties of each hypothesis test, while it is independent of the p-value under the null hypothesis.'
+  summary: Independent Hypothesis Weighting
+  description: Independent hypothesis weighting (IHW) is a multiple testing procedure that increases power compared to the method of Benjamini and Hochberg by assigning data-driven weights to each hypothesis. The input to IHW is a two-column table of p-values and covariates. The covariate can be any continuous-valued or categorical variable that is thought to be informative on the statistical properties of each hypothesis test, while it is independent of the p-value under the null hypothesis.
+
 extra:
   identifiers:
     - biotools:IHW

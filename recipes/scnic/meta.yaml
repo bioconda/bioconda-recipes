@@ -1,4 +1,4 @@
-{% set version = "0.6.2" %}
+{% set version = "0.6.6" %}
 
 package:
   name: scnic
@@ -6,45 +6,50 @@ package:
 
 source:
   url: https://github.com/lozuponelab/SCNIC/archive/{{ version }}.tar.gz
-  sha256: d841c4e68f769b1c569c2e6a95a0f32d6ab4d15684d5228dba13e8c7638400e6
+  sha256: 754490880a31b067434a94c0bd4cbee6f067010511e5d7760b9ccbcbbddf0353
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage('scnic', max_pin="x.x") }}
 
 requirements:
   host:
     - python >=3
-    - setuptools
+    - pip
     - pytest-runner
   run:
     - python >=3
     - numpy
-    - scipy
-    - pandas
+    - scipy >=1.9.0,<=1.10.1
+    - pandas >=1
     - statsmodels
     - h5py
     - biom-format
-    - networkx >2
+    - networkx >=2
     - scikit-bio
     - fastspar
     - tqdm
     - matplotlib-base
-    - seaborn
+    - seaborn-base
 
 test:
+  imports:
+    - SCNIC
   command:
     - SCNIC_analysis.py --help
     - fastspar --help  # verify fastspar working correctly
 
 about:
   home: https://github.com/lozuponelab/SCNIC
-  license: BSD
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
   summary: "SCNIC: Sparse Cooccurence Network Investigation for Compositional data"
+  dev_url: https://github.com/lozuponelab/SCNIC
 
 extra:
   recipe-maintainers:
     - lozuponelab
-  skip-lints:
-    - missing_tests

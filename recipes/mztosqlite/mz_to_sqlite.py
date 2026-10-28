@@ -6,7 +6,7 @@ import sys
 import subprocess
 from os import access, getenv, X_OK
 
-jar_file = "mzToSQLite-2.0.4.jar"
+jar_file = "mzToSQLite.jar"
 
 default_jvm_mem_opts = ["-Xms1g", "-Xmx2g"]
 

@@ -1,0 +1,36 @@
+{% set version = "1.0.1" %}
+{% set name = "dodge" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LanLab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 64e18f3463f406e63a934d362364eeb4033fcb7bb50cb9ecf3b0e7cc5cc90fab
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('dodge', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+  run:
+    - python >=3.8
+    - scikit-learn >=1.0
+    - pandas >=1.3
+
+about:
+  home: https://github.com/LanLab/dodge
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Dynamic Outbreak Detection for Genomic Epidemiology. Automated point source bacterial outbreak detection using cumulative long term genomic surveillance.
+
+test:
+  commands:
+    - dodge --help

@@ -1,0 +1,47 @@
+{% set version = '1.2.0' %}
+
+package:
+  name: msamtools
+  version: {{ version }}
+
+source:
+  url: https://github.com/arumugamlab/msamtools/releases/download/{{ version }}/msamtools-{{ version }}.tar.gz
+  sha256: e00e14384666ced9111850ccdca4e6cb22ba32cc2926aa2cdf284689a085d7fc
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("msamtools", max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ stdlib("c") }}
+    - {{ compiler('c') }}
+
+  host:
+    - zlib
+    - argtable2
+
+  run:
+    - zlib
+    - argtable2
+
+test:
+  commands:
+    - msamtools help > /dev/null
+    - msamtools filter --help > /dev/null
+    - msamtools profile --help > /dev/null
+    - msamtools coverage --help > /dev/null
+    - msamtools summary --help > /dev/null
+
+about:
+  home: https://github.com/arumugamlab/msamtools
+  doc_url: https://msamtools.readthedocs.io/
+  license: MIT
+  license_file: LICENSE
+  summary: Microbiome-oriented tools for filtering, profiling, and summarizing SAM/BAM alignments
+
+extra:
+  recipe-maintainers:
+    - microbiomix

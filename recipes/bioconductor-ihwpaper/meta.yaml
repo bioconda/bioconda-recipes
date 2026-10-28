@@ -1,32 +1,41 @@
-{% set version = "1.16.0" %}
+{% set version = "1.38.0" %}
 {% set name = "IHWpaper" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 56c66dd65e4fdf7734729f35fd19e603
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 6cb1dc5f39056040497bbb7904433bbe
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: testthat, RColorBrewer, wesanderson, scales, gridExtra, BiocStyle, knitr, rmarkdown, airway, pasilla, DESeq, locfdr, tidyr, ggbio, latex2exp
+  run_exports: '{{ pin_subpackage("bioconductor-ihwpaper", max_pin="x.x") }}'
+
+# Suggests: testthat, RColorBrewer, wesanderson, scales, gridExtra, BiocStyle, knitr, rmarkdown, airway, locfdr, tidyr, latex2exp
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-biobase >=2.48.0,<2.49.0'
-    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
-    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
-    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
-    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
-    - 'bioconductor-ihw >=1.16.0,<1.17.0'
-    - 'bioconductor-qvalue >=2.20.0,<2.21.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-ihw >=1.38.0,<1.39.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-cowplot
     - r-dplyr
@@ -35,15 +44,17 @@ requirements:
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-biobase >=2.48.0,<2.49.0'
-    - 'bioconductor-biocgenerics >=0.34.0,<0.35.0'
-    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
-    - 'bioconductor-deseq2 >=1.28.0,<1.29.0'
-    - 'bioconductor-genefilter >=1.70.0,<1.71.0'
-    - 'bioconductor-ihw >=1.16.0,<1.17.0'
-    - 'bioconductor-qvalue >=2.20.0,<2.21.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-ihw >=1.38.0,<1.39.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-cowplot
     - r-dplyr
@@ -51,16 +62,15 @@ requirements:
     - r-ggplot2
     - r-rcpp
     - curl
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - bioconductor-data-packages >=20260207
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Reproduce figures in IHW paper'
-  description: 'This package conveniently wraps all functions needed to reproduce the figures in the IHW paper (https://www.nature.com/articles/nmeth.3885) and the latest arXiv preprint available under http://arxiv.org/abs/1701.05179. Thus it is a companion package to the Bioconductor IHW package.'
+  summary: Reproduce figures in IHW paper
+  description: This package conveniently wraps all functions needed to reproduce the figures in the IHW paper (https://www.nature.com/articles/nmeth.3885) and the data analysis in https://rss.onlinelibrary.wiley.com/doi/10.1111/rssb.12411, cf. the arXiv preprint (http://arxiv.org/abs/1701.05179). Thus it is a companion package to the Bioconductor IHW package.
 

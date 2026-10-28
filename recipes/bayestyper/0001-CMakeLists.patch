@@ -1,0 +1,45 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6bc8406..3a9a766 100755
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,9 +42,39 @@ else(${BUILD_STATIC} EQUAL 0)
+ endif(${BUILD_STATIC} EQUAL 0)
+ 
+ 
+-FIND_PACKAGE(Boost COMPONENTS iostreams program_options system filesystem serialization REQUIRED)
++# When user specifies boost paths to use, we need to disable searching from the
++# environment and from using cmake's internal boost variables.
++if (BOOST_ROOT OR BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_ROOT} OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Don't search for system include dirs for boost
++  set(Boost_NO_SYSTEM_PATHS ON)
++  # Disable excessive warning messages when using multiple boost versions
++  set(Boost_NO_WARN_NEW_VERSION ON)
++endif()
++
++# Use the OLD way of looking for Boost
++# The NEW way only respects BOOST_ROOT, not these more-specific variables.
++if (BOOST_INCLUDEDIR OR BOOST_LIBRARYDIR OR DEFINED ENV{BOOST_INCLUDEDIR} OR DEFINED ENV{BOOST_LIBRARYDIR})
++  # Ignore cmake boost variables
++  set(Boost_NO_BOOST_CMAKE ON)
++endif()
++
++set( Boost_USE_STATIC_LIBS OFF )   
++set( Boost_USE_MULTITHREADED TRUE )
++set( Boost_DEBUG ON )
++
++find_package(Boost 1.71.0 COMPONENTS iostreams program_options system filesystem serialization REQUIRED)
+ message(STATUS ${Boost_LIBRARIES})
+ 
++if(Boost_FOUND)
++        include_directories(${Boost_INCLUDE_DIRS})
++        LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
++endif()
++
++MESSAGE("Boost configuration results:")
++MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
++MESSAGE("  Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
++MESSAGE("  Boost_LIBRARIES: ${Boost_LIBRARIES}")
++
+ add_subdirectory(${CMAKE_SOURCE_DIR}/external/kmc_api)
+ add_subdirectory(${CMAKE_SOURCE_DIR}/src/vcf++)
+ add_subdirectory(${CMAKE_SOURCE_DIR}/src/kmerBloom)

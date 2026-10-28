@@ -1,57 +1,66 @@
-{% set version = "1.2.0" %}
+{% set version = "1.24.0" %}
 {% set name = "SEtools" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 220393caf5bd125fec31c2e8e0f3fe1a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 2f279d30c7e36fe020dc3b4d7e95730f
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-setools", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: BiocStyle, knitr, rmarkdown, ggplot2
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
-    - 'bioconductor-complexheatmap >=2.4.0,<2.5.0'
-    - 'bioconductor-edger >=3.30.0,<3.31.0'
-    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-sechm >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-sva >=3.58.0,<3.59.0
     - r-base
     - r-circlize
     - r-data.table
+    - r-matrix
     - r-openxlsx
     - r-pheatmap
-    - r-randomcolor
-    - r-seriation
   run:
-    - 'bioconductor-biocparallel >=1.22.0,<1.23.0'
-    - 'bioconductor-complexheatmap >=2.4.0,<2.5.0'
-    - 'bioconductor-edger >=3.30.0,<3.31.0'
-    - 'bioconductor-s4vectors >=0.26.0,<0.27.0'
-    - 'bioconductor-summarizedexperiment >=1.18.0,<1.19.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-sechm >=1.18.0,<1.19.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-sva >=3.58.0,<3.59.0
     - r-base
     - r-circlize
     - r-data.table
+    - r-matrix
     - r-openxlsx
     - r-pheatmap
-    - r-randomcolor
-    - r-seriation
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL
   summary: 'SEtools: tools for working with SummarizedExperiment'
-  description: 'This includes a set of tools for working with the SummarizedExperiment class, including merging, melting, aggregation and plotting functions.'
+  description: This includes a set of convenience functions for working with the SummarizedExperiment class. Note that plotting functions historically in this package have been moved to the sechm package (see vignette for details).
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

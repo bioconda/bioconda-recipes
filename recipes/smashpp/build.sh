@@ -1,12 +1,15 @@
-#! /bin/bash
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
-#export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
-export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
+#!/bin/bash
+set -euxo pipefail
 
-rm -fr build
-mkdir -p build
-cd build
-cmake ../src
-make -j8
-mkdir -p ${PREFIX}/bin
-mv smashpp ${PREFIX}/bin
+if [[ "${target_platform:-}" == osx-* || "$(uname)" == "Darwin" ]]; then
+    export CXXFLAGS="${CXXFLAGS:-} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
+cmake -S . -B build \
+    ${CMAKE_ARGS:-} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+    -DSMASHPP_VERSION_OVERRIDE="${PKG_VERSION}"
+
+cmake --build build --parallel "${CPU_COUNT:-1}" --config Release
+cmake --install build --config Release

@@ -1,0 +1,81 @@
+{% set name = "snapatac2" %}
+{% set version = "2.10.0" %}
+{% set sha256 = "e412d93f355c85f3c445d95bfb383a78b4f3be391fb2816ee5ffef03fa270b34" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/snapatac2/snapatac2-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - cargo.toml.patch
+
+build:
+  number: 0
+  # aarch64 build goes over 1 hour time left; do not build python 3.10
+  skip: True  # [py > 314 or py < 312]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - cargo-bundle-licenses
+    - make
+    - cmake
+    - pkg-config
+  host:
+    - python
+    - pip
+    - maturin
+    - zlib
+  run:
+    - python
+    - anndata
+    - python-igraph >=0.10.3
+    - multiprocess
+    - macs3
+    - natsort
+    - numpy >=2.0.0,<3.0.0
+    - pandas >=2.2.0,<3.0.0
+    - plotly >=5.19.0,<7.0.0
+    - polars >=1.0
+    - pooch >=1.6.0
+    - pyarrow
+    - pyfaidx >=0.7.0,<0.9.0
+    - python-kaleido
+    - rustworkx
+    - scipy >=1.4
+    - scikit-learn >=1.0
+    - tqdm >=4.62
+    - typing_extensions
+    - typeguard >=4.0
+
+test:
+  imports:
+    - snapatac2
+
+about:
+  home: "https://github.com/scverse/SnapATAC2"
+  summary: "SnapATAC2: Single-cell epigenomics analysis pipeline."
+  license: MIT
+  license_family: MIT
+  license_file: "snapatac2-core/LICENSE"
+  doc_url: "https://scverse.org/SnapATAC2"
+  dev_url: "https://github.com/scverse/SnapATAC2"
+
+extra:
+  identifiers:
+    - biotools:snapatac
+    - doi:10.1038/s41592-023-02139-9
+    - usegalaxy-eu:snapatac2_preprocessing
+    - usegalaxy-eu:snapatac2_clustering
+    - usegalaxy-eu:snapatac2_peaks_and_motif
+    - usegalaxy-eu:snapatac2_plotting
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

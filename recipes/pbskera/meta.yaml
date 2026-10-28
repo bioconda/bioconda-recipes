@@ -1,0 +1,34 @@
+{% set name = "pbskera" %}
+{% set version = "26.2.0" %}
+{% set pbskera_sha256 = "0d927a19c2e33b214cd7483b67d93a1e9f1869c3a7d3ca670eb3517b4bac339e" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/skera/releases/download/v{{ version }}/skera
+    sha256: {{ pbskera_sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/skera
+  license: BSD-3-Clause-Clear
+  summary: PacBio tool to split concatenated read designs
+
+extra:
+  recipe-maintainers:
+    - zeeev
+    - jmattick
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic
+    
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('pbskera', max_pin='x.x') }}
+
+test:
+  commands:
+    - skera -h

@@ -1,0 +1,48 @@
+{% set name = "proteomiqon-peptidedb" %}
+{% set version = "0.0.10" %}
+{% set sha256 = "363a1b3adba2cad4c5b05c61ea3ff2fdfc16abf9c632f0c9e9e2a4257e5a7ed4" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PeptideDB/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-peptidedb"
+    - test -f "$PREFIX/lib/dotnet/tools/PeptideDB/ProteomIQon.PeptideDB.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-peptidedb"
+    - grep -q "PeptideDB/ProteomIQon.PeptideDB.dll" "$PREFIX/bin/proteomiqon-peptidedb"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool ProteomIQon.PeptideDB creates a peptide database in the SQLite format.
+  description: | 
+    MS-based shotgun proteomics estimates protein abundances using a proxy: peptides. 
+    An established method to identify acquired MS/MS spectra is the comparison of each spectrum with peptides in a reference database. 
+    The PeptideDB tool helps to create peptide databases by in silico digestion given proteome information in the FASTA format and a set of parameters that 
+    allow the user to mimic conditions of their specific experiment. The created database stores peptide protein relationships in a SQLite database which can 
+    then be supplied to other ProteomIQon tools.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PeptideDB.html

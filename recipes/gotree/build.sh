@@ -1,14 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
 
-go get -u github.com/golang/dep/cmd/dep
-cd "$GOPATH/src/github.com/evolbioinfo/gotree"
-dep ensure
-go build -o ${PREFIX}/bin/gotree -ldflags "-X github.com/evolbioinfo/gotree/version.Version=${PKG_VERSION}" github.com/evolbioinfo/gotree
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+cd src/github.com/evolbioinfo/${PKG_NAME}
+
+make all -j"${CPU_COUNT}"
+
+install -v -m 0755 gotree "${PREFIX}/bin"
+
+#go get .
+#go build -o ${PREFIX}/bin/${PKG_NAME} -ldflags "-X github.com/evolbioinfo/${PKG_NAME}/cmd.Version=${PKG_VERSION}" github.com/evolbioinfo/${PKG_NAME}
+#go test github.com/evolbioinfo/${PKG_NAME}/...
 
 # Gotree test data
-cp -r tests/data $PREFIX/gotree_test_data
+cp -rf tests/data $PREFIX/gotree_test_data
 
 # Gotree test script
 echo "#!/usr/bin/env bash" > $PREFIX/bin/gotree_test.sh
