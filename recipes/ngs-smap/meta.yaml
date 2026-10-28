@@ -1,15 +1,13 @@
 {% set name = "ngs-smap" %}
-{% set version = "5.0.1" %}
+{% set version = "5.1.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 713bc0c393ac26fc208d0c316a3141fb1be96fab2a69057c872229ebf56ef3d8
-  patches:
-    - patch
+  url: https://pypi.org/packages/source/n/ngs-smap/ngs_smap-{{ version }}.tar.gz
+  sha256: 942127ac232ab29152aae46e2a1ded0f98e9cc586ea62e6cbfcab1081c9d3fab
 
 build:
   number: 0
@@ -17,47 +15,60 @@ build:
   entry_points:
     - smap = smap.__main__:main
   ignore_prefix_files: True
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('ngs-smap', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - setuptools-scm
+    - setuptools-scm <8
     - setuptools_scm_git_archive
+    - setuptools
     - python >=3.8.1,!=3.11
+    - pip
   run:
-    - biopython >=1.8
-    - gffpandas 1.2.*
-    - pybedtools >=0.9.0,<0.10
-    - pysam >=0.22.0,<0.23.0
-    - pandas >=2.0.3,<2.1.0
-    - matplotlib-base >=3.5.1,<3.6
-    - colorlog >=6.6.0,<6.7
-    - cutadapt ==4.4
     - python >=3.8.1,!=3.11
-    - natsort ==8.2.0
-    - numexpr
-    - openpyxl >=3.0.9,<3.1.0
-    - plotly >=5.5
-    - seaborn ==0.12.1
-    - typing-extensions >=4.0.0,<4.1.1
+    - colorlog
+    - cutadapt
+    - biopython
+    - gffpandas
+    - matplotlib-base
+    - natsort
+    - openpyxl
+    - pandas
+    - plotly
+    - pybedtools
+    - pysam
+    - seaborn-base
+    - typing-extensions
     - gffutils
     - primer3-py
     - tqdm
     - scipy
+    - numexpr
+    - numpy
+    - scanpy
+    - pycirclize
+    - python-igraph
+    - python-kaleido
 
 test:
   commands:
     - smap compare --help
 
 about:
-  home: "https://gitlab.com/truttink/smap"
-  license: "GPL-3.0-or-later"
-  license_family: GPL3
+  home: "https://gitlab.ilvo.be/genomics/smap-package/smap"
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
   license_file: LICENSE
-  summary: "SMAP is an analysis tool for stack-based NGS read mapping"
+  summary: "SMAP is a software package that analyzes next-generation DNA sequencing read mapping distributions and performs haplotype calling to create multi-allelic molecular markers."
+  dev_url: "https://gitlab.ilvo.be/genomics/smap-package/smap"
+  doc_url: "https://ngs-smap.readthedocs.io/en/latest"
 
 extra:
   recipe-maintainers:
     - ieguinoa
+  identifiers:
+    - doi:10.1101/2022.03.10.483555

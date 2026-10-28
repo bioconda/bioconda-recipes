@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "clustifyrdatahub-1.16.0"
+installBiocDataPackage.sh "clustifyrdatahub-1.20.0"

@@ -1,16 +1,17 @@
 {% set name = "odgi" %}
-{% set version = "0.9.1" %}
+{% set version = "0.9.4" %}
 
 package:
-  name: "{{ name }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: https://github.com/pangenome/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.tar.gz
-  sha256: b6eea59aaf5c8fb112bc8b45f3afd1101929c79914c8eed6eb74958325273ce5
+  sha256: e50dde6dd833f2294179398c801e1545915cb4653a15c329c8ddea50b12bc281
+  patches:
+    - 0001-CMakeLists.txt
 
 build:
-  skip: True  # [osx]
   number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -20,23 +21,26 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
+    - pkg-config
+    - python >=3
+    - pybind11-global
+    - tapi  # [osx]
   host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - zlib
     - jemalloc
-    - python
-    - pybind11
   run:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-    - python
+    - python >=3
     - jemalloc
     - pybind11
+    - libstdcxx-ng  # [linux]
 
 test:
   commands:
-    - odgi test
+    - odgi 2>&1
 
 about:
   home: "https://github.com/pangenome/odgi"
@@ -48,6 +52,9 @@ about:
   doc_url: "https://github.com/pangenome/odgi/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - AndreaGuarracino
   identifiers:

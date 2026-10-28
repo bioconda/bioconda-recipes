@@ -1,22 +1,26 @@
-
-
+{% set name = "rscape" %}
+{% set version = "2.0.4.a" %}
 
 package:
-  name: rscape
-  version: 1.4.0
+  name: {{name}}
+  version: {{version}}
 
 source:
-  url: http://eddylab.org/software/rscape/rscape_v1.4.0-221019.tar.gz    
-  md5: 6b0715b8d60d5650062c055219290bd0
+  url: http://eddylab.org/software/rscape/rscape_v{{ version }}.tar.gz
+  sha256: 71d9180614f421742e1274ee0d0fc976f327927d402abb880e578ef1c232048a
 
 build:
-  number: 5
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - gnuconfig
   host:
     - gnuplot
   run:
@@ -32,3 +36,7 @@ about:
   license: GPLv3
   license_file: documentation/R-scape_userguide.pdf
   summary: R-scape (RNA Structural Covariation Above Phylogenetic Expectation) looks for evidence of a conserved RNA secondary structure by measuring pairwise covariations observed in an input multiple sequence alignment.
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

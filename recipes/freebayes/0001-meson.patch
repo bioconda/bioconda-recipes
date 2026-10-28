@@ -1,0 +1,63 @@
+diff --git a/meson.build b/meson.build
+index 6a2aac9..611a615 100644
+--- a/meson.build
++++ b/meson.build
+@@ -32,29 +32,29 @@ cc = meson.get_compiler('cpp')
+ 
+ lzma_dep = dependency('liblzma', static: static_build)
+ thread_dep = dependency('threads', static: static_build)
+-wfa2lib_dep = cc.find_library('wfa2') # need to link for vcflib code
++wfa2lib_dep = cc.find_library('wfa2', required: false) # need to link for vcflib code
+ zlib_dep = dependency('zlib', static: static_build)
+ htslib_dep = dependency('htslib', static: static_build, required: false)
+-vcflib_dep = cc.find_library('vcflib', required: false, static: static_build)
+-seqlib_dep = dependency('libseqlib', static: static_build, required: false)
+-tabixpp_dep = cc.find_library('tabixpp', required: false, static: static_build)
++vcflib_dep = cc.find_library('vcflib', required: false)
++seqlib_dep = cc.find_library('seqlib', required: false)
++tabixpp_dep = cc.find_library('tabixpp', required: false)
+ 
+ # later versions of vcflib have Variant.hpp in a system subdirectory
+ fs = import('fs')
+-if fs.is_dir('/usr/include/vcflib')
+-  message('Using /usr/include/vcflib dir')
+-  vcflib_inc = include_directories('/usr/include/vcflib')
++if fs.is_dir('${PREFIX}/include/vcflib')
++  message('Using ${PREFIX}/include/vcflib dir')
++  vcflib_inc = include_directories('${PREFIX}/include/vcflib')
+ else
+   vcflib_inc = files()
+ endif
+ 
+ if get_option('prefer_system_deps')
+-  fastahack_dep = cc.find_library('libfastahack', required: true) # also link in for vcflib
++  fastahack_dep = cc.find_library('libfastahack', required: false) # also link in for vcflib
+   fastahack_src = files()
+-  smithwaterman_dep = cc.find_library('libsmithwaterman')
+-  if fs.is_dir('/usr/include/fastahack')
+-    message('Using /usr/include/fastahack dir')
+-    fastahack_inc = include_directories('/usr/include/fastahack')
++  smithwaterman_dep = cc.find_library('libsmithwaterman', required: false)
++  if fs.is_dir('${SRC_DIR}/include/fastahack')
++    message('Using ${SRC_DIR}/include/fastahack dir')
++    fastahack_inc = include_directories('${SRC_DIR}/include/fastahack')
+   else
+     fastahack_inc = files()
+   endif
+@@ -168,6 +168,7 @@ extra_cpp_args = cc.get_supported_arguments(
+     '-Wno-sign-compare',
+     '-Wno-unused-variable',
+     '-Wno-unused-but-set-variable',
++    '-Wno-deprecated-declarations',
+     )
+ 
+ freebayes_lib = static_library(
+@@ -184,7 +185,7 @@ freebayes_lib = static_library(
+ if static_build
+   link_arguments = '-static'
+ else
+-  link_arguments = []
++  link_arguments = ['-lhts', '-ltabixpp', '-lwfa2', '-lvcflib', '-pthread', '-lz']
+ endif
+ 
+ executable('freebayes',
