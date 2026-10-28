@@ -1,0 +1,31 @@
+--- a/src/openms/source/SYSTEM/File.cpp
++++ b/src/openms/source/SYSTEM/File.cpp
+@@ -619,7 +619,12 @@
+     search_dirs.push_back(std::string(OPENMS_SOURCE_PATH) + "/../../doc/");
+     search_dirs.push_back(getOpenMSDataPath() + "/../../doc/");
+     search_dirs.push_back(OPENMS_DOC_PATH);
+-    search_dirs.push_back(OPENMS_INSTALL_DOC_PATH);
++    {
++      // Read through a volatile pointer so the length is taken at run time (see
++      // resolveOpenMSDataPath_ below): conda rewrites the prefix inside this string.
++      const char* volatile install_doc_path = OPENMS_INSTALL_DOC_PATH;
++      search_dirs.push_back(install_doc_path);
++    }
+ 
+     // needed for OpenMS Mac OS X packages where documentation is stored in <package-root>/Documentation
+ #if defined(__APPLE__)
+@@ -686,7 +691,13 @@
+       // unrelated OpenMS installation. On Linux/macOS the baked prefix is genuinely correct.
+       if (!path_checked)
+       {
+-        path = OPENMS_INSTALL_DATA_PATH;
++        // Relocatable packages (conda) rewrite the install prefix inside this string in the
++        // binary and pad the shorter result with NUL bytes. Assigning the literal directly
++        // lets the compiler fold its original length into the code, which would keep the
++        // padding NULs in 'path' (and every file name built from it). Reading the pointer
++        // through a volatile variable makes the length a run-time strlen().
++        const char* volatile install_data_path = OPENMS_INSTALL_DATA_PATH;
++        path = install_data_path;
+         path_checked = isOpenMSDataPath_(path);
+         if (path_checked)
+         {

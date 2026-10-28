@@ -3,8 +3,11 @@
 set -ex
 
 export CC=mpicc
+export FC=mpifort
 
-cd esme_netcdf-c
+cd "${SRC_DIR}/esme_netcdf-c"
+
+autoreconf -fiv
 
 ./configure --prefix="${PREFIX}" \
             --disable-doxygen \
@@ -16,7 +19,9 @@ cd esme_netcdf-c
             --enable-shared=yes \
 	    --enable-static=no \
 	    --enable-netcdf4 \
-	    --enable-pnetcdf
+	    --enable-pnetcdf \
+	    --disable-filters \
+	    --disable-libxml2
 
 make -j ${CPU_COUNT}
 
