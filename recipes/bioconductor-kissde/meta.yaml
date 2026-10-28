@@ -1,53 +1,70 @@
-{% set version = "1.6.0" %}
+{% set version = "1.30.0" %}
 {% set name = "kissDE" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 25d2f2ff10cdb49d3cd0da5c73697ba9
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: b2a3d9836a5a84052f59f60ebf5899d3
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-kissde", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: BiocStyle, testthat
 requirements:
   host:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
-    - 'bioconductor-dss >=2.34.0,<2.35.0'
-    - r-aod
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-dss >=2.58.0,<2.59.0
+    - r-ade4
+    - r-aods3
     - r-base
     - r-doparallel
+    - r-dt
+    - r-factoextra
     - r-foreach
     - r-ggplot2
     - r-gplots
     - r-matrixstats
+    - r-shiny
+    - r-shinycssloaders
   run:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
-    - 'bioconductor-dss >=2.34.0,<2.35.0'
-    - r-aod
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-dss >=2.58.0,<2.59.0
+    - r-ade4
+    - r-aods3
     - r-base
     - r-doparallel
+    - r-dt
+    - r-factoextra
     - r-foreach
     - r-ggplot2
     - r-gplots
     - r-matrixstats
+    - r-shiny
+    - r-shinycssloaders
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Retrieves Condition-Specific Variants in RNA-Seq Data'
-  description: 'Retrieves condition-specific variants in RNA-seq data (SNVs, alternative-splicings, indels). It has been developed as a post-treatment of ''KisSplice'' but can also be used with user''s own data.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Retrieves Condition-Specific Variants in RNA-Seq Data
+  description: Retrieves condition-specific variants in RNA-seq data (SNVs, alternative-splicings, indels). It has been developed as a post-treatment of 'KisSplice' but can also be used with user's own data.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

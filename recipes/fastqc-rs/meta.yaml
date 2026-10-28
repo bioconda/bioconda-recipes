@@ -1,0 +1,52 @@
+{% set version = "0.3.5" %}
+
+package:
+  name: fastqc-rs
+  version: {{version}}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fastqc-rs', max_pin="x.x") }}
+
+source:
+  url: https://github.com/fastqc-rs/fastqc-rs/archive/v{{ version }}.tar.gz
+  sha256: a456a87b0081b5a446b9889b72b239c95c61499ec5200e8dd499bc7107835220
+
+requirements:
+  build:
+    - clangdev
+    - cmake
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - pkg-config
+  host:
+    - clangdev
+    - openssl
+    - zlib
+    - bzip2
+    - freetype
+    - expat
+    - xz
+
+test:
+  commands:
+    - fqc --help
+
+about:
+  home: https://fastqc-rs.github.io
+  license: MIT
+  license_file: LICENSE
+  summary: A fast quality control tool for FASTQ files written in rust.
+  dev_url: https://github.com/fastqc-rs/fastqc-rs
+    
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - fxwiegand
+  skip-lints:
+    - compiler_needs_stdlib_c

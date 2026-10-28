@@ -1,0 +1,97 @@
+{% set version = '3.2.1' %}
+
+package:
+  name: r-shinyngs
+  version: {{ version|replace("-", "_") }}
+
+source:
+  - url: https://github.com/pinin4fjords/shinyngs/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: "510bb1d1658cd559ffd255bd4841f1fd3d572e651945a3aaa9ac04f75d89d2a7"
+    folder: shinyngs
+
+build:
+  number: 0
+  noarch: generic
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+  run_exports:
+    - {{ pin_subpackage("r-shinyngs", max_pin="x") }}
+
+requirements:
+  host:
+    - r-biocmanager
+    - bioconductor-limma
+    - bioconductor-summarizedexperiment
+    - git
+    - pandoc
+    - r-base
+    - r-bslib >=0.9.0
+    - r-cluster
+    - r-dplyr
+    - r-dt >=0.2
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-ggdendro
+    - r-heatmaply
+    - r-htmltools
+    - r-htmlwidgets
+    - r-markdown
+    - r-matrixstats
+    - r-rmarkdown
+    - r-optparse
+    - r-plotly >=4.8.0
+    - r-rcolorbrewer
+    - r-rsconnect
+    - r-scatterplot3d
+    - r-shiny >=1.7.0
+    - r-shinycssloaders
+    - r-shinyjs
+    - r-viridislite
+    - r-yaml
+
+  run:
+    - r-biocmanager
+    - bioconductor-limma
+    - bioconductor-summarizedexperiment
+    - r-base
+    - r-bslib >=0.9.0
+    - r-cluster
+    - r-dplyr
+    - r-dt >=0.2
+    - r-ggbeeswarm
+    - r-ggplot2
+    - r-ggdendro
+    - r-heatmaply
+    - r-htmltools
+    - r-htmlwidgets
+    - r-markdown
+    - r-matrixstats
+    - r-optparse
+    - r-plotly >=4.8.0
+    - r-rcolorbrewer
+    - r-rsconnect
+    - r-scatterplot3d
+    - r-shiny >=1.7.0
+    - r-shinycssloaders
+    - r-shinyjs
+    - r-viridislite
+    - r-yaml
+
+test:
+  commands:
+    - $R -e "library('shinyngs')"
+    - make_app_from_files.R --help
+    - exploratory_plots.R --help
+    - differential_plots.R --help
+
+about:
+  home: https://github.com/pinin4fjords/shinyngs
+  license: AGPL-3.0
+  summary: Provides Shiny applications for various array and NGS applications. Currently very
+    RNA-seq centric, with plans for expansion.
+  license_family: AGPL
+  license_file: shinyngs/LICENSE.md

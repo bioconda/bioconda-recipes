@@ -1,0 +1,52 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 440dfc3..e4edb6e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -74,11 +74,6 @@ if(NOT CMAKE_BUILD_TYPE)
+           "Choose the type of build, options are: Release|Debug|RelWithDebInfo (for distros)." FORCE)
+ endif()
+ 
+-if (${CMAKE_BUILD_TYPE} MATCHES Release)
+-  set(EXTRA_FLAGS "-march=native -D_FILE_OFFSET_BITS=64")
+-  # set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG") # reset CXX_FLAGS to replace -O3 with -Ofast
+-endif()
+-
+ if ((${CMAKE_BUILD_TYPE} MATCHES Release) OR (${CMAKE_BUILD_TYPE} MATCHES RelWithDebInfo))
+   set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}")
+   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}")
+@@ -325,6 +320,10 @@ set(SCRIPTS
+ file (STRINGS "VERSION" BUILD_NUMBER)
+ add_definitions(-DVCFLIB_VERSION="${BUILD_NUMBER}")
+ add_definitions(-DVERSION="${BUILD_NUMBER}")
++string(REGEX MATCH "^[0-9]+" MAJOR_BUILD_NUMBER ${BUILD_NUMBER})
++set_target_properties(vcflib PROPERTIES
++	SOVERSION ${MAJOR_BUILD_NUMBER}
++    )
+ 
+ # ---- Build htslib
+ #
+@@ -336,11 +335,11 @@ if (htslib_LOCAL)
+ 
+   include_directories(${htslib_LOCAL})
+ 
+-  set(flags "-O2 -g -fPIC")
++  set(flags "-O3 -g -fPIC")
+   ExternalProject_Add(htslib-EXT
+     SOURCE_DIR "${CMAKE_SOURCE_DIR}/${htslib_LOCAL}"
+-    UPDATE_COMMAND autoreconf -i
+-    CONFIGURE_COMMAND ./configure --disable-s3
++    UPDATE_COMMAND autoreconf -if
++    CONFIGURE_COMMAND ./configure --disable-s3 CC=${CC}
+     INSTALL_COMMAND ""
+     BUILD_IN_SOURCE ON
+     BUILD_COMMAND $(MAKE) CFLAGS=${flags} lib-static
+@@ -596,6 +595,8 @@ if(WFA_GITMODULE)
+   install(TARGETS ${WFALIB} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ endif(WFA_GITMODULE)
+ 
+-install(FILES ${INCLUDES} DESTINATION include/vcflib)
++install(FILES ${INCLUDES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/vcflib)
++configure_file(${CMAKE_CURRENT_SOURCE_DIR}/vcflib.pc.in ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/vcflib.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+ 
+ install(DIRECTORY ${CMAKE_SOURCE_DIR}/man/ DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)

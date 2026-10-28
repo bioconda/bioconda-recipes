@@ -1,0 +1,38 @@
+{% set name = "paraphase" %}
+{% set version = "4.1.0" %}
+{% set paraphase_sha256 = "b650fa83cbdbb4b19b1b26bd0aae923e60101919ea96494f93aa58e3abc265de" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/paraphase/releases/download/v{{ version }}/paraphase-v{{ version }}-x86_64-unknown-linux-gnu.tar.gz  # [linux64]
+    sha256: {{ paraphase_sha256 }}  # [linux64]
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  noarch: false
+  script:
+    - mkdir -p ${PREFIX}/bin
+    - cp paraphase ${PREFIX}/bin/
+    - chmod +x ${PREFIX}/bin/paraphase
+  run_exports:
+    - {{ pin_subpackage('paraphase', max_pin="x") }}
+
+test:
+  commands:
+    - paraphase --version
+
+about:
+  home: https://github.com/PacificBiosciences/paraphase
+  summary: HiFi-based caller for highly similar paralogous genes
+  license: Pacific Biosciences Software License (https://github.com/PacificBiosciences/paraphase/blob/main/LICENSE.md)
+
+extra:
+  recipe-maintainers:
+    - xiao-chen-xc
+  skip-lints:
+    - should_be_noarch_generic
+    - should_use_compilers

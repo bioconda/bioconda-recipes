@@ -1,34 +1,33 @@
 {% set name = "PretextSnapshot" %}
-{% set version = "0.0.2" %}
-{% set checksum = "bbb4ce292c13263616b24233f49859cb9d139cd84d56729ec5dd495782d87536" %}
+{% set version = "0.1.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: {{ checksum }}
-  patches:
-    - 0001-disable-auto-vectorisation-for-conda-libm.patch # [linux]
+  url: https://github.com/sanger-tol/PretextSnapshot/releases/download/{{ version }}/PretextSnapshot-{{ version }}.tar.xz
+  sha256: a1b234bb521ced97522c6062b1d11b1d2f083956513c607223f741bb3ee12ba5
 
 build:
   number: 0
+  run_exports: 
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }} 
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - make
-    - clang >=9
-    - python
+    - {{ stdlib('c') }}
+    - clang >=9.0.1 # [linux] 
+    - meson >=0.57.1
 
 test:
   commands:
     - {{ name }}
 
-extra:
-  skip-lints:
-    - should_not_be_noarch_source
+#extra:
+#  skip-lints:
+#    - should_not_be_noarch_source
 
 about:
   home: https://github.com/wtsi-hpag/{{ name }}

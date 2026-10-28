@@ -9,13 +9,14 @@ then
     NOPIE=""
 fi
 
+make clean
+
 cd samtools
 make clean
 make lib CC=$CC CFLAGS="-g -Wall -O2 $NOPIE" INCLUDES=-I$PREFIX/include LIBPATH=-L$PREFIX/lib
 cd ..
 
-make clean
-make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 $NOPIE"
+make novoBreak INCLUDE="-Isamtools -I$PREFIX/include" LIBPATH="-Lsamtools -L$PREFIX/lib" CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 $NOPIE"
 mkdir -p $PREFIX/bin
 cp novoBreak $PREFIX/bin
 

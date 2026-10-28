@@ -1,55 +1,77 @@
-{% set version = "1.24.0" %}
+{% set version = "1.48.0" %}
 {% set name = "TSCAN" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 01878ea77175cf0f6c6a1e622bf0a22f
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 12beec0b6b4ab87246c8610977565665
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tscan", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr
+
+# Suggests: knitr, testthat, scuttle, scran, metapod, BiocParallel, BiocNeighbors, batchelor
 requirements:
   host:
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-sparsearray >=1.10.0,<1.11.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-trajectoryutils >=1.18.0,<1.19.0
     - r-base
     - r-combinat
     - r-fastica
     - r-ggplot2
     - r-gplots
     - r-igraph
+    - r-matrix
     - r-mclust
     - r-mgcv
     - r-plyr
     - r-shiny
   run:
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - bioconductor-sparsearray >=1.10.0,<1.11.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-trajectoryutils >=1.18.0,<1.19.0
     - r-base
     - r-combinat
     - r-fastica
     - r-ggplot2
     - r-gplots
     - r-igraph
+    - r-matrix
     - r-mclust
     - r-mgcv
     - r-plyr
     - r-shiny
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL(>=2)
-  summary: 'TSCAN: Tools for Single-Cell ANalysis'
-  description: 'TSCAN enables users to easily construct and tune pseudotemporal cell ordering as well as analyzing differentially expressed genes. TSCAN comes with a user-friendly GUI written in shiny. More features will come in the future.'
+  summary: Tools for Single-Cell Analysis
+  description: Provides methods to perform trajectory analysis based on a minimum spanning tree constructed from cluster centroids. Computes pseudotemporal cell orderings by mapping cells in each cluster (or new cells) to the closest edge in the tree. Uses linear modelling to identify differentially expressed genes along each path through the tree. Several plotting and interactive visualization functions are also implemented.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:tscan

@@ -1,0 +1,56 @@
+{% set version = "3.0.0" %}
+
+package:
+  name: chewiesnake
+  version: {{ version }}
+ 
+source:
+  url: https://gitlab.com/bfr_bioinformatics/chewieSnake/-/archive/{{ version }}/chewieSnake-{{ version }}.tar.gz
+  sha256: 9f4413e3fa53773ccd55cfb0b29ae6bf68e18b3a4ccbc8443b6c3653afdc2ba4
+
+build:
+  number: 2
+  noarch: generic
+
+requirements:
+  run:
+    - python >=3.6
+    - snakemake >=5.30
+    - biopython =1.76
+    - pandoc >=2.11
+    - shovill=1.1.0
+    - kmc 3.1.0
+    - fastp 0.19.5
+    - grapetree 2.1
+    - chewbbaca 2.0.12
+    - r-base >=3.6.3
+    - r-tidyverse >=1.3
+    - r-reshape2
+    - r-dt
+    - r-optparse
+    - r-rmarkdown
+    - r-knitr
+    - r-plotly
+    - r-ape=5
+    - r-dendextend >=1.14
+    - bioconductor-biobase >=2.46
+    - bioconductor-biostrings >=2.54
+    - bioconductor-ggtree >=2.0.0
+
+about:
+  home: https://gitlab.com/bfr_bioinformatics/chewieSnake
+  license: BSD-3
+  license_file: LICENSE
+  summary: ChewieSnake is a snakemake workflow that performs cgMLST allele calling for a set of assembled genomes using chewBBACA.
+
+test:
+  commands:
+    - chewiesnake_join -h
+    - create_sampleSheet.sh --help
+    - $PREFIX/opt/chewiesnake/chewBBACA/CHEWBBACA/chewBBACA.py -h    
+    - hashID.py -h
+    - create_sampleSheet.sh --help
+    - create_alleledbSheet.sh -h | grep "inputdir"
+    - Clustering_DistanceMatrix.R -h
+    - alleleprofile_hasher.py -h  
+

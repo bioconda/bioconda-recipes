@@ -1,33 +1,52 @@
 {% set name = "ngless" %}
-{% set version = "1.0.1" %}
-{% set md5 = "f36f674fd3b5cf51f4946605b4ac3007" %}
+{% set version = "1.6.1" %}
+{% set sha256 = "0021c291ca45b6cb0590c203cd5915f75fddc44b8da76789017ddf0cf8e6c482" %}
+
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ngless-toolkit/ngless/releases/download/v{{ version }}/ngless-{{ version }}-static-Linux64
-  md5: {{ md5 }}
+  url: https://github.com/ngless-toolkit/ngless/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: True  #  [osx]
+  run_exports:
+    - {{ pin_subpackage('ngless', max_pin='x') }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
   run:
-    - python
+    - bwa >=0.7.19
+    - prodigal >=2.6.3
+    - megahit >=1.2.9
+    - samtools >=1.23.1
+    - minimap2 >=2.31
 
 test:
   commands:
     - ngless --version
-    - ngless --check-install
+    - ngless --check-install --verbose
 
 about:
   home: https://ngless.embl.de
   license: MIT
-  summary: A tool for metagenomics processing with a focus on metagenomics
+  license_family: MIT
+  license_file:
+    - COPYING
+    - THIRDPARTY.yml
+  summary: A tool for short-read processing with a focus on metagenomics
+  dev_url: https://github.com/ngless-toolkit/ngless
+  doc_url: https://ngless.embl.de
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  recipe-maintainers:
+    - luispedro
+  identifiers:
+    - "doi:10.1186/s40168-019-0684-8" # Publication

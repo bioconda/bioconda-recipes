@@ -1,4 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-mkdir -p $PREFIX/bin
-cp taxonkit $PREFIX/bin
+set -o xtrace -o nounset -o pipefail -o errexit
+
+export CGO_ENABLED=0
+export GOPATH=$PWD
+export GOCACHE=$PWD/.cache/
+
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+cd taxonkit
+go build -trimpath -o=${PREFIX}/bin/taxonkit -ldflags="-extldflags '-static' -s -w" -tags netgo

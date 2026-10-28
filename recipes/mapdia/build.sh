@@ -1,5 +1,4 @@
 #!/bin/bash
-make -j
-mkdir -p $PREFIX/bin
-cp $SRC_DIR/mapDIA $PREFIX/bin/mapDIA
-chmod +x $PREFIX/bin/mapDIA
+make -j CXX="${CXX} ${CXXFLAGS} -std=c++03 ${CPPFLAGS} ${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install mapDIA "${PREFIX}/bin/mapDIA"

@@ -8,13 +8,15 @@ package:
 source:
   url: https://pypi.io/packages/source/p/pyquant-ms/pyquant-ms-{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
+  patches:
+    - 0001-Remove-cython-from-install_requires.patch
 
 build:
-  number: 0
-  skip: True  # [py3k]
+  number: 5
+  skip: True  # [py>=30]
   entry_points:
     - pyQuant = pyquant.command_line:run_pyquant
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
   build:
@@ -26,7 +28,7 @@ requirements:
     - numpy
   run:
     - python
-    - cython
+    - setuptools
     - {{ pin_compatible('numpy') }}
     - scipy >=0.18.*
     - patsy
@@ -49,6 +51,8 @@ about:
   license_family: MIT
   summary: A framework for the analysis of quantitative mass spectrometry data
   dev_uri: https://github.com/Chris7/pyquant
+
 extra:
   skip-lints:
-    - cython_must_be_in_host
+    # Uses pkg_resources.
+    - uses_setuptools

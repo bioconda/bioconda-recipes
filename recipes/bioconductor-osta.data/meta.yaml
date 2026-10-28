@@ -1,0 +1,40 @@
+{% set version = "1.2.1" %}
+{% set name = "OSTA.data" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0e4df2f6601c8ab1427ccf7c7398adb8
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-osta.data", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle, DropletUtils, knitr, VisiumIO, SpatialExperimentIO
+requirements:
+  host:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - r-base
+    - r-osfr
+  run:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - r-base
+    - r-osfr
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: OSTA book data
+  description: '''OSTA.data'' is a companion package for the "Orchestrating Spatial Transcriptomics Analysis" (OSTA) with Bioconductor online book. Throughout OSTA, we rely on a set of publicly available datasets that cover different sequencing- and imaging-based platforms, such as Visium, Visium HD, Xenium (10x Genomics) and CosMx (NanoString). In addition, we rely on scRNA-seq (Chromium) data for tasks, e.g., spot deconvolution and label transfer (i.e., supervised clustering). These data been deposited in an Open Storage Framework (OSF) repository, and can be queried and downloaded using functions from the ''osfr'' package. For convenience, we have implemented ''OSTA.data'' to query and retrieve data from our OSF node, and cache retrieved Zip archives using ''BiocFileCache''.'
+

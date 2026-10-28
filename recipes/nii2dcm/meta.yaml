@@ -1,0 +1,54 @@
+{% set name = "nii2dcm" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nii2dcm-{{ version }}.tar.gz
+  sha256: 49630e1ec1ee0ce3f999158e8da68c8492e27593d5742ed826b7ce88c1d42be0
+  patches:
+    - 001-version_info.patch
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nii2dcm', max_pin="x") }}
+
+requirements:
+  host:
+    - python <3.11
+    - setuptools
+    - dunamai
+    - pip
+  run:
+    - python <3.11
+    - numpy ==1.23.2
+    - matplotlib-base ==3.6.2
+    - nibabel ==5.0.0
+    - pydicom ==2.3.0
+    - twine ==4.0.2
+    - dunamai ==1.18.0
+
+test:
+  imports:
+    - nii2dcm
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/tomaroberts/nii2dcm
+  dev_url: https://github.com/tomaroberts/nii2dcm
+  summary: 'nii2dcm: NIfTI to DICOM creation with Python'
+  license: BSD-3
+  license_family: BSD
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - acaprez

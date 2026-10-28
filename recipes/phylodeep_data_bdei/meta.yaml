@@ -1,0 +1,42 @@
+{% set name = "phylodeep_data_bdei" %}
+{% set version = "0.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 59098286f611e21b264ccf0265351c27b3e51d1861f66d4fe9638136fd2828c3
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('phylodeep_data_bdei', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - pandas >=1.0.0
+
+test:
+  imports:
+    - phylodeep_data_bdei
+  commands:
+    - bdei_ci_paths --help
+
+about:
+  home: "https://github.com/evolbioinfo/phylodeep_data_bdei"
+  summary: "Package containing data for the phylodeep package."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - annazhukova

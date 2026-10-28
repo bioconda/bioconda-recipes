@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
+set -xe
 
+export M4=${BUILD_PREFIX}/bin/m4
+autoreconf -ifv
 ./configure --prefix=${PREFIX}
-make -j4
+make -j ${CPU_COUNT}
 make install

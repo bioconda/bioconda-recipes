@@ -1,0 +1,56 @@
+{% set name = "needle" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/seqan/{{ name }}/releases/download/{{ name }}-v{{ version }}/{{ name }}-{{ version }}-Source.tar.xz
+  sha256: 4e0d468e5864ec6cd6f1a80a4741f6d0852eff3e1bf824b474ef5e2fc1f72ce4
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
+requirements:
+  build:
+    - ninja
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.12
+  host:
+    - bzip2
+    - zlib
+    - llvm-openmp # [osx]
+
+test:
+  commands:
+    - needle --version
+    - needle --help 2>&1 > /dev/null
+    - needle count --help 2>&1 > /dev/null
+    - needle ibf --help 2>&1 > /dev/null
+    - needle ibfmin --help 2>&1 > /dev/null
+    - needle minimiser --help 2>&1 > /dev/null
+    - needle estimate --help 2>&1 > /dev/null
+
+about:
+  home: "https://www.seqan.de/apps/needle"
+  summary: "Needle: A fast and space-efficient pre-filter for the quantification of very large collections of nucleotide sequences"
+  description: "Needle is a tool for approximately quantifiying many queries in large collections of nucleotide sequences."
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  dev_url: "https://github.com/seqan/needle"
+  doc_url: "https://github.com/seqan/needle/blob/needle-v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - mitradarja
+    - eseiler
+  identifiers:
+    - doi:10.1093/bioinformatics/btac492

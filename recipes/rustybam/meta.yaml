@@ -1,0 +1,58 @@
+{% set name = "rustybam" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vollgerlab/rustybam/archive/v{{ version }}.tar.gz
+  sha256: 503c0e55bbac7713ffcffdd395df78312397601b37f197a6897fbdcdd21b4325
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+    - make
+    - cmake
+    - clangdev
+  host:
+    - gsl
+    - libcblas
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
+  run:
+    - openssl  # [not osx]
+
+test:
+  commands:
+    - rb --help
+
+
+about:
+  home: "https://github.com/vollgerlab/rustybam"
+  license: MIT
+  license_family: MIT
+  summary: "Mitchell Vollger's bioinformatics rust utilities."
+  dev_url: "https://github.com/vollgerlab/rustybam"
+  doc_url: "https://vollgerlab.com/rustybam"
+
+extra:
+  recipe-maintainers:
+    - mrvollger
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

@@ -1,42 +1,56 @@
-{% set version = "0.28.0" %}
+{% set version = "0.52.0" %}
 {% set name = "illuminaio" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ff4c031a3acee98df0ed6ae85c9231c2
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 6eb3d2972cf2a013c184136f668d15a5
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-illuminaio", max_pin="x.x") }}'
+
 # Suggests: RUnit, BiocGenerics, IlluminaDataTestFiles (>= 1.0.2), BiocStyle
 requirements:
-  host:
-    - r-base
-    - r-base64
-  run:
-    - r-base
-    - r-base64
   build:
     - {{ compiler('c') }}
     - make
+  host:
+    - r-base
+    - r-base64
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - r-base
+    - r-base64
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-2
-  summary: 'Parsing Illumina Microarray Output Files'
-  description: 'Tools for parsing Illumina''s microarray output files, including IDAT.'
+  summary: Parsing Illumina Microarray Output Files
+  description: Tools for parsing Illumina's microarray output files, including IDAT.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:illuminaio
   parent_recipe:

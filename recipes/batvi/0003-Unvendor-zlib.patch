@@ -1,0 +1,128 @@
+--- batindel/configure.in
++++ batindel/configure.in
+@@ -4,7 +4,6 @@
+ AC_PREREQ(2.61)
+ AC_INIT(BatINDEL, 1.00(mmx), bwtbatman@gmail.com)
+ AM_INIT_AUTOMAKE(BatINDEL,1.00_mmx)
+-AC_CONFIG_SRCDIR([src/crc32.h])
+ AC_CONFIG_HEADERS([config.h])
+ 
+ # Checks for programs.
+--- batindel/src/Makefile.am
++++ batindel/src/Makefile.am
+@@ -1,16 +1,10 @@
+ #EXTRA_DIST =  batman.ini 
+-AM_CFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm -pthread
+-AM_CXXFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm -pthread 
++AM_CFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm -pthread -lz
++AM_CXXFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm -pthread  -lz
+ RANLIB=ranlib
+ #LIB= -L/home/tennakoonc/newscratch/test/hbv_mapping/compare/zlib-1.2.8/ -lz
+ #AM_CPPFLAGS = -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm
+ 
+-noinst_LIBRARIES = libz.a
+-libz_a_SOURCES = adler32.c compress.c crc32.c uncompr.c deflate.c trees.c \
+-       zutil.c inflate.c infback.c inftrees.c inffast.c\
+-       gzclose.c gzlib.c gzread.c gzwrite.c\
+-       zlib.h zconf.h crc32.h  deflate.h zutil.h inftrees.h inflate.h inffast.h trees.h inffixed.h gzguts.h
+-
+ bin_PROGRAMS = index penguin 
+ index_SOURCES= bfix.cpp index.cpp BWT.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+  iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c\
+@@ -23,7 +17,6 @@
+  print.h filters.h BWT.h TypeNLimit.h MemManager.h TextConverter.h HSP.h MiscUtilities.h DNACount.h r250.h HSPstatistic.h\
+  BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h\
+  bfix.h rqindex.h utils.h batlib.h common.h map.h fastsw.h
+-penguin_LDADD = libz.a
+ #batman_SOURCES= batman.cpp BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+ # iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c 
+ #batman_LDADD = libz.a
+--- BatMis-3.00/configure.in
++++ BatMis-3.00/configure.in
+@@ -4,7 +4,6 @@
+ AC_PREREQ(2.61)
+ AC_INIT(BatMis, 3.00(mmx), bwtbatman@gmail.com)
+ AM_INIT_AUTOMAKE(BatMis,3.00)
+-AC_CONFIG_SRCDIR([src/crc32.h])
+ AC_CONFIG_HEADERS([config.h])
+ 
+ # Checks for programs.
+--- BatMis-3.00/src/batdecode.cpp
++++ BatMis-3.00/src/batdecode.cpp
+@@ -545,7 +545,7 @@
+ 		}
+ 	}
+ 
+-	if (OUTPUT_COMPRESS) gzclose(Output_File);	
++	if (OUTPUT_COMPRESS) gzclose(static_cast<gzFile>(Output_File));	
+ 	printf("\r[++++++++100%%+++++++++]\n");fprintf(Log_File,"100%%\n");//progress bar....
+ 	printfL("Total Tags/Hits[Rejected Hits] %d / %d[%d]\n",Total_Tags,Total_Hits,Off_Hits);
+ 	time(&End_Time);printfL("\n Time Taken  - %.0lf Seconds ..\n ",difftime(End_Time,Start_Time));
+@@ -2893,7 +2893,7 @@
+ 
+ 		Zip_Buffer[sizeof(Zip_Buffer) - 1] = 0;
+ 		Len = vsnprintf(Zip_Buffer, sizeof(Zip_Buffer), Format_String, argptr);
+-		gzwrite((gzFile*) Handle, Zip_Buffer, (unsigned)Len);
++		gzwrite(static_cast<gzFile>(Handle), Zip_Buffer, (unsigned)Len);
+ 
+ 	}
+ 	else
+--- BatMis-3.00/src/batman.cpp
++++ BatMis-3.00/src/batman.cpp
+@@ -2212,7 +2212,7 @@
+ 	}
+ 
+ 	time(&End_Time);printf("\n Time Taken  - %.0lf Seconds ..\n ",difftime(End_Time,Start_Time));fprintf(Log_File,"\n Time Taken  - %.0lf Seconds ..\n ",difftime(End_Time,Start_Time));
+-	if(OUTPUT_ZIPPED) gzclose(Output_File);
++	if(OUTPUT_ZIPPED) gzclose(static_cast<gzFile>(Output_File));
+ 	if (EMAIL) Emailer(argc,argv);
+ 
+ 
+@@ -5683,7 +5683,7 @@
+ {
+ 	if (OUTPUT_ZIPPED)
+ 	{
+-		return gzwrite ( (gzFile*) stream ,ptr, size*count);
++		return gzwrite (static_cast<gzFile>(stream) ,ptr, size*count);
+ 	}
+ 	else
+ 	{
+@@ -5697,7 +5697,7 @@
+ 
+ 	if (OUTPUT_ZIPPED)
+ 	{
+-		gzprintf((gzFile*) Handle, Format, String);
++		gzprintf(static_cast<gzFile>(Handle), Format, String);
+ 	}
+ 	else
+ 	{
+--- BatMis-3.00/src/Makefile.am
++++ BatMis-3.00/src/Makefile.am
+@@ -1,14 +1,9 @@
+ EXTRA_DIST =  batman.ini 
+-AM_CFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm
+-AM_CXXFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm 
++AM_CFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm -lz
++AM_CXXFLAGS = -w -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm  -lz
+ RANLIB=ranlib
+ #AM_CPPFLAGS = -O3 -funroll-loops -maccumulate-outgoing-args -msse2 -lm
+ 
+-noinst_LIBRARIES = libz.a
+-libz_a_SOURCES = adler32.c compress.c crc32.c gzio.c uncompr.c deflate.c trees.c \
+-       zutil.c inflate.c infback.c inftrees.c inffast.c\
+-       zlib.h zconf.h crc32.h  deflate.h zutil.h inftrees.h inflate.h inffast.h trees.h inffixed.h
+-
+ bin_PROGRAMS = bwtformatdb reverse batman batdecode filter
+ bwtformatdb_SOURCES= bwtformatdb.c BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+  iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c\
+@@ -16,10 +11,8 @@
+  BWTConstruct.h QSufSort.h r250.h dictionary.h inistrlib.h iniparser.h Timing.h Socket.h karlin.h
+ batman_SOURCES= batman.cpp BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+  iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c 
+-batman_LDADD = libz.a
+ batdecode_SOURCES= batdecode.cpp BWT.c BWTConstruct.c MiscUtilities.c MemManager.c TextConverter.c r250.c QSufSort.c\
+  iniparser.c inistrlib.c dictionary.c DNACount.c Timing.c Socket.c HSP.c HSPstatistic.c karlin.c
+-batdecode_LDADD = libz.a
+ reverse_SOURCES = reverse.cpp 
+ filter_SOURCES = filter.cpp 
+ copy:
