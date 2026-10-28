@@ -1,0 +1,40 @@
+{% set version = "1.0" %}
+
+package:
+  name: pepnet
+  version: {{ version }}
+
+source:
+  - url: https://zenodo.org/record/7869847/files/denovo.py
+    md5: d309b880ec67add8aa4b2c78c62001df 
+    patches: denovo.patch
+  - url: https://zenodo.org/record/7869847/files/utils.py
+    md5: d5b682bbebabab40c9542ae3500d6d10
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage("pepnet", max_pin="x") }}
+
+requirements:
+  build:
+    - dos2unix
+  host:
+    - python >=3.7
+  run:
+    - numba
+    - pandas >=0.2
+    - pyteomics
+    - tensorflow
+
+about:
+  home: https://github.com/lkytal/PepNet
+  license: LGPL
+  license_file: https://raw.githubusercontent.com/lkytal/PepNet/86c99173b8f3e964274ba32267689195db8edfeb/LGPL.txt
+  summary: de novo sequencing of tandem mass spectra
+  description: The state of the art Deep CNN neural network for de novo sequencing of tandem mass spectra, currently works on unmodified HCD spectra of charges 1+ to 4+.
+
+test:
+  commands:
+    - denovo.py
