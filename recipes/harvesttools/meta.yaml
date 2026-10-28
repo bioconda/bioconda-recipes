@@ -1,0 +1,40 @@
+{% set version = "1.3" %}
+{% set base = "https://github.com/marbl/harvest-tools/releases/download" %}
+{% set sha256linux = "1bc347967cd43e93121039f28f8938e624e42b16f2629af963a593f0f4e78a6a" %}
+{% set sha256osx = "e69fa113b8a5146f8dd3044cbfbcaf6a79c496e2121e052d1f1941be80060d0e" %}
+
+package:
+  name: harvesttools
+  version: {{ version }}
+
+source:
+  - url: '{{ base }}/v{{ version }}/harvesttools-Linux64-v{{ version }}.tar.gz'   # [linux]
+    sha256: '{{ sha256linux }}'                                         # [linux]
+  - url: '{{ base }}/v{{ version }}/harvesttools-OSX64-v{{ version }}.tar.gz'     # [osx]
+    sha256: '{{ sha256osx }}'                                           # [osx]
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('harvesttools', max_pin="x") }}
+
+requirements:
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - harvesttools -h >/dev/null
+
+about:
+  home: "https://github.com/marbl/harvest-tools"
+  license: "Custom; see https://raw.githubusercontent.com/marbl/harvest-tools/master/LICENSE.txt"
+  summary: "HarvestTools is a part of the Harvest software suite and provides file conversion between Gingr files and various standard text formats."
+  dev_url: "https://github.com/marbl/harvest-tools"
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

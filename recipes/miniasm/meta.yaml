@@ -1,33 +1,43 @@
-{% set name = "miniasm" %}
-{% set version = "0.2_r168" %}
+{% set version = "0.3" %}
 
 package:
-  name: {{ name|lower }}
+  name: miniasm
   version: {{ version }}
 
 build:
-  number: 1
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('miniasm', max_pin='x.x') }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/lh3/miniasm/archive/40ec2809489b72410f9b436e1145f4cf593f259c.tar.gz
-  md5: fea96683cfac16cb431196051d42ae45
+  url: https://github.com/lh3/miniasm/archive/refs/tags/v0.3.tar.gz
+  sha256: 9b688454f30f99cf1a0b0b1316821ad92fbd44d83ff0b35b2403ee8692ba093d
 
 requirements:
   build:
-  - gcc
-  - zlib {{CONDA_ZLIB}}*
-
-  run:
-  - libgcc
-  - zlib {{CONDA_ZLIB}}*
+    - make
+    - {{ compiler('c') }}
+  host:
+    - zlib
 
 test:
   commands:
     - miniasm -V
 
 about:
-  home: https://github.com/lh3/miniasm
+  home: "https://github.com/lh3/miniasm"
   license: MIT
-  license_file: LICENSE.txt
-  summary: Ultrafast de novo assembly for long noisy reads (though having no consensus step)
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Ultrafast de novo assembly for long noisy reads (though having no consensus step)."
+  dev_url: "https://github.com/lh3/miniasm"
+  doc_url: "https://github.com/lh3/miniasm/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:miniasm
+    - usegalaxy-eu:miniasm
+    - doi:10.1093/bioinformatics/btw152

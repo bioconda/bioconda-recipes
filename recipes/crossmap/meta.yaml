@@ -1,44 +1,56 @@
 {% set name = "CrossMap" %}
-{% set version = "0.2.7" %}
-{% set sha256hash = "edaef71757c4ae5182f5c8fd6350d096118919c02ff46660944e8db4ff5d6341" %}
+{% set version = "0.7.4" %}
+{% set sha256 = "c081dedba70b62ac6f1763f4d50d6e6754afdff4e6951d3f19c1f891905d4493" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: CrossMap-{{ version }}.tar.gz
-  url: http://sourceforge.net/projects/crossmap/files/CrossMap-{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  url: https://github.com/liguowang/CrossMap/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-    number: 0
-    # CrossMap is very particular about Python version.
-    skip: True # [not py27]
+  number: 0
+  noarch: python
+  entry_points:
+    - CrossMap = cmmodule:crossmap
+  run_exports:
+    - {{ pin_subpackage('crossmap', max_pin="x.x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.8
+    - pip
     - setuptools
-    - cython >=0.17
-    - numpy
-    - nose >=0.10.4
-    - pysam >=0.11.1
-    - bx-python
   run:
-    - python
-    - cython >=0.17
+    - python >=3.8
     - numpy
-    - pysam >=0.11.1
+    - pysam
     - bx-python
+    - pybigwig
     - ucsc-wigtobigwig
 
 test:
   commands:
-    - CrossMap.py bed
-    - CrossMap.py vcf
+    - CrossMap bed -h
+    - CrossMap vcf -h
 
 about:
-  home: http://crossmap.sourceforge.net
-  license: GPLv2
-  summary: "Convert genomic coordiates between assemblies"
+  home: "https://crossmap.sourceforge.net"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.txt"
+  summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."
+  dev_url: "https://github.com/liguowang/CrossMap"
+  doc_url: "https://crossmap.readthedocs.io/en/latest"
+
+extra:
+  identifiers:
+    - usegalaxy-eu:crossmap_bam
+    - usegalaxy-eu:crossmap_bed
+    - usegalaxy-eu:crossmap_vcf
+    - usegalaxy-eu:crossmap_wig
+    - usegalaxy-eu:crossmap_gff
+    - doi:10.1093/bioinformatics/btt730
+    - biotools:crossmap

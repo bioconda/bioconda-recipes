@@ -1,0 +1,38 @@
+{% set version = "0.5.2" %}
+{% set name = "legsta" %}
+{% set sha256 = "73db39cdc695e6a889b0b0092c2eda4119e9fa463e5992e9b5de91186cc97101" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+
+  run:
+    - perl
+    - ispcr
+    - any2fasta
+
+test:
+  commands:
+    - legsta --version | grep '{{ version }}'
+    - legsta --help
+    - legsta $(dirname $(which legsta))/../db/pilE.tfa
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: In silico Legionella pneumophila Sequence Based Typing

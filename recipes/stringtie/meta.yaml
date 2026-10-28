@@ -1,32 +1,63 @@
+{% set name = "StringTie" %}
+{% set version = "3.0.3" %}
+{% set sha256 = "c33cf39a1a36e8e0a808b419a67d57f1744fd8141b30a85162c4d19dd9d36d42" %}
+
 package:
-  name: stringtie
-  version: 1.3.3
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gpertea/stringtie/releases/download/v{{ version }}/stringtie-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('stringtie', max_pin="x") }}
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
-    - gnu-wget
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    # curl is used to download prepDE.py
+    - htslib
+    - curl
+    - bzip2
+    - xz
+    - zlib
   run:
-    - libgcc    # [linux]
-    - zlib {{CONDA_ZLIB}}*
+    - htslib
     - python
-
-source:
-  fn: stringtie-1.3.3.tar.gz
-  sha256: c01b16a681dc55f114dbfc2fcd725f615b2d9a79058ff8c110047cfa9cbe2976
-  url: http://ccb.jhu.edu/software/stringtie/dl/stringtie-1.3.3.tar.gz
 
 test:
   commands:
-    - "stringtie 2>&1 | grep Assemble"
+    - stringtie 2>&1 | grep "Assemble"
     - prepDE.py --help
 
 about:
-  home: http://ccb.jhu.edu/software/stringtie/
-  license: Artistic License 2.0
-  summary: Transcriptome assembly and quantification for RNA-seq
+  home: "https://ccb.jhu.edu/software/stringtie"
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: "StringTie employs efficient algorithms for transcript structure recovery and abundance estimation from bulk RNA-Seq reads aligned to a reference genome."
+  dev_url: "https://github.com/gpertea/stringtie"
+  doc_url: "https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:stringtie
+    - usegalaxy-eu:stringtie
+    - doi:10.1038/nbt.3122
+    - doi:10.1038/nprot.2016.095
+    - doi:10.1186/s13059-019-1910-1

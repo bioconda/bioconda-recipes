@@ -1,31 +1,48 @@
-{% set version = "0.7.2" %}
+{% set name = "seqkit" %}
+{% set version = "2.14.0" %}
 
 package:
-  name: seqkit
+  name: {{ name }}
   version: {{ version }}
 
-about:
-  home: https://github.com/shenwei356/seqkit
-  summary: Cross-platform and ultrafast toolkit for FASTA/Q file manipulation
-  license: MIT
+source:
+  url: https://github.com/shenwei356/seqkit/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7df95904ce438c1a1a7b1fc06f20479a169e69209ac59abae8e80c60a1e65d60
 
 build:
   number: 0
-  skip: False
+  run_exports:
+    - {{ pin_subpackage('seqkit', max_pin="x") }}
 
-source:
-  fn: seqkit_{{ version }}_osx.tar.gz # [osx]
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_darwin_amd64.tar.gz # [osx]
-  md5: 18d13c7bc2dea0bf3923ae5494dae626 # [osx]
-
-  fn: seqkit_{{ version }}_linux.tar.gz # [linux]
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_linux_386.tar.gz # [linux]
-  md5: f806546031c5b88010480a2f8fa9acb0 # [linux]
-
-  fn: seqkit_{{ version }}_linux64.tar.gz # [linux64]
-  url: https://github.com/shenwei356/seqkit/releases/download/v{{ version }}/seqkit_linux_amd64.tar.gz # [linux64]
-  md5: 30c2c5f1ff3a8310ce75a5ae2ec329f1 # [linux64]
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('go-nocgo') }}
+    - go-licenses
 
 test:
   commands:
     - seqkit version --help
+
+about:
+  home: "https://github.com/shenwei356/seqkit"
+  summary: "A cross-platform and ultrafast toolkit for FASTA/Q file manipulation."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/shenwei356/seqkit"
+  doc_url: "https://bioinf.shenwei.me/seqkit"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:seqkit
+    - usegalaxy-eu:seqkit_head
+    - usegalaxy-eu:seqkit_stats
+    - usegalaxy-eu:seqkit_fx2tab
+    - usegalaxy-eu:seqkit_locate
+    - usegalaxy-eu:seqkit_translate
+    - usegalaxy-eu:seqkit_sort
+    - doi:10.1002/imt2.191

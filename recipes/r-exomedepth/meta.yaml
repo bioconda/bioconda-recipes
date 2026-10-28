@@ -1,25 +1,28 @@
-{% set version = '1.1.10' %}
+{% set version = '1.1.18' %}
 
 package:
   name: r-exomedepth
-  version: {{ version|replace("-", "_") }}
+  version: {{ version }}
 
 source:
-  fn: ExomeDepth_{{ version }}.tar.gz
-  url:
-    - https://cran.r-project.org/src/contrib/ExomeDepth_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/ExomeDepth/ExomeDepth_{{ version }}.tar.gz
-  sha256: 2678ff4c4d024e08a843f08cb932707a11ce7274ab48bfc2632669ca930d8f86
+  url: https://github.com/vplagnol/ExomeDepth/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f0f85339c17d7a3142994fd1e399798039c34fb6a129670b922c04c65635649e
 
 build:
   number: 0
-
+  run_exports:
+    - {{ pin_subpackage('r-exomedepth', max_pin="x.x.x") }}
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
+  host:
     - r-base
     - bioconductor-biostrings
     - bioconductor-genomicalignments
@@ -28,9 +31,8 @@ requirements:
     - bioconductor-rsamtools
     - r-vgam >=0.8.4
     - r-aod
-    - gcc  # [linux]
-    - llvm # [osx]
-
+    - r-dplyr
+    - r-magrittr
   run:
     - r-base
     - bioconductor-biostrings
@@ -40,7 +42,8 @@ requirements:
     - bioconductor-rsamtools
     - r-vgam >=0.8.4
     - r-aod
-    - libgcc # [linux]
+    - r-dplyr
+    - r-magrittr
 
 test:
   commands:

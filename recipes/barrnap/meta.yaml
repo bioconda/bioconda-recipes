@@ -1,0 +1,74 @@
+{% set name = "barrnap" %}
+{% set user = "tseemann" %}
+{% set version = "1.10.6" %}
+{% set sha256 = "6904ca909f59ce8e0952784d59a7d6b5334586f592e1595fa153a917d2a33d62"%}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+  host:
+    - perl
+    - perl-list-moreutils
+    - perl-path-tiny
+    - perl-file-which
+    - infernal >=1.1.2
+    - aragorn
+    - bedtools
+    - any2fasta >=0.6.0
+    - seqkit
+    - pyrodigal
+    - transtermhp >=2
+    - ziggypep
+    - diamond
+    - taxonkit
+    - mmseqs2
+  run:
+    - perl >=5.32
+    - perl-list-moreutils
+    - perl-path-tiny
+    - perl-file-which
+    - infernal >=1.1.2
+    - aragorn
+    - bedtools
+    - any2fasta >=0.6.0
+    - seqkit
+    - pyrodigal
+    - transtermhp >=2
+    - ziggypep
+    - diamond
+    - taxonkit
+    - make
+    - mmseqs2
+
+test:
+  commands:
+    - LC_ALL=C {{ name }} --version
+    - LC_ALL=C {{ name }} --help
+    - LC_ALL=C {{ name }} --citation
+    - LC_ALL=C {{ name }} --listdb
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'Rapid microbial RNA annotation'
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - usegalaxy-eu:{{ name }}

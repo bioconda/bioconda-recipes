@@ -1,0 +1,51 @@
+{% set name = "prooverlap" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 5545a2b8371b04e3e77756923217e28d2386783dd8b8b9c64b9952c761af62d4
+
+build:
+  run_exports:
+    - {{ pin_subpackage("prooverlap", max_pin="x.x") }}
+  noarch: python
+  number: 0
+  entry_points:
+    - prooverlap = prooverlap.prooverlap:cli
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pip
+    - python >=3.8,<3.11
+  run:
+    - biopython
+    - numpy
+    - pandas
+    - pybedtools
+    - python >=3.8,<3.11
+    - scipy
+
+test:
+  imports:
+    - prooverlap
+  commands:
+    - prooverlap --help
+
+about:
+  home: "https://github.com/ngualand/ProOvErlap"
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Assessing feature proximity/overlap and testing statistical significance from genomic intervals"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - ngualand
+    - alessio134298

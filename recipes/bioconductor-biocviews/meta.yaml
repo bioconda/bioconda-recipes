@@ -1,42 +1,64 @@
-{% set version = "1.46.0" %}
+{% set version = "1.78.2" %}
 {% set name = "biocViews" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ad868c40c54bbcac5b38776bc56afca95bc514f091ea042b4d08303c83c4fe27
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: 769f4e9e094645165e6fd2a1cb9d30670bdfc4c723fdf9d120bef2714c683c3d
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biocviews", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocGenerics, BiocPkgTools, knitr, commonmark, BiocStyle
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-graph >=1.9.26'
-    - 'bioconductor-rbgl >=1.13.5'
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
     - r-base
+    - r-biocmanager
     - r-rcurl
     - r-runit
     - r-xml
   run:
-    - bioconductor-biobase
-    - 'bioconductor-graph >=1.9.26'
-    - 'bioconductor-rbgl >=1.13.5'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-rbgl >=1.86.0,<1.87.0
     - r-base
+    - r-biocmanager
     - r-rcurl
     - r-runit
     - r-xml
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Infrastructure to support Bioconductor ''views'' used to classify software packages. ''biocViews'' are directed acyclic graphs of terms from a controlled vocabulary. There are three major classifications, corresponding to ''software'', ''annotation'', and ''experiment data'' packages.'
+  summary: Categorized views of R package repositories
+  description: Infrastructure to support 'views' used to classify Bioconductor packages. 'biocViews' are directed acyclic graphs of terms from a controlled vocabulary. There are three major classifications, corresponding to 'software', 'annotation', and 'experiment data' packages.
+
+extra:
+  identifiers:
+    - biotools:biocviews
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-biocviews
+    path: recipes/bioconductor-biocviews
+    version: 1.48.3
+

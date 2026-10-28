@@ -17,3 +17,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+chmod +rx $PREFIX/bin/stubmaker.pl
+chmod +rx $PREFIX/bin/SOAPsh.pl

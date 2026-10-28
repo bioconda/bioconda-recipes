@@ -1,0 +1,50 @@
+{% set name = "airr" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3443d95e3088356ec9c5dc99f4879addd1ea1ee13fd43eb0a7ad9cf917838af3
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - airr-tools=airr.tools:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools
+  run:
+    - pandas >=0.18.0
+    - python
+    - pyyaml >=3.12
+    - setuptools <78
+    - yamlordereddictloader >=0.4.0
+
+test:
+  imports:
+    - airr
+    - airr.specs
+    - tests
+  commands:
+    - airr-tools --help
+
+about:
+  home: http://docs.airr-community.org
+  license: CC BY 4.0
+  license_family: CC
+  summary: 'AIRR Community Data Representation Standard reference library for antibody and TCR sequencing data.
+    Citations: AIRR standards <doi:10.5281/zenodo.1185414>.'
+
+extra:
+  recipe-maintainers:
+    - PertuyF

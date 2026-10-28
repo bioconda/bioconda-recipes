@@ -1,24 +1,26 @@
+{% set name = "perl-sereal-decoder" %}
+{% set version = "5.009" %}
+
 package:
-  name: perl-sereal-decoder
-  version: "3.015"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: Sereal-Decoder-3.015.tar.gz
-  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Decoder-3.015.tar.gz
-  md5: de91784e359e25aee07f87a8b9b2f90b
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://cpan.metacpan.org/authors/id/Y/YV/YVES/Sereal-Decoder-{{ version }}.tar.gz
+  sha256: ac98d146ae6dfb61898046c238ba788b9bb1108ff2c3830499a09d995b5d9a49
 
-# build:
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
-    - perl-file-path
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
+    - perl
     - perl-test-warn
     - perl-test-simple
     - perl-extutils-makemaker
@@ -26,29 +28,25 @@ requirements:
     - perl-scalar-list-utils
     - perl-pathtools
     - perl-extutils-parsexs
-
+    - perl-devel-checklib >=1.16
+    - perl-xsloader
   run:
-    - perl-threaded
+    - perl
+    - perl-xsloader
 
 test:
-  # Perl 'use' tests
   imports:
-    - Sereal::Decoder
-    - Sereal::Decoder::Constants
+    - Sereal::Decoder  # [osx]
+    - Sereal::Decoder::Constants  # [osx]
     - Sereal::Performance
 
-  # You can also put a file called run_test.pl (or run_test.py) in the recipe
-  # that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
-
 about:
-  home: http://metacpan.org/pod/Sereal::Decoder
-  license: perl_5
-  summary: 'Fast, compact, powerful binary deserialization'
+  home: "https://metacpan.org/pod/Sereal::Decoder"
+  license: "perl_5"
+  summary: 'Fast, compact, powerful binary deserialization.'
+  doc_url: "https://metacpan.org/pod/Sereal::Decoder"
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

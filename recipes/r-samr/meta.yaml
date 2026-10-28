@@ -1,42 +1,56 @@
-{% set version = '2.0' %}
+{% set version = '3.0.1' %}
 
 package:
   name: r-samr
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: samr_{{ version }}.tar.gz
   url:
     - https://cran.r-project.org/src/contrib/samr_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/samr/samr_{{ version }}.tar.gz
-  sha256: 090b5becd91d60f4bb8269df5c9bc19a03c09917d327b28e75b0ee7b80624e67
+  sha256: 0904262e3dd834866327ac4532324ce025d0a9665f0438a00a146f225baabae1
 
 build:
   number: 0
-
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage("r-samr", max_pin="x") }}
+
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - r-base
-    - bioconductor-impute
+    - bioconductor-impute >=1.56.0
     - r-matrixstats
-    - gcc  # [linux]
-    - llvm # [osx]
-
+    - r-gsa
+    - r-openxlsx
+    - r-shiny
+    - r-shinyfiles
   run:
     - r-base
-    - bioconductor-impute
+    - bioconductor-impute >=1.56.0
     - r-matrixstats
-    - libgcc # [linux]
+    - r-gsa
+    - r-openxlsx
+    - r-shiny
+    - r-shinyfiles
 
 test:
   commands:
     - $R -e "library('samr')"
 
 about:
-  home: http://www-stat.stanford.edu/~tibs/SAM
+  home: "http://www-stat.stanford.edu/~tibs/SAM"
   license: LGPL
-  summary: Significance Analysis of Microarrays
+  summary: "Significance Analysis of Microarrays"
   license_family: LGPL
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

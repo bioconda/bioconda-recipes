@@ -1,37 +1,47 @@
-{% set name = "bpp-phyl" %}
-{% set version = "2.2.0" %}
+{% set name = 'bpp-phyl' %}
+{% set version = '3.0.0' %}
+{% set sha256 = '347e3838004cda197af5fb40b2fa415740481233887c3e980f791225092331c4' %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  skip: True  # [win]
-  number: 0
-
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: http://biopp.univ-montp2.fr/repos/sources/{{ name }}-{{ version }}.tar.gz
-  md5: 5c40667ec0bf37e0ecaba321be932770
+  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
+    - make
+    - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
+  host:
     - bpp-seq
-
+    - eigen
   run:
-    - libgcc # [not osx]
     - bpp-seq
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libbpp-phyl.a  # [unix]
     - test -f ${PREFIX}/lib/libbpp-phyl.so  # [linux]
+    - test -f ${PREFIX}/lib/libbpp-phyl.dylib  # [osx]
 
 about:
-  home: https://github.com/BioPP/bpp-phyl
+  home: "https://github.com/BioPP/bpp-phyl"
   license: CeCILL
-  license_file: COPYING.txt
-  summary: Bio++ is a set of C++ libraries for Bioinformatics.
+  #license_file: "COPYING.txt"
+  summary: "Bio++ is a set of C++ libraries for Bioinformatics."
+  dev_url: "https://github.com/BioPP/bpp-phyl"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

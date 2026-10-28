@@ -1,29 +1,47 @@
+{% set name = "lastz" %}
+{% set version = "1.04.60" %}
+# 1.04.60 is lastz master at fbc303c (2026-09-28), which merged lastz#78 (segfault when --masking is
+# combined with --segments) and lastz#80 (gcc 15 build failure) and set its version to 1.04.60; it is not
+# tagged yet. Switch source back to the release tarball once 1.04.60 is tagged.
+{% set commit = "fbc303c77f60fdaf6e9830e3c723d77f7b296e36" %}
+
 package:
-  name: lastz
-  version: "1.0.4"
+  name: {{ name }}
+  version: {{ version }}
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('lastz', max_pin='x') }}
 
 source:
-  fn: lastz-1.04.00.tar.gz
-  url: http://www.bx.psu.edu/~rsharris/lastz/lastz-1.04.00.tar.gz
-  sha256: dd2e417c088a794532125d4c3e83a2c4ce39e6d287ed69312fb8c665f885ed52
-
+  url: https://github.com/lastz/lastz/archive/{{ commit }}.tar.gz
+  sha256: 3aec02eee8bbf5138fa468c431efae50c457299afcf2d7897a78e8656ba99577
   patches:
     - makefile.patch
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-  run:
-    - libgcc  # [not osx]
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
 test:
   commands:
-    - lastz --version 2>&1 | grep 1.04.00 > /dev/null
+    - lastz --version 2>&1 | grep {{ version }} > /dev/null
 
 about:
-  home: http://www.bx.psu.edu/~rsharris/lastz/
+  home: "https://www.bx.psu.edu/~rsharris/lastz"
   license: MIT
-  summary: LASTZ is a program for aligning DNA sequences, a pairwise aligner.
+  license_family: MIT
+  license_file: LICENSE
+  summary: "LASTZ is a program for aligning DNA sequences, a pairwise aligner."
+  dev_url: "https://github.com/lastz/lastz"
+  doc_url: "https://lastz.github.io/lastz"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:lastz

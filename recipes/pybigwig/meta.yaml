@@ -1,29 +1,39 @@
-{% set version = "0.3.11" %}
+{% set name = "pybigwig" %}
+{% set version = "0.3.26" %}
 
 package:
-    name: pybigwig
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-    fn: {{ version }}.tar.gz
-    url: https://files.pythonhosted.org/packages/7b/b7/e135efa69cd146d22920c196e4575d2ff5a0b19c8f3a29634f5b4c639764/pyBigWig-0.3.11.tar.gz
-    sha256: 408ebb40f01c72c77adde4d785a18dabc9abbe9020024e4296b8f6a51a662ae7
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8b01c6542ed9e65d0758ff18a43d6fd7b1c517e1f6aa6132368fe17ee32c1533
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py < 39]
+  script:
+    - export C_INCLUDE_PATH="$PREFIX/include"
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3"
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
+    - pip
+    - setuptools
     - curl
     - libcurl
-    - zlib {{CONDA_ZLIB}}*
-    - numpy x.x
+    - zlib
+    - numpy >=2.0.0
   run:
     - python
-    - libcurl
-    - zlib {{CONDA_ZLIB}}*
-    - numpy x.x
+    - numpy >=2.0.0
 
 test:
   imports:
@@ -32,6 +42,19 @@ test:
     - python -c "import pyBigWig; assert(pyBigWig.numpy == 1); assert(pyBigWig.remote == 1)"
 
 about:
-  home: https://github.com/dpryan79/pyBigWig
+  home: "https://github.com/deeptools/pyBigWig"
   license: MIT
-  summary: A python extension written in C for quick access to bigWig files.
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "A python extension written in C for quick access to bigWig files."
+  dev_url: "https://github.com/deeptools/pyBigWig"
+  doc_url: "https://github.com/deeptools/pyBigWig/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.5281/zenodo.45238
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -1,37 +1,74 @@
+{% set name = "r-sleuth" %}
+{% set version = "0.30.2" %}
+{% set github = "https://github.com/pachterlab/sleuth" %}
+
 package:
-  name: r-sleuth
-  version: 0.29.0
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  url: https://github.com/pachterlab/sleuth/archive/v0.29.0.tar.gz
-  md5: d625174a31bb033d8ddf14c29c703773
+  url: "{{ github }}/archive/v{{ version }}.tar.gz"
+  sha256: 043ce093124cef931090ceb1933111f43e92d324d16a5aa1d97e1597f67b9f91
+
 build:
   number: 0
+  noarch: generic
+  script: ${R} CMD INSTALL --build . ${R_ARGS}
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-sleuth', max_pin="x.x") }}
+
 requirements:
-  build:
-    - r-base
+  host:
+    # Depends:
+    - r-base >=3.2.1
+    # Imports:
     - bioconductor-rhdf5
-    - r-ggplot2
-    - r-dplyr
-    - r-tidyr
-    - r-shiny
+    - r-aggregation
     - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-lazyeval
     - r-matrixstats
+    - r-pheatmap
+    - r-reshape2
+    - r-shiny
+    - r-tidyr
+    # Suggests:
+    - r-mass
   run:
-    - r-base
+    # Depends:
+    - r-base >=3.2.1
+    # Imports:
     - bioconductor-rhdf5
-    - r-ggplot2
-    - r-dplyr
-    - r-tidyr
-    - r-shiny
+    - r-aggregation
     - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-lazyeval
     - r-matrixstats
+    - r-pheatmap
+    - r-reshape2
+    - r-shiny
+    - r-tidyr
+    # Suggests:
+    - r-mass
+
 test:
   commands:
-    - '$R -e "library(''sleuth'')"'
+    - $R -e "library('sleuth')"
+
 about:
-  home: http://pachterlab.github.io/sleuth
-  license: GPLv3
-  summary: "Sleuth is an R library for analysis of RNA-Seq experiments for which transcript abundances have been quantified with kallisto."
+  home: "https://pachterlab.github.io/sleuth"
+  dev_url: "{{ github }}"
+  license: "GPL-3.0-or-later"
+  license_file: LICENSE
+  license_family: GPL3
+  summary: "Tools for investigating RNA-Seq."
+  doc_url: "https://pachterlab.github.io/sleuth"
+
+extra:
+  recipe-maintainers:
+    - mjsteinbaugh

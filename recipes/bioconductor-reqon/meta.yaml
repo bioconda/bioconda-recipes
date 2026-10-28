@@ -1,0 +1,46 @@
+{% set version = "1.48.0" %}
+{% set name = "ReQON" %}
+{% set bioc = "3.18" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3940db44a4b48a5b04d87c9466df72c3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-reqon", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: BiocStyle
+# SystemRequirements: Java version >= 1.6
+requirements:
+  host:
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
+    - 'bioconductor-seqbias >=1.50.0,<1.51.0'
+    - r-base
+    - r-rjava
+    - openjdk
+  run:
+    - 'bioconductor-rsamtools >=2.18.0,<2.19.0'
+    - 'bioconductor-seqbias >=1.50.0,<1.51.0'
+    - r-base
+    - r-rjava
+    - openjdk
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Recalibrating Quality Of Nucleotides'
+  description: 'Algorithm for recalibrating the base quality scores for aligned sequencing data in BAM format.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

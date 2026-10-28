@@ -1,38 +1,66 @@
-{% set version = "1.6.0" %}
+{% set version = "1.38.0" %}
 {% set name = "BioQC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 7abfb656723c874a837c2bad9b3368681c19b02bcbbcf8671406a201bff53bd3
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 218e54f2c0d515bd337351ef7659fb40
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bioqc", max_pin="x.x") }}'
+
+# Suggests: testthat, knitr, rmarkdown, lattice, latticeExtra, rbenchmark, gplots, gridExtra, org.Hs.eg.db, hgu133plus2.db, ggplot2, reshape2, plyr, ineq, covr, limma, RColorBrewer
 requirements:
   build:
-    - bioconductor-biobase
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-edger >=4.8.0,<4.9.0
     - r-base
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biobase
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-edger >=4.8.0,<4.9.0
     - r-base
     - r-rcpp
-    - libcxx # [osx]
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=3)'
-  summary: 'BioQC performs quality control of high-throughput expression data based on tissue gene signatures. It can detect tissue heterogeneity in gene expression data. The core algorithm is a Wilcoxon-Mann-Whitney test that is optimised for high performance.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=3) + file LICENSE
+  summary: Detect tissue heterogeneity in expression profiles with gene sets
+  description: BioQC performs quality control of high-throughput expression data based on tissue gene signatures. It can detect tissue heterogeneity in gene expression data. The core algorithm is a Wilcoxon-Mann-Whitney test that is optimised for high performance.
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:bioqc
+    - doi:10.1186/s12864-017-3661-2
+  parent_recipe:
+    name: bioconductor-bioqc
+    path: recipes/bioconductor-bioqc
+    version: 1.8.0
+

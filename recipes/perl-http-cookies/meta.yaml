@@ -1,32 +1,47 @@
+{% set name = "perl-http-cookies" %}
+{% set version = "6.12" %}
+{% set sha256 = "4e460c4bae76285bfc726f641349402fc9038fcd9ca0f33346bec036d73876b8" %}
+
 package:
-  name: perl-http-cookies
-  version: "6.01"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: HTTP-Cookies-6.01.tar.gz
-  url: http://cpan.metacpan.org/authors/id/G/GA/GAAS/HTTP-Cookies-6.01.tar.gz
-  md5: ecfd0eeb88512033352c2f13c9580f03
+  url: https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Cookies-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  noarch: generic
+  run_exports:
+      - {{ pin_subpackage('perl-http-cookies', max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
+    - make
+  host:
+    - perl
+    - perl-extutils-makemaker
+    - perl-uri
+    - perl-test
     - perl-http-date
+    - perl-time-local
+    - perl-carp
     - perl-http-message
-
   run:
-    - perl-threaded
+    - perl
     - perl-http-date
+    - perl-time-local
+    - perl-carp
     - perl-http-message
 
 test:
-  # Perl 'use' tests
   imports:
     - HTTP::Cookies
+    - HTTP::Cookies::Netscape
 
 about:
-  home: http://metacpan.org/pod/HTTP-Cookies
-  license: perl_5
-  summary: 'HTTP cookie jars'
+  home: "https://github.com/libwww-perl/http-cookies"
+  license: "perl_5"
+  summary: "HTTP cookie jars."
+  dev_url: "https://github.com/libwww-perl/http-cookies"

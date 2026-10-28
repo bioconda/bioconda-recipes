@@ -1,0 +1,53 @@
+--- a/run.py.orig	2018-09-03 08:14:34.850659791 -0400
++++ b/run.py	2018-09-03 10:14:13.720337846 -0400
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python
++#!/opt/anaconda1anaconda2anaconda3/bin/python
+ 
+ import os
+ import subprocess
+@@ -7,14 +7,19 @@
+ import argparse
+ import functools
+ 
++# global constants
++codePath = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
++pValCode = os.path.join(codePath,'get_pvalue.R')
++annotationDir = os.path.join(codePath, 'data', 'annotation')
++bkgErrorDistSimulation = os.path.join(annotationDir, 'bkg.error.v2.RData')
++
+ # our modules
++import sys
++sys.path.append(codePath)
+ import utils
+ import vcf
+ from vc import vc_wrapper
+ 
+-# global constants
+-codePath = os.path.dirname(os.path.abspath(__file__))
+-pValCode = os.path.join(codePath,'get_pvalue.R')
+ locChunkLen = 1000
+ seed = 10262016
+ nsim = 5000
+@@ -46,8 +51,10 @@
+    parser.add_argument('--minAltUMI', type=int, default=3, help='minimum requirement of ALT UMIs; default is 3')
+    parser.add_argument('--maxAltAllele', type=int, default=2, help='maximum ALT alleles that meet minAltUMI to be reported; default is 2 (tri-allelic variants)')
+    parser.add_argument('--refGenome',type=str,help='Path to the reference fasta file')
+-   parser.add_argument('--repBed',type=str,help='Path to the simpleRepeat bed file')
+-   parser.add_argument('--srBed',type=str,help='Path to the full repeat bed file')
++   parser.add_argument('--repBed',type=str,help='Path to the simpleRepeat bed file',
++                       default=os.path.join(annotationDir, "hg19", "simpleRepeat.full.bed"))
++   parser.add_argument('--srBed',type=str,help='Path to the full repeat bed file',
++                       default=os.path.join(annotationDir, "hg19", "SR_LC_SL.full.bed"))
+    parser.add_argument('--ds', type=int, default=10000, help='down sample if number of UMIs greater than this value (RNA only)')
+    parser.add_argument('--bamType', type=str, default='raw', help='raw (default): raw BAM file with UMIs; consensus: consensused BAM file')
+    parser.add_argument('--inputVCF', type=str, default='none', help='optional input VCF file;') 
+@@ -141,7 +148,7 @@
+ 
+    outfile2 = 'intermediate/' + args.outPrefix + '.VariantList.long.txt'
+    outfile_lod = 'intermediate/' + args.outPrefix + '.umi_depths.lod.bedgraph'
+-   pValCmd = ' '.join(['Rscript', pValCode, args.runPath, outfile1, bkgFileName, str(seed), str(nsim), outfile2, outfile_lod, args.outPrefix, str(rpb), str(args.minAltUMI), args.inputVCF])
++   pValCmd = ' '.join(['Rscript', pValCode, args.runPath, outfile1, bkgFileName, str(seed), str(nsim), outfile2, outfile_lod, args.outPrefix, str(rpb), str(args.minAltUMI), args.inputVCF, bkgErrorDistSimulation])
+    subprocess.check_call(pValCmd, shell=True)
+    print("completed p-values at " + str(datetime.datetime.now()) + "\n")
+ 

@@ -1,71 +1,129 @@
-{% set version = "1.0.0" %}
+{% set version = "2.12.0" %}
 {% set name = "IsoformSwitchAnalyzeR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.23" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
+  name: bioconductor-{{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2ee026380092487f7be3236765219752c434b377a2644809ea8f4f23f2f0632d
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: dd9623342a7d7cf1e254229995d3836be60e465e7579ed08a8fb02149a5d3904
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-isoformswitchanalyzer", max_pin="x.x") }}'
 
 requirements:
   build:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-cummerbund
-    - bioconductor-drimseq
-    - bioconductor-edger
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-splicer
-    - bioconductor-tximport
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
     - r-base
+    - bioconductor-biobase >=2.64.0
+    - bioconductor-biocgenerics >=0.50.0
+    - bioconductor-biocparallel >=1.38.0
+    - bioconductor-biostrings >=2.72.0
+    - bioconductor-bsgenome >=1.72.0
+    - bioconductor-dexseq >=1.50.0
+    - bioconductor-edger >=4.2.0
+    - bioconductor-genomicranges >=1.56.0
+    - bioconductor-iranges >=2.38.0
+    - bioconductor-limma >=3.60.0
+    - bioconductor-pfamanalyzer >=1.4.0
+    - bioconductor-pwalign >=1.0.0
+    - bioconductor-rtracklayer >=1.64.0
+    - bioconductor-s4vectors >=0.42.0
+    - bioconductor-saturn >=1.12.0
+    - bioconductor-seqinfo
+    - bioconductor-summarizedexperiment >=1.34.0
+    - bioconductor-sva >=3.52.0
+    - bioconductor-tximeta >=1.22.0
+    - bioconductor-tximport >=1.32.0
+    - bioconductor-xvector >=0.44.0
     - r-dbi
-    - r-ggplot2
+    - r-dplyr
+    - r-futile.logger
+    - r-ggplot2 >=3.3.5
     - r-gridextra
+    - r-magrittr
     - r-plyr
     - r-rcolorbrewer
+    - r-rcurl
+    - r-readr
     - r-reshape2
+    - r-stringr
+    - r-tibble
+    - r-tidyr
     - r-venndiagram
+    - libblas
+    - liblapack
   run:
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-cummerbund
-    - bioconductor-drimseq
-    - bioconductor-edger
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-splicer
-    - bioconductor-tximport
     - r-base
+    - bioconductor-biobase >=2.64.0
+    - bioconductor-biocgenerics >=0.50.0
+    - bioconductor-biocparallel >=1.38.0
+    - bioconductor-biostrings >=2.72.0
+    - bioconductor-bsgenome >=1.72.0
+    - bioconductor-dexseq >=1.50.0
+    - bioconductor-edger >=4.2.0
+    - bioconductor-genomicranges >=1.56.0
+    - bioconductor-iranges >=2.38.0
+    - bioconductor-limma >=3.60.0
+    - bioconductor-pfamanalyzer >=1.4.0
+    - bioconductor-pwalign >=1.0.0
+    - bioconductor-rtracklayer >=1.64.0
+    - bioconductor-s4vectors >=0.42.0
+    - bioconductor-saturn >=1.12.0
+    - bioconductor-seqinfo
+    - bioconductor-summarizedexperiment >=1.34.0
+    - bioconductor-sva >=3.52.0
+    - bioconductor-tximeta >=1.22.0
+    - bioconductor-tximport >=1.32.0
+    - bioconductor-xvector >=0.44.0
     - r-dbi
-    - r-ggplot2
+    - r-dplyr
+    - r-futile.logger
+    - r-ggplot2 >=3.3.5
     - r-gridextra
+    - r-magrittr
     - r-plyr
     - r-rcolorbrewer
+    - r-rcurl
+    - r-readr
     - r-reshape2
+    - r-stringr
+    - r-tibble
+    - r-tidyr
     - r-venndiagram
 
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'IsoformSwitchAnalyzeR enabels identification and analysis of isoform switches with predicted functional consequences (such as gain/loss of protein domains etc) from quantification by Kallisto, Salmon, Cufflinks/Cuffdiff, RSEM etc.'
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-2.0-or-later"
+  summary: "Identify, Annotate and Visualize Isoform Switches with Functional Consequences from both short- and long-read RNA-seq data."
+  description: "Analysis of alternative splicing and isoform switches with predicted functional consequences (e.g. gain/loss of protein domains etc.) from quantification of all types of RNASeq by tools such as Kallisto, Salmon, StringTie, Cufflinks/Cuffdiff etc."
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:IsoformSwitchAnalyzeR
+    - doi:10.1158/1541-7786.MCR-16-0459
+  parent_recipe:
+    name: bioconductor-isoformswitchanalyzer
+    path: recipes/bioconductor-isoformswitchanalyzer
+    version: 1.2.0

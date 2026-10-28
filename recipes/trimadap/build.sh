@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
+mkdir -p "$PREFIX/bin"
 
-mkdir -p $PREFIX/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-make 
-mv trimadap-mt  $PREFIX/bin
+make CC="$CC" CFLAGS="${CFLAGS} -g -Wall -O3 -Wno-unused-function -I$PREFIX/include -L$PREFIX/lib"
 
+install -v -m 0755 trimadap-mt "$PREFIX/bin"

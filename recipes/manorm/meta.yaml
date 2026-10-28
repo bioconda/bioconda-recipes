@@ -1,38 +1,39 @@
+{% set name = "MAnorm" %}
+{% set version = "1.3.0" %}
+
 package:
-  name: manorm
-  version: 1.1.3
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: MAnorm-1.1.3.tar.gz
-  url: https://pypi.python.org/packages/b3/fd/fcec99d7f9ef6aa6b61253faec9724ebd9b20b4641cd5e03c36515013ae2/MAnorm-1.1.3.tar.gz
-  md5: 576992d0304b529611646d7388f8ab08
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 88702e2074bbecaecc975bbc458856166ea222dded38b36204ec92bd036c5f01
 
 build:
   number: 0
-  skip: True  # [not py27]
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
   entry_points:
-    - manorm=manorm.cmdline:main
+    - manorm=manorm.cli:main
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy
-    - matplotlib
-    - statsmodels
+  host:
+    - python >=3.6
+    - pip
   run:
-    - python
+    - python >=3.6
     - numpy
-    - scipy
-    - matplotlib
-    - statsmodels
+    - matplotlib-base >=3.0.0
+    - scikit-learn >=0.21.0
+    - pysam >=0.15.0
 
 test:
   imports:
     - manorm
-    - manorm.lib
+    - manorm.read
+    - manorm.region
   commands:
-    - manorm --help > /dev/null
+    - manorm --help
 
 about:
   home: https://github.com/shao-lab/MAnorm

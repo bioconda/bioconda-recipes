@@ -1,37 +1,69 @@
-{% set version = "2.22.0" %}
+{% set version = "2.56.0" %}
 {% set name = "Rgraphviz" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.23" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
+  name: bioconductor-{{ name|lower }}
+  version: {{ version }}
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1bfb8ac90df797365cf883813505f3b63a01061f515c009924c424e59cf436f9
-  patches: # [osx]
-    - rpath.patch  # [osx]
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: 7de4a7dc9a6dd875e236b45a336d923e8126dc7c1f6f03d0af294b6ffd8e2199
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: {{ pin_subpackage('bioconductor-rgraphviz', max_pin="x.x") }}
+
+# Suggests: RUnit, BiocGenerics, XML
+# SystemRequirements: optionally Graphviz (>= 2.16), USE_C17
 requirements:
   build:
-    - bioconductor-graph
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - pkg-config
+    - gnuconfig
+  host:
+    - bioconductor-graph >=1.88.0,<1.89.0
     - r-base
-    - llvm  # [osx]
-    - gcc  # [linux]
+    #- graphviz  # [osx and arm64]
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-graph
+    - bioconductor-graph >=1.88.0,<1.89.0
     - r-base
-    - libgcc # [linux]
+    #- graphviz  # [osx and arm64]
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
   license: EPL
-  summary: 'Interfaces R with the AT and T graphviz library for plotting R graph objects from the graph package.'
+  summary: "Provides plotting capabilities for R graph objects."
+  description: >-
+    Interfaces R with the AT and T graphviz library for plotting R graph objects
+    from the graph package.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # Error: C17 standard requested but CC17 is not defined
+    - osx-arm64
+  identifiers:
+    - biotools:rgraphviz
+    - usegalaxy-eu:rgraphviz

@@ -1,59 +1,91 @@
-{% set version = "1.14.0" %}
+{% set version = "1.46.0" %}
 {% set name = "trackViewer" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e2da49185aff09acdebf382dce011dace2d0ecd8a462cfa9d75818b77c64318
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: cc92a216b090cb16ec4f3a7bd84c6b1d
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-trackviewer", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: biomaRt, TxDb.Hsapiens.UCSC.hg19.knownGene, RUnit, org.Hs.eg.db, BiocStyle, knitr, VariantAnnotation, httr, htmltools, rmarkdown, motifStack
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-gviz >=1.54.0,<1.55.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-txdbmaker >=1.6.0,<1.7.0
     - r-base
     - r-grimport
     - r-htmlwidgets
-    - r-pbapply
     - r-scales
+    - r-strawr
+
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicfeatures >=1.62.0,<1.63.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-gviz >=1.54.0,<1.55.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-txdbmaker >=1.6.0,<1.7.0
     - r-base
     - r-grimport
     - r-htmlwidgets
-    - r-pbapply
     - r-scales
+    - r-strawr
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Visualize mapped reads along with annotation as track layers for NGS dataset such as ChIP-seq, RNA-seq, miRNA-seq, DNA-seq, SNPs and methylation data.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: A R/Bioconductor package with web interface for drawing elegant interactive tracks or lollipop plot to facilitate integrated analysis of multi-omics data
+  description: Visualize mapped reads along with annotation as track layers for NGS dataset such as ChIP-seq, RNA-seq, miRNA-seq, DNA-seq, SNPs and methylation data.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:trackviewer
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-trackviewer
+    path: recipes/bioconductor-trackviewer
+    version: 1.16.1
+

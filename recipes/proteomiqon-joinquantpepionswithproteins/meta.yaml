@@ -1,0 +1,47 @@
+{% set name = "proteomiqon-joinquantpepionswithproteins" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "e4076d297b4d86492b51da43a105dbfffaa2462f8dbb1dbb9b442dbe4b98ec30" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.JoinQuantPepIonsWithProteins/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+    - test -f "$PREFIX/lib/dotnet/tools/JoinQuantPepIonsWithProteins/ProteomIQon.JoinQuantPepIonsWithProteins.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+    - grep -q "JoinQuantPepIonsWithProteins/ProteomIQon.JoinQuantPepIonsWithProteins.dll" "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool JoinQuantPepIonsWithProteins combines results from ProteinInference and PSMBasedQuantification.
+  description: |
+    Results from PSMBasedQuantification contain detailed information about the quantification of every peptide, but only basic informations about the protein they 
+    originated from. This information is obtained during the ProteinInference. This tool takes the results from both tools and combines the quantification information 
+    of each peptide with the more accurate information about the corresponding protein including its q-value.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/JoinQuantPepIonsWithProteins.html

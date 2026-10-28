@@ -1,0 +1,72 @@
+{% set name = "phame" %}
+{% set version = "1.0.4" %}
+{% set sha256 = "907d2b2b27bbba5a361d8d9fb7d300fa4403c923bebd66edb5c7f65f59eda1a4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LANL-Bioinformatics/PhaME/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+  host:
+    - perl >=5.26.0,<5.35.0
+    - zlib >=1.2.11
+  run:
+    # Core Perl modules
+    - perl >=5.26.0,<5.35.0
+    - perl-bioperl >=1.7.2,<1.8.0
+    - perl-statistics-distributions >=1.02
+    - perl-getopt-long >=2.50
+    - perl-file-path >=2.12
+    - perl-parallel-forkmanager >=1.17
+
+    # Bioinformatics toolchain
+    - bwa >=0.7.17,<0.8.0
+    - samtools >=0.1.18,<1.12
+    - bcftools
+    - mummer
+    - bbmap >=38.0
+    - FastTree >=2.1.10,<2.2.0
+    - RAxML-ng >=1.0.0
+    - bowtie2 >=2.4.1
+    - muscle >=3.8.31,<4.0.0
+    - paml >=4.9,<5.0
+    - mafft >=7.471
+    - iqtree >=2.0.0
+
+    # Conditional dependencies
+    - llvm-openmp  # [osx]
+    - openmpi >=4.0.0  # [not osx]
+    - hyphy >=2.5.0
+
+    # System tools
+    - curl >=7.68.0
+
+test:
+  commands:
+    - phame -h
+
+about:
+  home: "https://github.com/LANL-Bioinformatics/PhaME"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "A tool to derive SNP matrices and phylogenetic tree from raw reads, contigs, and full genomes."
+  dev_url: "https://github.com/LANL-Bioinformatics/PhaME"
+  doc_url: "https://github.com/LANL-Bioinformatics/PhaME/blob/{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - biotools:phame
+    - doi:10.1038/s41598-020-58356-1

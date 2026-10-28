@@ -1,63 +1,63 @@
 {% set name = "planemo" %}
-{% set version = "0.48.0" %}
-{% set md5 = "d7f5d12ad04a83113632a2a989ea1938" %}
+{% set version = "0.75.47" %}
+{% set sha256 = "5c896c8c53f6e9a386a5095a086985ee1c76b558e64a8bc327dae9bfab873aa8" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: planemo-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/9a/86/9f9d5425519c519dd91db3f992484d82c1a03413620cb1b2c6a0ca9bb540/planemo-0.48.0.tar.gz
-  md5: {{ md5 }}
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/planemo-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  preserve_egg_dir: true
-  skip: true # [py3k]
-  entry_points:
-    - planemo=planemo.cli:planemo
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  entry_points:
+    - planemo = planemo.cli:planemo
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
-    - aenum
-    - bioblend >=0.10.0
-    - click
-    - galaxy-lib >=17.9.8
-    - jinja2
-    - pyaml
-    - python
+  host:
+    - python >=3.10
     - pip
     - setuptools
-    - six >=1.7.0
-    - virtualenv
-
   run:
-    - aenum
-    - bioblend >=0.8.0
-    - click
-    - docutils
-    - galaxy-lib >=17.9.8
+    - python >=3.10
+    - allure-python-commons
+    - backports
+    - backports.strenum
+    - bioblend >=1.6.0
+    - click !=8.0.2
+    - cryptography
+    - cwltool >=1.0.20191225192155
+    - ephemeris >=0.10.3
+    - galaxy-job-config-init >=0.1.4
+    - galaxy-tool-util >=25.1,<26.2
+    - galaxy-tool-util-models >=25.1,<26.1
+    - galaxy-util >=24.1,<26.2
     - glob2
+    - gxformat2 >=0.25.0
+    - h5py
     - jinja2
-    - pyaml
-    - python
+    - lxml
+    - oyaml
+    - packaging
+    - pathvalidate
+    - pydantic >=2
     - pyyaml
-    - six >=1.7.0
+    - ruamel.yaml
     - virtualenv
-    - ephemeris
-    - gxformat2
+    - stdlib-list  # [py < 310]
+    - tabulate
 
 test:
   imports:
     - planemo
     - planemo.commands
-    - planemo.conda_verify
-    - planemo.cwl
-    - planemo.cwl.cwl2script
     - planemo.database
-    - planemo.engine
     - planemo.galaxy
     - planemo.galaxy.test
     - planemo.linters
@@ -65,14 +65,16 @@ test:
     - planemo.shed
     - planemo.shed2tap
     - planemo.test
+    - planemo.training
     - planemo.xml
-
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 planemo --help
+    - planemo --help
 
 about:
-  home: https://github.com/galaxyproject/planemo
-  license: Academic Free License (AFL)
-  summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
-  license_family: Apache
+  home: "https://github.com/galaxyproject/planemo"
+  summary: "Command-line utilities to assist in building tools for the Galaxy project (https://galaxyproject.org)."
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://planemo.readthedocs.io/en/latest"
+  dev_url: "https://github.com/galaxyproject/planemo"

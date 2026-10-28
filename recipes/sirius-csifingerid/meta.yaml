@@ -1,0 +1,63 @@
+{% set version = "6.5.4" %}
+{% set siriusDistDir = "sirius_gui_dist" %}
+
+package:
+  name: sirius-csifingerid
+  version: {{ version }}
+
+build:
+  # Builds and passes its tests on linux-64, osx-64 and osx-arm64.
+  number: 0
+  script_env:
+    - siriusDistName={{ siriusDistDir }}-sirius
+    - siriusDistDir={{ siriusDistDir }}
+  run_exports:
+    - {{ pin_subpackage('sirius-csifingerid', max_pin="x") }}
+
+source:
+  - url: https://github.com/sirius-ms/sirius/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: efd43832537a77426d4d6b68771b3744022e741f8a56342f705d7d768355b2b1
+
+requirements:
+  build:
+    - openjdk 25.*
+  run:
+    - openjdk 25.*
+    - coin-or-cbc  # [not win]
+
+test:
+  commands:
+    - java -version
+    - sirius --version | grep -F "${PKG_VERSION}"
+    # Quoted: the colon-space in "Usage: sirius" is YAML mapping syntax.
+    - 'sirius --help | grep -q "Usage: sirius"'
+    - sirius formulas --help | grep -q "formulas"
+    # write-summaries is an alias for summaries, which is what its help prints.
+    - sirius write-summaries --help | grep -q "summaries"
+    - sirius login --help | grep -qF -- "--user-env"
+    - sirius login --help | grep -qF -- "--password-env"
+
+about:
+  home: https://v6.docs.sirius-ms.io/
+  license: AGPL-3.0-or-later AND OTHER
+  license_file:
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/COPYING.txt
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/LICENSE.txt
+    - sirius_dist/{{ siriusDistDir }}/build/install/{{ siriusDistDir }}-sirius/licenses.md
+  summary: "SIRIUS (CLI + GUI) LC-MS/MS data analyses framework. Includes: SIRIUS, ZODIAC, CSI:FingerID (with COSMIC) and CANOPUS"
+  description: SIRIUS is a java-based software framework for the analysis of LC-MS/MS data of metabolites and other
+    small molecules of biological interest. SIRIUS integrates a collection of our tools, including CSI:FingerID
+    (with COSMIC), ZODIAC and CANOPUS.  In particular, both the graphical user interface and the command line version
+    of SIRIUS seamlessly integrate the CSI:FingerID and CANOPUS web services.
+  doc_url: https://v6.docs.sirius-ms.io/
+  dev_url: https://github.com/sirius-ms/sirius
+
+extra:
+  skip-lints:
+    - should_not_be_noarch_source
+    - should_be_noarch_generic
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1038/s41592-019-0344-8

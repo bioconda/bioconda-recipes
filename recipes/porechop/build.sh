@@ -1,4 +1,3 @@
 #!/bin/bash
-
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
-$PYTHON -m unittest
+export CXXFLAGS="${CXXFLAGS} -std=c++14"
+python -m pip install . --ignore-installed --no-deps -vv

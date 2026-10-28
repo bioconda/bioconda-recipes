@@ -1,45 +1,48 @@
-{% set version = "0.1.86" %}
+{% set name = "pauvre" %}
+{% set version = "0.2.3" %}
 
 package:
-  name: pauvre
-  version: {{ version }}
+  name: "{{ name }}"
+  version: "{{ version }}"
 
 source:
-  fn: pauvre-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/p/pauvre/pauvre-{{ version }}.tar.gz
-  sha256: 8ae7c221f684936a60b7b5e996fc6abd168f4adce98e1be7eb6322cd2bd0d93a
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ba756bc9025ae7edafd91092d12a57864f018958fd46b548e9eeda7167ee197d
 
 build:
-  entry_points:
-    - pauvre=pauvre.pauvre_main:main
   number: 0
+  noarch: python
+  entry_points:
+    - pauvre = pauvre.pauvre_main:main
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-cache-dir --no-deps -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
+    - pip
     - setuptools
-    - matplotlib >=2.0.2
-    - biopython >=1.68
-    - pandas >=0.20.1
-    - numpy >=1.12.1
-
-
   run:
-    - python
-    - matplotlib >=2.0.2
+    - python >=3
     - biopython >=1.68
-    - pandas >=0.20.1
+    - matplotlib-base >=2.0.2
     - numpy >=1.12.1
+    - pandas >=0.20.1
+    - scikit-learn
+    - scipy
 
 test:
   imports:
     - pauvre
-
+    - pauvre.lsi
+    - pauvre.tests
   commands:
     - pauvre --help
 
 about:
-  home: https://github.com/conchoecia/pauvre
-  license: GNU General Public License v3 (GPLv3)
-  summary: 'Tools for plotting Oxford Nanopore and other long-read data.'
+  home: "https://github.com/conchoecia/pauvre"
+  license: "GPL-3.0-only"
   license_family: GPL3
+  summary: "Tools for plotting Oxford Nanopore and other long-read data."
+  dev_url: "https://github.com/conchoecia/pauvre"

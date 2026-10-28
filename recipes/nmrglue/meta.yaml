@@ -1,25 +1,27 @@
+{% set name = "nmrglue" %}
+{% set version = "0.9" %}
+{% set sha256 = "be2602a08b4453bccd2b276640ebe2f06e1598aa3883492be7d11c686f623507" %}
+
 package:
-  name: nmrglue
-  version: "0.5"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: nmrglue-0.5.tar.gz
-  url: https://pypi.python.org/packages/48/1e/be85936901a3a82a1dc14a8b41017ca86dcb8b966717c786e361e752c898/nmrglue-0.5.tar.gz
-  md5: 4cf63caceae0b9f0a144f07b6663e670
+  url: https://files.pythonhosted.org/packages/5e/64/33f04fc1487b1606a7888c0eb75a53ddd73d83b3ed16a6dc9f6b211e2456/nmrglue-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
+  skip: True  # [py2k]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
     - python
-    - numpy
-    - scipy
-
+    - pip
   run:
-    - libgcc  # [not osx]
     - python
     - numpy
     - scipy
@@ -35,6 +37,7 @@ test:
 
 about:
   home: http://www.nmrglue.com
-  license: BSD License
+  license: BSD-3-Clause
   summary: 'A module for working with NMR data in Python'
   license_family: BSD
+  license_file: LICENSE.txt

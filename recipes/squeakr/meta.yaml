@@ -1,39 +1,46 @@
+{% set version = "0.8" %}
 {% set name = "squeakr" %}
-{% set version = "0.5" %}
-{% set md5 = "311dd917960e91e4fb7fee34970cd0b5" %}
 
 package:
-  name : {{ name|lower }}
-  version : {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url : https://github.com/splatlab/squeakr/archive/v{{ version }}.tar.gz
-  fn : {{ name|lower }}_{{ version }}.tar.gz
-  md5 : {{ md5 }}
+  url: https://github.com/splatlab/squeakr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: af5c04274475c3666df38eed326ee6e8bc61f577557dc30b8ec23bf808d03e03
+  patches:
+    - 0001-Makefile.patch
 
 build:
-  number : 1
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - bzip2 {{CONDA_BZIP2}}*
-    - zlib {{CONDA_ZLIB}}*
-    - boost  {{CONDA_BOOST}}*
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - bzip2
+    - zlib
+    - boost-cpp
     - openssl
+    - pthread-stubs
   run:
-    - libgcc # [not osx]
-    - bzip2 {{CONDA_BZIP2}}*
-    - zlib {{CONDA_ZLIB}}*
-    - boost  {{CONDA_BOOST}}*
+    - boost-cpp
     - openssl
+    - pthread-stubs
 
 test:
   commands:
-    - squeakr-count -h
+    - squeakr help -v
 
 about:
-  home : https://github.com/splatlab/squeakr
-  license : BSD
-  summary : 'An Exact and Approximate k-mmer Counting System'
+  home: "https://github.com/splatlab/squeakr"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  summary: "An Exact and Approximate k-mer Counting System."
+  dev_url: "https://github.com/splatlab/squeakr"

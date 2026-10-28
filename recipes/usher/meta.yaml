@@ -1,0 +1,78 @@
+{% set name = "usher" %}
+{% set version = "0.6.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yatisht/usher/archive/v{{ version  }}.tar.gz
+  sha256: 9630654895050a0cf83a60b66299c2ad940694580dcdae3536227ce5a521baec
+  patches:
+    - 0001-CMakeLists.patch
+    - 0002-main-cpp.patch
+
+build:
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - autoconf
+    - automake
+    - libtool
+    - ninja
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
+    - boost-cpp
+    - protobuf <5
+    - tbb-devel <2021.1.1
+    - isa-l
+    - curl
+    - wget
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - openmpi
+    - boost-cpp
+    - protobuf <5
+    - tbb-devel <2021.1.1
+    - isa-l
+    - ucsc-fatovcf
+    - mafft
+
+test:
+  commands:
+    - usher --help
+    - usher-sampled --help
+    - matOptimize --help  # [not (osx and x86_64)]
+    - matUtils --help  # [not (osx and x86_64)]
+
+about:
+  home: "https://github.com/yatisht/usher"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Ultrafast Sample Placement on Existing Trees (UShER)."
+  doc_url: "https://usher-wiki.readthedocs.io/en/latest"
+  dev_url: "https://github.com/yatisht/usher"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1038/s41588-021-00862-7
+    - biotools:usher
+    - usegalaxy-eu:usher_matutils
+    - usegalaxy-eu:usher
+  container:
+    # mpirun won't run with ssh present, which is not included in the base image
+    extended-base: True

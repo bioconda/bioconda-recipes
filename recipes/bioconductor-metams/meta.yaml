@@ -1,40 +1,60 @@
-{% set version = "1.14.0" %}
+{% set version = "1.46.0" %}
 {% set name = "metaMS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 15d79ce9834f4402687b4efb52f1d6802e0894c507e66032cc80f5e02e88e0d2
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 54ce3f88ff9e47504fb226e30a55eebd
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-metams", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: metaMSdata, RUnit
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-camera
-    - 'bioconductor-xcms >=1.35'
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-camera >=1.66.0,<1.67.0
+    - bioconductor-xcms >=4.8.0,<4.9.0
     - r-base
     - r-matrix
     - r-robustbase
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-camera
-    - 'bioconductor-xcms >=1.35'
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-camera >=1.66.0,<1.67.0
+    - bioconductor-xcms >=4.8.0,<4.9.0
     - r-base
     - r-matrix
     - r-robustbase
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'MS-based metabolomics data processing and compound annotation pipeline.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: MS-based metabolomics annotation pipeline
+  description: MS-based metabolomics data processing and compound annotation pipeline.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:metams
+  parent_recipe:
+    name: bioconductor-metams
+    path: recipes/bioconductor-metams
+    version: 1.18.0
+

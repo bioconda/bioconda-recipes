@@ -1,37 +1,62 @@
-{% set name = "expansionhunter" %}
-{% set version = "2.0.8" %}
-
-string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+{% set name = "ExpansionHunter" %}
+{% set version = "5.0.0" %}
+{% set sha256 = "921d1f8be658f2bdd144150278210bb921d605af921816e94a7508c0b9b9dfff" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 0
-  
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/Illumina/ExpansionHunter/archive/v{{ version }}.tar.gz
-  md5: 24d39d1f1c4b013f87a589932bc88976
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-adjust-cmake-targets.patch
+    - 0002-specify-boost-for-make_unique.patch
+    - 0003-add-missing-limits-import.patch
+    - 0004-add-fmt-formatters-for-classes.patch
+    - 0005-apply-bioconda-4.0.2-patches.patch  # [osx]
+
+build:
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('expansionhunter', max_pin="x") }}
 
 requirements:
   build:
-  - gcc  # [linux]  
-  - llvm # [osx]
-  - cmake
-  - boost {{CONDA_BOOST}}*
-  - icu
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - pkg-config
+  host:
+    - abseil-cpp >=20210324.2,<20210324.3
+    - boost-cpp >=1.73
+    - bzip2
+    - fmt
+    - gmock
+    - gtest >=1.10.0
+    - htslib >=1.10.2
+    - libcurl
+    - libdeflate
+    - spdlog >=1.6.1
+    - xz
+    - zlib
   run:
-  - boost {{CONDA_BOOST}}*
-  - icu
-  - libgcc # [linux]
-  - libcxx # [osx] 
+    - boost-cpp
+
 test:
   commands:
-  - ExpansionHunter --help 2>&1 | grep "help"
+    - test -f ${PREFIX}/bin/ExpansionHunter
+    - ExpansionHunter --help
+
 about:
-  home: https://github.com/Illumina/ExpansionHunter
-  license: GPL3
-  license_file: LICENSE.txt
-  summary: a tool for estimating repeat sizes
+  home: "https://github.com/Illumina/ExpansionHunter"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: "LICENSE.txt"
+  summary: "A tool for estimating repeat sizes."
+  dev_url: "https://github.com/Illumina/ExpansionHunter"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,10 +1,6 @@
 #!/bin/sh
+cp -rf $BUILD_PREFIX/share/gnuconfig/config.* .
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
-
-# Fix broken configure option
-./configure  --prefix=$PREFIX
+./configure  --enable-threads --prefix=$PREFIX
 make
 make install --always-make

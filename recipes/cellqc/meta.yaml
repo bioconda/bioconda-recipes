@@ -1,0 +1,83 @@
+{% set name = "cellqc" %}
+{% set version = "0.3.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 4106ed727110c3b66c93d16cf454b2055f5144d1b78a82269058326927759e20
+
+build:
+  number: 1
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+
+requirements:
+  host:
+    - pip
+    - python {{ python_min }}
+    - setuptools >=77
+  run:
+    - python >={{ python_min }}
+    # Kept in step with envs/cellqc.yaml upstream.
+    # --- workflow / CLI ---
+    - click
+    - snakemake-minimal >=8
+    - jinja2
+    - pandas
+    - pyyaml
+    # --- python analysis stack ---
+    - numpy
+    - scipy
+    - h5py
+    - matplotlib-base
+    - scanpy
+    - anndata
+    - pysam
+    # --- PDF slide report ---
+    - tectonic
+    # --- R analysis stack ---
+    - r-base >=4.4
+    - r-seurat >=5
+    - r-seuratobject >=5
+    - r-matrix
+    - r-soupx >=1.6.2  # 1.6.2 is the last release; upstream is dormant
+    - r-ggplot2
+    - bioconductor-dropletutils
+    - bioconductor-singlecellexperiment
+    - bioconductor-summarizedexperiment
+    - bioconductor-zellkonverter
+    - bioconductor-scdblfinder
+    - bioconductor-celda
+    - r-doubletfinder >=2.0.6
+
+test:
+  imports:
+    - cellqc
+    - cellqc.qcutil
+    - cellqc.reportdata
+  commands:
+    - cellqc --help
+
+about:
+  home: "https://github.com/lijinbio/cellqc"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE"
+  summary: "Cellqc standardizes the quality control of single-cell RNA-Seq (scRNA) data to render clean feature count matrices."
+  description: |
+    A Snakemake pipeline for quality control of single-cell RNA-Seq data. From
+    Cell Ranger output it runs ambient RNA correction (SoupX or DecontX),
+    filtering on UMI count, detected genes and mitochondrial percentage,
+    doublet detection (DoubletFinder and/or scDblFinder), and a nuclear-fraction
+    statistic from the Cell Ranger BAM. Per sample it writes a cleaned .h5ad
+    with its .obs and .var as TSVs, plus a cohort metrics.csv, an HTML report
+    and a PDF slide deck.
+
+extra:
+  recipe-maintainers:
+    - lijinbio

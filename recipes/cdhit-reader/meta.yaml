@@ -1,0 +1,44 @@
+{% set name="cdhit-reader" %}
+{% set repo="cdhit-parser" %}
+{% set version="0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+source:
+  url: https://github.com/telatin/{{ repo }}/archive/v{{ version }}.tar.gz
+  sha256: 1162d4a4cfff0607b56870d64170bb81a40881b9d2a5bd09ef27939e5f606011
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - cd-hit
+    - click
+    - xopen
+    - more-itertools
+
+test:
+  commands:
+    - cdhit-parser --version | grep {{ version }}
+
+about:
+  home: https://github.com/telatin/cdhit-parser
+  license: 'MIT'
+  license_file: LICENSE.md
+  summary: 'Parse CD-HIT cluster files'
+
+extra:
+  recipe-maintainers:
+    - telatin

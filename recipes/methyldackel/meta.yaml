@@ -1,24 +1,27 @@
+{% set version = "0.6.2" %}
+
 package:
   name: methyldackel
-  version: "0.3.0"
+  version: {{ version }}
 
 build:
-  number: 1
-  skip: False
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("methyldackel", max_pin="x.x") }}
 
 source:
-  fn: MethylDackel-0.3.0.tar.gz
-  sha256: b5a49f213bba9113d2c9951de9daf676efd9b9c94327097e960b8623765f1b91
-  url: https://github.com/dpryan79/MethylDackel/archive/0.3.0.tar.gz
+  url: https://github.com/dpryan79/MethylDackel/archive/{{ version }}.tar.gz
+  sha256: ee8d7c114599ce35b41b999bf82527a21bc85eb23281d5d39bff28f81c258882
 
 requirements:
   build:
-    - zlib {{CONDA_ZLIB}}*
-    - gcc # [not osx]
-    - llvm # [osx]
-  run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc # [not osx]
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - libbigwig
+    - htslib
+    - zlib
 
 test:
   commands:
@@ -27,4 +30,10 @@ test:
 about:
   home: https://github.com/dpryan79/MethylDackel
   license: MIT
+  license_file: LICENSE
   summary: A (mostly) universal methylation extractor for BS-seq experiments. Formerly named PileOMeth.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

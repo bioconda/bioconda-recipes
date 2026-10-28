@@ -1,25 +1,31 @@
-{% set version = "1.10.0" %}
+{% set version = "1.42.0" %}
 {% set name = "TIN" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: eda55f4b183ef45dd885a2d23d5c7ca6b8d06aa455d4b0c054eb0f2dc93c9b9a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 9334766a92dce9fbe73c19ca8a296a2c
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-tin", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, aroma.light, affxparser, RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-impute
+  host:
+    - bioconductor-impute >=1.84.0,<1.85.0
     - r-aroma.affymetrix
     - r-base
     - r-data.table
@@ -27,17 +33,30 @@ requirements:
     - r-stringr
     - r-wgcna
   run:
-    - bioconductor-impute
+    - bioconductor-impute >=1.84.0,<1.85.0
     - r-aroma.affymetrix
     - r-base
     - r-data.table
     - r-squash
     - r-stringr
     - r-wgcna
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'The TIN package implements a set of tools for transcriptome instability analysis based on exon expression profiles. Deviating exon usage is studied in the context of splicing factors to analyse to what degree transcriptome instability is correlated to splicing factor expression. In the transcriptome instability correlation analysis, the data is compared to both random permutations of alternative splicing scores and expression of random gene sets.'
+  summary: Transcriptome instability analysis
+  description: The TIN package implements a set of tools for transcriptome instability analysis based on exon expression profiles. Deviating exon usage is studied in the context of splicing factors to analyse to what degree transcriptome instability is correlated to splicing factor expression. In the transcriptome instability correlation analysis, the data is compared to both random permutations of alternative splicing scores and expression of random gene sets.
+
+extra:
+  identifiers:
+    - biotools:tin
+    - doi:10.4137/CIN.S31363
+  parent_recipe:
+    name: bioconductor-tin
+    path: recipes/bioconductor-tin
+    version: 1.12.0
+

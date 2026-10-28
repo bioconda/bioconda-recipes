@@ -1,43 +1,65 @@
-{% set version = "1.6.1" %}
+{% set version = "1.38.0" %}
 {% set name = "DEFormats" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a9dcdcdeb8fa6ec107c17abf0eebe18c74297fd68f09f3b549080d628e2d3df2
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: a2e14cebef6886c4dda54a0af1f78a19
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-deformats", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle (>= 1.8.0), knitr, rmarkdown, testthat
 requirements:
-  build:
-    - bioconductor-deseq2
-    - 'bioconductor-edger >=3.13.4'
-    - bioconductor-genomicranges
-    - bioconductor-summarizedexperiment
+  host:
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-checkmate
     - r-data.table
   run:
-    - bioconductor-deseq2
-    - 'bioconductor-edger >=3.13.4'
-    - bioconductor-genomicranges
-    - bioconductor-summarizedexperiment
+    - bioconductor-deseq2 >=1.50.0,<1.51.0
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-checkmate
     - r-data.table
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Convert between different data formats used by differential gene expression analysis tools.'
+  summary: Differential gene expression data formats converter
+  description: Convert between different data formats used by differential gene expression analysis tools.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:deformats
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-deformats
+    path: recipes/bioconductor-deformats
+    version: 1.8.0
+

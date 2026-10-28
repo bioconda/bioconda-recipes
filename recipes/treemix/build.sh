@@ -1,5 +1,7 @@
 #!/bin/bash
 
-./configure --with-boost=${PREFIX} CPPFLAGS=-I${PREFIX} --prefix=$PREFIX
-make
+./configure --prefix="${PREFIX}" --with-boost="${PREFIX}"
+
+make -j 2
 make install
+install src/plotting_funcs.R "${PREFIX}/bin/"

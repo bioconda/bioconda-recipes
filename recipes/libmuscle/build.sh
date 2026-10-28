@@ -1,19 +1,19 @@
 #!/bin/bash
-# fix automake
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
 
-# fix autoconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3 -Wno-deprecated-declarations"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 sed -i.bak ' s| = muscle| = |g' libMUSCLE/Makefile.am
 
-sh autogen.sh
-./configure --prefix=$PREFIX
-make
+./autogen.sh
+./configure --prefix="${PREFIX}" \
+	--disable-option-checking --enable-silent-rules \
+	--enable-dependency-tracking CC="${CC}" \
+	CXX="${CXX}" CFLAGS="${CFLAGS}" \
+	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}"
+
+make -j"${CPU_COUNT}"
 make install

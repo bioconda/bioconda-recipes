@@ -1,24 +1,30 @@
-{% set version = "1.4.0" %}
+{% set version = "1.36.0" %}
 {% set name = "GAprediction" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 21954a61055d6264f87fa17a94e04f3da68b0cbd060618d997ff6e37a7b61382
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 60229a972cdd66ab37b89b4bef59d1a2
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-gaprediction", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown
 requirements:
-  build:
+  host:
     - r-base
     - r-glmnet
     - r-matrix
@@ -26,10 +32,24 @@ requirements:
     - r-base
     - r-glmnet
     - r-matrix
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>=2)'
-  summary: '[GAprediction] predicts gestational age using Illumina HumanMethylation450 CpG data.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>=2)
+  summary: Prediction of gestational age with Illumina HumanMethylation450 data
+  description: '[GAprediction] predicts gestational age using Illumina HumanMethylation450 CpG data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:gaprediction
+    - doi:10.1186/s13059-016-1063-4
+  parent_recipe:
+    name: bioconductor-gaprediction
+    path: recipes/bioconductor-gaprediction
+    version: 1.8.0
+

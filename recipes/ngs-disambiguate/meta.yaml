@@ -1,33 +1,41 @@
-{% set version = "1.0.0" %}
+{% set version = "2018.05.03" %}
+{% set revision = "55c3f78" %}
 
 package:
   name: ngs-disambiguate
   version: {{ version }}
 
 source:
-  fn: ngs-disambiguate-{{ version }}.tar.gz
-  url: https://github.com/AstraZeneca-NGS/disambiguate/archive/v{{ version }}.tar.gz
-  sha256: fae1385c57f249226eebd942e54aabbf92b8f8d575d228a874f64cdfdc45e21b
+  url: https://github.com/AstraZeneca-NGS/disambiguate/archive/{{ revision }}.tar.gz
+  sha256: d5b05caec68db7596fc31564f44afdce27c4d5215785f9c97581d58e87d9cc94
 
 build:
-  number: 0
-  skip: true # [osx]
-  string: bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
+  number: 12
+  run_exports:
+    - {{ pin_subpackage('ngs-disambiguate', max_pin=None) }}
 
 requirements:
   build:
-    - gcc
-    - bamtools {{ CONDA_BAMTOOLS }}*
-
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - bamtools
+    - zlib
   run:
-    - libgcc
-    - bamtools {{ CONDA_BAMTOOLS }}*
+    - bamtools
 
 test:
   commands:
     - ngs_disambiguate --help
 
 about:
-  home: https://github.com/AstraZeneca-NGS/disambiguate
+  home: "https://github.com/AstraZeneca-NGS/disambiguate"
   license: MIT
-  summary: Disambiguation algorithm for reads aligned to human and mouse genomes using Tophat or BWA mem
+  license_family: MIT
+  summary: "Disambiguation algorithm for reads aligned to human and mouse genomes using Tophat or BWA mem."
+  dev_url: "https://github.com/AstraZeneca-NGS/disambiguate"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

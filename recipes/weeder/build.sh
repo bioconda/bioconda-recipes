@@ -1,13 +1,27 @@
 #!/bin/bash
 
-TGT="$PREFIX/share/weeder2"
-mkdir -p "$TGT"
-mkdir -p "${PREFIX}/bin"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3 -std=c++14"
 
-cd "${SRC_DIR}"
-g++ weeder2.cpp -o weeder2 -O3
-cp weeder2 $TGT/
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
-cp $RECIPE_DIR/weeder2.py $TGT/
-ln -s $TGT/weeder2.py $PREFIX/bin/weeder2
-chmod 0755 "${PREFIX}/bin/weeder2"
+export TGT="${PREFIX}/share/weeder2"
+mkdir -p ${PREFIX}/bin
+mkdir -p ${TGT}
+
+cp -rf FreqFiles ${TGT}
+"${CXX}" ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} weeder2.cpp -o ${TGT}/weeder2
+
+cp -f ${RECIPE_DIR}/weeder2.py ${PREFIX}/bin/weeder2
+chmod 0755 ${PREFIX}/bin/weeder2

@@ -1,33 +1,45 @@
-{% set version = "3.5.0" %}
+{% set version = "3.22.0" %}
 {% set name = "org.Mm.eg.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cf34b2a1bc1663e82c49d56855a531b4105ace79a047351624769138c70d0287
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: cc19f63b25a7a8018e46f71e42e2f83f
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-org.mm.eg.db", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: DBI, annotate, RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.39.3'
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.39.3'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
-    - wget
+    - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Genome wide annotation for Mouse, primarily based on mapping using Entrez Gene identifiers.'
+  summary: Genome wide annotation for Mouse
+  description: Genome wide annotation for Mouse, primarily based on mapping using Entrez Gene identifiers.
+extra:
+  parent_recipe:
+    name: bioconductor-org.mm.eg.db
+    path: recipes/bioconductor-org.mm.eg.db
+    version: 3.11.1
+

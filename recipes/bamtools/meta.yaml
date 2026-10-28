@@ -1,36 +1,44 @@
-{% set version = "2.4.1" %}
+{% set name = "bamtools" %}
+{% set version = "2.5.3" %}
 
 package:
-  name: bamtools
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: v{{ version }}.tar.gz
-  url: https://github.com/pezmaster31/bamtools/archive/v{{ version  }}.tar.gz
-  sha256: 933a0c1a83c88c1dac8078c0c0e82f6794c75cb927265399404bc2cc2611204b
-  patches:
-    # Install bamtools in lib instead of bamtools lib, thanks to homebrew-science:
-    # https://github.com/Homebrew/homebrew-science/blob/master/bamtools.rb
-    - bamtools_lib.diff
+  url: https://github.com/pezmaster31/bamtools/archive/v{{ version }}.tar.gz
+  sha256: 7d4e59bac7c03bde488fe43e533692f78b5325a097328785ec31373ffac08344
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-  run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc  # [linux]
+    - make
+  host:
+    - jsoncpp
+    - zlib
 
 test:
   commands:
     - bamtools --help
 
 about:
-  home: https://github.com/pezmaster31/bamtools
+  home: "https://github.com/pezmaster31/bamtools"
   license: MIT
-  summary: C++ API & command-line toolkit for working with BAM data
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/pezmaster31/bamtools"
+  summary: "C++ API & command-line toolkit for working with BAM data."
+  doc_url: "https://github.com/pezmaster31/bamtools/wiki"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bamtools

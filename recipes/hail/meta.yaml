@@ -1,0 +1,81 @@
+{% set name = "hail" %}
+{% set version = "0.2.61" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/hail-is/hail.git
+  git_rev: {{ version }}
+  sha256: unused
+
+build:
+  number: 3
+  run_exports:
+    # bokeh pinning breaks everything >=3.8
+    - {{ pin_subpackage(name,max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - python >=3.7,<3.12
+    - setuptools <81.0.0
+    - numpy <1.24
+    - pyspark
+    - openjdk 8.*
+    - lz4
+    - pytest-runner
+    - pip
+    - bokeh >=2.4.0,<3.0.0
+    - rsync
+  run:
+    - python >=3.7,<3.12
+    - numpy <1.24
+    - openjdk 8.*
+    - pyspark
+    - aiohttp
+    - aiohttp-session
+    - bokeh >=2.4.0,<3.0.0
+    - decorator <5
+    - deprecated
+    - gcsfs
+    - humanize
+    - hurry.filesize
+    - jinja2 <3.1
+    - nest-asyncio
+    - parsimonious
+    - pyjwt
+    - python-json-logger ==0.1.11
+    - requests
+    - scipy
+    - tabulate ==0.8.3
+    - tqdm ==4.42.1
+    - dill
+    - asyncinit
+    - google-cloud-sdk
+    - google-cloud-storage
+    - google-api-core
+
+test:
+  imports:
+    - hail
+    - hailtop.batch
+
+about:
+  home: "https://hail.is"
+  dev_url: "https://github.com/hail-is/hail"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Hail is Python-based data analysis tool for working with genomic data."
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+  recipe-maintainers:
+    - raivivek
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,51 @@
+{% set version = "0.1.9" %}
+
+package:
+  name: atactk
+  version: {{ version }}
+
+source:
+  url: https://github.com/ParkerLab/atactk/archive/{{ version }}.tar.gz
+  sha256: b3318b09458337087920eb13e6f24d562ec93694ac55e03727acf3fef5957cea
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - python
+    - pip
+  run:
+    - python
+    - pysam >=0.15.0
+    - python-levenshtein
+    - sexpdata
+    - r-base
+    - r-rcolorbrewer
+    - r-ggplot2
+    - r-gtools
+
+test:
+  commands:
+    - trim_adapters --help
+    - make_cut_matrix --help
+    - R -e "library('RColorBrewer')"
+    - R -e "library('ggplot2')"
+    - R -e "library('grid')"
+    - R -e "library('gtools')"
+
+about:
+  home: http://theparkerlab.org/
+  license: GPL-3.0-or-later
+  license_family: GPL
+  summary: 'A toolkit for working with ATAC-seq data.'
+
+extra:
+  notes: Adds 3 scripts, namely "trim_adapters", "make_cut_matrix" and "plot_aggregate_matrix.R"
+  recipe-maintainers:
+    - egeogretmen

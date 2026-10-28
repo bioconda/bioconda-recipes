@@ -1,12 +1,11 @@
 #!/bin/bash
+set -xe
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
+mkdir -p "${PREFIX}/bin"
 
-mkdir -p $PREFIX/bin
+make CC="${CC}" \
+	CFLAGS="${CFLAGS} -fcommon -g -Wall -O3" \
+	LIBS="${LDFLAGS} -L${PREFIX}/lib -lz -pthread" \
+	-j"${CPU_COUNT}"
 
-make 
-mv ropebwt2  $PREFIX/bin
-
-
+install -v -m 0755 ropebwt2 "${PREFIX}/bin"

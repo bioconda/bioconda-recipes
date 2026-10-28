@@ -1,0 +1,47 @@
+{% set name = "ipcr" %}
+{% set version = "5.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KPU-AGC/ipcr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c7966f4ee8ce6840dfbf7ca5370aa1ea18dc67da9b352ef9ff75d40cdf409954
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('go') }}
+    - go-licenses
+    - make
+
+test:
+  commands:
+    - ipcr --help
+    - ipcr-probe --help
+    - ipcr-nested --help
+    - ipcr-multiplex --help
+    - ipcr-thermo --help
+
+about:
+  home: "https://github.com/KPU-AGC/ipcr"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Fast, streaming, IUPAC-aware in-silico PCR toolkit (probe, nested, multiplex, thermo CLIs)."
+  dev_url: "https://github.com/KPU-AGC/ipcr"
+  doc_url: "https://github.com/KPU-AGC/ipcr/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ericksamera

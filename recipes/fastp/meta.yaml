@@ -1,30 +1,52 @@
-{% set version="0.12.4" %}
+{% set version = "1.4.0" %}
+
 package:
   name: fastp
   version: {{ version }}
 
 source:
-  fn: fastp-{{ version }}.tar.gz
   url: https://github.com/OpenGene/fastp/archive/v{{ version }}.tar.gz
-  sha256: eb4cb5336e4c49fd11b82e90513ca512ad01ee344bc4fe5e2b6b79ddd31eefad
+  sha256: 28c0537e9d1f32f5a5c404562e6a282bf373b034a4c3a3610d9aa31d6429b550
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("fastp", max_pin="x.x") }}
 
 requirements:
   build:
-    - gcc # [linux]
-    - zlib {{ CONDA_ZLIB }}*
-
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - isa-l
+    - libdeflate
+    - libhwy
   run:
-    - libgcc # [linux]
-    - zlib {{ CONDA_ZLIB }}*
+    - isa-l
+    - libdeflate
+    - libhwy
 
 test:
   commands:
     - fastp --help
 
 about:
-  home: https://github.com/OpenGene/fastp
+  home: "https://github.com/OpenGene/fastp"
   license: MIT
-  summary: A FASTQ preprocessor with full features (QC/adapters/trimming/filtering/splitting...)
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A ultra-fast FASTQ preprocessor with full features (QC/adapters/trimming/filtering/splitting...)."
+  dev_url: "https://github.com/OpenGene/fastp"
+  doc_url: "https://github.com/OpenGene/fastp/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:fastp
+    - usegalaxy-eu:fastp
+    - doi:10.1002/imt2.107
+  skip-lints:
+    - compiler_needs_stdlib_c  # until https://github.com/bioconda/bioconda-utils/issues/1095 is resolved

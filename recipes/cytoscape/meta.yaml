@@ -1,0 +1,49 @@
+{% set name = "cytoscape" %}
+{% set version = "3.10.5" %}
+{% set sha256 = "e9d97c59a52d59b15f9e91a46d4df6b089fd896b54dbc9c36c8799a35b3082e2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cytoscape/cytoscape/releases/download/{{ version }}/Cytoscape_{{ version|replace(".","_") }}_unix.sh
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('cytoscape', max_pin="3") }}
+
+requirements:
+  build:
+    - gettext
+  host:
+    - openjdk >=17,<20
+    - fontconfig
+    - freetype
+    - font-ttf-dejavu-sans-mono
+  run:
+    - openjdk >=17,<20
+    - xorg-libxtst
+    - fontconfig
+    - freetype
+    - font-ttf-dejavu-sans-mono
+
+test:
+  commands:
+    - "cytoscape.sh -v"
+
+about:
+  home: https://cytoscape.org
+  license: LGPL
+  license_family: GPL
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: 'Cytoscape: an open source platform for network analysis and visualization.'
+  dev_url: https://github.com/cytoscape/cytoscape
+
+extra:
+  identifiers:
+    - biotools:cytoscape
+    - doi:10.1101/gr.1239303

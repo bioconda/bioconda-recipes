@@ -1,48 +1,64 @@
-RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl"
-RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
-
-mkdir -p ${PREFIX}/bin
-mkdir -p ${RM_DIR}
-cp -r * ${RM_DIR}
-for name in ${RM_PROGRAMS} ; do
-  # sed -i 's$^#!.*perl.*$#!/usr/bin/env perl$g;' ${RM_DIR}/${name}
-  LANG=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
-done
-
-cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
-# pvanheus - disabled this because the library included with RepeatMasker is too old to be usable
-# users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
-
-
-#${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
-#makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
-#makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
-
-
-cat <<END >>${PREFIX}/bin/RepeatMasker
 #!/bin/bash
 
-BINDIR=\$(dirname \$(which RepeatMasker))
-BASEDIR=\${BINDIR%/bin}
-REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
-REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${BASEDIR}/share/RepeatMasker/Matrices}
-REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Libraries}
-TRF_DIR=${PREFIX}/bin
-RMBLAST_DIR=${PREFIX}/bin
-HMMER_DIR=${PREFIX}/bin
-export REPEATMASKER_DIR REPEATMASKER_LIB_DIR REPEATMASKER_MATRICES_DIR TRF_DIR RMBLAST_DIR HMMER_DIR REPEATMASKER_CACHE_DIR
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+RM_DIR="${PREFIX}/share/RepeatMasker"
+mkdir -p "${PREFIX}/bin"
+mkdir -p "${RM_DIR}"
+mv * ${RM_DIR}
 
-NAME=\$(basename \$0)
+export LC_ALL="en_US.UTF-8"
 
-perl ${RM_DIR}/\${NAME} \$@
-END
+# configure
+cd ${RM_DIR}
 
-chmod a+x ${PREFIX}/bin/RepeatMasker
-for name in ${RM_OTHER_PROGRAMS} ; do
-  ln -s ${PREFIX}/bin/RepeatMasker ${PREFIX}/bin/$(basename $name)
+# find famdb dir
+famdb_dir=$(echo "${PREFIX}/share/famdb-"*)
+# error if not found
+if [[ ! -d "${famdb_dir}" ]]; then
+    echo "ERROR: could not find famdb share directory under ${PREFIX}/share/" >&2
+    exit 1
+fi
+
+# configure with the famdb dir
+perl ./configure \
+	-trf_prgm "${PREFIX}/bin/trf" \
+	-rmblast_dir "${PREFIX}/bin" \
+	-hmmer_dir "${PREFIX}/bin" \
+	-abblast_dir "${PREFIX}/bin" \
+	-crossmatch_dir "${PREFIX}/bin" \
+	-default_search_engine rmblast \
+	-famdb_dir "${famdb_dir}"
+
+# BELOW NOT NEEDED FOR 4.2.4
+# Delete huge Dfam file, will be downloaded by post-link.sh
+# Do it now only, because configure needs the full version
+#echo "Placeholder file, should be replaced on Conda package installation." > ${RM_DIR}/Libraries/Dfam.h5
+
+# ----- add tools within the bin ------
+
+# add RepeatMasker
+chmod 0755 ${RM_DIR}/RepeatMasker ${RM_DIR}/DupMasker ${RM_DIR}/ProcessRepeats ${RM_DIR}/RepeatProteinMask
+ln -sf ${RM_DIR}/RepeatMasker ${PREFIX}/bin/RepeatMasker
+
+# add other tools
+RM_OTHER_PROGRAMS="DupMasker ProcessRepeats RepeatProteinMask"
+for name in ${RM_OTHER_PROGRAMS}; do
+	ln -sf ${RM_DIR}/${name} ${PREFIX}/bin/${name}
 done
 
-if [ -f ${RM_DIR}/conda_build.sh ] ; then
-  rm ${RM_DIR}/conda_build.sh
-fi
+# add all utils
+for name in ${RM_DIR}/util/*; do
+	ln -sf $name ${PREFIX}/bin/$(basename $name)
+done
+
+# Fix perl shebang
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/DupMasker
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/ProcessRepeats
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/RepeatProteinMask
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/util/*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pm
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${RM_DIR}/*.pl
+
+rm -f ${RM_DIR}/util/*.bak
+rm -f ${RM_DIR}/*.bak

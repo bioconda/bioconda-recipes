@@ -1,30 +1,40 @@
+{% set name = "perl-heap-simple-xs" %}
+{% set version = "0.10" %}
+
 package:
-  name: perl-heap-simple-xs
-  version: "0.10"
+  name: {{ name }}
+  version: {{ version }} 
 
 source:
-  fn: Heap-Simple-XS-0.10.tar.gz
-  url: http://cpan.metacpan.org/authors/id/T/TH/THOSPEL/Heap-Simple-XS-0.10.tar.gz
+  url: http://cpan.metacpan.org/authors/id/T/TH/THOSPEL/Heap-Simple-XS-{{ version }}.tar.gz
   md5: 0611ac7984f6ddc3aaa60c75d2257803
 
 build:
-  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 8
 
 requirements:
   build:
-    - gcc
-    - perl-threaded
+    - make
+    - {{ compiler('c') }}
+  host:
+    - perl
 
   run:
-    - libgcc
-    - perl-threaded
+    - perl
 
 # Only usable when installed as dep of perl-heap-simple
-#test:
-#  imports:
-#    - Heap::Simple
+test:
+  imports:
+    - Heap::Simple::XS
 
 about:
   home: http://metacpan.org/pod/Heap::Simple::XS
   license: unknown
   summary: 'An XS implementation of the Heap::Simple interface'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

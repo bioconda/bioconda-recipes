@@ -1,35 +1,46 @@
+{% set version = "3.2.0" %}
+
 package:
   name: preseq
-  version: 2.0.2
-
-source:
-  url: https://github.com/smithlabcode/preseq/releases/download/v2.0.2/preseq_v2.0.2.tar.bz2
-  fn: preseq_v2.0.2.tar.bz2
-  md5: 9f2a7b597c9f08b821db6ee55e2ea39c
-  patches:
-    - makefile.patch
+  version: {{ version }}
 
 build:
-  number: 1
-  string: "gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}"
+  number: 7
+  run_exports:
+    - {{ pin_subpackage("preseq", max_pin="x.x") }}
+
+source:
+  url: https://github.com/smithlabcode/preseq/releases/download/v{{ version }}/preseq-{{ version }}.tar.gz
+  sha256: 95b81c9054e0d651de398585c7e96b807ad98f0bdc541b3e46665febbe2134d9
 
 requirements:
   build:
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
-    - gsl {{CONDA_GSL}}*
-
+    - make
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
+    - zlib
+    - htslib
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
-    - gsl {{CONDA_GSL}}*
+    - zlib
+    - htslib
+
+about:
+  home: https://github.com/smithlabcode/preseq
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: |
+    predicting library complexity and genome coverage in high-throughput sequencing
+  doc_url: 'https://preseq.readthedocs.io/'
 
 test:
   commands:
     - preseq
-    - bam2mr
+    - to-mr
 
-about:
-  home: https://github.com/smithlabcode/preseq
-  license: GNU GENERAL PUBLIC LICENSE
-  summary: 'Software for predicting library complexity and genome coverage in high-throughput sequencing'
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - andrewdavidsmith

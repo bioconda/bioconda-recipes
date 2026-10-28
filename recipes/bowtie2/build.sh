@@ -1,10 +1,40 @@
-#!/bin/bash
-CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
-export CPPFLAGS
-LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
-export LDFLAGS
+#!/bin/bash -euo
 
-make
+# Fetch third party dependencies
+# (Git submodules - https://github.com/BenLangmead/bowtie2/blob/a43fa6f43f54989468a294967898f85b9fe4cefa/.gitmodules)
+git clone --branch master https://github.com/simd-everywhere/simde-no-tests.git third_party/simde
+git clone https://github.com/ch4rr0/libsais third_party/libsais
+
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-deprecated-declarations"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+sed -i.bak 's|3.0.9|3.2.1|' Makefile
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+sed -i.bak 's|-O2|-O3|' Makefile
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8-a|' Makefile
+	;;
+    arm64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3 -march=armv8.4-a|' Makefile
+	;;
+    x86_64)
+	sed -i.bak 's|-std=c++11|-std=c++14 -O3|' Makefile
+	;;
+esac
+rm -f *.bak
+
+if [[ "$(uname -s)" == Darwin ]]; then
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
+else
+	LDFLAGS=""
+fi
+
+make WITH_ZSTD=1 USE_SRA=1 USE_SAIS_OPENMP=1 \
+	CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" CPP="${CXX}" CC="${CC}" \
+	CFLAGS="${CFLAGS}" LDLIBS="-L${PREFIX}/lib -lz -lzstd -pthread"
 
 binaries="\
 bowtie2 \
@@ -17,21 +47,19 @@ bowtie2-inspect \
 bowtie2-inspect-l \
 bowtie2-inspect-s \
 "
-directories="scripts"
-pythonfiles="bowtie2-build bowtie2-inspect"
-
-PY3_BUILD="${PY_VER%.*}"
-
-if [ $PY3_BUILD -eq 3 ]; then
-    for i in $pythonfiles; do
-	2to3 --write $i
-    done
+# On x86_64 the Makefile also builds the AVX2 (x86-64-v3) aligners, and
+# bowtie2-align-{s,l} exec them at runtime when the CPU supports it
+if [[ "$(uname -m)" == "x86_64" ]]; then
+	binaries="${binaries} bowtie2-align-s-v256 bowtie2-align-l-v256"
 fi
+directories="scripts"
 
-for i in $binaries; do
-    cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i
+for i in ${binaries}; do
+    install -v -m 0755 "${i}" "${PREFIX}/bin"
 done
 
 for d in $directories; do
-    cp -r $d $PREFIX/bin
+    cp -rf $d "${PREFIX}/bin"
 done
+
+make clean

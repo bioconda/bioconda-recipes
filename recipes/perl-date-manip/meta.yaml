@@ -1,35 +1,40 @@
+{% set name = "perl-date-manip" %}
+{% set version = "7.00" %}
+{% set sha256 = "37133eeb09d36da6d461546cc216b8f6a2297a43331c680a6848f3fff925975c" %}
+
 package:
-  name: perl-date-manip
-  version: "6.57"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: Date-Manip-6.57.tar.gz
-  url: https://cpan.metacpan.org/authors/id/S/SB/SBECK/Date-Manip-6.57.tar.gz
-  md5: cd87e060f87662fc4cfebe7b3867ddf6
+  url: https://cpan.metacpan.org/authors/id/S/SB/SBECK/Date-Manip-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
-    - perl-pathtools
+    - make
+  host:
+    - perl
+    - perl-data-dumper
+    - perl-encode
+    - perl-storable
+    - perl-carp
     - perl-extutils-makemaker
-    - perl-encode-locale
     - perl-test-inter
-    #- perl-data-dumper
-    - perl-io-all
-    - perl-test-simple
-
   run:
-    - perl-threaded
-    - perl-pathtools
-    #- perl-data-dumper
-    - perl-encode-locale
-    - perl-io-all
+    - perl
+    - perl-data-dumper
+    - perl-carp
+    - perl-storable
+    - perl-encode
 
 test:
-  # Perl 'use' tests
   imports:
     - Date::Manip
     - Date::Manip::Base
@@ -38,6 +43,13 @@ test:
     - Date::Manip::DM6
     - Date::Manip::Date
     - Date::Manip::Delta
+    - Date::Manip::Recur
+    - Date::Manip::TZ
+    - Date::Manip::TZ::a00
+    - Date::Manip::TZ::afabid00
+    - Date::Manip::TZ_Base
+    - Date::Manip::TZdata
+    - Date::Manip::Zones
     - Date::Manip::Lang::catalan
     - Date::Manip::Lang::danish
     - Date::Manip::Lang::dutch
@@ -56,13 +68,9 @@ test:
     - Date::Manip::Lang::swedish
     - Date::Manip::Lang::turkish
     - Date::Manip::Obj
-    - Date::Manip::Recur
-    - Date::Manip::TZ
-    - Date::Manip::TZ_Base
-    - Date::Manip::TZdata
-    - Date::Manip::Zones
 
 about:
-  home: http://metacpan.org/pod/Date::Manip
-  license: perl_5
-  summary: 'Date manipulation routines'
+  home: "https://metacpan.org/pod/Date::Manip"
+  license: "Perl_5"
+  summary: "Date manipulation routines."
+  doc_url: "https://metacpan.org/pod/Date::Manip"

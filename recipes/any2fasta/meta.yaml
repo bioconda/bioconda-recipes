@@ -1,0 +1,43 @@
+{% set version = "0.8.1" %}
+{% set name = "any2fasta" %}
+{% set sha256 = "73f4f2c1eb0cb5525703a5368fe4b34ddd252e64af1f9c3aba2ba63d8f9723b6" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  build:
+
+  run:
+    - perl >=5.18.0
+    - gzip
+    - bzip2
+    - unzip
+    - xz
+
+test:
+  commands:
+    - any2fasta -h
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Convert various sequence formats to FASTA
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

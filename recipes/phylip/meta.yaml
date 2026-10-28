@@ -6,37 +6,37 @@
 
 package:
   name: phylip
-  version: 3.696
+  version: "3.697"
 
 source:
-  fn: phylip-3.696.tar.gz
-  url: http://evolution.gs.washington.edu/phylip/download/phylip-3.696.tar.gz
-  md5: dbe5abc26f6089ead3dba41c2db526ee
+  url: https://phylipweb.github.io/phylip/download/phylip-3.697.tar.gz
+  sha256: 9a26d8b08b8afea7f708509ef41df484003101eaf4beceb5cf7851eb940510c1
   patches:
     - makefile.patch
-    - font-paths.patch # adapted this patch to bioconda share dir
-    - maxtrees.patch   # increased max tied trees stored for all
+    - font-paths.patch  # adapted this patch to bioconda share dir
+    - maxtrees.patch    # increased max tied trees stored for all
+    - externs.patch     # fix extern declarations 
 
 build:
-
   # Note when changing the build-number you must also update the
   # font-paths.patch file from
   # /share/phylip-3.696-<oldversion>/fonts/fontfile to
   # /share/phylip-3.696-<new version>/fonts/fontfile
   number: 3
-  detect_binary_files_with_prefix: true
+  detect_binary_files_with_prefix: True
   script_env:
     - BB_ARCH_FLAGS
     - BB_OPT_FLAGS
     - BB_MAKE_JOBS
+  run_exports:
+    - {{ pin_subpackage('phylip', max_pin="x") }}
 
 requirements:
-  build: 
-    - gcc       # [not osx]
-    - llvm      # [osx]
-  run: 
+  build:
+    - make
+    - {{ compiler('c') }}
+  run:
     - openjdk >=6
-    - libgcc    # [not osx]
     - python
 
 test:
@@ -44,11 +44,12 @@ test:
   # and implemented into the phylip.py script
   commands:
     - mkdir __tmp4phyliptests__; pushd __tmp4phyliptests__; phylip test; pushd; rm -rf __tmp4phyliptests__
-    
+
 about:
-  home: "http://evolution.genetics.washington.edu/phylip/"
+  home: "https://phylipweb.github.io/phylip"
   license: BSD
-  summary: "Package of programs for inferring phylogenies"
+  summary: "Package of programs for inferring phylogenies."
+  doc_url: "https://phylipweb.github.io/phylip"
 
 # <Info from the original phylip website>
 #
@@ -84,3 +85,10 @@ about:
 # recover distribution costs. Permission requests for any other
 # distribution of these programs should be directed to license (at)
 # u.washington.edu .
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:PHYLIP

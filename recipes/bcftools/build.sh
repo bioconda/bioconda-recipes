@@ -1,13 +1,6 @@
 #!/bin/sh
 
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+./configure --prefix="$PREFIX" --with-htslib=system --enable-libgsl
 
-cd htslib*
-./configure --prefix=$PREFIX --enable-libcurl CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
-make
-cd ..
-
-./configure --prefix=$PREFIX --enable-libcurl CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
-make prefix=$PREFIX CPPFLAGS=$CPPFLAGS LDFLAGS=$LDFLAGS
-make prefix=$PREFIX CPPFLAGS=$CPPFLAGS LDFLAGS=$LDFLAGS plugins install
+make all GSL_LIBS=-lgsl -j"${CPU_COUNT}"
+make install

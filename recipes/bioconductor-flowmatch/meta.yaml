@@ -1,40 +1,65 @@
-{% set version = "1.14.0" %}
+{% set version = "1.46.0" %}
 {% set name = "flowMatch" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: c33a4fec14fc5069a6da5756991b3531623edcf6f08413c74e5b9019780a0774
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 31bf17a583bf4f76c810fa40467cc97e
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-flowmatch", max_pin="x.x") }}'
+
+# Suggests: healthyFlowData
 requirements:
   build:
-    - bioconductor-biobase
-    - bioconductor-flowcore
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
     - r-base
-    - 'r-rcpp >=0.11.0'
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - r-rcpp >=0.11.0
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biobase
-    - bioconductor-flowcore
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
     - r-base
-    - 'r-rcpp >=0.11.0'
-    - libcxx # [osx]
+    - r-rcpp >=0.11.0
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Matching cell populations and building meta-clusters and templates from a collection of FC samples.'
+  summary: Matching and meta-clustering in flow cytometry
+  description: Matching cell populations and building meta-clusters and templates from a collection of FC samples.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:flowmatch
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-flowmatch
+    path: recipes/bioconductor-flowmatch
+    version: 1.16.0
+

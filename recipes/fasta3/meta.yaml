@@ -1,48 +1,52 @@
 {% set name = "fasta3" %}
-{% set version = "36.3.8" %}
-{% set hash = "102ee6bc9406d7b13a69eeb16c67c30258a146807a5363d8dab867c45f2e0725" %}
+{% set version = "36.3.8i" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-    fn: fasta-{{ version }}.tar.gz
-    url: http://faculty.virginia.edu/wrpearson/fasta/fasta36/fasta-{{ version }}g.tar.gz
-    sha256: {{ hash }}
-    patches:
-      - libpath.patch
+  url: https://github.com/wrpearson/fasta36/archive/refs/tags/v{{ version }}_14-Nov-2020.tar.gz
+  sha256: b4b1c3c9be6beebcbaf4215368e159d69255e34c0bdbc84affa10cdb473ce008
 
 build:
-    number: 2
-    skip: True # [osx]
+  number: 3
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-    build:
-       - zlib {{ CONDA_ZLIB }}*
+  build:
+    - make
+    - {{ compiler('c') }}
 
-    run:
-       - zlib {{ CONDA_ZLIB }}*
 test:
-    commands:
-      - fasta36 > /dev/null
-      - fastf36 > /dev/null
-      - fastm36 > /dev/null
-      - fasts36 > /dev/null
-      - fastx36 > /dev/null
-      - fasty36 > /dev/null
-      - ggsearch36 > /dev/null
-      - glsearch36 > /dev/null
-      - lalign36 > /dev/null
-      - ssearch36 > /dev/null
-      - tfastf36 > /dev/null
-      - tfastm36 > /dev/null
-      - tfasts36 > /dev/null
-      - tfastx36 > /dev/null
-      - tfasty36 > /dev/null
+  commands:
+    - fasta36 > /dev/null
+    - fastf36 > /dev/null
+    - fastm36 > /dev/null
+    - fasts36 > /dev/null
+    - fastx36 > /dev/null
+    - fasty36 > /dev/null
+    - ggsearch36 > /dev/null
+    - glsearch36 > /dev/null
+    - lalign36 > /dev/null
+    - ssearch36 > /dev/null
+    - tfastf36 > /dev/null
+    - tfastm36 > /dev/null
+    - tfasts36 > /dev/null
+    - tfastx36 > /dev/null
+    - tfasty36 > /dev/null
 
 about:
-    home: http://faculty.virginia.edu/wrpearson/fasta
-    license: Apache 2.0
-    summary: The FASTA package - protein and DNA sequence similarity searching and alignment programs
-    license_file: LICENSE
+  home: "https://fasta.bioch.virginia.edu/wrpearson/fasta"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "The FASTA package - protein and DNA sequence similarity searching and alignment programs."
+  license_file: LICENSE
+  doc_url: "https://fasta.bioch.virginia.edu/wrpearson/fasta"
+  dev_url: "https://github.com/wrpearson/fasta36"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

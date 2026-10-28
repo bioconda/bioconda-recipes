@@ -1,30 +1,48 @@
+{% set name = "perl-json-xs" %}
+{% set version = "4.04" %}
+{% set sha256 = "8eff1e9f304c5625b59ab7b42258415f6d3e3681c1ddab6b725518a018a7f5e0" %}
+
 package:
-  name: perl-json-xs
-  version: "2.34"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: JSON-XS-2.34.tar.gz
-  url: "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-2.34.tar.gz"
-  md5: dda3c03335665cdeff91c37a269b833b
+  url: https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
+    - make
+    - {{ compiler('cxx') }}
+
+  host:
+    - perl
+    - perl-extutils-makemaker
+    - perl-types-serialiser
+    - perl-canary-stability
     - perl-common-sense
 
   run:
-    - perl-threaded
+    - perl
+    - perl-types-serialiser
     - perl-common-sense
 
 test:
-  # Perl 'use' tests
   imports:
     - JSON::XS
 
 about:
-  home: 'http://search.cpan.org/~mlehmann/JSON-XS/'
-  license: perl_5
+  home: https://metacpan.org/pod/JSON::XS
+  license_file: COPYING
+  license: GPL-1.0-or-later OR Artistic-1.0-Perl
   summary: 'JSON serialising/deserialising, done correctly and fast'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

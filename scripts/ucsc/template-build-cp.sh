@@ -1,8 +1,7 @@
 #!/bin/bash
+
+set -xe
+
 mkdir -p "$PREFIX/bin"
-if [ "$(uname)" == "Darwin" ]; then
-    cp {program} "$PREFIX/bin"
-else
-    cp {program_source_dir}/{program} "$PREFIX/bin"
-fi
-chmod +x "$PREFIX/bin/{program}"
+cp {program_source_dir}/{program} "${{PREFIX}}/bin"
+chmod 0755 "${{PREFIX}}/bin/{program}"

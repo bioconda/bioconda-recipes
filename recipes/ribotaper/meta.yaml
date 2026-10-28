@@ -3,16 +3,20 @@ package:
   version: 1.3.1a
 
 source:
-  fn: RiboTaper-1.3.1a.tar.gz
   url: https://ohlerlab.mdc-berlin.de/files/RiboTaper/RiboTaper-1.3.1a.tar.gz
   md5: 5f753a25646e7f5bb3e3f1865129e1f5
 
 build:
   skip: True  # [not linux]
-  number: 1
+  number: 9
+  run_exports:
+    - {{ pin_subpackage('ribotaper', max_pin='x') }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - make
+  host:
     - bedtools ==2.17.0
     - samtools
     - r-iterators
@@ -24,6 +28,7 @@ requirements:
     - r-xnomial
   run:
     - bedtools ==2.17.0
+    - coreutils
     - samtools
     - r-iterators
     - r-foreach
@@ -41,8 +46,14 @@ test:
 
 about:
   home: https://ohlerlab.mdc-berlin.de/software/RiboTaper_126/
-  license: GPL
+  license: GPL-3.0-or-later
+  license_file: LICENSE
   summary: 'RiboTaper is a new analysis pipeline for
   Ribosome Profiling (Ribo-seq) experiments,
   which exploits the triplet periodicity of
   ribosomal footprints to call translated regions.'
+
+extra:
+  identifiers:
+    - biotools:ribotaper
+    - doi:10.1038/nmeth.3688

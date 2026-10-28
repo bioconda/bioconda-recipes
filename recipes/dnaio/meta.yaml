@@ -1,0 +1,44 @@
+{% set version = "1.2.4" %}
+
+package:
+  name: dnaio
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/d/dnaio/dnaio-{{ version }}.tar.gz
+  sha256: a7570311f29e8b3c1ea39a60f57b7baf8dad8f2508595c58d4278c5571463166
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('dnaio', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - pip
+    - python
+    - cython
+    - setuptools-scm
+  run:
+    - python
+    - xopen >=1.4.0
+
+test:
+  imports:
+    - dnaio
+
+about:
+  home: https://github.com/marcelm/dnaio/
+  license: MIT
+  summary: 'Read and write FASTA and FASTQ files efficiently'
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - marcelm

@@ -1,41 +1,41 @@
-{% set version = "0.10.0" %}
+{% set name = "bioblend" %}
+{% set version = "1.9.0" %}
 
 package:
-  name: bioblend
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: bioblend-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/b/bioblend/bioblend-{{ version }}.tar.gz
-  sha256: 96a98ddfdb3732458cf67dda3e92ba6919d1100c960c193d4f184f8378fbf266
+  sha256: c1aefc24ad0bd81e39e55c62231c8b61129a024f80d6596c2ede032d09eef8c5
 
 build:
   number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install --no-deps --no-build-isolation --no-cache-dir . -vvv
+  entry_points:
+    - bioblend-galaxy-tests = bioblend._tests.pytest_galaxy_test_wrapper:main [testing]
+  run_exports:
+    - {{ pin_subpackage('bioblend', max_pin="x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.0
+    - pip
     - setuptools
-    - requests >=2.4.3,!=2.12.0,!=2.12.1
-    - requests-toolbelt
-    - boto >=2.9.7
-    - pyyaml
-    - six
-
   run:
-    - python
-    - requests >=2.4.3,!=2.12.0,!=2.12.1
-    - requests-toolbelt
-    - boto >=2.9.7
+    - python >=3.9
+    - requests >=2.20.0
+    - requests-toolbelt >=0.5.1,!=0.9.0
+    - tuspy
     - pyyaml
-    - six
 
 test:
   imports:
     - bioblend
-    - bioblend.cloudman
     - bioblend.galaxy
     - bioblend.galaxy.config
+    - bioblend.galaxy.container_resolution
     - bioblend.galaxy.dataset_collections
     - bioblend.galaxy.datasets
     - bioblend.galaxy.datatypes
@@ -45,12 +45,14 @@ test:
     - bioblend.galaxy.genomes
     - bioblend.galaxy.groups
     - bioblend.galaxy.histories
+    - bioblend.galaxy.invocations
     - bioblend.galaxy.jobs
     - bioblend.galaxy.libraries
     - bioblend.galaxy.objects
     - bioblend.galaxy.quotas
     - bioblend.galaxy.roles
     - bioblend.galaxy.tool_data
+    - bioblend.galaxy.tool_dependencies
     - bioblend.galaxy.tools
     - bioblend.galaxy.toolshed
     - bioblend.galaxy.users
@@ -63,7 +65,10 @@ test:
     - bioblend.util
 
 about:
-  home: http://bioblend.readthedocs.org/
-  license: MIT License
-  summary: 'CloudMan and Galaxy API library'
+  home: "https://github.com/galaxyproject/bioblend"
+  license: MIT
+  summary: 'A Python library for interacting with the Galaxy API.'
   license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://bioblend.readthedocs.org/"
+  dev_url: "https://github.com/galaxyproject/bioblend"

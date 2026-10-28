@@ -1,32 +1,47 @@
+{% set version = "3.0.1" %}
+{% set sha256 = "e72ae9b5d9dea2b025fabb07b16a194f2a0470dc8389fc0c4ab1c3757f7648ef" %}
+
 package:
   name: selscan
-  version: "1.1.0b"
-build:
-  number: 1
-  skip: False
+  version: {{ version }}
+
 source:
-  fn: 1.1.0b.zip
-  url: https://github.com/szpiech/selscan/archive/1.1.0b.zip
-  md5: 02a39fff61fadcfb5df248d37111141f
-  patches:
-      - Makefile.linux.patch # [linux]
-      - Makefile.mac.patch # [osx]
+  url: https://github.com/szpiech/selscan/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('selscan', max_pin='x') }}
+
 requirements:
   build:
-    - gcc
-    #- openblas
-    #- gsl
-    - zlib {{CONDA_ZLIB}}*
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - gsl
+    - zlib
   run:
-    - libgcc
-    #- openblas
-    #- gsl
-    - zlib {{CONDA_ZLIB}}*
-    #- perl-threaded
+    - gsl
+    - zlib
+
 test:
   commands:
-    - "selscan 2>&1 | grep 'selscan' &> /dev/null"
+    - selscan 2>&1 | grep -qF 'selscan'
+
 about:
-  home: "https://github.com/szpiech/selscan"
-  license: "GPLv3"
-  summary: "a program to calculate EHH-based scans for positive selection in genomes"
+  home: https://github.com/szpiech/selscan
+  dev_url: https://github.com/szpiech/selscan
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE.md
+  summary: a program to calculate EHH-based scans for positive selection in genomes
+
+extra:
+  identifiers:
+    - biotools:selscan
+    - doi:10.1093/molbev/msu211
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,10 +1,13 @@
 #!/bin/bash
 
-make
+# Object files/libraries in wrong order => can't use --as-needed.
+# (and clange does not seem to support --no-as-needed).
+export LDFLAGS="${LDFLAGS//-Wl,--as-needed/}"
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-ls *.pl | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g' 
-
-mkdir -p $PREFIX/bin
-cp velvetg $PREFIX/bin
-cp velveth $PREFIX/bin
-cp *.pl $PREFIX/bin
+install -d "${PREFIX}/bin"
+install \
+    velvetg \
+    velveth \
+    *.pl \
+    "${PREFIX}/bin/"

@@ -1,45 +1,64 @@
-{% set version="1.7" %}
-about:
-  home: https://github.com/samtools/bcftools
-  license: MIT
-  summary: BCFtools is a set of utilities that manipulate variant calls in the Variant
-    Call Format (VCF) and its binary counterpart BCF. All commands work transparently
-    with both VCFs and BCFs, both uncompressed and BGZF-compressed.  Most commands
-    accept VCF, bgzipped VCF and BCF with filetype detected automatically even when
-    streaming from a pipe. Indexed VCF and BCF will work in all situations. Un-indexed
-    VCF and BCF and streams will work in most, but not all situations.
+{% set version = "1.25" %}
 
-build:
-  number: 0
 package:
   name: bcftools
   version: {{ version }}
-requirements:
-  build:
-    - gcc  # [not osx]
-    - llvm # [osx]
-    - bzip2 {{CONDA_BZIP2}}*
-    - curl
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
-  run:
-    - libgcc # [not osx]
-    - bzip2 {{CONDA_BZIP2}}*
-    - curl
-    # Currently removed due to size and dependency issues
-    #- matplotlib # for plot-vcfstats
-    #- texlive-core # for plot-vcfstats
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
 
 source:
-  fn: bcftools-{{ version }}.tar.bz2
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: dd4f63d91b0dffb0f0ce88ac75c2387251930c8063f7799611265083f8d302d1
+  sha256: f96e583d2315998645bb56756f1c8f230c489512db2655b0f623198ebc8a2d99
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('bcftools', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - htslib
+    - zlib
+    - gsl >=2.6,<2.7
+    - libxcrypt
+  run:
+    # Currently removed due to size and dependency issues
+    #- matplotlib # for plot-vcfstats
+    #- tectonic # for plot-vcfstats
+    - perl
 
 test:
   commands:
     - bcftools -h
     - bcftools --version
     - bcftools plugin -lv
+    - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
     #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
+
+about:
+  home: "https://github.com/samtools/bcftools"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "BCFtools, utilities for manipulating variant calls in VCF and BCF formats."
+  description: |
+    BCFtools is a set of utilities that manipulate variant calls in the Variant
+    Call Format (VCF) and its binary counterpart BCF. All commands work transparently
+    with both VCFs and BCFs, both uncompressed and BGZF-compressed. Most commands
+    accept VCF, bgzipped VCF and BCF with filetype detected automatically even when
+    streaming from a pipe. Indexed VCF and BCF will work in all situations. Un-indexed
+    VCF and BCF and streams will work in most, but not all situations.
+  dev_url: "https://github.com/samtools/bcftools"
+  doc_url: "https://samtools.github.io/bcftools/bcftools.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bcftools
+    - usegalaxy-eu:bcftools_merge
+    - doi:10.1093/bioinformatics/btp352

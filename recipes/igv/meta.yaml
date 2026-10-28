@@ -1,27 +1,47 @@
-{% set version = "2.4.9" %}
-{% set sha256 = "e18dd8372e34454ac51cf3fb846fa26f22c34e12e1c6c4aaf9573c01ccc19e29" %}
+{% set name = "IGV" %}
+{% set version = "2.19.8" %}
+{% set sha256 = "9845c299996ae8196c71688fe3f950ad5953f80aa952fdeb736009d7c71208be" %}
 
 package:
-  name: igv
-  version: "{{ version }}"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: IGV_{{ version }}.zip
-  url: "http://data.broadinstitute.org/igv/projects/downloads/{{ version.rsplit('.', 1)[0] }}/IGV_{{ version }}.zip"
+  url: https://github.com/igvteam/igv/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
+  host:
+    - openjdk <22
   run:
-    - openjdk >=8.0
+    - openjdk <22
+    - glib
+    - glib-tools
 
 test:
   commands:
-#    - "igv > log.txt 2>&1 & PID=$! && sleep 2 && kill $PID && grep 'IGV Version {{ version }}' log.txt"
+    - igv --version
+    - igv_hidpi --version
 
 about:
-  home: "http://www.broadinstitute.org/software/igv/home"
+  home: "https://igv.org/doc/desktop"
+  dev_url: "https://github.com/igvteam/igv"
   license: MIT
-  summary: "Integrative Genomics Viewer. Fast, efficient, scalable visualization tool for genomics data and annotations"
+  license_family: MIT
+  license_file: "license.txt"
+  summary: |
+    Integrative Genomics Viewer. Fast, efficient, scalable visualization tool for genomics
+    data and annotations.
+  doc_url: "https://igv.org"
+
+extra:
+  identifiers:
+    - biotools:igv
+    - doi:10.1038/nbt.1754
+    - doi:10.1093/bioinformatics/btac830

@@ -1,23 +1,30 @@
+{% set name = "perl-devel-size" %}
+{% set version = "0.87" %}
+
 package:
-  name: perl-devel-size
-  version: "0.80"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: Devel-Size-0.80.tar.gz
-  url: https://cpan.metacpan.org/authors/id/N/NW/NWCLARK/Devel-Size-0.80.tar.gz
-  md5: 49d5060edaf076bc757a028614c60f41
+  url: https://cpan.metacpan.org/authors/id/N/NW/NWCLARK/Devel-Size-{{ version }}.tar.gz
+  sha256: c89fe04c9d0e5ced6c1d334311d576de609f3c8a41220919d4551e9eb0191f47
 
 build:
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
   number: 0
 
 requirements:
   build:
-    - perl-threaded
+    - make
+    - {{ compiler('c') }}
+  host:
+    - perl
     - perl-extutils-makemaker
     - perl-test-simple
 
   run:
-    - perl-threaded
+    - perl
     - perl-test-simple
 
 test:
@@ -28,3 +35,8 @@ about:
   home: http://metacpan.org/pod/Devel::Size
   license: perl_5
   summary: 'Perl extension for finding the memory usage of Perl variables'
+
+extra:
+  # osx-arm64 is erroring due to missing perl-storable in conda forge
+  additional-platforms:
+    - linux-aarch64

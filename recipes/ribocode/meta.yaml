@@ -1,36 +1,59 @@
-{% set version = "1.2.9" %}
+{% set version = "1.2.15" %}
+{% set sha256 = "c59a45c3d5871615b5c8035469cc7faefb9db186a5609d85c62ef8e714f3bc08" %}
 
 package:
   name: ribocode
   version: {{ version }}
 
 source:
-  fn: RiboCode-{{ version }}.tar.gz
-  url: https://github.com/xzt41/RiboCode/files/1782403/RiboCode-1.2.9.tar.gz
-  md5: e439d8788d7d14b5a0e39dd403c72689
+  url: "https://github.com/zhengtaoxiao/RiboCode/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+  patches:
+    - fix-version.patch
+
+build:
+  number: 1
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('ribocode', max_pin='x.x') }}
+  entry_points:
+    - RiboCode=RiboCode.RiboCode:main
+    - RiboCode_onestep=RiboCode.RiboCode_onestep:main
+    - prepare_transcripts=RiboCode.prepare_transcripts:main
+    - metaplots=RiboCode.metaplots:main
+    - plot_orf_density=RiboCode.plot_orf_density:main
+    - ORFcount=RiboCode.RPF_count_ORF:main
+    - GTFupdate=RiboCode.GTF_update:main
 
 requirements:
-  build:
-    - python 
-    - numpy 
+  host:
+    - python >=3.8,<3.11
+    - pip
+    - setuptools
+    - numpy
     - pysam >0.8.4
-    - matplotlib
+    - matplotlib-base
     - pyfasta
     - biopython
     - h5py
     - htseq
     - future
+    - minepy
+    - statsmodels
   run:
-    - python
-    - numpy 
+    - python >=3.8,<3.11
+    - numpy
     - pysam >0.8.4
-    - matplotlib
+    - matplotlib-base
     - scipy
     - pyfasta
     - biopython
     - h5py
     - htseq
     - future
+    - minepy
+    - statsmodels
+
 test:
   imports:
     - RiboCode
@@ -43,18 +66,9 @@ test:
     - ORFcount --help
     - GTFupdate --help
 
-build:
-  entry_points:
-    - RiboCode=RiboCode.RiboCode:main
-    - RiboCode_onestep=RiboCode.RiboCode_onestep:main
-    - prepare_transcripts=RiboCode.prepare_transcripts:main
-    - metaplots=RiboCode.metaplots:main
-    - plot_orf_density=RiboCode.plot_orf_density:main
-    - ORFcount=RiboCode.RPF_count_ORF:main
-    - GTFupdate=RiboCode.GTF_update:main
-
 about:
-  home: https://github.com/xzt41/RiboCode
+  home: https://github.com/xryanglab/RiboCode
   license: MIT
-  summary: "A package for identifying the translated ORFs using ribosome-profiling data"
   license_family: MIT
+  license_file: LICENSE
+  summary: A package for detecting the actively translated ORFs using ribosome-profiling data

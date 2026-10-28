@@ -1,28 +1,30 @@
+{% set name = "perl-config-any" %}
+{% set version = "0.33" %}
+
 package:
-  name: perl-config-any
-  version: "0.27"
+  name : {{ name }}
+  version: {{ version }}
 
 source:
-  fn: Config-Any-0.27.tar.gz
-  url: https://cpan.metacpan.org/authors/id/B/BR/BRICAS/Config-Any-0.27.tar.gz
-  md5: 0c8db36ebfeea250f554ebc50ee5b643
+  url: https://cpan.metacpan.org/authors/id/H/HA/HAARG/Config-Any-{{ version }}.tar.gz
+  sha256: c0668eb5f2cd355bf20557f04dc18a25474b7a0bcfa79562e3165d9a3c789333
 
 build:
-  #skip: True # [osx]
-  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  number: 5
 
 requirements:
   build:
-    - toolchain
-    - gcc  # [linux]
-    - llvm  # [osx]
-    - perl
+    - make
+    - {{ compiler('c') }}
+  host:
+    - perl >=5.32.1
     - perl-app-cpanminus
     - perl-extutils-makemaker
 
   run:
-    - perl
-    - libgcc  # [linux]
+    - perl >=5.32.1
     - perl-app-cpanminus
 
 test:
@@ -52,3 +54,9 @@ about:
 # See
 # http://docs.continuum.io/conda/build.html for
 # more information about meta.yaml
+
+extra:
+  # linux-aarch64 is erroring during build.
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64

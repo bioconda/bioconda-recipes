@@ -1,27 +1,23 @@
 package:
   name: query_phenomizer
-  version: "0.5"
+  version: "1.2.1"
 
 source:
-  fn: query_phenomizer-0.5.tar.gz
-  url: https://pypi.python.org/packages/e3/b2/d8f106d7f59aba6f198a6b2dc14237076517977c4208ca299ea8995fd43e/query_phenomizer-0.5.tar.gz
-  md5: 6141bd9f5743d9f828ee200eb62f8fbc
+  url: https://files.pythonhosted.org/packages/02/21/0e62f38dcf337727a4d3b7d18dc55b090296f43ac95a070c2dbe3e5ef24f/query_phenomizer-1.2.1.tar.gz
+  sha256: fe673970e435bf49fd4d7f14283d8f4e11546fca597a39abf8ca87158da9ca20
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - query_phenomizer = query_phenomizer.__main__:cli
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
-
+  run_exports:
+    - {{ pin_subpackage('query_phenomizer', max_pin="x") }}
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
-    - click
-    - requests
-    - pytest
-
+    - pip
   run:
     - python
     - click
@@ -32,12 +28,19 @@ test:
   # Python imports
   imports:
     - query_phenomizer
-
   commands:
     # click requires a unicode locale
-    - LANG=C.UTF-8 query_phenomizer --help
+    - query_phenomizer --help
 
 about:
   home: https://www.github.com/moonso/query_phenomizer
-  license: MIT License
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
   summary: 'Tool for query and parsing the phenomizer tool'
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

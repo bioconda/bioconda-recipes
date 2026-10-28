@@ -1,0 +1,43 @@
+{% set version = "0.2.8" %}
+{% set sha256 = "4e0624097f8b2b9a152caa51947659d370ef8311621582abd23a77b733ba3b3b" %}
+
+package:
+  name: smoove
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/brentp/smoove/releases/download/v{{ version }}/smoove
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  binary_relocation: false
+  skip: true  # [not linux]
+
+requirements:
+  run:
+    - bcftools
+    - duphold
+    - gsort
+    - htslib
+    - lumpy-sv >=0.3
+    - mosdepth
+    - samtools
+    - svtools
+    - svtyper
+
+test:
+  commands:
+    - smoove -h 2>&1 | grep smoove\ version
+    - smoove call -h
+
+about:
+  home: https://github.com/brentp/smoove
+  license: Apache-2.0
+  license_family: Apache
+  summary: structural variant calling and genotyping with existing tools, but, smoothly
+
+extra:
+  skip-lints:
+    # Installs a precompiled binary
+    - should_be_noarch_generic

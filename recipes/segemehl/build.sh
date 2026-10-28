@@ -1,11 +1,14 @@
-#!/bin/sh
-cd segemehl
+#!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/ncurses
-export LIBRARY_PATH=${PREFIX}/lib
+export C_INCLUDE_PATH=${PREFIX}/include:"${PREFIX}/include/ncurses"
+export LIBRARY_PATH="${PREFIX}/lib"
+export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig"
 
-make -j 1 ## do not use >1 make threads!
+sed -i.bak 's|-lpthread|-pthread|' Makefile
+rm -f *.bak
 
-for i in *.x ; do
-    install ${i} ${PREFIX}/bin
+make all -j"${CPU_COUNT}"
+
+for i in *.x; do
+	install -v -m 0755 ${i} "${PREFIX}/bin"
 done

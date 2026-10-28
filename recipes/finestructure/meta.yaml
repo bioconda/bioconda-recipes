@@ -1,0 +1,56 @@
+{% set version = "4.1.1" %}
+{% set variant = "openblas" %}
+
+package:
+  name: finestructure
+  version: '{{ version }}'
+
+source:
+  url: https://people.maths.bris.ac.uk/~madjl/finestructure/fs_{{ version }}.zip
+  sha256: 7af2dd51b02bf117e364f70e76d03920b0cd9ec17111b5be94dd2a5ab906b75e
+  patches:
+    - perl.patch
+    - noSwitch.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('finestructure', max_pin='x.x') }}
+
+requirements:
+  host:
+    - perl
+    - clang
+    - r-xml
+    - r-ape
+  run:
+    - perl
+    - clang
+    - r-xml
+    - r-ape
+
+about:
+  home: https://people.maths.bris.ac.uk/~madjl/finestructure/finestructure.html
+  license: OTHER
+  license_file: LICENSE-FS
+  summary: 'fineSTRUCTURE is a fast and powerful algorithm for identifying population structure using dense sequencing data.'
+
+test:
+  commands:
+    - fs -help | grep "USAGE"
+    - beagle2chromopainter.pl | grep "usage" 
+    - chromopainter2chromopainterv2.pl | grep "usage"
+    - convertrecfile.pl | grep "Usage"
+    - impute2chromopainter.pl | grep "usage"
+    - makeuniformrecfile.pl | grep "Usage"
+    - msms2cp.pl | grep "usage"
+    - phasescreen.pl | grep "usage"
+    - phasesubsample.pl | grep "usage"
+    - plink2chromopainter.pl | grep "Usage"
+
+
+extra:
+  identifiers:
+    - biotools:fineSTRUCTURE
+    - doi:10.1371/journal.pgen.1002453

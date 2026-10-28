@@ -1,0 +1,48 @@
+{% set name = "fastq-dl" %}
+{% set version = "4.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/f/fastq_dl/fastq_dl-{{ version }}.tar.gz
+  sha256: 3aecad1fb8c18edbf005af60c4280b9cb5d16fe9dd9e5550ee180c27f6c9624b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - fastq-dl = fastq_dl.cli.download:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - poetry
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - pysradb >=2.3
+    - requests
+    - rich-click >=1.6.0
+    - sracha
+    - wget
+
+test:
+  commands:
+    - fastq-dl --version
+    - fastq-dl --help
+    - fastq-dl --check
+
+about:
+  home: https://github.com/rpetit3/fastq-dl
+  license: MIT
+  license_file: LICENSE
+  summary: A tool to download FASTQs associated with Study, Experiment, or Run accessions.
+
+extra:
+  recipe-maintainers:
+    - rpetit3

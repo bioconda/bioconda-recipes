@@ -1,47 +1,67 @@
-{% set version = "1.50.0" %}
+{% set version = "1.82.0" %}
 {% set name = "webbioc" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ad2a0cf3b4b0fe9f5a9de9515941482ea01bf971a262d36fbdfe240ced55e6cd
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 0b0cd1da2e59a8730d6ebecaafde55ef
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-webbioc", max_pin="x.x") }}'
+  noarch: generic
+
+# SystemRequirements: Unix, Perl (>= 5.6.0), Netpbm
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-annaffy
-    - bioconductor-biobase
-    - bioconductor-biocinstaller
-    - bioconductor-gcrma
-    - bioconductor-multtest
-    - bioconductor-qvalue
-    - bioconductor-vsn
+  host:
+    - bioconductor-affy >=1.88.0,<1.89.0
+    - bioconductor-annaffy >=1.82.0,<1.83.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-gcrma >=2.82.0,<2.83.0
+    - bioconductor-multtest >=2.66.0,<2.67.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-vsn >=3.78.0,<3.79.0
     - r-base
+    - r-biocmanager
   run:
-    - bioconductor-affy
-    - bioconductor-annaffy
-    - bioconductor-biobase
-    - bioconductor-biocinstaller
-    - bioconductor-gcrma
-    - bioconductor-multtest
-    - bioconductor-qvalue
-    - bioconductor-vsn
+    - bioconductor-affy >=1.88.0,<1.89.0
+    - bioconductor-annaffy >=1.82.0,<1.83.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-gcrma >=2.82.0,<2.83.0
+    - bioconductor-multtest >=2.66.0,<2.67.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-vsn >=3.78.0,<3.79.0
     - r-base
+    - r-biocmanager
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'An integrated web interface for doing microarray analysis using several of the Bioconductor packages. It is intended to be deployed as a centralized bioinformatics resource for use by many users. (Currently only Affymetrix oligonucleotide analysis is supported.)'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Bioconductor Web Interface
+  description: An integrated web interface for doing microarray analysis using several of the Bioconductor packages. It is intended to be deployed as a centralized bioinformatics resource for use by many users. (Currently only Affymetrix oligonucleotide analysis is supported.)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:webbioc
+    - doi:10.1007/0-387-29362-0_18
+  parent_recipe:
+    name: bioconductor-webbioc
+    path: recipes/bioconductor-webbioc
+    version: 1.52.0
+

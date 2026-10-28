@@ -1,34 +1,45 @@
 {% set version = "1.0.7" %}
 {% set name = "RmiR.Hs.miRNA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 649da235d09f1c8d8cbb0a84bce7085f70ac945b80410bf9d4d9d18a40e2cb5f
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 4aedac188382447d9907d2617aa2e8e6
 build:
-  number: 0
+  number: 17
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rmir.hs.mirna", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: methods, hgug4112a.db
 requirements:
-  build:
-    - bioconductor-annotationdbi
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
   run:
-    - bioconductor-annotationdbi
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
-    - wget
+    - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'The Artistic License, Version 2.0'
-  summary: 'Various databases of microRNA Targets'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: The Artistic License, Version 2.0
+  summary: Various databases of microRNA Targets
+  description: Various databases of microRNA Targets
+extra:
+  parent_recipe:
+    name: bioconductor-rmir.hs.mirna
+    path: recipes/bioconductor-rmir.hs.mirna
+    version: 1.0.7
+

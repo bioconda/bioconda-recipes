@@ -1,39 +1,31 @@
-{% set name = "pbcommand" %}
-{% set version = "0.3.29" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "5156a04aa772543f285914ac0db11ac68e8f1270f880320b676bc1fd6f0a6e5a" %}
 
 package:
-  name: {{ name|lower }}
+  name: pbcommand
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/ed/10/8cb0bb4586a11ddac7383634ad48b095692313b97f1153f0e77e1b70eacc/pbcommand-0.3.29.tar.gz
-  md5: f1b3c2b6039d6bf7cf166bd5df6f3cd8
+  url: https://github.com/PacificBiosciences/pbcommand/releases/download/{{ version }}/pbcommand-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True # [not py27]
-  entry_points:
-    - pbservice = pbcommand.services.cli:main
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - xmlbuilder
-    - jsonschema
-    - avro
-    - requests
-    - iso8601
-    - numpy
-
+  host:
+    - python >=3.7,<3.8
+    - pip
   run:
-    - python
-    - xmlbuilder
-    - jsonschema
-    - avro
+    - python >=3.7,<3.8
+    - setuptools
+    - avro-python3
     - requests
     - iso8601
-    - numpy
+    - pytz
+    - numpy >=1.17
 
 test:
   # Python imports
@@ -47,24 +39,13 @@ test:
     - pbcommand.schemas
     - pbcommand.services
     - pbcommand.testkit
-    - tests
-
-  commands:
-    - pbservice --help
-
-  requires:
-    - avro
-    - iso8601
-    - jsonschema
-    - nose
-    - numpy
-    - requests
-    - sphinx-argparse
-    - sphinx-bootstrap-theme
-    - xmlbuilder
-    - numpy
 
 about:
-  home: https://github.com/PacificBiosciences/pbcommand
-  license: BSD-3-Clause
-  summary: 'Library and Tools for interfacing to PacBio pbsmrtpipe workflow engine.'
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: Library for generating the CLI of various PacBio tools
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh

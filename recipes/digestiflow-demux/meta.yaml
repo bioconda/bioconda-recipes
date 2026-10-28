@@ -1,0 +1,47 @@
+{% set version = "0.5.3" %}
+{% set sha256 = "1f92a8d15631c21d7921131f06b1d811fd011b18425c8f3046b7a0c85f8e52d6" %}
+
+package:
+  name: digestiflow-demux
+  version: "{{ version }}"
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - digestiflow-demux = digestiflow_demux.__main__:main
+  run_exports:
+    - {{ pin_subpackage("digestiflow-demux", max_pin="x.x") }}
+
+source:
+  url: https://github.com/bihealth/digestiflow-demux/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    - patch
+
+requirements:
+  host:
+    - python >=3.5
+    - setuptools
+    - snakemake >=5.4.0
+  run:
+    - python >=3.5
+    - coloredlogs >=10.0
+    - attrs >=18.2.0
+    - requests
+    - snakemake >=5.4.0
+    - toml >=0.10.0
+    - git
+
+test:
+  commands:
+    - "digestiflow-demux --help"
+
+about:
+  home: https://github.com/bihealth/digestiflow-demux
+  license: MIT
+  summary: Digestiflow Command Line Client.
+  description: |
+    A command line client tool to perform semiautomatic demultiplexing of Illumina
+    flowcells using data from Digestiflow Server.

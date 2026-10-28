@@ -1,44 +1,56 @@
-{% set version = "0.9.0" %}
 {% set name = "shovill" %}
+{% set version = "1.4.2" %}
+{% set sha256 = "2bbf2abc1d85ace3c989a177506eaf83e82cdfe2038b5b83de5274517bebf926" %}
+{% set user = "tseemann" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 build:
-    number: 0
-    string: pl{{CONDA_PERL}}_{{PKG_BUILDNUM}}
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-    fn: {{ name }}_v{{ version }}.tar.gz
-    url: https://github.com/tseemann/shovill/archive/v{{ version }}.tar.gz
-    sha256: 0a428609ec39661eb4af417d24e1a5d4cfe5cbc120f7999914c19406fddd41cd
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
-    run:
-        - perl {{CONDA_PERL}}*
-        - perl-time-piece
-        - perl-file-spec
-        - perl-findbin
-        - unzip
-        - lighter
-        - bwa
-        - kmc >=2
-        - flash
-        - pilon >=1.22
-        - seqtk
-        - trimmomatic
-        - spades
-        - pigz
-        - samtools >=1.3
+  run:
+    - python <3.12
+    - perl >=5.32.0
+    - perl-file-spec
+    - perl-findbin
+    - spades >=3.14,<4
+    - skesa >=2.5
+    - megahit >=1.2.9
+    - velvet >=1.2.10
+    - lighter >=1.1
+    - bwa >=0.7.17
+    - kmc >=3.2
+    - flash >=1.2
+    - pilon >=1.22
+    - samclip >=0.4
+    - trimmomatic >=0.36
+    - samtools >=1.10
+    - seqkit
+    - csvtk
+    - pigz
 
 test:
   commands:
-    - "shovill --help"
-    - "shovill --version"
+    - {{ name }} --version | grep -F '{{ version }}'
+    - {{ name }} --check
 
 about:
-  home: https://github.com/tseemann/shovill
+  home: https://github.com/{{ user }}/{{ name }}
   license: GPL2
   license_file: LICENSE
-  summary: Faster SPAdes assembly of Illumina reads
+  summary: Microbial assembly pipeline for Illumina paired-end reads
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - usegalaxy-eu:{{ name }}

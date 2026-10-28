@@ -1,29 +1,64 @@
+{% set name = "perl-cgi" %}
 package:
-  name: perl-cgi
-  version: '4.22'
+  name: {{name}}
+  version: '4.72'
 
 source:
-  fn: CGI-4.22.tar.gz
-  url: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.22.tar.gz
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.72.tar.gz
+  sha256: babc1ca72db188083a1c3812debe88c4473b943b1f7c662281cd57c580a8bdd9
 
 build:
-  number: 3
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('perl-cgi', max_pin="x") }}
 
 requirements:
   build:
-    - gcc
-    - perl-threaded
-    - perl-app-cpanminus
-    - perl-module-build
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - perl
+    - perl-extutils-makemaker
+    - perl-file-temp
+    - perl-parent
+    - perl-test-warn
+    - perl-exporter
+    - perl-carp
+    - perl-encode
+    - perl-test-nowarnings
+    - perl-base
+    - perl-test-deep
+    - perl-html-parser
   run:
-    - libgcc
-    - perl-threaded
+    - perl
+    - perl-file-temp
+    - perl-exporter
+    - perl-carp
+    - perl-encode
+    - perl-parent
+    - perl-base
+    - perl-html-parser
+    - perl-uri
 
 test:
   imports:
     - CGI
+    - CGI::Carp
+    # - CGI::Cookie
+    - CGI::File::Temp
+    - CGI::HTML::Functions
+    #- CGI::Pretty
+    - CGI::Push
+    - CGI::Util
 
 about:
   home: https://metacpan.org/pod/distribution/CGI/lib/CGI.pod
-  license: GPL
-  summary: A generic file fetching mechanism
+  license: Artistic-2.0
+  license_file: LICENSE
+  summary: "A generic file fetching mechanism."
+  doc_url: https://metacpan.org/pod/distribution/CGI/lib/CGI.pod
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

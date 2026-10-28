@@ -1,56 +1,67 @@
-{% set version="91.3" %}
+{% set name = "ensembl-vep" %}
+{% set version = "116.3" %}
 
 package:
-  name: ensembl-vep
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: vep-{{ version }}.tar.gz
-  url: https://github.com/Ensembl/ensembl-vep/archive/release/{{ version }}.tar.gz
-  sha256: b1624ccf77f57d87678e053819acfe10108db73d8dbd0b5f2e821c1e97922034
+  url: https://github.com/Ensembl/ensembl-vep/archive/refs/tags/release/{{ version }}.tar.gz
+  sha256: fe4379330e638e6442a5cb0b806f83eecf401957b2ff7d973a85c75f0d2fa200
 
 build:
-  number: 1
-  skip: True # [osx]
-  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
-    - curl
+  host:
     - perl
     - perl-archive-zip
-    - perl-lwp-simple
-    - unzip
     - perl-dbi
+    - perl-libwww-perl
+    - curl
+    - unzip
   run:
     - perl
-    - htslib {{CONDA_HTSLIB}}*
-    - perl-bioperl
-    - perl-bio-db-hts >=2.7
-    - perl-cgi
+    - perl-bioperl >=1.7.3
+    - perl-bio-bigfile
+    - perl-bio-db-hts >=2.11
+    - perl-bio-procedural
+    - perl-list-moreutils
     - perl-dbi
     - perl-dbd-mysql
+    - perl-dbd-sqlite
     - perl-io-compress
     - perl-json
     - perl-perlio-gzip
     - perl-sereal
     - perl-set-intervaltree
+    - perl-text-csv
+    - htslib
     - unzip
 
 test:
   commands:
-     - vep --help
-     - vep_convert_cache --help
-     - vep_install --help
-     - haplo --help
-     - variant_recoder --help
+    - vep --help
+    - vep_convert_cache --help
+    - vep_install --help
+    - haplo --help
+    - variant_recoder --help
 
 about:
-  home: http://www.ensembl.org/info/docs/tools/vep/index.html
-  license: Apache 2.0
-  summary:  The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions.
+  home: "https://www.ensembl.org/info/docs/tools/vep/index.html"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "Ensembl Variant Effect Predictor"
+  description: "The VEP determines the effect of your variants (SNPs, insertions, deletions, CNVs or structural variants) on genes, transcripts, and protein sequence, as well as regulatory regions."
+  doc_url: "https://useast.ensembl.org/info/docs/tools/vep/script/vep_tutorial.html"
+  dev_url: "https://github.com/Ensembl/ensembl-vep"
 
 extra:
+  identifiers:
+    - biotools:vep
   notes: |
     This package installs only the variant effect predictor (VEP) library
     code. To install data libraries, you can use the 'vep_install' command

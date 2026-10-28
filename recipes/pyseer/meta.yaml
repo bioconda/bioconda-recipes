@@ -1,48 +1,77 @@
+{% set name = "pyseer" %}
+{% set version = "1.4.2" %}
+
 package:
-  name: pyseer
-  version: "0.3.1"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: pyseer-0.3.1.tar.gz
-  url: https://pypi.python.org/packages/75/0a/385b6f7f75d3b5c905db5f59f7f127362e4a0e0b568fc58ca6b35327241f/pyseer-0.3.1.tar.gz
-  md5: 537a846c90150805ccf98ff82d57942c
+  url: https://github.com/mgalardini/pyseer/releases/download/{{ version }}/pyseer-{{ version }}.tar.gz
+  sha256: f01d628e41c7106847b69e3c9c2e2338323e973c0fb188303a3f6e21a7015509
 
 build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   entry_points:
     - pyseer = pyseer.__main__:main
     - square_mash = pyseer.mash:main
-
-  number: 0
+    - similarity_pyseer = pyseer.similarity:main
+    - scree_plot_pyseer = pyseer.scree_plot:main
+    - phandango_mapper = pyseer.kmer_mapping.phandango_plot:main
+    - annotate_hits_pyseer = pyseer.kmer_mapping.annotate_hits:main
+    - enet_predict_pyseer = pyseer.enet_predict:main
+  run_exports:
+    - {{ pin_subpackage('pyseer', max_pin="x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.6
+    - pip
     - setuptools
-    - numpy
-    - scipy
-    - pandas
-    - statsmodels
-
   run:
-    - python
-    - numpy
-    - scipy
+    - python >=3.6
+    - numpy >=1.16.5,<1.23.0
+    - scipy =1.7.0 # avoid errors with older glmnet_py
+    - python-dateutil >=2.5.0
     - pandas
-    - statsmodels
+    - statsmodels >=0.10
+    - scikit-learn
+    - conda-forge::glmnet_py !=1.0.1,!=1.0.2
+    - pysam >=0.15.3  # older versions have wrong openssl pinning
+    - dendropy >=4.4.0
+    - matplotlib-base
+    - pybedtools
     - mash
+    - bwa
+    - bedtools
+    - bedops
+    - tqdm
 
 test:
   imports:
     - pyseer
-
+    - pyseer.fastlmm
+    - pyseer.kmer_mapping
   commands:
-
     - pyseer --help
     - square_mash --help
+    - similarity_pyseer --help
+    - scree_plot_pyseer --help
+    - phandango_mapper --help
+    - annotate_hits_pyseer --help
+    - enet_predict_pyseer --help
 
 about:
-  home: https://github.com/mgalardini/pyseer
-  license: GNU General Public License v3 (GPLv3)
-  summary: 'Sequence Elements Enrichment Analysis (SEER), python implementation'
-  license_family: GPL3
+  home: "https://github.com/mgalardini/pyseer"
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file: LICENSE
+  summary: 'Sequence Element Enrichment Analysis (SEER), python implementation.'
+  dev_url: "https://github.com/mgalardini/pyseer"
+  doc_url: "https://pyseer.readthedocs.io/en/master"
 
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bty539
+    - doi:10.1101/852426v1

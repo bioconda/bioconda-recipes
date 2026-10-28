@@ -1,34 +1,50 @@
+{% set name = "libsequence" %}
+{% set version = "1.9.8" %}
 
 package:
-  name: libsequence
-  version: '1.9.2'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn:  1.9.2.tar.gz
-  url: http://github.com/molpopgen/libsequence/archive/1.9.2.tar.gz
-  md5: e9ac2e624ee5bf93483df01e62429530
+  url: https://github.com/molpopgen/libsequence/archive/{{ version }}.tar.gz
+  sha256: 16c3ff6490861806292391195a8698fc17f4d5d30cbe3f5e5e1de1a03d1105f8
+  patches:
+    - patch
+    - fix-build.patch
 
 build:
-  number: 1
-  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+  number: 8
+  run_exports:
+    - {{ pin_subpackage('libsequence', max_pin="x") }}
 
 requirements:
   build:
-    - gcc
-    - zlib {{ CONDA_ZLIB }}*
-    - tbb
-    - htslib {{CONDA_HTSLIB}}*
-  run:
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
-    - tbb
-    - htslib {{CONDA_HTSLIB}}*
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
+  host:
+    - zlib
+    - boost-cpp
 
 test:
   commands:
-    - libsequenceConfig --version | grep 1.9.2 > /dev/null
+    - libsequenceConfig --version | grep {{ version }}
 
 about:
-  home: http://http://molpopgen.github.io/libsequence/
-  license: GNU Lesser General Public License v2 or later (LGPLv2+)
-  summary: 'A C++ class library for evolutionary genetics.'
+  home: "https://github.com/molpopgen/libsequence"
+  license: "LGPL-3.0-or-later"
+  license_family: LGPL
+  license_file: LICENSE
+  summary: "A C++ class library for evolutionary genetics."
+  dev_url: "https://github.com/molpopgen/libsequence"
+  doc_url: "https://molpopgen.github.io/libsequence"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

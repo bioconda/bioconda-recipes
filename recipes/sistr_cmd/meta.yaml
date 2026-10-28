@@ -1,31 +1,45 @@
+{% set name = "sistr_cmd" %}
+{% set version = "1.1.3" %}
+
 package:
-  name: sistr_cmd
-  version: 1.0.2
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: sistr_cmd-1.0.2.tar.gz
-  url: https://pypi.python.org/packages/48/d5/bf992cf61aef67c9d89879a99000eb02f34ef612608b6f6e0c9394f915f7/sistr_cmd-1.0.2.tar.gz
-  md5: 9a531cf6139a56613943627de267572c
+  url: https://github.com/phac-nml/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f5618c136f87859790d0c2612f14bed6b52dd4c60c974a05ab469528d7478ec6
+  
 
 build:
-  number: 0
-  skip: True # [not linux]
+  number: 2
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - sistr=sistr.sistr_cmd:main
+    - sistr_init=sistr.sistr_cmd:setup_sistr_dbs
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy >=1.11.1
-    - pandas >=0.18.1
+  host:
+    - python >=3.4
+    - pip
+    - setuptools ==58.2.0
+    - pandas >=0.22,<3
+    - pycurl
+    - scipy >=1.1.0,<2
     - pytables >=3.3.0
+    - numpy
   run:
-    - python
-    - numpy >=1.11.1
-    - pandas >=0.18.1
-    - pytables >=3.3.0
-    - blast
+    - python >=3.4
+    - {{ pin_compatible('numpy', max_pin="x") }}
+    - pandas >=0.22,<3
+    - pytables >=3.3.0,<3.10.2
+    - {{ pin_compatible('scipy', max_pin="x.x") }}
+    - {{ pin_compatible('pycurl') }}
+    - blast >=2.9.0
     - mafft
-    - mash
+    - mash >=2.0
+    - python-dateutil
 
 test:
   commands:
@@ -33,6 +47,15 @@ test:
     - sistr -V
 
 about:
-  home: https://github.com/peterk87/sistr_cmd/
-  license: Apache
-  summary: 'Salmonella In Silico Typing Resource (SISTR) commandline tool for serovar prediction'
+  home: https://github.com/phac-nml/sistr_cmd/
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Salmonella In Silico Typing Resource (SISTR) commandline tool for serovar prediction"
+  dev_url: https://github.com/phac-nml/sistr_cmd
+
+extra:
+  identifiers:
+    - usegalaxy-eu:sistr_cmd
+    - doi:10.1371/journal.pone.0147101
+    - biotools:SISTR

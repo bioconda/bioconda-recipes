@@ -1,31 +1,27 @@
 #!/bin/bash
-
 set -e -x -o pipefail
 
-BINARY_HOME=$PREFIX/bin
-PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -fopenmp -O3 -std=c++14 -I${PREFIX}/include/"
 
-mkdir -p $BINARY_HOME
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
-mkdir -p $PREFIX/bin
-mkdir -p $PACKAGE_HOME
+mkdir -p "$PREFIX/bin"
 
-if [ "$(uname)" == "Darwin" ]; then
-    echo "Copying in *.dylib for OSX"
-    mkdir -p $PREFIX/lib/
-    # store the dylib with the binary (with custom name) so it does not
-    # collide with the dylibs provided by libgcc
-    cp $SRC_DIR/V-Phaser-2.0/MacOSX/*.dylib $PACKAGE_HOME
-    mv $PACKAGE_HOME/libgomp.1.dylib $PACKAGE_HOME/libgomp_custom.1.dylib
-    cp $SRC_DIR/V-Phaser-2.0/MacOSX/variant_caller $PACKAGE_HOME
-    install_name_tool -change '@executable_path/libgomp.1.dylib' "@executable_path/libgomp_custom.1.dylib" $PACKAGE_HOME/variant_caller
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    echo "Platform: Linux"
-    cp $SRC_DIR/V-Phaser-2.0/linux64/variant_caller $PACKAGE_HOME
-fi
+# This is all the makefile does and it's simpler to just recreate it than to patch things
+cd V-Phaser-2.0/src
 
-cd $PACKAGE_HOME && chmod +x variant_caller
+${CXX} ${CXXFLAGS} -I${PREFIX}/include/boost -I${PREFIX}/include/bamtools -L${PREFIX}/lib *.cpp -o ${PREFIX}/bin/vphaser2 -lbamtools -lz -pthread
 
-# create links for either common name
-ln -s $PACKAGE_HOME/variant_caller $PREFIX/bin/variant_caller
-ln -s $PACKAGE_HOME/variant_caller $PREFIX/bin/vphaser2
+ln -sf ${PREFIX}/bin/vphaser2 ${PREFIX}/bin/variant_caller

@@ -1,48 +1,53 @@
+{% set name = "percolator" %}
+{% set version = "3.9" %}
+
 package:
-  name: percolator
-  version: '3.1'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: rel-3-01.tar.gz
-  url: https://github.com/percolator/percolator/archive/rel-3-01.tar.gz
-  md5: fcb37bc5fcd0149cc775c3e72ff3dc24
+  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-09.tar.gz
+  sha256: 2caed6362638f401a1527b09dcb2888320dab10fe003f76f584cfd395ed30f73
 
 build:
-  number: 4
-  string: boost_1.62{{PKG_BUILDNUM}}
-  skip: True # [osx]
+  number: 1
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('percolator', max_pin="x") }}
 
 requirements:
   build:
-    - cmake ==2.8.10.2
-    - gcc
-    - zlib {{ CONDA_ZLIB }}*
-    - boost ==1.62 # Specify version to ensure install from conda-forge and get static libs
-    - tokyocabinet
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+  host:
+    - libboost-devel
     - sqlite
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xerces-c ==3.1.2
-    - xsd
+    - bzip2
+    - zlib
   run:
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
-    - tokyocabinet
+    - libboost
     - sqlite
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xerces-c ==3.1.2
-    - xsd
-
+    - zlib
 
 test:
   commands:
-    - sqt2pin -o test.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
-    - percolator -X test.xml $PREFIX/testdata/percolatorTab 
-
-extra:
-  container:
-    extended-base: true  # Add UTF-8 for percolator converters
+    - percolator $PREFIX/testdata/percolatorTab > /dev/null
 
 about:
-  home: https://github.com/percolator/percolator
-  license: Apache 2.0
-  summary: Semi-supervised learning for peptide identification from shotgun proteomics datasets
+  home: "https://github.com/percolator/percolator"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: "license.txt"
+  summary: "Semi-supervised learning for peptide identification from shotgun proteomics datasets."
+  dev_url: "https://github.com/percolator/percolator"
+  doc_url: "http://percolator.ms"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:Percolator
+    - doi:10.1007/s13361-016-1460-7
+    - usegalaxy-eu:percolator

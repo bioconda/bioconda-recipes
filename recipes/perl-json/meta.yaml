@@ -1,23 +1,30 @@
+{% set name = "perl-json" %}
+{% set version = "4.11" %}
+{% set sha256 = "713bdbe724dbb915ed50265ffe47e079a511980cb2427aa19076788bb64c3182" %}
+
 package:
-  name: perl-json
-  version: "2.90"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: JSON-2.90.tar.gz
-  url: https://cpan.metacpan.org/authors/id/M/MA/MAKAMAKA/JSON-2.90.tar.gz
-  md5: e1512169a623e790a3f69b599cc1d3b9
+  url: https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
-    - perl-json-xs <3
-
+    - make
+  host:
+    - perl
+    - perl-json-xs
   run:
-    - perl-threaded
-    - perl-json-xs <3
+    - perl
+    - perl-json-xs
 
 test:
   # Perl 'use' tests
@@ -25,6 +32,7 @@ test:
     - JSON
 
 about:
-  home: http://metacpan.org/pod/JSON
-  license: perl_5
+  home: https://metacpan.org/pod/JSON
+  dev_url: https://github.com/makamaka/JSON
+  license: GPL-1.0-or-later OR Artistic-1.0-Perl
   summary: 'JSON (JavaScript Object Notation) encoder/decoder'

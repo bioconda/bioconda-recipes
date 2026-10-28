@@ -1,29 +1,38 @@
+{% set name = "perl-extutils-parsexs" %}
+{% set version = "3.64" %}
+{% set sha256 = "014b7d1bac86616e0ad7c8476e0a6b6c21d98615ec10cb5bc400ba06ebc288ac" %}
+
 package:
-  name: perl-extutils-parsexs
-  version: "3.28"
+  name: {{ name }}
+  version: {{ version }}
 
-#source:
-  #fn: ExtUtils-ParseXS-3.24.tar.gz
-  #url: http://cpan.metacpan.org/authors/id/S/SM/SMUELLER/ExtUtils-ParseXS-3.24.tar.gz
-  #md5: e6be3f1d493e04ed805576104cf4328b
-#  patches:
-   # List any patch files here
-   # - fix.patch
+source:
+  url: https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-ParseXS-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
-# build:
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('perl-extutils-parsexs', max_pin="x") }}
 
 requirements:
   build:
-    - perl-threaded
-
+    - make
+  host:
+    - perl
+    - perl-carp
+    - perl-exporter
+    - perl-extutils-cbuilder
+    - perl-extutils-makemaker >=6.46
   run:
-    - perl-threaded
+    - perl
+    - perl-carp
+    - perl-exporter
+    - perl-extutils-cbuilder
+    - perl-extutils-makemaker >=6.46
 
 test:
-  # Perl 'use' tests
   imports:
     - ExtUtils::ParseXS
     - ExtUtils::ParseXS::Constants
@@ -36,18 +45,8 @@ test:
     - ExtUtils::Typemaps::OutputMap
     - ExtUtils::Typemaps::Type
 
-  # You can also put a file called run_test.pl (or run_test.py) in the recipe
-  # that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
-
 about:
-  home: http://metacpan.org/pod/ExtUtils::ParseXS
-  license: unknown
-  summary: 'converts Perl XS code into C code'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  home: "https://metacpan.org/pod/ExtUtils::ParseXS"
+  license: Unknown
+  summary: "Converts Perl XS code into C code."
+  doc_url: "https://metacpan.org/pod/ExtUtils::ParseXS"

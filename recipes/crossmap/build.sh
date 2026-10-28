@@ -1,3 +1,6 @@
 #!/bin/bash
+
 rm -f lib/psyco_full.py
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+rm -rf data test
+
+${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation

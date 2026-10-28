@@ -1,34 +1,45 @@
-{% set version = "1.62.0" %}
+{% set version = "1.95.0" %}
 {% set name = "reactome.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b02d51e09d156cb5b0142e1183e7955acea33bc5ea298509bb9d02a46b52f624
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: d93fcdde3a516072c7842f41011228dc
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-reactome.db", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: RSQLite
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.33.0'
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.33.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
-    - wget
+    - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'CC BY 4.0'
-  summary: 'A set of annotation maps for reactome assembled using data from reactome'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: CC BY 4.0
+  summary: A set of annotation maps for reactome
+  description: A set of annotation maps for reactome assembled using data from reactome. This package has been created by a third-party developer, and is not affiliated with the Reactome team.
+extra:
+  parent_recipe:
+    name: bioconductor-reactome.db
+    path: recipes/bioconductor-reactome.db
+    version: 1.64.0
+

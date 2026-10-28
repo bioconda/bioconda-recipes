@@ -1,31 +1,41 @@
-{% set name = "morpheus" %}
-{% set version = "255" %}
-# Do not forget to update the version string in the searchgui.py file
-
-about:
-    home: https://github.com/cwenger/Morpheus/
-    license: MIT
-    summary: mass spectrometry–based proteomics database search algorithm
+{% set version = "290" %}
+{% set sha256 = "ca138b718debdf131d8b48386c5873b4d3c03f8457179991f814cb5278577609" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: morpheus
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/cwenger/Morpheus/releases/download/r{{ version }}/Morpheus_mzML_Mono.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: True    # [osx]
-  script: "cp * $PREFIX/bin && cd $PREFIX/bin && ln -s ./morpheus_mzml_mono_cl.exe ./morpheus"
-
-source:
-    fn: Morpheus_mzML_Mono.tar.gz
-    url: https://github.com/cwenger/Morpheus/releases/download/r{{ version }}/Morpheus_mzML_Mono.tar.gz
-    md5: 918207ce1ecf20f6cdcd4aeb03b84e4b
+  skip: True  # [osx]
+  script: mkdir -p $PREFIX/bin && cp * $PREFIX/bin && cd $PREFIX/bin && ln -s ./morpheus_mzml_mono_cl.exe ./morpheus && chmod +x $PREFIX/bin/morpheus*
+  run_exports:
+    - {{ pin_subpackage('morpheus', max_pin=None) }}
 
 requirements:
-  build:
   run:
     - mono >=4.0.0
 
 test:
-    commands:
-      - mono `which morpheus` | grep 'mzML Mono command line'
+  commands:
+    - mono `which morpheus` | grep 'mzML Mono command line'
+
+about:
+  home: https://github.com/cwenger/Morpheus/
+  license: MIT
+  license_family: MIT
+  license_file: MIT_License.CommandLine.txt
+  summary: mass spectrometry–based proteomics database search algorithm
+  doc_url: https://cwenger.github.io/Morpheus/
+  dev_url: https://github.com/cwenger/Morpheus/
+
+extra:
+  identifiers:
+    - doi:10.1021/pr301024c
+    - biotools:morpheus
+  skip-lints:
+    - should_be_noarch_generic

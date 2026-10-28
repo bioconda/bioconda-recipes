@@ -1,0 +1,32 @@
+{% set version = "3.0" %}
+{% set sha256 = "5a63d98a06c0662c5bafbfb4d54cc34b84c9631e40405627d584130810977a54" %}
+
+package:
+  name: hmftools-cobalt
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/hartwigmedical/hmftools/releases/download/cobalt-v{{ version }}/cobalt_v{{ version }}.jar
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("hmftools-cobalt", max_pin="x.x") }}
+
+requirements:
+  run:
+    - openjdk >=8,<=21
+    - bioconductor-copynumber
+    - r-dplyr
+
+test:
+  commands:
+    - 'cobalt -version | grep Cobalt'
+
+about:
+  home: https://github.com/hartwigmedical/hmftools/blob/master/cobalt/README.md
+  license: GPL-3.0-only
+  license_family: GPL3
+  summary: Calculate read-depth counts and GC ratios to use in PURPLE.

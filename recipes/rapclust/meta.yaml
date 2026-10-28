@@ -3,17 +3,15 @@ package:
   version: "0.1.2"
 
 source:
-  fn: rapclust-0.1.2.tar.gz
   url: https://pypi.python.org/packages/3b/ad/7dcaf6c6507d7b8703fde76aba730f83d7dc6d04c5ef88f22e10f19e9d53/rapclust-0.1.2.tar.gz
   md5: 7e13cecfe0ec6f12211d61888d7e6cf6
 
 build:
-  number: 0
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
+  number: 1
+  noarch: python
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pyyaml
@@ -23,7 +21,6 @@ requirements:
     - pandas
     - tqdm
     - coloredlogs
-
   run:
     - python
     - pyyaml
@@ -38,11 +35,16 @@ test:
   imports:
     - rapclust
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 RapClust --help
+    - RapClust --help
 
 about:
   home: https://github.com/COMBINE-lab/RapClust
   license: BSD with attribution
   summary: 'Accurate, Fast and Lightweight Clustering of de novo Transcriptomes using Fragment Equivalence Classes'
   license_family: BSD
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

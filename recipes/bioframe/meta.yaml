@@ -1,0 +1,53 @@
+{% set name = "bioframe" %}
+{% set version = "0.8.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ea87d7c3f26235bf35396d41bbdcddd21fe7434f7406f8182a67aad241b96fa2
+
+build:
+  noarch: python
+  number: 0
+  script: "touch requirements.txt && {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('bioframe', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+    - hatchling
+    - hatch-vcs
+  run:
+    - numpy >=1.10
+    - pandas >=1.3
+    - matplotlib-base
+    - pyfaidx
+    - pairix
+    - pysam
+    - python >=3.7
+    - pyyaml
+    - requests
+    - six
+    - cytoolz
+
+test:
+  imports:
+    - bioframe
+    - bioframe.io
+
+about:
+  home: "https://github.com/mirnylab/bioframe"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Pandas utilities for tab-delimited and other genomic files"
+  doc_url: https://bioframe.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - abretaud

@@ -1,55 +1,57 @@
-{% set version = "0.5.0" %}
+{% set version = "0.16.4" %}
 
 package:
   name: genomepy
   version: {{ version }}
 
 source:
-  fn: genomepy-{{ version }}.tar.gz
-  url: https://github.com/simonvh/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
-  sha256: 94ff24652af2d1013c514b72801ae1f1779cd347da08fb22d6bea8accaae6d07
+  url: https://github.com/vanheeringen-lab/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: 6ccd1d54867ec33127d5921d356493877df26d865479d7ebde250f007afb104a
 
 build:
   number: 0
-
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage('genomepy', max_pin="x.x") }}
+  
 requirements:
-  build:
-    - python
-    - setuptools
-    - pytest
-    - click
-    - pyfaidx >=0.5.1
-    - norns >0.1.1
-    - xmltodict
-    - bucketcache
-    - msgpack-python
-    - requests
-    - ucsc-bedtogenepred
-    - ucsc-gtftogenepred
-    - ucsc-genepredtobed
-    - ucsc-genepredtogtf
-
+  host:
+    - python >=3.9
+    - pip
+    - hatchling >=1.5.0
   run:
     - python
-    - pytest
+    - appdirs
+    - biopython >=1.73
+    - diskcache
     - click
-    - pyfaidx >=0.5.1
-    - norns >0.1.1
-    - xmltodict
-    - bucketcache
-    - msgpack-python
+    - colorama
+    - filelock >=3.5
+    # - libsqlite <3.49  # v3.49.1: no column "size" (this is a diskcache requirement)
+    - loguru
+    - mygene
+    - mysql <=8.4  # fix for 'mysql_native_password' cannot be loaded
+    - mysql-connector-python <=8.4  # fix for 'mysql_native_password' cannot be loaded
+    - numpy
+    - pandas
+    - pyfaidx >=0.7.2.1
+    - python >=3.9
+    - pyyaml
     - requests
+    - tqdm >=4.51
+    - htslib >=1.11
     - ucsc-bedtogenepred
     - ucsc-gtftogenepred
     - ucsc-genepredtobed
     - ucsc-genepredtogtf
+    - ucsc-gff3togenepred
 
 test:
-  # Python imports
   imports:
     - genomepy
-
-  commands: 
+  commands:
+    - genomepy -v
     - genomepy -h
 
 extra:
@@ -59,7 +61,11 @@ extra:
     extended-base: true  # [py3k]
 
 about:
-  home: https://github.com/simonvh/genomepy
-  license: MIT License
-  summary: 'Download genomes the easy way.'
+  home: https://github.com/vanheeringen-lab/genomepy
+  license: MIT
   license_family: MIT
+  license_file: LICENSE
+  summary: 'Install and use genomes & gene annotations the easy way!'
+  description: |
+    Install and use genomes & gene annotations the easy way!
+  doc_url: https://vanheeringen-lab.github.io/genomepy

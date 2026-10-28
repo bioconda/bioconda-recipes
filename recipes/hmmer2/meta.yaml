@@ -1,23 +1,25 @@
+{% set name = "hmmer2" %}
+
 package:
-  name: hmmer2
+  name: {{ name }}
   version: "2.3.2"
 
 source:
-  fn: hmmer-2.3.2.tar.gz
   url: http://eddylab.org/software/hmmer/2.3.2/hmmer-2.3.2.tar.gz
   sha256: d20e1779fcdff34ab4e986ea74a6c4ac5c5f01da2993b14e92c94d2f076828b4
   patches:
     - Makefile.in.patch
 
 build:
-  number: 2
+  number: 12
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm # [osx]
-  run:
-    - libgcc  # [not osx]
+    - make
+    - {{ compiler('c') }}
+    - gnuconfig
 
 test:
   commands:
@@ -34,10 +36,15 @@ test:
 
 
 about:
-  summary: 'Biosequence analysis using profile hidden Markov models'
-  home: http://hmmer.org/
-  license: GPLv2
+  summary: 'Biosequence analysis using profile hidden Markov models.'
+  home: "http://hmmer.org"
+  license: "GPL-2.0-or-later"
   license_file: LICENSE
   notes: |
     This package appends "2" to the all HMMER tool binary names,
     allowing use in parallel with HMMER version 3 onwards.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

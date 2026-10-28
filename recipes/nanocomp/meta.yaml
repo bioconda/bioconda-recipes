@@ -1,33 +1,37 @@
-{% set version = "0.15.0" %}
+{% set version = "1.25.6" %}
 
 package:
   name: nanocomp
   version: {{ version }}
 
 source:
-  fn: NanoComp-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/n/nanocomp/NanoComp-{{ version }}.tar.gz
-  sha256: 10e03c1f15802091a4b2e1305f5b37788f759db2537296e26868f1b075b29ad2
+  url: https://pypi.io/packages/source/n/nanocomp/nanocomp-{{ version }}.tar.gz
+  sha256: 89cec6e4cee1110da5975a6e9512816120edd81638ad1896ca037c86e9237d43
 
 build:
   entry_points:
     - NanoComp=nanocomp.NanoComp:main
   number: 0
-  skip: True  # [py27]
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('nanocomp', max_pin='x') }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
+    - pip
     - setuptools
-
   run:
-    - python
+    - python >=3
+    - numpy >=1.16.5
     - pandas
-    - numpy
-    - nanoplotter >=0.33.0
-    - nanoget >=1.4.0
-    - nanomath >=0.15.3
-    - nanoplot >=0.19.1
+    - pyarrow
+    - nanoget >=1.19.0
+    - nanomath >=1.0.0
+    - nanoplot >=1.46.1
+    - psutil
+    - plotly >=3.4.2
 
 test:
   imports:
@@ -38,6 +42,7 @@ test:
 
 about:
   home: https://github.com/wdecoster/NanoComp
-  license: MIT License
+  license: MIT
   summary: 'Comparing runs of Oxford Nanopore sequencing data and alignments'
   license_family: MIT
+  license_file: LICENSE

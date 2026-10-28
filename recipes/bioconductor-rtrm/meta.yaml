@@ -1,38 +1,58 @@
-{% set version = "1.16.0" %}
+{% set version = "1.48.0" %}
 {% set name = "rTRM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b0e724c6b17c0d579b501a10a1d783099c9cf04af5af3a76dec2c700015e932d
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: fef3bdf8af29066178a873061b7f719b
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-rtrm", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: RUnit, BiocGenerics, MotifDb, graph, PWMEnrich, biomaRt, Biostrings, BSgenome.Mmusculus.UCSC.mm8.masked, org.Hs.eg.db, org.Mm.eg.db, ggplot2, BiocStyle, knitr, rmarkdown
 requirements:
-  build:
-    - bioconductor-annotationdbi
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
     - r-dbi
-    - 'r-igraph >=1.0'
+    - r-igraph >=1.0
     - r-rsqlite
   run:
-    - bioconductor-annotationdbi
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
     - r-dbi
-    - 'r-igraph >=1.0'
+    - r-igraph >=1.0
     - r-rsqlite
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'rTRM identifies transcriptional regulatory modules (TRMs) from protein-protein interaction networks.'
+  summary: Identification of Transcriptional Regulatory Modules from Protein-Protein Interaction Networks
+  description: rTRM identifies transcriptional regulatory modules (TRMs) from protein-protein interaction networks.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:rtrm
+  parent_recipe:
+    name: bioconductor-rtrm
+    path: recipes/bioconductor-rtrm
+    version: 1.18.0
+

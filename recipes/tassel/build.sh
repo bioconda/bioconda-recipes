@@ -9,6 +9,7 @@ cp -R $SRC_DIR/* $TASSEL_HOME/
 sed -i 's/\r//' $TASSEL_HOME/*.pl
 
 # Create symbolic links for TASSEL's wrappers
+mkdir -p $BINARY_HOME
 ln -s $TASSEL_HOME/run_anything.pl $BINARY_HOME/ 
 ln -s $TASSEL_HOME/run_pipeline.pl $BINARY_HOME/
 ln -s $TASSEL_HOME/start_tassel.pl $BINARY_HOME/

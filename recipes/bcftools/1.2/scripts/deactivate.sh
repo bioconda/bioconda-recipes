@@ -1,4 +1,0 @@
-if [[ -n "$_CONDA_SET_BCFTOOLS_PLUGINS" ]]; then
-	unset BCFTOOLS_PLUGINS
-	unset _CONDA_SET_BCFTOOLS_PLUGINS
-fi

@@ -1,46 +1,63 @@
-{% set version="1.7.1" %}
+{% set name = "synapseclient" %}
+{% set version = "4.14.0" %}
 
 package:
-  name: synapseclient
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: synapseclient-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/s/synapseclient/synapseclient-{{ version }}.tar.gz
-  md5: 94cafb568a0c3adfe35cd3a4e826f1bb
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/synapseclient-{{ version }}.tar.gz
+  sha256: a196f0df9c419ab1a18d9add5d355e9e3da991b5c494ddeb405e4600299f6253
 
 build:
-  skip: False
+  noarch: python
   entry_points:
     - synapse = synapseclient.__main__:main
   number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('synapseclient', max_pin="x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.9,<3.13
+    - pip
     - setuptools
-    - requests >=1.2
-    - six
-    - future
-    - backports.csv
-
   run:
-    - python
-    - requests >=1.2
-    - six
-    - future
-    - backports.csv
+    - python >=3.9,<3.13
+    - requests >=2.22
+    - urllib3 <2
+    - deprecated >=1.2.4
+    - opentelemetry-api
+    - opentelemetry-sdk
+    - opentelemetry-exporter-otlp-proto-http
+    - opentelemetry-instrumentation
+    - opentelemetry-instrumentation-httpx
+    - opentelemetry-instrumentation-requests
+    - opentelemetry-instrumentation-threading
+    - opentelemetry-instrumentation-urllib
+    - nest-asyncio
+    - asyncio-atexit
+    - httpx
+    - tqdm
+    - loky
+    - async-lru
+    - psutil
 
 test:
   imports:
     - synapseclient
   commands:
     - synapse --help
-  requires:
-    - mock
-    - nose
 
 about:
-  home: http://synapse.sagebase.org/
-  license: Apache Software License
-  summary: 'A client for Synapse, a collaborative compute space  that allows scientists to share and analyze data together.'
+  home: "https://www.synapse.org"
+  license: "Apache-2.0"
+  license_family: APACHE
+  summary: "Python client for Synapse."
+  description: |
+    A client for Synapse, a collaborative compute space  that allows
+    scientists to share and analyze data together.
+  license_file: LICENSE
+  dev_url: "https://github.com/Sage-Bionetworks/synapsePythonClient"
+  doc_url: "https://python-docs.synapse.org"

@@ -1,32 +1,45 @@
-{% set version = "2.8.0" %}
+{% set version = "2.36.0" %}
 {% set name = "BubbleTree" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.20" %}
 
-package:
-  name: 'bioconductor-{{ name|lower }}'
-  version: '{{ version }}'
-source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
-  url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 218d2c332c8b861af538cf4e5a2b470b7fdb76602cc2f8766b72aad8ac3e0eda
+about:
+  description: CNV analysis in groups of tumor samples.
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: LGPL (>= 3)
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+  summary: 'BubbleTree: an intuitive visualization to elucidate tumoral aneuploidy and clonality in somatic mosaicism using next generation sequencing data'
+
 build:
-  number: 1
+  noarch: generic
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bubbletree", max_pin="x.x") }}'
+
+extra:
+  identifiers:
+    - biotools:bubbletree
+    - doi:10.1093/nar/gkv1102
+  parent_recipe:
+    name: bioconductor-bubbletree
+    path: recipes/bioconductor-bubbletree
+    version: 2.10.0
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+# Suggests: knitr, rmarkdown
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - bioconductor-biocstyle
-    - bioconductor-biovizbase
-    - 'bioconductor-genomeinfodb >=1.14.0'
-    - 'bioconductor-genomeinfodbdata >=1.0.0'
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
+  host:
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biovizbase >=1.54.0,<1.55.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-dplyr
     - r-e1071
@@ -39,15 +52,13 @@ requirements:
     - r-rcolorbrewer
     - r-writexls
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - bioconductor-biocstyle
-    - bioconductor-biovizbase
-    - 'bioconductor-genomeinfodb >=1.14.0'
-    - 'bioconductor-genomeinfodbdata >=1.0.0'
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
+    - bioconductor-biobase >=2.66.0,<2.67.0
+    - bioconductor-biocgenerics >=0.52.0,<0.53.0
+    - bioconductor-biocstyle >=2.34.0,<2.35.0
+    - bioconductor-biovizbase >=1.54.0,<1.55.0
+    - bioconductor-genomicranges >=1.58.0,<1.59.0
+    - bioconductor-iranges >=2.40.0,<2.41.0
+    - bioconductor-limma >=3.62.0,<3.63.0
     - r-base
     - r-dplyr
     - r-e1071
@@ -59,10 +70,16 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-writexls
+
+source:
+  md5: acf0e813b99cba417798d192588822e0
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'LGPL (>= 3)'
-  summary: 'CNV analysis in groups of tumor samples.'
+    - $R -e "library('{{ name }}')"
+

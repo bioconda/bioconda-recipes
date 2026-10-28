@@ -1,0 +1,42 @@
+{% set name = "vcf2variants" %}
+{% set version = "1.4" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a592bc420a0b21d19abf3d95285a52f768b428342a959bd357e5a2c922b9891e
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('vcf2variants', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+  run:
+    - python >=3.6
+    - pysam
+
+test:
+  commands:
+    - vcf2variants -h
+  imports:
+    - vcf2variants
+
+about:
+  home: https://github.com/varda/varda2_preprocessing
+  license: MIT
+  license_family: MIT
+  summary: Convert vcf files to varda variant files.
+
+extra:
+  recipe-maintainers:
+    - marksantcroos

@@ -1,34 +1,56 @@
+{% set name = "gxformat2" %}
+{% set version = "0.28.0" %}
+
 package:
-  name: gxformat2
-  version: "0.2.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: gxformat2-0.2.0.tar.gz
-  url: https://pypi.python.org/packages/cb/9e/996296fb03124406d78e51bb161c2ce1e09ebb20cdb7ca83d830dd598eb4/gxformat2-0.2.0.tar.gz
-  md5: d13123b54de67d8bb941399b54b728ee
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4a9b0121430aabcc4ce2e726d629ca351f733a3067e15c16b9985847ee0093e3
 
 build:
-  preserve_egg_dir: True
-  script: python -m pip install --no-deps --ignore-installed .
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - gxwf-to-native = gxformat2.converter:main
+    - gxwf-to-format2 = gxformat2.export:main
+    - gxwf-lint = gxformat2.lint:main
+    - gxwf-viz = gxformat2.cytoscape:main
+    - gxwf-abstract-export = gxformat2.abstract:main
+    - gxwf-mermaid = gxformat2.mermaid:main
+    - gxwf-layout = gxformat2.layout:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.10
     - pip
     - setuptools
-    - pyyaml
-    - bioblend
   run:
-    - python
-    - pyyaml
+    - python >=3.10
     - bioblend
+    - pydantic >=2.0
+    - pyyaml
+    - requests
+    - ruamel.yaml >=0.17.6
+    - schema-salad >=8.10.20260810193251
+    - typing_extensions
 
 test:
   imports:
     - gxformat2
 
 about:
-  home: https://github.com/jmchilton/gxformat2
-  license: Academic Free License (AFL)
-  summary: 'Galaxy Workflow Format 2 Descriptions'
-  license_family: OTHER
+  home: "https://github.com/jmchilton/gxformat2"
+  license: MIT
+  summary: "Galaxy Workflow Format 2 Descriptions."
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: "https://github.com/jmchilton/gxformat2"
+
+extra:
+  recipe-maintainers:
+    - nsoranzo

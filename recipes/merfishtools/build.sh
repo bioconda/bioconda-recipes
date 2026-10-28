@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/bash 
 
-# build statically linked binary with Rust
-LIBRARY_PATH=$PREFIX/lib cargo build --release
-# install the binary
-cp target/release/merfishtools $PREFIX/bin
+set -xe
+
+# build statically linked binary with Rust and install it to $PREFIX/bin
+LIBRARY_PATH=$PREFIX/lib cargo install --root ${PREFIX} --path .
+
 # install the Python package
 $PYTHON setup.py install

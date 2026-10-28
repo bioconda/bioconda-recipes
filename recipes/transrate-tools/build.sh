@@ -1,34 +1,45 @@
 #!/bin/bash
-
 set -ef -o pipefail
 
-wget https://raw.githubusercontent.com/blahah/transrate-tools/master/LICENSE
+mkdir -p "$PREFIX/bin"
 
-export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include -I${PREFIX}/include/bamtools"
-
-export C_INCLUDE_PATH="${PREFIX}/include:${PREFIX}/include/bamtools"
-export CPLUS_INCLUDE_PATH="${PREFIX}/include:${PREFIX}/include/bamtools"
-export CXXFLAGS="-I${PREFIX}/include -I${PREFIX}/include/bamtools"
-export CXX_FLAGS="-I${PREFIX}/include -I${PREFIX}/include/bamtools"
-export CMAKE_CXX_FLAGS="-I${PREFIX}/include -I${PREFIX}/include/bamtools"
-
-export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
-export LD_FLAGS="-L${PREFIX}/lib"
-export CMAKE_LD_FLAGS="-L${PREFIX}/lib"
-export CMAKE_LDFLAGS="-L${PREFIX}/lib"
-export CC=gcc
-export CXX=g++
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
 rm -rf bamtools
-mkdir -p bamtools
-ln -s $PREFIX/lib bamtools/
-ln -s $PREFIX/include bamtools/
-mkdir -p build
-pushd build
+mkdir -p bamtools/include
 
-mkdir -p $PREFIX/bin
+ln -sf $PREFIX/lib bamtools/
+ln -sf $PREFIX/include/bamtools/api bamtools/include/
+ln -sf $PREFIX/include/bamtools/shared bamtools/include/
 
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ${SRC_DIR}
-make
-cp src/bam-read $PREFIX/bin/
-popd
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
+
+if [[ "$(uname -s)" == "Linux" ]]; then
+	sed -i.bak 's|ZLIB REQUIRED STATIC|ZLIB REQUIRED|' CMakeLists.txt
+	rm -rf *.bak
+	export CONFIG_ARGS=""
+else
+	export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
+fi
+
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_CXX_COMPILER="${CXX}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
+	"${CONFIG_ARGS}"
+
+cmake --build build -j 1
+
+install -v -m 0755 build/src/bam-read "$PREFIX/bin"

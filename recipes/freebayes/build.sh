@@ -1,67 +1,59 @@
 #!/bin/bash
 
-if [ "$(uname)" == "Darwin" ]; then
-    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
-    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
-    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
+mkdir -p ${PREFIX}/bin
 
-    # Patch vcflib: fix for missing <thread> include.
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
+mkdir build
+
+export C_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.h
+sed -i.bak -e 's|"split.h"|<vcflib/split.h>|' src/*.cpp
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.h
+sed -i.bak -e 's|"convert.h"|<vcflib/convert.h>|' src/*.cpp
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.h
+sed -i.bak -e 's|"join.h"|<vcflib/join.h>|' src/*.cpp
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.h
+sed -i.bak -e 's|"multichoose.h"|<vcflib/multichoose.h>|' src/*.cpp
+sed -i.bak -e 's|<Variant.h>|<vcflib/Variant.h>|' src/*.h
+sed -i.bak -e 's|<intervaltree/IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.h
+sed -i.bak -e 's|<IntervalTree.h>|<vcflib/IntervalTree.h>|' src/BedReader.cpp
+sed -i.bak -e 's|<Fasta.h>|"Fasta.h"|' ${PREFIX}/include/vcflib/Variant.h
+rm -rf src/*.bak
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "x86_64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch x86_64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
+elif [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export CXXFLAGS="${CXXFLAGS} -arch arm64"
+	sed -i.bak -e 's|c++17|c++14|' meson.build
+	rm -rf *.bak
 fi
 
-# Patch vcflib.
-# Tabix missing library https://github.com/ekg/tabixpp/issues/5.
-# Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589.
-sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' vcflib/tabixpp/Makefile
-sed -i.bak 's/-ltabix//' vcflib/Makefile
+CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" meson setup --buildtype release \
+	--prefix "${PREFIX}" --strip --includedir "${PREFIX}/include" \
+	--libdir "${PREFIX}/lib" -Dc_args="-I${PREFIX}/include" \
+	-Dc_link_args="-L${PREFIX}/lib" build/
 
-# Set exports.
-export CFLAGS="-I$PREFIX/include"
-export C_INCLUDE_PATH=$PREFIX/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+cd build
 
-# Make bamtools.
-mkdir -p bamtools/build
-cd bamtools/build
-cmake ..
-cd ../..
+sed -i.bak -e 's|-I../src|-I../src -I../contrib -I../contrib/SeqLib -I../contrib/fastahack -I../contrib/smithwaterman|' build.ninja
+rm -rf *.bak
 
-# Make autoversion.
-cd src
-make autoversion
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
-cd ..
+ninja -v -j"${CPU_COUNT}"
+ninja install -v -j"${CPU_COUNT}"
 
-# Make vcflib (needed for freebayes-parallel).
-cd vcflib
-make
-cd ..
+## Copy scripts over to ${PREFIX}/bin ##
+install -v -m 0755 ../scripts/*.py "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.sh "${PREFIX}/bin"
+install -v -m 0755 ../scripts/*.pl "${PREFIX}/bin"
+install -v -m 0755 ../scripts/freebayes-parallel "${PREFIX}/bin"
 
-# Translate for Python 3 if needed.
-pythonfiles="scripts/fasta_generate_regions.py scripts/coverage_to_regions.py vcflib/scripts/vcffirstheader"
-
-PY3_BUILD="${PY_VER%.*}"
-
-if [ $PY3_BUILD -eq 3 ]
-then
-    for i in $pythonfiles; do 2to3 --write $i; done
-fi
-
-# Copy executables.
-mkdir -p $PREFIX/bin
-cp -r bin/* $PREFIX/bin
-
-sed -i.bak 's/..\/vcflib\/scripts\///g; s/..\/vcflib\/bin\///g' scripts/freebayes-parallel
-cp scripts/freebayes-parallel $PREFIX/bin
-
-sed -i.bak 's@#!/usr/bin/python@#!/usr/bin/env python@g' scripts/fasta_generate_regions.py
-cp scripts/fasta_generate_regions.py $PREFIX/bin
-
-cp scripts/coverage_to_regions.py $PREFIX/bin
-cp scripts/generate_freebayes_region_scripts.sh $PREFIX/bin
-
-cp vcflib/bin/vcfstreamsort $PREFIX/bin
-cp vcflib/bin/vcfuniq $PREFIX/bin
-cp vcflib/scripts/vcffirstheader $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/freebayes"

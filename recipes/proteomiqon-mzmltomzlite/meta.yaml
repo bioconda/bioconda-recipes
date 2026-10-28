@@ -1,0 +1,46 @@
+{% set name = "proteomiqon-mzmltomzlite" %}
+{% set version = "0.0.10" %}
+{% set sha256 = "e90c35bb212f5b431f0ccd84aae016a9cef0653d2136602b82f248f2bd508c32" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.MzMLToMzLite/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-mzmltomzlite"
+    - test -f "$PREFIX/lib/dotnet/tools/MzMLToMzLite/ProteomIQon.MzMLToMzLite.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-mzmltomzlite"
+    - grep -q "MzMLToMzLite/ProteomIQon.MzMLToMzLite.dll" "$PREFIX/bin/proteomiqon-mzmltomzlite"
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool MzMLToMzLite allows to convert mzML files to mzLite files.
+  description: |
+    The success of modern proteomics was made possible by constant progression in the field of mass spectrometry. Over the course of the past years quite a few manufacturers of
+    mass spectrometers have managed to establish themselfes in the field of biological research. Since aquisition and accession of mass spectra are performance critical processes,
+    various performance optimized, but vendor specific and closed source formats have been developed to store raw MS data. This comes to the disadvantage for toolchain developers
+    which want to provide tools for every scientist regardless of the format of their raw data.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/MzMLToMzLite.html

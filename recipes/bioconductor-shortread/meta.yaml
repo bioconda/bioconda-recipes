@@ -1,58 +1,95 @@
-{% set version = "1.36.0" %}
+{% set version = "1.68.0" %}
 {% set name = "ShortRead" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9f7dbec9d74f16a67403a0f801024fceb637c5ddef2ad97e5716925635b5b31a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 43070d34a1b5f924c71600ad8dcc965b
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-shortread", max_pin="x.x") }}'
+
+# Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi, knitr
 requirements:
+
   build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - bioconductor-biocparallel
-    - 'bioconductor-biostrings >=2.37.1'
-    - 'bioconductor-genomeinfodb >=1.1.19'
-    - 'bioconductor-genomicalignments >=1.5.4'
-    - 'bioconductor-genomicranges >=1.21.6'
-    - 'bioconductor-iranges >=2.3.7'
-    - 'bioconductor-rsamtools >=1.21.4'
-    - 'bioconductor-s4vectors >=0.13.8'
-    - bioconductor-zlibbioc
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+
+  host:
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-pwalign >=1.6.0,<1.7.0
+    - bioconductor-rhtslib >=3.6.0,<3.7.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-xvector >=0.50.0,<0.51.0
     - r-base
     - r-hwriter
     - r-lattice
     - r-latticeextra
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - bioconductor-biocparallel
-    - 'bioconductor-biostrings >=2.37.1'
-    - 'bioconductor-genomeinfodb >=1.1.19'
-    - 'bioconductor-genomicalignments >=1.5.4'
-    - 'bioconductor-genomicranges >=1.21.6'
-    - 'bioconductor-iranges >=2.3.7'
-    - 'bioconductor-rsamtools >=1.21.4'
-    - 'bioconductor-s4vectors >=0.13.8'
-    - bioconductor-zlibbioc
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicalignments >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-pwalign >=1.6.0,<1.7.0
+    - bioconductor-rhtslib >=3.6.0,<3.7.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-xvector >=0.50.0,<0.51.0
     - r-base
     - r-hwriter
     - r-lattice
     - r-latticeextra
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'This package implements sampling, iteration, and input of FASTQ files. The package includes functions for filtering and trimming reads, and for generating a quality assessment report. Data are represented as DNAStringSet-derived objects, and easily manipulated for a diversity of purposes.  The package also contains legacy support for early single-end, ungapped alignment formats.'
+  summary: FASTQ input and manipulation
+  description: This package implements sampling, iteration, and input of FASTQ files. The package includes functions for filtering and trimming reads, and for generating a quality assessment report. Data are represented as DNAStringSet-derived objects, and easily manipulated for a diversity of purposes.  The package also contains legacy support for early single-end, ungapped alignment formats.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:shortread
+  parent_recipe:
+    name: bioconductor-shortread
+    path: recipes/bioconductor-shortread
+    version: 1.38.0
+

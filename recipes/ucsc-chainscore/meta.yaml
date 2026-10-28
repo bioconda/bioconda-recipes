@@ -1,0 +1,49 @@
+{% set package = "ucsc-chainscore" %}
+{% set program = "chainScore" %}
+{% set version = "455" %}
+{% set sha256 = "e458cadad7c4a5c1b8385edafffa1b29380ac725a0c20535bf5a3bab99fe80db" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.archive/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
+
+build:
+  skip: True  # [osx]
+  number: 1
+  run_exports:
+    - {{ pin_subpackage("ucsc-chainscore", max_pin=None) }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - binutils >=2.32  # https://wiki.gentoo.org/wiki/Project:Toolchain/Binutils_2.32_upgrade_notes/elfutils_0.175:_unable_to_initialize_decompress_status_for_section_.debug_info
+    - {{ compiler('cxx') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Remove chain-breaking alignments from chains that break nested chains."

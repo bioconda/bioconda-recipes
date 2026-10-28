@@ -1,42 +1,53 @@
+{% set name = "RepeatMasker" %}
+{% set version = "4.2.4" %}
+{% set sha256 = "7407b42909c64b7ae080efb737f3f725327be81ace1ec0cd9dc13c4a503885d7" %}
+
 package:
-    name: repeatmasker
-    version: 4.0.7
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-    fn:  RepeatMasker-open-4-0-7.tar.gz
-    url: http://repeatmasker.org/RepeatMasker-open-4-0-7.tar.gz
-    sha256: 16faf40e5e2f521146f6692f09561ebef5f6a022feb17031f2ddb3e3aabcf166
-    patches:
-      - patch1
+  url: https://www.repeatmasker.org/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
 build:
-  number: 10
-  detect_binary_files_with_prefix: False
-  has_prefix_files:
-    - bin/RepeatMasker
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('repeatmasker', max_pin="x") }}
 
 requirements:
-  build:
+  host:
     - perl
-    - rmblast
+    - rmblast >=2.17.0
+    - h5py
+    - trf # required for config
+    - famdb # required for config
   run:
-    - perl-text-soundex
-    - rmblast
+    - rmblast >=2.17.0
     - hmmer
     - trf
     - perl
-    - perl-text-soundex
+    - h5py
+    - gzip  # [osx]
+    - wget
+    - famdb
 
 test:
-# pvanheus - disable file based tests for
-# now - they don't work with Dockerized
-# containers - 13/1/2017
-#  files:
-#    - rm_input1.fasta
-#    - sample_repeats.fasta
-#    - test_md5.txt
   commands:
     - RepeatMasker | grep "RepeatMasker - Mask repetitive DNA" > /dev/null
 
 about:
-    home: http://www.repeatmasker.org
-    license: Open Software License v2.1
-    summary: RepeatMasker is a program that screens DNA sequences for interspersed repeats and low complexity DNA sequences.
+  home: "https://www.repeatmasker.org/RepeatMasker"
+  license: "Open Software License v2.1"
+  summary: "RepeatMasker is a program that screens DNA sequences for interspersed repeats and low complexity DNA sequences."
+  dev_url: "https://github.com/Dfam-consortium/RepeatMasker"
+  doc_url: "https://www.repeatmasker.org/RepeatMasker"
+
+extra:
+  identifiers:
+    - biotools:repeatmasker
+    - usegalaxy-eu:repeatmasker_wrapper
+  recipe-maintainers:
+    - mencian
+    - TobyBaril

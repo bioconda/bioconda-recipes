@@ -1,23 +1,10 @@
 #! /bin/bash
-binaries="\
-misc/msToGlf \
-misc/contamination \
-misc/contamination2 \
-misc/splitgl \
-misc/thetaStat \
-misc/printIcounts \
-misc/NGSadmix \
-misc/realSFS \
-misc/smartCount \
-misc/supersim \
-angsd \
-"
-BINDIR=$PREFIX/bin
-mkdir -p $BINDIR
 
-export LDFLAGS="-L=${PREFIX}/lib"
-export CPLUS_INCLUDE_PATH="-I=${PREFIX}/include"
+mkdir -p ${PREFIX}/bin
 
-make
+cd angsd
 
-for i in $binaries; do cp $i $BINDIR && chmod +x $BINDIR/$(basename $i); done
+# '-D__STDC_FORMAT_MACROS' fix from https://github.com/ANGSD/angsd/issues/397
+make HTSSRC="systemwide" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" prefix=$PREFIX \
+ CC="$CC" CXX="$CXX" FLAGS="-I${PREFIX}/include -L${PREFIX}/lib -D__STDC_FORMAT_MACROS" \
+ install-all

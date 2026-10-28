@@ -1,40 +1,63 @@
-{% set version = "1.48.0" %}
+{% set version = "1.80.0" %}
 {% set name = "SIM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cecad837161de40bc56dc745e3fb1776f3804f77fa5eb44b285bb4160b3f40d8
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ce518fb3260b74abae74be697121a380
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-sim", max_pin="x.x") }}'
+
+# Suggests: biomaRt, RColorBrewer
 requirements:
   build:
-    - bioconductor-globaltest
-    - bioconductor-quantsmooth
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-globaltest >=5.64.0,<5.65.0
+    - bioconductor-quantsmooth >=1.76.0,<1.77.0
     - r-base
     - r-quantreg
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-globaltest
-    - bioconductor-quantsmooth
+    - bioconductor-globaltest >=5.64.0,<5.65.0
+    - bioconductor-quantsmooth >=1.76.0,<1.77.0
     - r-base
     - r-quantreg
-    - libcxx # [osx]
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Finds associations between two human genomic datasets.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Integrated Analysis on two human genomic datasets
+  description: Finds associations between two human genomic datasets.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  identifiers:
+    - biotools:sim
+    - doi:10.1186/1471-2105-10-203
+  parent_recipe:
+    name: bioconductor-sim
+    path: recipes/bioconductor-sim
+    version: 1.50.0
+

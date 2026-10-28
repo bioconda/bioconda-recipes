@@ -1,42 +1,69 @@
+{% set name = "mothur" %}
+{% set mothurVersion = "1.48.6" %}
+{% set mothurSha256 = "8a5ff6b02206e85ca1172d112e3ea7bb0a4db70e6946e779441167a867f75352" %}
+{% set vsearchVersion = "2.15.2" %}
+
 package:
-  name: mothur
-  version: 1.39.5
+  name: {{ name }}
+  version: {{ mothurVersion }}
 
 source:
-  fn: v1.39.5.tar.gz
-  url: https://github.com/mothur/mothur/archive/v1.39.5.tar.gz
-  md5: 1f826ea4420e6822fc0db002c5940b92
+  url: https://github.com/mothur/mothur/archive/refs/tags/v{{ mothurVersion }}.tar.gz
+  sha256: {{ mothurSha256 }}
   patches:
-    - Build-Flags.patch
+    - 0001-Makefile.patch
+    # - 0002-Makefile-osx.patch  # [osx]
+    - 0003-uchime_makefile.patch
 
 build:
-  number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [not linux64 or osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mothur', max_pin="x") }}
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
-    - ncurses
+    - make
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost-cpp
+    - gsl
+    - hdf5
     - readline
-    - boost >=1.55,{{CONDA_BOOST}}*
-    - blast-legacy
+    - sra-tools
+    - vsearch >=2.15.2
+    - zlib
+    - bzip2
+    - blast
   run:
-    - libgcc   # [linux]
-    - zlib {{CONDA_ZLIB}}*
-    - ncurses
+    - boost-cpp
+    - gsl
+    - hdf5
     - readline
-    - boost {{CONDA_BOOST}}*
-    - blast-legacy
+    - sra-tools
+    - vsearch >=2.15.2
+    - blast
+
 test:
   commands:
-     - mothur "#help()"
-     - uchime --version
+    - mothur "#help()"
+    - uchime --version
 
 about:
-  home: http://www.mothur.org
-  license: GPL
-  license_file: LICENSE.md
-  summary: This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community.
+  home: "https://www.mothur.org"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: "LICENSE.md"
+  summary: "This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community."
+  dev_url: "https://github.com/mothur/mothur"
+  doc_url: "https://mothur.org/wiki/mothur_manual"
+
+extra:
+  identifiers:
+    - doi:10.1128/AEM.01541-09
+    - usegalaxy-eu:mothur_get_label
+    - biotools:mothur
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

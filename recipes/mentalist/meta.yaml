@@ -1,36 +1,54 @@
 {% set name = "MentaLiST" %}
-{% set version = "0.2.1" %}
+{% set version = "0.2.5" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: https://github.com/WGS-TB/MentaLiST/archive/v{{ version }}.tar.gz
-  sha256: a148fcd552c9ce4964dd7cc88d7771fc5bde7d94ed46e8145ba61c8a88804c92
+  sha256: 6cc0ff1f39e892b0a5c71e6d477404c6b72d368ab3436146248419d59863eb48
 
 build:
-  number: 1
+  number: 0
+  # error: The system returned an invalid home directory path `UNKNOWN/.julia/juliaup`.
   skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
-    - julia 0.6.1
-    - hdf5 {{ CONDA_HDF5 }}*
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - juliaup >=1.10
+    - hdf5
     - mpfr
   run:
-    - julia 0.6.1
-    - hdf5 {{ CONDA_HDF5 }}*
+    - juliaup >=1.10
+    - hdf5
     - mpfr
     - libxml2
+    - unzip
 
 test:
   commands:
-    - mentalist -h
+    - test -f "${PREFIX}/bin/mentalist"
+    #- mentalist -h
 
 about:
-  home: https://github.com/WGS-TB/MentaLiST
-  summary: The MLST pipeline developed by the PathOGiST research group.
+  home: "https://github.com/WGS-TB/MentaLiST"
+  summary: "The MLST pipeline developed by the PathOGiST research group."
   license: MIT
+  license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/WGS-TB/MentaLiST"
+  doc_url: "https://github.com/WGS-TB/MentaLiST/blob/v{{ version }}/README.md"
+
+#extra:
+  #additional-platforms:
+    # lib/julia/libstdc++.so.6: symbol __cxa_thread_atexit_impl, version GLIBC_2.18 not defined in file libc.so.6 with link time reference
+    #- linux-aarch64
+    #The system returned an invalid home directory path `UNKNOWN/.julia/juliaup`.
+    #- osx-arm64

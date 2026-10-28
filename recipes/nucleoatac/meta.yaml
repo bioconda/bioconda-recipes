@@ -1,46 +1,80 @@
 {% set name = "nucleoatac" %}
-{% set version = "0.3.4" %}
+{% set version = "1.0.0" %}
+{% set commit = "22edcd0d026845c94013e12e5c550a17842edb7f" %}
+{% set sha256 = "2bf6f790b294cf119d8c2f5d63ce09519ab9362328ded55ae8387c347ed68f85" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
-about:
-  home: http://nucleoatac.readthedocs.io/en/latest/
-  license: MIT
-  summary: 'Python package for calling nucleosomes using ATAC-Seq data. Also includes general scripts for working with paired-end ATAC-Seq data (or potentially other paired-end data).'
-  license_family: MIT
-
 source:
-  fn: NucleoATAC-0.3.4.tar.gz
-  url: https://pypi.python.org/packages/98/23/9af6c490de166a03b84706224652ad9fea707d82a3f9d02221523e72c70f/NucleoATAC-0.3.4.tar.gz
-  md5: 668525f351241d71ce5263dba0464317
+  url: https://github.com/alecethell/NucleoATAC/archive/{{ commit }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - add-console-script-main-wrappers.patch
+    - relax-pyproject-requirements.patch
+    - relax-setup-requirements.patch
 
 build:
-  number: 1
-  skip: True # [not py27]
+  number: 0
+  skip: True  # [py != 310]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - nucleoatac = nucleoatac.cli:main
+    - pyatac = pyatac.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+  host:
     - python
-    - cython >=0.22
-    - numpy >=1.9.1
-    - scipy
-    - matplotlib
-    - pysam >=0.8.1
-    - zlib {{CONDA_ZLIB}}*
+    - pip
+    - setuptools >=68
+    - cython <3
+    - numpy >=1.23,<2
+    - pysam >=0.19,<0.21  # [x86_64]
+    - pysam  # [not x86_64]
+    - htslib
   run:
     - python
-    - cython >=0.22
-    - numpy >=1.9.1
-    - scipy
-    - matplotlib
-    - pysam >=0.8.1
-    - zlib {{CONDA_ZLIB}}*
+    - numpy
+    - scipy >=1.9
+    - pysam
+    - htslib
+    - matplotlib-base >=3.5
+    - samtools >=1.18
 
 test:
+  imports:
+    - nucleoatac
+    - pyatac
+    - pyatac.fragments
+    - nucleoatac.multinomial_cov
   commands:
+    - nucleoatac --help
     - nucleoatac run --help
     - pyatac --help
-  import:
-    - pyatac.fragmentsizes
+
+about:
+  home: "https://github.com/GreenleafLab/NucleoATAC"
+  dev_url: "https://github.com/alecethell/NucleoATAC/tree/py311-modernization"
+  doc_url: "https://nucleoatac.readthedocs.io"
+  license: MIT
+  license_family: MIT
+  summary: "Nucleosome calling from ATAC-seq data."
+  description: |
+    NucleoATAC calls nucleosome positions from ATAC-seq data and provides
+    helper utilities for paired-end ATAC-seq signal processing. This recipe
+    packages the Python 3 modernization fork used by nf-core/atacportray.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.192294.115
+  recipe-maintainers:
+    - PFRoux

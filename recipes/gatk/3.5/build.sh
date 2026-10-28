@@ -6,20 +6,20 @@ PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
-cp $RECIPE_DIR/gatk.sh $PACKAGE_HOME/gatk.sh
+cp $RECIPE_DIR/gatk.py $PACKAGE_HOME/gatk.py
 
-SOURCE_FILE=$RECIPE_DIR/gatk-register.sh
-DEST_FILE=$PACKAGE_HOME/gatk-register.sh
+# jar locations: Handle both nested (GATK3.8) and non-ested (<=GATK 3.7)
+NESTED_GLOB="GenomeAnalysisTK-*/GenomeAnalysisTK.jar"
+if compgen -G "$NESTED_GLOB"; then
+  JARS=( "$NESTED_GLOB" )
+  JAR=( "${JARS[0]}" )
+else
+  JAR=./GenomeAnalysisTK.jar
+fi
 
+mv $JAR $PACKAGE_HOME/
 
-echo "#!/bin/bash" > $DEST_FILE
-echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE
-echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE
+chmod +x $PACKAGE_HOME/*.{py,jar}
 
-cat $SOURCE_FILE >> $DEST_FILE
-
-chmod +x $PACKAGE_HOME/*.sh
-
-ln -s $PACKAGE_HOME/gatk.sh $PREFIX/bin/gatk
-ln -s $PACKAGE_HOME/gatk.sh $PREFIX/bin/GenomeAnalysisTK
-ln -s $PACKAGE_HOME/gatk-register.sh $PREFIX/bin/gatk-register
+ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/gatk3
+ln -s $PACKAGE_HOME/gatk.py $PREFIX/bin/GenomeAnalysisTK

@@ -1,24 +1,24 @@
 #!/bin/bash
+set -xe
 
-# fix automake
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
+export C_INCLUDE_PATH="$PREFIX/include"
+export LIBRARY_PATH="$PREFIX/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
 
-# fix autoconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-cd $SRC_DIR/ext
-wget -O seqtk.tar.gz https://github.com/lh3/seqtk/archive/d3b53c9.tar.gz
-tar -xvf seqtk.tar.gz -C seqtk --strip-components 1
-cd ..
+# Use conda-provided AR and RANLIB if set, to avoid broken llvm-ranlib on macOS
+if [ -n "$AR" ]; then
+	export CMAKE_AR="$AR"
+fi
+if [ -n "$RANLIB" ]; then
+	export CMAKE_RANLIB="$RANLIB"
+fi
 
-mkdir -p $PREFIX/bin
-autoreconf --install
-./configure
-make
-mv orfm  $PREFIX/bin
+# build statically linked binary with Rust
+RUST_BACKTRACE=1
+cargo install --verbose --root "$PREFIX" --path . --no-track
+
+"${STRIP}" "$PREFIX/bin/orfm"

@@ -1,42 +1,35 @@
-#!/bin/bash
+#!/bin/bash -xe
 
-export PRFX=$PREFIX
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3 -pthread -I${PREFIX}/include"
 
-binaries="\
-lastal \
-lastdb \
-last-split \
-lastal8 \
-lastdb8 \
-last-split8 \
-last-pair-probs \
-last-merge-batches \
-"
-
-scripts=" \
-maf-sort \
-maf-convert \
-maf-join \
-last-train \
-last-postmask \
-last-map-probs \
-last-dotplot \
-"
-
-if [[ $(uname) == "Darwin" ]]; then
-	export CMAKE_CXX_FLAGS="-stdlib=libc++"
+# macOS specific flags to prevent compilation conflicts
+if [[ `uname -s` == "Darwin" ]]; then
+    export MACOSX_DEPLOYMENT_TARGET=11.3
+    export MACOSX_SDK_VERSION=11.3
+    export CFLAGS="${CFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-if [[ "${PY_VER}" =~ 3 ]]
-then
-		2to3 -w -n `grep -l python $SRC_DIR/scripts/*`
-fi
+ARCH=$(uname -m)
 
-for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+case ${ARCH} in
+    x86_64) ARCH_FLAGS="-msse4" ;;
+    *) ARCH_FLAGS="" ;;
+esac
 
-chmod +x $SRC_DIR/build/*
-make CXX="g++ $CMAKE_CXX_FLAGS"
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+    x86_64)
+	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	;;
+esac
 
-mkdir -p $PREFIX/bin
-for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-make install prefix=$PREFIX # to install scripts, primarily
+make install CXXFLAGS="${CXXFLAGS} ${ARCH_FLAGS} ${LDFLAGS}" \
+	prefix="${PREFIX}" -j"${CPU_COUNT}"

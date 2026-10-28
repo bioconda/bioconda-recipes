@@ -1,27 +1,60 @@
+{% set name = "eigensoft" %}
+{% set version = "9.0.0" %}
+
 package:
-  name: eigensoft
-  version: "6.0.1"
-build:
-  number: 1
-  skip: True # [osx]
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  fn: EIG6.0.1.tar.gz
-  url: https://data.broadinstitute.org/alkesgroup/EIGENSOFT/OLD/EIG6.0.1.tar.gz
-  md5: a6ed8f2cb48fe76886dcb97af289596c
+  url: https://github.com/DReichLab/EIG/archive/v{{ version }}.tar.gz
+  sha256: 6b9535115f3f37045a721a9ec630b39eec4d4e84fba8b4a753731a284ff05587
+  patches:
+    - 0001-Add-gfortran-to-LDLIBS.patch
+    - 0002-remove-wrong-cflag.patch
+    - 0003-macos.patch  # [osx]
+
+build:
+  number: 0
+  # v9.0.0 is for linux only according to changelog
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
   build:
-    - gcc
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - gsl
     - openblas
-    - gsl ==1.16
+    - liblapack
+    - argp-standalone  # [osx]
   run:
-    - libgcc
+    - gsl
     - openblas
-    - gsl ==1.16
+    - argp-standalone  # [osx]
     - perl
+
 test:
   commands:
-    - smartpca 2>&1 | grep "no parameters"
+    - smartpca
+    # both tools crash without input, there is other way to check whether installation worked...
+    - which convertf
+    - which mergeit
+
 about:
-  home: http://www.hsph.harvard.edu/alkes-price/software/
-  license: Custom OSS
-  summary: Population Genetics - Principal Components Analysis (PCA)
+  home: "https://github.com/DReichLab/EIG"
+  license: "Custom OSS"
+  license_file: "LICENSE.txt"
+  summary: "The EIGENSOFT package implements methods for analyzing population structure and performing stratification correction."
+  dev_url: "https://github.com/DReichLab/EIG"
+  doc_url: "https://github.com/DReichLab/EIG/blob/v{{ version }}/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:Eigensoft
+    - doi:10.1371/journal.pgen.0020190

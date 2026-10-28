@@ -1,2 +1,2 @@
 #!/bin/bash
-expMatrixToBarchartBed 2> /dev/null || [[ "$?" == 1 ]]
+expMatrixToBarchartBed 2> /dev/null || [[ $? == 1 ]]

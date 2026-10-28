@@ -1,0 +1,81 @@
+{% set name = "ganon" %}
+{% set version = "2.4.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  - url: https://github.com/pirovc/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: 537376e1ad8afd19de6e0592c287332561a73622308861683ef7623ef3230fa2
+
+build:
+  number: 0
+  skip: True  # [py<310 or osx]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  ignore_run_exports:
+    - seqan3
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.5
+  host:
+    - bzip2
+    - catch2 ==2.*
+    - coreutils
+    - curl
+    - cxxopts >=3.2.0
+    - diffutils
+    - genome_updater >=0.8.1
+    - grep
+    - multitax >=1.5.1
+    - pandas >=1.2.0
+    - parameterized >=0.9.0
+    - python
+    - raptor ==3.*
+    - robin_hood ==3.11.*
+    - seqan3 ==3.3.0
+    - setuptools
+    - setuptools_scm
+    - zlib
+  run:
+    - coreutils
+    - curl
+    - diffutils
+    - genome_updater >=0.8.1
+    - grep
+    - multitax >=1.4.0
+    - pandas >=1.2.0
+    - python
+    - raptor ==3.*
+
+test:
+  commands:
+    - ganon --help
+    - ganon-build --help
+    - ganon-classify --help
+
+about:
+  home: https://github.com/pirovc/ganon
+  summary: "ganon2 classifies genomic sequences against large sets of references efficiently"
+  description: |
+          ganon2 classifies genomic sequences against large sets of references efficiently,
+          with integrated download and update of databases (refseq/genbank), taxonomic profiling
+          (ncbi/gtdb), binning and hierarchical classification, customized reporting and more
+  license: MIT License
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - doi:10.1093/nargab/lqaf094
+  recipe-maintainers:
+    - pirovc

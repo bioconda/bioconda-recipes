@@ -1,3 +1,4 @@
 #!/bin/bash
 
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" install_prefix=$PREFIX install
+make -j ${CPU_COUNT} CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" CPPFLAGS="$CPPFLAGS" CXXFLAGS="$CXXFLAGS -std=c++14" LDFLAGS="$LDFLAGS"
+make install_prefix="$PREFIX" install

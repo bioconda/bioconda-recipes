@@ -1,44 +1,65 @@
-{% set version = "1.12" %}
+{% set name = "prokka" %}
+{% set version = "1.15.6" %}
+{% set sha256 = "e626d53313401d7c5fac48b41f161c2cf233c8ce6aec844d5ca419e644665df1" %}
 
 package:
-  name: prokka
-  version: {{ version }}
+  name: '{{ name }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/tseemann/prokka/archive/v{{ version }}.tar.gz
-  md5: 658c4c203ddded3623e68a36f94cabec
+  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+  patches:
+    # https://github.com/tseemann/prokka/pull/736
+    - prodigal-mode.patch
 
 build:
-  number: 4
-
+  number: 1
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
 requirements:
-  build:
-    - perl-bioperl ==1.6.924
-    - blast >=2.6
-
+  host:
+    - perl
+    - perl-bioperl >=1.7.2
+    - perl-xml-simple
+    - blast >=2.7.1
+    - infernal >=1.1.2
+    - hmmer >=3.1b2
   run:
+    - perl
     - aragorn >=1.2
     - barrnap >=0.7
-    - blast >=2.6
+    - blast >=2.7.1
     - hmmer >=3.1b2
     - infernal >=1.1.2
-    - minced >=0.2
-    - parallel >=20130422
-    - perl-bioperl ==1.6.924
+    - minced >=0.3
+    - parallel >=20180522
+    - perl-bioperl >=1.7.2
     - perl-xml-simple
     - prodigal >=2.6
-    - tbl2asn >=25.6
+    - tbl2asn-forever >=25.7
 
 test:
   commands:
     - prokka --listdb
     - prokka --version
     - blastp -help
-    - barrnap --help 2>&1 | grep Options
+    - barrnap --help
     - prodigal -h
     - tbl2asn --help
 
 about:
-  home: http://www.vicbioinformatics.com/software.prokka.shtml
-  license: GPLv2
-  summary: A tool for the rapid annotation of prokaryotic genomes
+  home: https://github.com/tseemann/{{ name }}
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: 'doc/LICENSE.Prokka'
+  summary: Rapid annotation of prokaryotic genomes
+  dev_url: https://github.com/tseemann/{{ name }}
+
+extra:
+  identifiers:
+    - biotools:{{ name }}
+    - doi:10.1093/bioinformatics/btu153
+    - usegalaxy-eu:{{ name }}

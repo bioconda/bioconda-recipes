@@ -1,44 +1,67 @@
-{% set version = "1.10.0" %}
+{% set version = "1.42.0" %}
 {% set name = "regioneR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d775697b0bdb3ef5b209ad676113e3d567fb1c57704dfd76fd1c2691e8b8f9ee
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: ed43e0428e56018911846916258de8bb
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-regioner", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown, BSgenome.Hsapiens.UCSC.hg19.masked, testthat
 requirements:
-  build:
-    - bioconductor-bsgenome
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
     - r-memoise
   run:
-    - bioconductor-bsgenome
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-genomeinfodb >=1.46.0,<1.47.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rtracklayer >=1.70.0,<1.71.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
     - r-memoise
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'regioneR offers a statistical framework based on customizable permutation tests to assess the association between genomic region sets and other genomic features.'
+  summary: Association analysis of genomic regions based on permutation tests
+  description: regioneR offers a statistical framework based on customizable permutation tests to assess the association between genomic region sets and other genomic features.
+
+extra:
+  identifiers:
+    - biotools:regioner
+  parent_recipe:
+    name: bioconductor-regioner
+    path: recipes/bioconductor-regioner
+    version: 1.12.0
+

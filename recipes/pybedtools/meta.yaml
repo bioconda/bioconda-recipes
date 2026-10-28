@@ -1,35 +1,35 @@
+{% set name = "pybedtools" %}
+{% set version = "0.12.1" %}
+
 package:
-  name: pybedtools
-  version: '0.7.10'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.python.org/packages/09/57/e7668e8644c60413be05b8cc9c23aaea3a0717b4025843d8c26b7c4822af/pybedtools-0.7.10.tar.gz#md5=f003c67e22c48b77f070538368ece70c
-  fn: pybedtools-0.7.10.tar.gz
-  md5: f003c67e22c48b77f070538368ece70c
+  url: https://files.pythonhosted.org/packages/8c/0e/3b645561e25640cd5ffce29e7e1966e67b3ea49b7091910e5e2f43c203db/pybedtools-0.12.1.tar.gz
+  sha256: f459def3b430b4de6689a800d5d7b38beb313436cfb9d5e966600afca909415a
 
 build:
-  number: 2
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("pybedtools", max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
     - python
-    - six
-    - pysam >=0.8.1
+    - pip
     - setuptools
-    - pandas
+    - wheel
     - cython
-    - gcc  # [linux]
-    - llvm # [osx]
-    - zlib {{CONDA_ZLIB}}*
-
+    - zlib
   run:
     - python
     - bedtools
-    - six
-    - pysam >=0.8.1
-    - pandas
-    - libgcc # [linux]
-    - zlib {{CONDA_ZLIB}}*
+    - numpy
+    - pysam
 
 test:
   imports:
@@ -40,4 +40,15 @@ test:
 about:
   home: https://github.com/daler/pybedtools
   license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
   summary: Wraps BEDTools for use in Python and adds many additional features.
+  dev_url: https://github.com/daler/pybedtools
+  doc_url: https://daler.github.io/pybedtools
+
+extra:
+  identifiers:
+    - biotools:pybedtools
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

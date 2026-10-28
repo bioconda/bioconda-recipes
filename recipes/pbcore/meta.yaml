@@ -1,34 +1,30 @@
 {% set name = "pbcore" %}
-{% set version = "1.2.10" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "f12ee91621f521929f74887bdc63f53b703f7a9c93439e0998d22099be136021" %}
 
 package:
-  name: {{ name|lower }}
+  name: pbcore
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/63/23/3c2dd8c5b957be17af9d00197fc157cd60952592c3b46e7b418029df9cca/pbcore-1.2.10.tar.gz
-  md5: e33bee180b9d91e90a3f0f022764742c
+  url: https://github.com/PacificBiosciences/pbcore/releases/download/{{ version }}/pbcore-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True # [not py27]
-  number: 1
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - cython
-    - numpy >=1.7.1
-    - h5py >=2.0.1
-    - pysam >=0.9.0
-
+  host:
+    - pip
+    - python >=3.7,<3.8
   run:
-    - python
-    - cython
-    - numpy >=1.7.1
-    - h5py >=2.0.1
-    - pysam >=0.9.0
+    - python >=3.7,<3.8
+    - setuptools
+    - biopython >=1.74
+    - numpy >=1.17
+    - pysam >=0.15.1
 
 test:
   imports:
@@ -41,13 +37,17 @@ test:
     - pbcore.io.dataset
     - pbcore.model
     - pbcore.util
-
   requires:
     - nose
     - pyxb
     - sphinx
 
 about:
-  home: https://github.com/PacificBiosciences/pbcore
-  license: BSD-3-Clause
-  summary: 'A Python library for reading and writing PacBio data files'
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: A Python library for reading and writing PacBio data files
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
