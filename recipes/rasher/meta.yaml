@@ -1,0 +1,55 @@
+{% set name = "rasher" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/RASHER/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8766580c93343b43672047725c3c607850ebfa7d29b0207a9b8b5ec05741e92b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - minimap2 >=2.24
+    - samtools >=1.21
+    - fastp >=1.0
+    - spades >=4.0
+    - skesa >=2.5
+    - ska2 >=0.5
+    - parsnp >=2.1.2
+    - harvesttools
+    - fasttree >=2.1.11
+    - iqtree >=2.2
+    - bbmap >=39
+    - python-isal
+
+test:
+  commands:
+    - rasher --help
+    - rasher --version
+
+about:
+  home: https://github.com/duceppemo/RASHER
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Bait, assemble and compare Illumina short reads matching a reference sequence, such as an organelle genome
+  dev_url: https://github.com/duceppemo/RASHER
+  doc_url: https://github.com/duceppemo/RASHER/wiki
+
+extra:
+  recipe-maintainers:
+    - duceppemo

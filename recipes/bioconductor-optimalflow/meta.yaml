@@ -1,17 +1,19 @@
-{% set version = "1.14.0" %}
+{% set version = "1.22.0" %}
 {% set name = "optimalFlow" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: c66127dc23a70fdcfd651543ea596329
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 1eaa06faa1e497b00679f277c32dee38
+
 build:
   number: 0
   rpaths:
@@ -19,38 +21,9 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-optimalflow", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: knitr, BiocStyle, rmarkdown, magick
 requirements:
-  host:
-    - 'bioconductor-flowmeans >=1.62.0,<1.63.0'
-    - 'bioconductor-optimalflowdata >=1.14.0,<1.15.0'
-    - r-base
-    - r-dbscan
-    - r-doparallel
-    - r-dplyr
-    - r-ellipse
-    - r-foreach
-    - r-randomforest
-    - r-rfast
-    - r-rgl
-    - 'r-rlang >=0.4.0'
-    - r-robustbase
-    - r-transport
-  run:
-    - 'bioconductor-flowmeans >=1.62.0,<1.63.0'
-    - 'bioconductor-optimalflowdata >=1.14.0,<1.15.0'
-    - r-base
-    - r-dbscan
-    - r-doparallel
-    - r-dplyr
-    - r-ellipse
-    - r-foreach
-    - r-randomforest
-    - r-rfast
-    - r-rgl
-    - 'r-rlang >=0.4.0'
-    - r-robustbase
-    - r-transport
   build:
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
@@ -58,15 +31,48 @@ requirements:
     - {{ cdt('libxdamage') }}  # [linux]
     - {{ cdt('libxxf86vm') }}  # [linux]
     - xorg-libxfixes  # [linux]
+  host:
+    - bioconductor-flowmeans >=1.70.0,<1.71.0
+    - bioconductor-optimalflowdata >=1.22.0,<1.23.0
+    - r-base
+    - r-dbscan
+    - r-doparallel
+    - r-dplyr
+    - r-ellipse
+    - r-foreach
+    - r-randomforest
+    - r-rfast
+    - r-rgl
+    - r-rlang >=0.4.0
+    - r-robustbase
+    - r-transport
+  run:
+    - bioconductor-flowmeans >=1.70.0,<1.71.0
+    - bioconductor-optimalflowdata >=1.22.0,<1.23.0
+    - r-base
+    - r-dbscan
+    - r-doparallel
+    - r-dplyr
+    - r-ellipse
+    - r-foreach
+    - r-randomforest
+    - r-rfast
+    - r-rgl
+    - r-rlang >=0.4.0
+    - r-robustbase
+    - r-transport
+
 test:
   commands:
-    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library(''{{ name }}'')"'
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda-linux-gnu/sysroot/usr/lib64:${BUILD_PREFIX}/lib" $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
   summary: optimalFlow
-  description: 'Optimal-transport techniques applied to supervised flow cytometry gating.'
+  description: Optimal-transport techniques applied to supervised flow cytometry gating.
+
 extra:
   container:
-    extended-base: true
+    extended-base: yes
 

@@ -1,0 +1,66 @@
+{% set name = "msbuddy" %}
+{% set version = "0.3.16" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d3850fb4e8f40b1101710fd855f53d26d3f3ba9a04626614f095c97e060fc2df
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    # MSBuddy README.md states python >=3.9 and <3.13 
+    - python >=3.9,<3.13
+    - pip
+    - setuptools
+  run:
+    - python >=3.9,<3.13
+    - brain-isotopic-distribution
+    - chemparse
+    - gdown
+    - joblib
+    - lightgbm
+    - numba
+    - numpy
+    - pandas
+    - requests
+    - scipy
+    - tqdm
+
+test:
+  imports:
+    - msbuddy
+  commands:
+    - msbuddy --help
+
+about:
+  home: https://github.com/Philipbear/msbuddy
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Molecular formula annotation for MS-based small molecule analysis
+  description: |
+    msbuddy performs bottom-up MS/MS interrogation for molecular formula
+    annotation of small molecules (below ~1500 Da), with false discovery rate
+    estimation. It accepts a precursor m/z plus ionization polarity as the
+    minimum query, and optionally MS1 isotope patterns and/or MS/MS spectra.
+    msbuddy does not perform adduct annotation -- the correct adduct must be
+    supplied by the user.
+  doc_url: https://msbuddy.readthedocs.io/
+  dev_url: https://github.com/Philipbear/msbuddy
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1038/s41592-023-01850-x

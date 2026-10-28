@@ -1,33 +1,42 @@
-{% set version = "1.8.0" %}
+{% set version = "1.16.0" %}
 {% set name = "methylclock" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b6151e23d6086f38d6489dcc277c81c9
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: e697bc677eaec3772f42109001128d68
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-methylclock", max_pin="x.x") }}'
+
 # Suggests: BiocStyle, knitr, GEOquery, rmarkdown
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-impute >=1.76.0,<1.77.0'
-    - 'bioconductor-methylclockdata >=1.10.0,<1.11.0'
-    - 'bioconductor-minfi >=1.48.0,<1.49.0'
-    - 'bioconductor-planet >=1.10.0,<1.11.0'
-    - 'bioconductor-preprocesscore >=1.64.0,<1.65.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-impute >=1.84.0,<1.85.0
+    - bioconductor-methylclockdata >=1.18.0,<1.19.0
+    - bioconductor-minfi >=1.56.0,<1.57.0
+    - bioconductor-planet >=1.18.0,<1.19.0
+    - bioconductor-preprocesscore >=1.72.0,<1.73.0
     - r-base
     - r-devtools
     - r-dplyr
@@ -38,21 +47,24 @@ requirements:
     - r-gridextra
     - r-performanceanalytics
     - r-quadprog
-    - 'r-rcpp >=1.0.6'
+    - r-rcpp >=1.0.6
     - r-rpmm
     - r-tibble
     - r-tidyr
     - r-tidyverse
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
+
   run:
-    - 'bioconductor-biobase >=2.62.0,<2.63.0'
-    - 'bioconductor-experimenthub >=2.10.0,<2.11.0'
-    - 'bioconductor-impute >=1.76.0,<1.77.0'
-    - 'bioconductor-methylclockdata >=1.10.0,<1.11.0'
-    - 'bioconductor-minfi >=1.48.0,<1.49.0'
-    - 'bioconductor-planet >=1.10.0,<1.11.0'
-    - 'bioconductor-preprocesscore >=1.64.0,<1.65.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-impute >=1.84.0,<1.85.0
+    - bioconductor-methylclockdata >=1.18.0,<1.19.0
+    - bioconductor-minfi >=1.56.0,<1.57.0
+    - bioconductor-planet >=1.18.0,<1.19.0
+    - bioconductor-preprocesscore >=1.72.0,<1.73.0
     - r-base
     - r-devtools
     - r-dplyr
@@ -63,22 +75,20 @@ requirements:
     - r-gridextra
     - r-performanceanalytics
     - r-quadprog
-    - 'r-rcpp >=1.0.6'
+    - r-rcpp >=1.0.6
     - r-rpmm
     - r-tibble
     - r-tidyr
     - r-tidyverse
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Methylclock - DNA methylation-based clocks'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Methylclock - DNA methylation-based clocks
   description: 'This package allows to estimate chronological and gestational DNA methylation (DNAm) age as well as biological age using different methylation clocks. Chronological DNAm age (in years) : Horvath''s clock, Hannum''s clock, BNN, Horvath''s skin+blood clock, PedBE clock and Wu''s clock. Gestational DNAm age : Knight''s clock, Bohlin''s clock, Mayne''s clock and Lee''s clocks. Biological DNAm clocks : Levine''s clock and Telomere Length''s clock.'
   license_file: LICENSE
 

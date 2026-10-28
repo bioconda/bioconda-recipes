@@ -1,0 +1,59 @@
+{% set name = "dashing2" %}
+{% set version = "2.1.20" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('dashing2', max_pin="x") }}
+
+source:
+  git_url: https://github.com/dnbaker/{{ name }}.git
+  git_rev: 3906ebde218144eef2bf1455b15e2241f7b09f8c
+  sha256: unused
+  patches:
+    - 0001-Makefile.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - make
+    - pkg-config
+  host:
+    - zlib
+    - zstd
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    - fmt
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+
+test:
+  commands:
+    - dashing2 --help 2>&1 | grep {{ version }}
+
+about:
+  home: "https://github.com/dnbaker/dashing2"
+  license: MIT
+  license_family: MIT
+  summary: "A fast toolkit for k-mer and minimizer encoding, sketching, comparison, and indexing."
+  license_file: LICENSE
+  dev_url: "https://github.com/dnbaker/dashing2"
+  doc_url: "https://github.com/dnbaker/dashing2/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    #- osx-arm64
+  identifiers:
+    - doi:10.1101/501726
+  recipe-maintainers:
+    - dnbaker
+  skip-lints:
+    - uses_vcs_url

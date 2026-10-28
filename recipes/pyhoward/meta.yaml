@@ -1,0 +1,83 @@
+{% set name = "pyhoward" %}
+{% set version = "0.13.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pyhoward-{{ version }}.tar.gz
+  sha256: 69a819d8e827974493a6e6b9ed545abe1e50f77c59b63bd25f6383cffe2fd664
+
+build:
+  entry_points:
+    - howard = howard.main:main
+    - pyhoward = howard.main:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.11
+    - setuptools >=75.1.0,<76.0
+    - twine >=6.0.0,<7.0.0
+    - wheel >=0.44.0,<0.45.0
+    - pip
+  run:
+    - python >=3.10,<3.11
+    - pandas >=2.2.0,<2.3.dev0
+    - python-duckdb >=1.0.0,<1.1.dev0
+    - pyarrow >=16.1.0,<16.2.dev0
+    - bio >=1.7.0,<1.8.dev0
+    - pyvcf3 >=1.0.0,<1.1.dev0
+    - dask-core >=2023.12.0,<2023.13.dev0
+    - pytest >=8.2.0,<8.3.dev0
+    - coverage >=7.5.0,<7.6.dev0
+    - fastparquet >=2024.5.0,<2024.6.dev0
+    - polars >=0.20.0,<0.21.dev0
+    - genomepy >=0.16.0,<0.17.dev0
+    - flake8 >=7.1.0,<7.2.dev0
+    - lazy >=1.6.0,<1.7.dev0
+    - pynose >=1.5.0,<1.6.dev0
+    - pyfaidx >=0.8.0,<0.9.dev0
+    - htslib =1.22 # needed for bgzip command availability
+    - py-bgzip >=0.4.0,<0.5.dev0
+    - pgzip >=0.3.0,<0.4.dev0
+    - mgzip >=0.2.0,<0.3.dev0
+    - pysam >=0.22.0,<0.23.dev0
+    - jproperties >=2.1.0,<2.2.dev0
+    - psutil >=6.0.0,<6.1.dev0
+    - markdown >=3.6.0,<3.7.dev0
+    - tabulate >=0.9.0,<0.10.dev0
+    - md-toc >=9.0.0,<9.1.dev0
+    - numpy >=1.26.0,<1.27.dev0
+    - beautifulsoup4 >=4.12.0,<4.13.dev0
+    - pybigwig >=0.3.0,<0.4.dev0
+    - cyvcf2 >=0.31.0,<0.32.dev0
+    - pypandoc >=1.14.0,<1.15.dev0 # use this instead of pypandoc-binary, as the pypandoc conda-forge package already installs pandoc itself
+    - pyfiglet >=1.0.0,<1.1.dev0
+    - termcolor >=2.5.0,<2.6.dev0
+    - coloredlogs >=15.0.0,<15.1.dev0
+    - markdown2 >=2.5.0,<2.6.dev0
+
+test:
+  imports:
+    - howard
+    - plugins
+  commands:
+    - howard --help
+    - pyhoward --help
+    - howard annotation --help
+
+about:
+  home: https://github.com/bioinfo-chru-strasbourg/howard
+  summary: HOWARD - Highly Open Workflow for Annotation & Ranking toward genomic variant Discovery
+  license: AGPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - dlaehnemann

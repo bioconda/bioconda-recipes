@@ -1,0 +1,59 @@
+{% set version = "1.2.0" %}
+{% set name = "BatchSVG" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3455a5131f43bceda212e2af3dad0700
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-batchsvg", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: testthat (>= 3.0.0), knitr, rmarkdown, BiocStyle, spatialLIBD
+requirements:
+  host:
+    - bioconductor-scry >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+  run:
+    - bioconductor-scry >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-rcolorbrewer
+    - r-rlang
+    - r-scales
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Identify Batch-Biased Features in Spatially Variable Genes
+  description: '`BatchSVG` is a feature-based Quality Control (QC) to identify SVGs on spatial transcriptomics data with specific types of batch effect. Regarding to the spatial transcriptomics data experiments, the batch can be defined as "sample", "sex", and etc.The `BatchSVG` method is based on binomial deviance model (Townes et al, 2019) and applies cutoffs based on the number of standard deviation (nSD) of relative change in deviance and rank difference as the data-driven thresholding approach to detect the batch-biased outliers.'
+

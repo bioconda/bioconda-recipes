@@ -1,0 +1,131 @@
+--- setup.py
++++ setup.py
+@@ -5,6 +5,6 @@
+ setup(
+     ext_modules=[Extension(
+         'tssv.sg_align',
+-        ['tssv/sgAlignWrapper.c', 'tssv/sgAlign.c', 'tssv/sgAlignSSE.c'],
++        ['tssv/sgAlignWrapper.c', 'tssv/sgAlign.c'],
+         extra_compile_args=['-O3'])]
+ )
+--- tssv/align_pair.py
++++ tssv/align_pair.py
+@@ -1,7 +1,7 @@
+-from .sg_align import align, align_sse
++from .sg_align import align
+ 
+ 
+-def align_pair(reference, reference_rc, pair, indel_score=1, method_sse=False):
++def align_pair(reference, reference_rc, pair, indel_score=1):
+     """Align a pair of markers to the forward reference sequence. The reverse
+     complement is used to align the second element of the pair (which is also
+     reverse complemented).
+@@ -11,16 +11,11 @@
+     :arg list pair: A pair (forward, reverse) of markers to align.
+     :arg int indel_score: Penalty score for insertions and deletions per
+         nucleotide.
+-    :arg bool method_sse: Use SSE2 alignment implementation.
+ 
+     :returns tuple: A tuple (score, position) of the best alignment.
+     """
+-    if method_sse:
+-        left = align_sse(reference, pair[0], indel_score)
+-        right = align_sse(reference_rc, pair[1], indel_score)
+-    else:
+-        left = align(reference, pair[0], indel_score)
+-        right = align(reference_rc, pair[1], indel_score)
++    left = align(reference, pair[0], indel_score)
++    right = align(reference_rc, pair[1], indel_score)
+ 
+     return (
+         (left['distance'], left['position']),
+--- tssv/cli.py
++++ tssv/cli.py
+@@ -38,9 +38,6 @@
+     parser.add_argument(
+         '-a', dest='minimum', type=int, default=0,
+         help='minimum count per allele (default=%(default)s)')
+-    parser.add_argument(
+-        '-s', dest='method_sse', action='store_true',
+-        help='if specified, use SSE2 alignment implementation')
+     parser.add_argument('-v', action='version', version=version(parser.prog))
+ 
+     args = parser.parse_args()
+--- tssv/sgAlignWrapper.c
++++ tssv/sgAlignWrapper.c
+@@ -1,7 +1,6 @@
+ #include <Python.h>
+ 
+ #include "sgAlign.h"
+-#include "sgAlignSSE.h"
+ 
+ 
+ /**
+@@ -30,24 +29,6 @@
+   return pyAlignment(a.distance, a.position);
+ }
+ 
+-/**
+- * Wrapper for alignSSE function.
+- */
+-PyObject *pyAlignSSE(PyObject *self, PyObject *args) {
+-  char *seq1,
+-       *seq2,
+-       indel_score;
+-  alignment a;
+-
+-  if (!PyArg_ParseTuple(args, "ssb", &seq1, &seq2, &indel_score)) {
+-    return NULL;
+-  }
+-
+-  a = alignSSE(seq1, seq2, indel_score);
+-
+-  return pyAlignment(a.distance, a.position);
+-}
+-
+ /*
+  * Module methods.
+  */
+@@ -59,9 +40,6 @@
+     "  :arg str seq2: The sequence to be aligned.\n"
+     "  :arg int indel_score: Penalty score for insertions and deletions.\n\n"
+     "  :returns dict alignment: The minimum distance and its row number.\n"},
+-  {
+-    "align_sse", pyAlignSSE, METH_VARARGS,
+-    "SSE implementation of {align}."},
+   {NULL, NULL, 0, NULL}
+ };
+ 
+--- tssv/tssv.py
++++ tssv/tssv.py
+@@ -325,7 +325,7 @@
+ 
+ def tssv(
+         input_handle, library_handle, report_handle, json_report, path,
+-        threshold, mismatches, minimum, indel_score, method_sse, file_format):
++        threshold, mismatches, minimum, indel_score, file_format):
+     """Do the short structural variation analysis.
+ 
+     :arg stream input_handle: Open readable handle to a FASTA file.
+@@ -338,7 +338,6 @@
+     :arg int minimum: Minimum count per allele.
+     :arg int indel_score: Penalty score for insertions and deletions per
+         nucleotide
+-    :arg bool method_sse: Use SSE2 alignment implementation.
+     :arg str file_format: File format of input_handle, either 'fasta' or 'fastq'.
+     """
+     total = 0
+@@ -358,11 +357,9 @@
+             # Align against all-uppercase reference sequence.
+             alignments = (
+                 align_pair(
+-                    ref_up[0], ref_up[1], library[i]['flanks'], indel_score,
+-                    method_sse),
++                    ref_up[0], ref_up[1], library[i]['flanks'], indel_score),
+                 align_pair(
+-                    ref_up[1], ref_up[0], library[i]['flanks'], indel_score,
+-                    method_sse))
++                    ref_up[1], ref_up[0], library[i]['flanks'], indel_score,))
+             matches = [False, False, False, False]
+             classification = ''
+ 

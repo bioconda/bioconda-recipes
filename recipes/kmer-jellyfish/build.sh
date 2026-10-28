@@ -3,14 +3,36 @@
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include -Wno-implicit-const-int-float-conversion -Wno-vla-cxx-extensio"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-./configure --prefix="${PREFIX}" --enable-python-binding --with-sse CXX="${CXX}" \
-	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS} -O3 -I${PREFIX}/include" \
-	LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+cp -rf ${BUILD_PREFIX}/share/gnuconfig/config.* .
+
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
+	export EXTRA_ARGS="--host=arm64"
+elif [[ "${OS}" == "Linux" && "${ARCH}" == "aarch64" ]]; then
+	export EXTRA_ARGS="--host=aarch64"
+else
+	export EXTRA_ARGS="--host=x86_64"
+fi
+
+if [[ "${OS}" == "Darwin" ]]; then
+	export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib"
+fi
+
+./configure --prefix="${PREFIX}" CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" PYTHON_VERSION="${PY_VER}" \
+ 	--enable-python-binding="${SP_DIR}/dna_jellyfish" \
+	--enable-perl-binding --with-sse --disable-option-checking \
+	--enable-silent-rules --disable-dependency-tracking \
+	--enable-python-deprecated "${EXTRA_ARGS}"
 
 make -j"${CPU_COUNT}"
 make install
-#make check -j"${CPU_COUNT}"
+
 cd swig/python
-${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+${PYTHON} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv

@@ -1,58 +1,65 @@
-{% set version = "1.32.0" %}
+{% set version = "1.40.1" %}
 {% set name = "EnrichedHeatmap" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 269aeb6d749072508069805663216dc4
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 9f9209da3af28de5f0da27390e7f4ab1
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-enrichedheatmap", max_pin="x.x") }}'
+
 # Suggests: testthat (>= 0.3), knitr, markdown, rmarkdown, genefilter, RColorBrewer
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - 'bioconductor-complexheatmap >=2.18.0,<2.19.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
-    - 'r-circlize >=0.4.5'
+    - r-circlize >=0.4.5
     - r-getoptlong
     - r-locfit
     - r-matrixstats
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - 'bioconductor-complexheatmap >=2.18.0,<2.19.0'
-    - 'bioconductor-genomicranges >=1.54.0,<1.55.0'
-    - 'bioconductor-iranges >=2.36.0,<2.37.0'
+    - bioconductor-complexheatmap >=2.26.0,<2.27.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
-    - 'r-circlize >=0.4.5'
+    - r-circlize >=0.4.5
     - r-getoptlong
     - r-locfit
     - r-matrixstats
     - r-rcpp
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Making Enriched Heatmaps'
-  description: 'Enriched heatmap is a special type of heatmap which visualizes the enrichment of genomic signals on specific target regions. Here we implement enriched heatmap by ComplexHeatmap package. Since this type of heatmap is just a normal heatmap but with some special settings, with the functionality of ComplexHeatmap, it would be much easier to customize the heatmap as well as concatenating to a list of heatmaps to show correspondance between different data sources.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Making Enriched Heatmaps
+  description: Enriched heatmap is a special type of heatmap which visualizes the enrichment of genomic signals on specific target regions. Here we implement enriched heatmap by ComplexHeatmap package. Since this type of heatmap is just a normal heatmap but with some special settings, with the functionality of ComplexHeatmap, it would be much easier to customize the heatmap as well as concatenating to a list of heatmaps to show correspondance between different data sources.
   license_file: LICENSE
 

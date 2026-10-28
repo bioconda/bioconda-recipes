@@ -1,0 +1,85 @@
+{% set version = "1.0.5" %}
+
+package:
+  name: mostar
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/m/mostar/mostar-{{ version }}.tar.gz
+  sha256: 1177b73f1b47d365d301ee96afa7fb6a7ce36948b22d3148a7a15986a4870333
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage("mostar", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=61
+
+  run:
+    - python >=3.11
+    # Core Assembly & Polishing
+    - flye
+    - medaka
+    - filtlong
+    - polypolish
+
+    # Pre-processing & Alignment
+    - fastp
+    - bwa
+    - samtools
+    - bcftools
+    - minimap2
+    - circlator
+
+    # Annotation & Profiling
+    - bakta =1.11.4
+    - pyhmmer <0.11
+    - hmmer =3.4
+    - alive-progress =3.0.1
+    - ncbi-amrfinderplus
+    - blast
+    - kraken2
+
+    # ICE & Conjugation Detection
+    - macsyfinder
+
+    # Plasticity & Mobile Elements
+    - genomad
+
+    # Python libraries
+    - matplotlib-base
+    - numpy
+    - pandas
+    - biopython
+    - osfclient
+
+    # Utilities
+    - wget
+    - curl
+
+test:
+  commands:
+    - mostar --help
+
+about:
+  home: https://github.com/nermze/MOSTAR
+  license: MIT
+  license_file: LICENSE
+  summary: "Modular ONT-Short-read Taxonomic Assembly and Resistome-Evolution pipeline"
+
+extra:
+  notes: |
+    Post-install setup required before first use (databases are not bundled):
+      amrfinder -u
+      msf_data install --target <path> CONJScan
+      (plus separate Kraken2, Bakta, and geNomad database downloads —
+       see project README for details)
+  recipe-maintainers:
+    - nermze
+  
