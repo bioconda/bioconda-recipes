@@ -1,5 +1,5 @@
 {% set name = "bwa-mem3" %}
-{% set version = "0.15.0" %}
+{% set version = "0.15.1" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/fg-labs/{{ name }}/releases/download/v{{ version }}/Source_code_including_submodules.tar.gz
-  sha256: ec6926716b9169018dca75064a08a5020c4a9eaff98a86f944cb0c8484c4670d
+  sha256: a11ab55eb6fc536f576cf037c0f3f53837ba46c0266fb280f3b48104fe4a054e
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('bwa-mem3', max_pin="x") }}
 
@@ -25,6 +25,8 @@ requirements:
     # platforms rather than libgomp on Linux.
     - {{ compiler('clang') }}
     - {{ compiler('clangxx') }}
+    # ld.lld for the LTO=full link in build.sh, same LLVM major as clang.
+    - lld {{ clang_compiler_version }}.*  # [linux]
     - {{ stdlib('c') }}
   host:
     - zlib
