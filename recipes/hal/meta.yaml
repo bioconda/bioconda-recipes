@@ -1,0 +1,85 @@
+{% set name = "hal" %}
+{% set version = "2.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ComparativeGenomicsToolkit/hal/archive/refs/tags/release-V{{ version }}.tar.gz
+  sha256: c3ee45900233bd6a32a8489f0da02dd5b16efdd94e67b835e1450d9eee130800
+  patches:
+    - patches/0001-Change-build-to-produce-shared-libraries.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: True  # [not unix]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
+    - pip
+  host:
+    - python
+    - hdf5
+    - sonlib
+    - zlib
+  run:
+    - python
+    - toil
+    - biopython
+
+test:
+  requires:
+    - cutest
+  commands:
+    - halLodInterpolate.py --help
+    - halExtract --help 2>&1 | grep USAGE
+    - halSnps --help 2>&1 | grep USAGE
+    - halSetMetadata --help 2>&1 | grep USAGE
+    - halSingleCopyRegionsExtract --help 2>&1 | grep USAGE
+    - halCoverage --help 2>&1 | grep USAGE
+    - halRenameGenomes --help 2>&1 | grep USAGE
+    - halUpdateBranchLengths --help 2>&1 | grep USAGE
+    - halValidate --help 2>&1 | grep USAGE
+    - halRenameSequences --help 2>&1 | grep USAGE
+    - hal4dExtract --help 2>&1 | grep USAGE
+    - halLodExtract --help 2>&1 | grep USAGE
+    - halReplaceGenome --help 2>&1 | grep USAGE
+    - halIndels --help 2>&1 | grep USAGE
+    - halBranchMutations --help 2>&1 | grep USAGE
+    - halWiggleLiftover --help 2>&1 | grep USAGE
+    - halSynteny --help 2>&1 | grep USAGE
+    - halLiftover --help 2>&1 | grep USAGE
+    - halAlignedExtract --help 2>&1 | grep USAGE
+    - halAddToBranch --help 2>&1 | grep USAGE
+    - halTreeNIConservation.py --help
+    - hal2fasta --help 2>&1 | grep USAGE
+    - halTreeNIBackground.py --help
+    - findRegionsExclusivelyInGroup --help 2>&1 | grep USAGE
+    - blockVizBed --help 2>&1 | grep Usage
+    - halStats --help 2>&1 | grep USAGE
+    - halSummarizeMutations --help 2>&1 | grep USAGE
+    - halRemoveSubtree --help 2>&1 | grep USAGE
+    - maf2hal --help 2>&1 | grep USAGE
+    - halWriteNucleotides --help 2>&1 | grep USAGE
+    - halMaskExtract --help 2>&1 | grep USAGE
+    - blockVizMaf --help 2>&1 | grep Usage
+    - halAppendSubtree --help 2>&1 | grep USAGE
+    - hal2paf --help 2>&1 | grep USAGE
+    - hal2maf --help 2>&1 | grep USAGE
+    - halRemoveGenome --help 2>&1 | grep USAGE
+    - hal2mafMP.py --help
+    - halPctId --help 2>&1 | grep USAGE
+    - halAlignmentDepth --help 2>&1 | grep USAGE
+    - hal2assemblyHub.py --help
+    - halTreeNITurnover.py --help
+
+about:
+  home: https://github.com/ComparativeGenomicsToolkit/hal
+  license: MIT
+  summary: 'Hierarchical Alignment (HAL) Format, a structure to efficiently store and index multiple genome alignments and ancestral reconstructions, API'
