@@ -1,6 +1,6 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-cp $SRC_DIR/scripts/* $PREFIX/bin/ 
-chmod +x $PREFIX/bin/*
+cp -r $SRC_DIR/piawka $SRC_DIR/include $PREFIX/bin/ 
+chmod +x $PREFIX/bin/piawka
 
