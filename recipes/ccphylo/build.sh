@@ -1,7 +1,12 @@
-BINARIES="ccphylo"
-make CFLAGS="-w -O3 -I$PREFIX/include -L$PREFIX/lib"
+#!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-cp $BINARIES $PREFIX/bin
-mkdir -p $PREFIX/doc/ccphylo
-cp README.md $PREFIX/doc/ccphylo/
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -w -O3 -I$PREFIX/include -L$PREFIX/lib"
+
+mkdir -p "${PREFIX}/bin"
+mkdir -p "$PREFIX/doc/ccphylo"
+
+make CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
+
+install -v -m 0755 ccphylo "$PREFIX/bin"
+cp -f README.md "$PREFIX/doc/ccphylo/"

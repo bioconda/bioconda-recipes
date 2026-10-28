@@ -11,21 +11,21 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    # Public API may change between patch releases without a SOVERSION bump.
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - ninja
     - pkg-config
   host:
     - eigen
     - fast_float  # [osx]
-    # Use the version pinned in conda-forge
-    - libboost-devel ==1.86.0  # [linux]
     - pcre2
     - sqlite
     - zlib
@@ -54,5 +54,3 @@ extra:
   additional-platforms:
     - linux-aarch64
     - osx-arm64
-  skip-lints:
-    - compiler_needs_stdlib_c
