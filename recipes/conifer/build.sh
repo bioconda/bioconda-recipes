@@ -15,7 +15,7 @@ ${CC} -std=c11 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
     -I . src/kraken_stats.c src/kraken_taxo.c utils/is_a_parent_of_b.c \
     -L "$PREFIX/lib" \
     -o is_a_parent_of_b -lm
-    
+
 # Build show_ancestors
 ${CC} -std=c11 -Wall -O3 -D_POSIX_C_SOURCE=200809L \
     -I "$PREFIX/include" \

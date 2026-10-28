@@ -1,0 +1,65 @@
+{% set name = "straglr-ont" %}
+{% set version = "1.4.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/philres/straglr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 139bcd6b55d7e54627303e207e9804dd518b0f6b0a71a22a02a388528fe4b163
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - straglr-genotype = straglr.straglr_genotype:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - pysam >=0.14.0
+    - pybedtools >=0.9.0
+    - numpy >=1.22.3
+    - pathos >=0.2.3
+    - scikit-learn >=1.1
+    - scipy >=1.8.0
+    - natsort
+    - matplotlib-base >=3.0
+    - seaborn >=0.11
+    - pandas >=1.0
+    - trf >=4.09.1
+    - blast >=2.5.0
+
+test:
+  imports:
+    - straglr
+  commands:
+    - straglr-genotype --help
+
+about:
+  home: https://github.com/philres/straglr
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Clinical tandem repeat genotyping from long-read alignments (philres fork of straglr).
+  description: >
+    This is a fork of the original Straglr tool (Chiu et al., Genome Biol 2021),
+    modified by philres/ONT to focus on genotyping clinical TR expansions from
+    long-read BAM alignments using Minimap2. Differs from upstream bcgsc/straglr
+    in its clinical loci focus and VCF output.
+  dev_url: https://github.com/philres/straglr
+  doc_url: https://github.com/philres/straglr/blob/master/README.md
+
+extra:
+  recipe-maintainers:
+    - nourmahfel
+  identifiers:
+    - doi:10.1186/s13059-021-02447-3

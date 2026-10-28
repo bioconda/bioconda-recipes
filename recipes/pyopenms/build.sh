@@ -1,47 +1,46 @@
 #!/bin/bash
 
-# Not sure if those are needed 
-export INCLUDES="-I${PREFIX}/include"
-export LIBPATH="-L${PREFIX}/lib"
-export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3"
-export LC_ALL="en_US.UTF-8"
-
-#2to3 -w ${SP_DIR}/autowrap/*.py
-
-if [[ $(uname -s) == "Darwin" ]]; then
-  RPATH='@loader_path/../lib'
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER -DCMAKE_MACOSX_RPATH=ON -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}"
-  export LDFLAGS="${LDFLAGS} -Wl,-rpath,${RPATH}"
-else
-  ORIGIN='$ORIGIN'
-  export ORIGIN
-  RPATH='$${ORIGIN}/../lib'
-  export CONFIG_ARGS=""
+if [[ "$CXX" == *gnu-c++* ]]; then
+  export CXXFLAGS="${CXXFLAGS} -Wno-psabi"
 fi
 
-mkdir build
+# The source tarball already contains an empty build/ directory.
+mkdir -p build
 cd build
 
-cmake -S ../ -B . -G Ninja -DOPENMS_GIT_SHORT_REFSPEC="release/${PKG_VERSION}" \
-  -DOPENMS_GIT_SHORT_SHA1="27e3601" -DOPENMS_CONTRIB_LIBS="$SRC_DIR/contrib-build" -DCMAKE_BUILD_TYPE="Release" \
-  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-  -DCMAKE_INSTALL_RPATH="${RPATH}" -DCMAKE_INSTALL_NAME_DIR="@rpath" \
-  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON \
-  -DHAS_XSERVER=OFF -DENABLE_TUTORIALS=OFF -DWITH_GUI=OFF -DBOOST_USE_STATIC=OFF \
-  -DBoost_NO_BOOST_CMAKE=ON -DBoost_ARCHITECTURE="-x64" -DBUILD_EXAMPLES=OFF \
-  -DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" -DPY_NUM_MODULES=20 \
-  -DNO_DEPENDENCIES=ON -DNO_SHARE=ON -DPYOPENMS=ON -DQT_HOST_PATH="${BUILD_PREFIX}" -DQT_HOST_PATH_CMAKE_DIR="${PREFIX}" \
-  -Wno-dev -Wno-deprecated --no-warn-unused-cli \
-  "${CONFIG_ARGS}"
+# Split mode needs the nanobind-backend package, which is not on conda-forge.
+cmake -S ../src/pyOpenMS -B . -G Ninja -DCMAKE_BUILD_TYPE="Release" \
+	-DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+	-DCMAKE_BUILD_RPATH="$BUILD_PREFIX/lib" -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" -DCMAKE_INSTALL_REMOVE_ENVIRONMENT_RPATH=ON \
+	-DPython_EXECUTABLE="${PYTHON}" -DPython_FIND_STRATEGY="LOCATION" \
+	-DPYOPENMS_SPLIT_MODE=OFF -DNO_DEPENDENCIES=ON -DNO_SHARE=ON -DPYOPENMS_GENERATE_STUBS=ON \
+	-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}
 
-# NO_DEPENDENCIES since conda takes over re-linking etc
+ninja pyopenms -j3
 
-# limit parallel jobs to 1 for memory usage since pyopenms has huge cython generated cpp files
-#cmake --build . --clean-first --target pyopenms -j 1
-ninja pyopenms -j"${CPU_COUNT}"
+# Stripped modules break conda-build on osx-64.
+STRIP_ARG="--strip"
+if [[ "$target_platform" == osx-* ]]; then
+  STRIP_ARG=""
+fi
+SITE_PACKAGES=$(${PYTHON} -c "import sysconfig; print(sysconfig.get_path('platlib'))")
+cmake --install . --component python_modules --prefix "${SITE_PACKAGES}" ${STRIP_ARG}
 
-echo "wheels are in `find . | grep whl`"  >&2
-${PYTHON} -m pip install ./pyOpenMS/dist/*.whl --no-build-isolation --no-deps --no-cache-dir --use-pep517 --no-binary=pyopenms -vvv
+# pyopenms.__version__ reads the version from this dist-info.
+DIST_INFO="pyopenms-${PKG_VERSION}.dist-info"
+mkdir -p "${SITE_PACKAGES}/${DIST_INFO}"
+cat > "${SITE_PACKAGES}/${DIST_INFO}/METADATA" <<EOF
+Metadata-Version: 2.1
+Name: pyopenms
+Version: ${PKG_VERSION}
+Summary: Python wrapper for C++ LC-MS library OpenMS
+Home-page: https://openms.de
+License: BSD-3-Clause
+Requires-Python: >=3.11
+EOF
+echo "conda" > "${SITE_PACKAGES}/${DIST_INFO}/INSTALLER"
+(
+  cd "${SITE_PACKAGES}"
+  find pyopenms "${DIST_INFO}" -type f ! -name RECORD | LC_ALL=C sort | sed 's/$/,,/'
+  echo "${DIST_INFO}/RECORD,,"
+) > "${SITE_PACKAGES}/${DIST_INFO}/RECORD"
