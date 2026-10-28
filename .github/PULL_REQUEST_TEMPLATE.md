@@ -54,7 +54,7 @@ Everyone has access to the following BiocondaBot commands, which can be given in
   </tr>
 </table>
 
-Note that the <code>@BiocondaBot please merge</code> command is now depreciated. Please just squash and merge instead.
+Note that the <code>@BiocondaBot please merge</code> command is obsolete. Please just squash and merge instead.
 
 Also, the bot watches for comments from non-members that include `@bioconda/<team>` and will automatically re-post them to notify the addressed `<team>`.
 
