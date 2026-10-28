@@ -1,5 +1,5 @@
 {% set name = "dipper" %}
-{% set version = "0.1.2" %}
+{% set version = "0.1.5" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,11 @@ package:
 
 source:
   url: https://github.com/TurakhiaLab/DIPPER/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b8c204b8ff7f3f6b1fbad797956b8078f5dc8b978a7a43c57365b8d1c8448e54
+  sha256: 7e60648d372677a5107d112f7316808d3a14c56521a7d5748bd873d81e034c62
 
 build:
   number: 0
-  skip: True  # [osx]
+  skip: True  # [win]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -19,25 +19,25 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
     - pkg-config
     - cuda-nvcc  # [linux]
     - cuda-cudart-dev  # [linux]
-    - cuda-version >=12.2  # [linux]
+    - cuda-version >=12.0,<13  # [linux]
   host:
     - zlib
     - boost-cpp
-    - tbb =2019.9
-    - tbb-devel =2019.9
+    - tbb
+    - tbb-devel
   run:
     - boost-cpp
-    - tbb =2019.9
-    - tbb-devel =2019.9
+    - tbb
 
 test:
   commands:
-    - dipper --help
+    - dipper_cpu --help
 
 about:
   home: "https://github.com/TurakhiaLab/DIPPER"
@@ -52,5 +52,6 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - sumit-walia

@@ -1,0 +1,54 @@
+{% set name = "spearfish" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "5a3ee790ce25d20ef326e8a24ccee1b66a417126efbd1a75190f1d68e7c92dd1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/COMBINE-lab/spearfish/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    # zstd and mimalloc compile C code.
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - spearfish --version
+    # Maps a built-in toy transcriptome with every preset and checks the result against a
+    # reference, at the SIMD level this machine selects.
+    - spearfish doctor
+
+about:
+  home: https://combine-lab.github.io/spearfish/
+  dev_url: https://github.com/COMBINE-lab/spearfish
+  doc_url: https://combine-lab.github.io/spearfish/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast long-read RNA-seq mapping to a transcriptome with locally consistent parsing
+  description: |
+    spearfish maps long RNA-seq reads (ONT cDNA, ONT direct RNA, PacBio) to a transcriptome.
+    For each read it reports every compatible transcript, the read's position on it, and its
+    score difference from the best candidate, for EM quantification with oarfish.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - rob-p
