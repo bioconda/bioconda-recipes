@@ -1,48 +1,40 @@
-{% set version = "2.18.0" %}
+{% set version = "2.24.0" %}
 {% set name = "flowCore" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.23" %}
 
-about:
-  description: Provides S4 data structures and basic functions to deal with flow cytometry data.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: 'flowCore: Basic structures for flow cytometry data'
+package:
+  name: bioconductor-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: 9e2906cdea659535f778ac744bbc6803fb2ea8d61ad770166e097e47fbcb2707
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-flowcore", max_pin="x.x") }}'
-
-extra:
-  additional-platforms:
-    - linux-aarch64
-  identifiers:
-    - biotools:flowcore
-    - doi:10.1186/1471-2105-10-106
-  parent_recipe:
-    name: bioconductor-flowcore
-    path: recipes/bioconductor-flowcore
-    version: 1.46.2
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  run_exports: {{ pin_subpackage('bioconductor-flowcore', max_pin="x.x") }}
 
 # Suggests: Rgraphviz, flowViz, flowStats (>= 3.43.4), testthat, flowWorkspace, flowWorkspaceData, openCyto, knitr, ggcyto, gridExtra
-# SystemRequirements: GNU make, C++11
+# SystemRequirements: GNU make, C++17
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-cytolib >=2.18.0,<2.19.0
-    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-cytolib >=2.24.0,<2.25.0
+    - bioconductor-rprotobuflib >=2.24.0,<2.25.0
+    - bioconductor-s4vectors >=0.48.0,<0.51.0
     - r-base
     - r-bh >=1.81.0.0
     - r-cpp11
@@ -50,29 +42,39 @@ requirements:
     - r-rcpp
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biobase >=2.66.0,<2.67.0
-    - bioconductor-biocgenerics >=0.52.0,<0.53.0
-    - bioconductor-cytolib >=2.18.0,<2.19.0
-    - bioconductor-rprotobuflib >=2.18.0,<2.19.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-cytolib >=2.24.0,<2.25.0
+    - bioconductor-rprotobuflib >=2.24.0,<2.25.0
+    - bioconductor-s4vectors >=0.48.0,<0.51.0
     - r-base
     - r-bh >=1.81.0.0
     - r-cpp11
     - r-matrixstats
     - r-rcpp
 
-source:
-  md5: b411dca0e1a3795bfb137ff69c12be5c
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-  patches:
-    - Makevars.osx.patch  # [osx]
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
 
+about:
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "Artistic-2.0"
+  summary: "flowCore: Basic structures for flow cytometry data."
+  description: "Provides S4 data structures and basic functions to deal with flow cytometry data."
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/manuals/{{ name }}/man/{{ name }}.pdf"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:flowcore
+    - doi:10.1186/1471-2105-10-106
+  parent_recipe:
+    name: bioconductor-flowcore
+    path: recipes/bioconductor-flowcore
+    version: '1.46.2'

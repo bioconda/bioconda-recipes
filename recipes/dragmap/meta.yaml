@@ -12,36 +12,43 @@ source:
   patches:
     - overflow.patch  # Don't break with CHM13 (https://github.com/Illumina/DRAGMAP/pull/55)
     - PG.patch        # Remove extra space in @PG line after ID: (https://github.com/Illumina/DRAGMAP/pull/14)
-    - contigs.patch   # Handle large numbers of contigs (https://github.com/Illumina/DRAGMAP/pull/56)
-    - cstdint.patch   # Patch around missing cstdint
-    - boost.patch     # Fix boost
+    #- contigs.patch   # Handle large numbers of contigs (https://github.com/Illumina/DRAGMAP/pull/56)
+    - 0001-aarch64-arm64.patch   # Add aarch64/arm64 support and patch around missing cstdint
+    #- boost.patch     # Fix boost
 
 build:
-  number: 5
+  number: 7
   skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage("dragmap", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - zlib
-    - boost
     - boost-cpp
+    - llvm-openmp  # [osx]
   run:
-    - zlib
-    - boost
     - boost-cpp
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - dragen-os -h
 
 about:
-  home: https://github.com/Illumina/DRAGMAP
-  license: GPL-3
+  home: "https://github.com/Illumina/DRAGMAP"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   licence_file: COPYRIGHT
   summary: "Dragmap is the Dragen mapper/aligner Open Source Software."
+  dev_url: "https://github.com/Illumina/DRAGMAP"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
