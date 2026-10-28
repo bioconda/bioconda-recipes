@@ -1,44 +1,24 @@
-#!/bin bash
-
+#!/bin/bash
 set -xe
 
-mkdir -p $PREFIX/bin
+export GOPATH="$PWD"
+export GOCACHE="$PWD/.cache"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CGO_LDFLAGS="-L${PREFIX}/lib -lz"
+export CGO_CFLAGS="$CGO_CFLAGS -I${PREFIX}/include"
 
-if [ "$(uname)" == "Darwin" ]; then
-    make "CGO_CFLAGS=$CGO_CFLAGS -I${CONDA_PREFIX}/include"
+mkdir -p "${GOCACHE}"
+mkdir -p "${PREFIX}/bin"
+
+sed -i.bak 's|GOFLAGS=|GOFLAGS=-buildvcs=false -trimpath|' Makefile
+rm -f *.bak
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    make CGO_CFLAGS="$CGO_CFLAGS -L$PREFIX/lib"
 else
-    make "CGO_CFLAGS=$CGO_CFLAGS -L$CONDA_PREFIX/lib -I$CONDA_PREFIX/include"
+    make CGO_CFLAGS="$CGO_CFLAGS -L$PREFIX/lib"
 fi
 
+"${STRIP}" build/obi*
 
-cp \
-    build/obiannotate \
-    build/obiclean \
-    build/obicleandb \
-    build/obicomplement \
-    build/obiconsensus \
-    build/obiconvert \
-    build/obicount \
-    build/obicsv \
-    build/obidemerge \
-    build/obidistribute \
-    build/obigrep \
-    build/obijoin \
-    build/obikmermatch \
-    build/obikmersimcount \
-    build/obilandmark \
-    build/obimatrix \
-    build/obimicrosat \
-    build/obimultiplex \
-    build/obipairing \
-    build/obipcr \
-    build/obireffamidx \
-    build/obirefidx \
-    build/obiscript \
-    build/obisplit \
-    build/obisummary \
-    build/obitag \
-    build/obitagpcr \
-    build/obitaxonomy \
-    build/obiuniq \
-    ${PREFIX}/bin/
+install -v -m 0755 build/obi* "${PREFIX}/bin"

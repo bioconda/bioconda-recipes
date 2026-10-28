@@ -1,0 +1,56 @@
+{% set version = "1.2.8" %}
+{% set name = "LimROTS" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 13b25ba7adcc43515845dcedba972d7a
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-limrots", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, ggplot2, magick, testthat (>= 3.0.0), knitr, rmarkdown, caret, ROTS
+requirements:
+  host:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-stringr
+  run:
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-limma >=3.66.0,<3.67.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-dplyr
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: 'LimROTS: A Hybrid Method Integrating Empirical Bayes and Reproducibility-Optimized Statistics for Robust Differential Expression Analysis'
+  description: Differential expression analysis is a prevalent method utilised in the examination of diverse biological data. The reproducibility-optimized test statistic (ROTS) modifies a t-statistic based on the data's intrinsic characteristics and ranks features according to their statistical significance for differential expression between two or more groups (f-statistic). Focussing on proteomics and metabolomics, the current ROTS implementation cannot account for technical or biological covariates such as MS batches or gender differences among the samples. Consequently, we developed LimROTS, which employs a reproducibility-optimized test statistic utilising the limma methodology to simulate complex experimental designs. LimROTS is a hybrid method integrating empirical bayes and reproducibility-optimized statistics for robust analysis of proteomics and metabolomics data.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

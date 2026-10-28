@@ -1,0 +1,5 @@
+                                                                                                                                                                                                           
+  #!/bin/bash                                                                                                                                                                                              
+  set -ex                                                                                                                                                                                                  
+                                                                                                                                                                                                           
+  cargo install --no-track --locked --root "$PREFIX" --path .   
