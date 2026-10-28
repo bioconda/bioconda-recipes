@@ -7,11 +7,16 @@ package:
 source:
   url: https://github.com/kpalin/EEL/archive/v{{ version }}.tar.gz
   sha256: d4556b04af69ad31f5c3ddf36bef413ab6ee0fc6143487639e4b07c055284d6c
+  patches:
+    - 0001-Add-static_cast-for-unsigned-assignment.patch
 
 build:
-  number: 0
-  skip: True  # [py3k]
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  number: 3
+  skip: True  # [py>=30]
+  script: |
+    # "version" file is picked up as a c++ header file.
+    mv src/gzstream/version{,.txt}
+    {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   build:

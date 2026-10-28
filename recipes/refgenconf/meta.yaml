@@ -1,32 +1,34 @@
 {% set name = "refgenconf" %}
-{% set version = "0.7.0" %}
+{% set version = "0.13.1" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "4b61413bf0ff38bb3fd206116ea3e738c7eb9a82ea0dbce6a8b899af4e0f5f31"
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "4653d5ada163a2716ef61f834207c55761d0ad681c8204a1a4873ef3708eb027"
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python
+    - python >=3.6
+    - setuptools
   run:
-    - attmap >=0.12.5
-    - future
-    - python
+    - python >=3.6
     - pyyaml
     - requests
-    - tqdm
-    - ubiquerg >=0.5.0
-    - yacman >=0.6.3
+    - yacman >=0.8.0
+    - future
+    - rich >=9.0.1
+    - jsonschema >=3.0.1
 
 test:
   imports:
@@ -43,4 +45,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - michalstolarczyk
+    - stolarczyk

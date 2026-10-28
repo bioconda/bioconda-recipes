@@ -1,0 +1,55 @@
+{% set name = "proteomiqon-labeledproteinquantification" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "c266d2b7f964dde71ef7c597e12bfb5ad72cc7202a145753f5f786490a6cb76e" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.LabeledProteinQuantification/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/LabeledProteinQuantification/ProteomIQon.LabeledProteinQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+    - grep -q "LabeledProteinQuantification/ProteomIQon.LabeledProteinQuantification.dll" "$PREFIX/bin/proteomiqon-labeledproteinquantification"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool LabeledProteinQuantification combines the results from ProteomIQon ProteinInference and ProteomIQon PSMBasedQuantification
+  description: |
+    After quantification and protein inference are performed, it is known which peptide originated from which protein, as well as the intensity of each peptide. 
+    The information available for each peptide now needs to be aggragated for their proteins. This tool performs the aggregation from the peptides to the protein in several steps. 
+    The first step for the labeled protein quantification is the aggregation of the differently labeled peptides. Peptides with the same sequence, modifications and
+    charge are aggregated and the ratio between the intensity from the light and heavy version is calculated. 
+    The next two aggregation steps are optional. One of them is the aggregation based on charge state. Similarily to the first step, peptides with the same sequence 
+    and modifications, but different charge states are being aggregated. 
+    The next optional step does the same for peptides with the same sequence, but different modification. Those steps build upon each other. 
+    The last step is the aggregation of all peptides of a protein. 
+    The result of each aggregation step is given as a tab separated file. The aggregation is performed according to the given parameters for each step. 
+    If an optional aggregation is not performed, the next step takes the result from the prior aggregation. 
+    For example, if aggregation by charge and modification are skipped, the protein aggregation gets a collection of peptides, where a peptidesequence can occur 
+    with different charge states and midifications.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/LabeledProteinQuantification.html

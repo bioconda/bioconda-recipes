@@ -1,0 +1,47 @@
+{% set name = "king" %}
+{% set version = "2.3.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://www.kingrelatedness.com/executables/KING{{ version }}code.tar.gz
+  sha256: b6c636ac99d2207d0c2435122abdc4bcd87260ccadaf27dc68df9000b4143a5b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+  host:
+    - zlib
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - king 2>&1 | grep "Genotype files"
+
+about:
+  home: "https://people.virginia.edu/~wc9c/KING"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "Kinship-based INference for Gwas (KING) is a toolset that makes use of high-throughput SNP data typically seen in a genome-wide association study."
+  doc_url: "https://people.virginia.edu/~wc9c/KING"
+
+extra:
+  recipe-maintainers:
+    - mtekman
+  identifiers:
+    - doi:10.1093/bioinformatics/btq559
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

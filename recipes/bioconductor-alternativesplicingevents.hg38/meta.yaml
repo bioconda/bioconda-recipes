@@ -1,38 +1,41 @@
-{% set version = "1.0.1" %}
+{% set version = "1.1.0" %}
 {% set name = "alternativeSplicingEvents.hg38" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 9ce2e10cfe00ec4451670e1fd18d2e37
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 8d49710eebd62fb15a48cab252ff3eca
 build:
-  number: 4
+  number: 6
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-alternativesplicingevents.hg38", max_pin="x.x") }}'
   noarch: generic
 # Suggests: dplyr, GenomicRanges, S4Vectors
 requirements:
   host:
-    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
     - r-base
   run:
-    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - bioconductor-annotationhub >=4.0.0,<4.1.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Alternative splicing event annotation for Human (hg38)'
-  description: 'Data frame containing alternative splicing events. The splicing events were compiled from the annotation files used by the alternative splicing quantification tools MISO, VAST-TOOLS, SUPPA and rMATS.'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Alternative splicing event annotation for Human (hg38)
+  description: Data frame containing alternative splicing events. The splicing events were compiled from the annotation files used by the alternative splicing quantification tools MISO, VAST-TOOLS, SUPPA and rMATS.
   license_file: LICENSE
 

@@ -1,0 +1,48 @@
+{% set name = "perl-retroseq" %}
+{% set version = "1.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/tk2/RetroSeq/archive/refs/tags/v1.5.zip
+  sha256: 2d868c73dade37237042f273f97cfcd510984d717fcc04078ed689c387093d16
+
+build:
+  noarch: generic
+  number: 3
+  run_exports: {{ pin_subpackage("perl-retroseq", max_pin="x") }}
+
+requirements:
+  host:
+    - perl
+    - perl-carp
+    - perl-exporter
+    - perl-extutils-makemaker
+    - zlib
+    - ncurses
+    - samtools ==0.1.19
+
+  run:
+    - perl
+    - perl-carp
+    - samtools ==0.1.19
+    - exonerate ==2.2.0
+    - bcftools
+    - bedtools
+    - zlib
+    - ncurses
+
+test:
+  imports:
+    - RetroSeq::Vcf
+    - RetroSeq::Utilities
+
+  commands:
+    - retroseq.pl --help
+
+about:
+  home: https://github.com/tk2/RetroSeq
+  license: GPL
+  summary: 'RetroSeq: discovery and genotyping of TEVs from reads in BAM format.'

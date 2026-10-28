@@ -1,39 +1,30 @@
 #!/bin/bash
+set -x
 
-mkdir -p ${PREFIX}/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3"
 
-make CC=${CC} CPP=${CXX}
+git clone --recursive https://github.com/simd-everywhere/simde-no-tests simde
 
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+esac
 
-# convert Python 2.7 scripts to 3
-if [ $PY3K -eq 1 ]
-then
-    2to3 --write \
-        extract_exons.py \
-        extract_splice_sites.py \
-        hisat2_extract_exons.py \
-        hisat2_extract_snps_haplotypes_UCSC.py \
-        hisat2_extract_snps_haplotypes_VCF.py \
-        hisat2_extract_splice_sites.py \
-        hisat2_read_statistics.py \
-        hisat2_simulate_reads.py \
-        hisatgenotype_build_genome.py \
-        hisatgenotype_extract_reads.py \
-        hisatgenotype_extract_vars.py \
-        hisatgenotype_hla_cyp.py \
-        hisatgenotype_locus.py \
-        hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-        hisatgenotype_modules/hisatgenotype_typing_common.py \
-        hisatgenotype_scripts/compare_HLA_Omixon.py \
-        hisatgenotype_scripts/extract_Omixon_HLA.py \
-        hisatgenotype_scripts/hisatgenotype_HLA_genotyping_PGs.py \
-        hisatgenotype_scripts/hisatgenotype_locus_samples.py \
-        hisatgenotype_scripts/compare_HLA.py \
-        hisatgenotype_scripts/hisatgenotype_convert_codis.py \
-        hisatgenotype_scripts/hisatgenotype_extract_codis_data.py \
-        hisatgenotype_scripts/hisatgenotype_extract_cyp_data.py \
-        hisatgenotype.py
-fi
+mkdir -p "${PREFIX}/bin"
+
+# The patch does not move the VERSION file on OSX. Let's make sure it's moved.
+mv VERSION{,.txt} || true
+
+make CC="${CC} ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+    CPP="${CXX} ${CXXFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+	-j"${CPU_COUNT}"
 
 # copy binaries and python scripts
 for i in \
@@ -46,19 +37,7 @@ for i in \
     hisat2-inspect \
     hisat2-inspect-l \
     hisat2-inspect-s \
-    *.py \
-    hisatgenotype_scripts/*.*;
+    *.py
 do
-    cp ${i} ${PREFIX}/bin
+    install -v -m 0755 "${i}" "${PREFIX}/bin"
 done
-
-# modules needed in PYTHONPATH
-for i in \
-    hisatgenotype_modules/hisatgenotype_assembly_graph.py \
-    hisatgenotype_modules/hisatgenotype_typing_common.py ;
-do
-   cp ${i} ${PREFIX}/lib/python${PY_VER}/site-packages
-done
-
-# set permissions
-chmod +x ${PREFIX}/bin/*

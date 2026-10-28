@@ -1,12 +1,15 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+set -eo pipefail
 
-chmod +x install
-./install
+if [ `uname` == Darwin ]; then
+    meson setup --buildtype=release --prefix=$PREFIX --unity on builddir
+else
+    env CC=clang CXX=clang meson setup --buildtype=release --prefix=$PREFIX --unity on builddir
+fi
 
-shopt -s extglob
-for file in $(compgen -G "Pretext!(*cpp)"); do
-    chmod +x $file;
-    mv $file $PREFIX/bin/
-done
+cd builddir
+meson compile
+meson test
+meson install
+

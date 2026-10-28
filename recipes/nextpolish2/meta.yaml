@@ -1,0 +1,54 @@
+{% set name = "nextpolish2" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Nextomics/NextPolish2/archive/{{ version }}.tar.gz
+  sha256: a60443bbd828e1110b6e8697f227cf2caf483b63082f90a10da501603b77979e
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nextpolish2', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+    - cmake
+    - pkg-config
+    - clangdev
+    - llvmlite
+  host:
+    - zlib
+    - curl
+  run:
+    - yak >=0.1
+
+test:
+  source_files:
+    - test
+  commands:
+    - nextPolish2 --help
+
+about:
+  home: "https://github.com/Nextomics/NextPolish2"
+  license: GBPL
+  license_file: LICENSE
+  summary: "Repeat-aware polishing genomes assembled using HiFi long reads."
+  dev_url: "https://github.com/Nextomics/NextPolish2"
+  doc_url: "https://github.com/Nextomics/NextPolish2/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - moold
+  identifiers:
+    - doi:10.1093/gpbjnl/qzad009

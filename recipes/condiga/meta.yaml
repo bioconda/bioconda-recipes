@@ -1,0 +1,55 @@
+{% set name = "ConDiGA" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/metagentools/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: 492bcf86bfceff50af12c230e98284f9422330d6d2840280c0eb3fed3fd843ed
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - convert=condiga_utils.support.convert:main
+  script:
+    - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('condiga', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.8
+  run:
+    - python >=3.8
+    - click
+    - biopython
+    - xlsxwriter
+    - tqdm
+    - minimap2
+    - taxonkit
+
+test:
+  commands:
+    - condiga --help
+    - convert --help
+
+about:
+  home: "https://github.com/metagentools/ConDiGA"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ConDiGA: Contigs Directed Gene Annotation for accurate protein sequence database construction in metaproteomics"
+  description: |
+    ConDiGA is a taxonomic annotation pipeline for metagenomic data to construct accurate protein sequence databases for deep metaproteomic coverage.
+  doc_url: "https://github.com/metagentools/ConDiGA"
+  dev_url: "https://github.com/metagentools/ConDiGA"
+
+extra:
+  recipe-maintainers:
+    - Vini2
+  identifiers:
+    - doi:10.1101/2023.04.19.537311

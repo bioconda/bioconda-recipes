@@ -1,15 +1,19 @@
-{% set version = "2-ddf2742" %}
+{% set version = "7-bba0d80" %}
+{% set sha256 = "45eff3cb8e15626b1142d4717bf43a6e7a1308bc8a6eb1718c70d33d613898fa" %}
+
 
 package:
   name: metaeuk
   version: {{ version|replace("-", ".")  }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('metaeuk', max_pin="x") }}
 
 source:
-  git_url: https://github.com/soedinglab/metaeuk
-  git_rev: {{ version }}
+  url: https://github.com/soedinglab/metaeuk/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -17,16 +21,15 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
   host:
-    - openmp
     - perl
     - gawk
     - zlib
     - bzip2
-
   run:
     - wget
-    - openmp
     - gawk
     - zlib
     - bzip2
@@ -43,8 +46,12 @@ about:
   license_file: LICENCE.md
 
 extra:
-   skip-lints:
-     # uses submodules
-     - uses_vcs_url
-     - missing_hash
-
+  identifiers:
+    - doi:10.1186/s40168-020-00808-x
+    - biotools:metaeuk
+  recipe-maintainers:
+    - milot-mirdita
+    - elileka
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

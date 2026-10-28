@@ -1,16 +1,17 @@
 #!/bin/bash -e
 
-# taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
-if [ "$(uname)" == "Darwin" ]; then
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -Wno-implicit-function-declaration"
+export CXXFLAGS="${CXXFLAGS} -O3 -fpermissive"
+export BINDGEN_EXTRA_CLANG_ARGS="${CFLAGS} ${CPPFLAGS} ${LDFLAGS}"
 
-    # apparently the HOME variable isn't set correctly, and circle ci output indicates the following as the home directory
-    export HOME="/Users/distiller"
-    echo "HOME is $HOME"
+sed -i.bak 's|"0.19"|"0.24.0"|' Cargo.toml
+rm -f *.bak
 
-    # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 removing circle ci default configuration solves cargo trouble downloading crates
-    git config --global --unset url.ssh://git@github.com.insteadOf
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-fi
+RUST_BACKTRACE=1
+cargo install --no-track --verbose --root "${PREFIX}" --path .
 
-# build statically linked binary with Rust
-C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --path . --root $PREFIX
+"${STRIP}" "$PREFIX/bin/rbt"

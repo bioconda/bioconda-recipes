@@ -1,23 +1,26 @@
-{% set version = "1.2.2" %}
+{% set name = "tidehunter" %}
+{% set version = "1.5.6" %}
 
 package:
-  name: tidehunter
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/yangao07/TideHunter/releases/download/v{{ version }}/TideHunter-v{{ version }}.tar.gz
-  sha256: e7f6547fc716df636a8850b942210036edfc2feefafa205a8fc8d97d89ff069f
+  sha256: 14e697b3414a070afecf79b76496ae5e54dd829223c71876ca06f5b45ee31f3c
 
 build:
   number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('c') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -25,7 +28,18 @@ test:
     - TideHunter --version | grep {{ version }}
 
 about:
-  home: https://github.com/yangao07/TideHunter
-  license: GPL
+  home: "https://github.com/yangao07/TideHunter"
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'TideHunter: efficient and sensitive tandem repeat detection from noisy long reads using seed-and-chain'
+  summary: "TideHunter: efficient and sensitive tandem repeat detection from noisy long reads using seed-and-chain."
+  dev_url: "https://github.com/yangao07/TideHunter"
+  doc_url: "https://github.com/yangao07/TideHunter/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:TideHunter
+    - doi:10.1093/bioinformatics/btz376

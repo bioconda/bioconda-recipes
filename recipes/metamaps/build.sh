@@ -3,6 +3,7 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
+sed -i.bak "s/@mathlib@/-lboost_math_c99/g" Makefile.in
 ./bootstrap.sh
 ./configure --with-boost=${PREFIX} --prefix=${PREFIX}
 make metamaps

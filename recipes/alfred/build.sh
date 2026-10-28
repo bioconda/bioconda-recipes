@@ -1,8 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
-export CXXFLAGS="${CXXFLAGS} -std=c++11"
-export CPPFLAGS="${CPPFLAGS} -std=c++11"
-export CFLAGS="$CFLAGS -std=c++11"
-make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${PREFIX}/include -L${PREFIX}/lib -Isrc/jlib/ -std=c++11"
-mkdir -p $PREFIX/bin
-cp src/alfred $PREFIX/bin
+CXXFLAGS="${CXXFLAGS} -O3 -D__STDC_FORMAT_MACROS -I${PREFIX}/include -std=c++17" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread" make -j${CPU_COUNT} CXX="${CXX}" prefix="${PREFIX}" install

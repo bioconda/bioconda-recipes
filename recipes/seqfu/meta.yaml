@@ -1,71 +1,63 @@
 {% set name = "seqfu" %}
-{% set version = "0.2.0" %}
-{% set sha256 = "242a6aa88d61e654ef92b1dbe75b1d716b9826cf5c9c09426be4cb38b718f281" %}
+{% set version = "1.30.3" %}
+{% set sha256 = "fed295c65d16821cda7440e9a41035c9bf737d1c3c6e91ea306e58d08bdbb5bf" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/quadram-institute-bioscience/{{ name }}/archive/v.{{ version }}.tar.gz
+  url: https://github.com/quadram-institute-bioscience/seqfu_v1/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  noarch: generic
   number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - nim >=2.2.0  # [not arm64]
+    - make
+    - pkg-config
+    - coreutils
   host:
-    - n50
-    - interleafq
-    - any2fasta
-    - perl
-    - perl-app-cpanminus
-    - perl-file-which
-    - perl-json-pp
-    - perl-fastx-reader
-    - perl-fastx-abi
-    - perl-getopt-long
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
-
+    - curl
+    - pcre
+    - zlib
   run:
-    - perl
-    - perl-file-which
-    - perl-getopt-long
-    - perl-json-pp
-    - perl-fastx-reader
-    - perl-fastx-abi
-    - perl-exporter
-    - perl-text-asciitable
-    - perl-pod-usage
-    - n50
-    - interleafq
+    - pcre
 
 test:
-  files:
-    - test.fa
   commands:
-  # (see run_test.sh for remainder of tests)
-  # Perl 'use' tests
-    - perl -e "use FASTX::Reader"
-    - perl -e "use FASTX::Abi"
-    - perl -e "use Proch::N50"
-
+    - seqfu
+    - seqfu stats --help
+    - seqfu --version
+    - "seqfu --version | grep '{{ version }}'"
 
 about:
-  home: http://github.com/quadram-institute-bioscience/seqfu/
-  license: mit
-  summary: 'DNA sequence utilities (N50, de/interleave FASTQ, grep etc.)'
+  home: "https://github.com/quadram-institute-bioscience/seqfu_v1"
+  docs: "https://corebio.info/seqfu_v1"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "DNA sequence utilities."
   description: |
     A collection of utilities to work with FASTX (FASTA or FASTQ) files
-    using the FASTX::Reader module that accepts gzipped input.
-    'n50' will calculate N50, minimum, maximum and total size of the 
-    sequences in one or more files, supporting CSV, TSV, JSON and screen
-    friendly output.
-    'interleafq' allows to interleave or deinterleave paired-end sequences.
+    that accept gzipped input.
+    Tools to interleave and deinterleave, to calculate stats, and extract
+    portions of sequence datasets.
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - telatin
   identifiers:
     - biotools:{{ name }}
+    - doi:10.3390/bioengineering8050059

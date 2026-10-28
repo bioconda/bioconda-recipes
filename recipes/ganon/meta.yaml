@@ -1,64 +1,81 @@
 {% set name = "ganon" %}
-{% set version = "0.2.1" %}
+{% set version = "2.4.4" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  - folder: ganon
-    url: https://github.com/pirovc/{{ name }}/archive/v{{ version }}.tar.gz
-    sha256: 9ec7c06b2eda3eee99884e9a35f45a0ffd805d7d1b9185b92f1551527446a429
-  - folder: seqan
-    url: https://github.com/eseiler/seqan/archive/d8b3fcd55858c150bc1dd95fa3cf4c8ebb640829.tar.gz
-    sha256: 5396aa6d541a22f32b7aa6f60015ade8a157e6af75f63aec8f3a514eeca06b80 
-  - folder: sdsl-lite
-    url: https://github.com/xxsds/sdsl-lite/archive/d6ed14d5d731ed4a4ec12627c1ed7154b396af48.tar.gz
-    sha256: db311228cd036ddf98eb130d29abd41195007c092ac2ea4092ba3567bff843c9 
-    
+  - url: https://github.com/pirovc/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: 537376e1ad8afd19de6e0592c287332561a73622308861683ef7623ef3230fa2
+
 build:
   number: 0
-  skip: True # [osx]
+  skip: True  # [py<310 or osx]
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  ignore_run_exports:
+    - seqan3
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-    - cmake >=3.10
-    - python >=3.4
-    - taxsbp ==0.1.2
-    - gawk
-    - pandas >=1.0.0
-    - coreutils
+    - {{ stdlib('c') }}
+    - cmake >=3.5
   host:
-    - catch2 >=2.7.0
-    - cxxopts ==2.2.0
+    - bzip2
+    - catch2 ==2.*
+    - coreutils
+    - curl
+    - cxxopts >=3.2.0
+    - diffutils
+    - genome_updater >=0.8.1
+    - grep
+    - multitax >=1.5.1
+    - pandas >=1.2.0
+    - parameterized >=0.9.0
+    - python
+    - raptor ==3.*
+    - robin_hood ==3.11.*
+    - seqan3 ==3.3.0
+    - setuptools
+    - setuptools_scm
     - zlib
   run:
-    - python >=3.4
-    - taxsbp ==0.1.2
-    - gawk
     - coreutils
-    - zlib
-    - pandas >=1.0.0
+    - curl
+    - diffutils
+    - genome_updater >=0.8.1
+    - grep
+    - multitax >=1.4.0
+    - pandas >=1.2.0
+    - python
+    - raptor ==3.*
 
 test:
   commands:
     - ganon --help
-    - ganon-build --help 2>&1 | grep "Ganon builder"
-    - ganon-classify --help 2>&1 | grep "Ganon classifier"
+    - ganon-build --help
+    - ganon-classify --help
 
 about:
   home: https://github.com/pirovc/ganon
-  summary: "ganon: a read classification tool using Interleaved Bloom Filters"
+  summary: "ganon2 classifies genomic sequences against large sets of references efficiently"
   description: |
-          ganon is a k-mer based read classification tool which uses Interleaved Bloom Filters
-          in conjunction with a taxonomic clustering and a k-mer counting-filtering scheme
+          ganon2 classifies genomic sequences against large sets of references efficiently,
+          with integrated download and update of databases (refseq/genbank), taxonomic profiling
+          (ncbi/gtdb), binning and hierarchical classification, customized reporting and more
   license: MIT License
   license_family: MIT
+  license_file: LICENSE
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
-    - doi:10.1101/406017
+    - doi:10.1093/nargab/lqaf094
   recipe-maintainers:
     - pirovc
-

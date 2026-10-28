@@ -1,0 +1,36 @@
+{% set version = "0.5.0" %}
+{% set sha256 = "61cba26e418d33af994bc85c4e5174ed115fc15bcf94f4f54e14a31ab839c82f" %}
+
+package:
+  name: vcf2parquet
+  version: {{ version }}
+
+source:
+  url: https://github.com/natir/vcf2parquet/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('vcf2parquet', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("rust") }}
+    - pkg-config  # [osx]
+  host:
+    - xz
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - vcf2parquet -h
+
+about:
+  home: https://github.com/natir/vcf2parquet
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Convert a vcf in parquet.

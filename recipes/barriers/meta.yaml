@@ -8,16 +8,27 @@ package:
 source:
   url: https://github.com/ViennaRNA/Barriers/releases/download/v{{ version }}/Barriers-{{ version }}.tar.gz
   sha256: 094d1916b851144bde03868097282cd18ef40911ced2917f6bef9883ded444f6
+  patches:
+    - patch
 
 build:
-  number: 0
+  number: 4
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - pkg-config
+    - automake
+    - autoconf
+    - libtool
+    - gnuconfig
   host:
     - gengetopt
+    - perl
     - viennarna
   run:
     - viennarna
@@ -27,7 +38,14 @@ test:
     - barriers --version
 
 about:
-  home: https://www.tbi.univie.ac.at/RNA/Barriers/
-  license: GPL
+  home: "https://www.tbi.univie.ac.at/RNA/Barriers"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: COPYING
   summary: "Compute local minima and energy barriers of a landscape."
+  dev_url: "https://www.tbi.univie.ac.at/RNA/Barriers"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

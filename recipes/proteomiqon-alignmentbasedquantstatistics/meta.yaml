@@ -1,0 +1,48 @@
+{% set name = "proteomiqon-alignmentbasedquantstatistics" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "3cee6c57578334aeba4d01a753196573bbc2bacb69345692b8f239f54db8cdd5" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.AlignmentBasedQuantStatistics/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-alignmentbasedquantstatistics"
+    - test -f "$PREFIX/lib/dotnet/tools/AlignmentBasedQuantStatistics/ProteomIQon.AlignmentBasedQuantStatistics.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-alignmentbasedquantstatistics"
+    - grep -q "AlignmentBasedQuantStatistics/ProteomIQon.AlignmentBasedQuantStatistics.dll" "$PREFIX/bin/proteomiqon-alignmentbasedquantstatistics"
+  
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The tool ProteomIQon.AlignmentBasedQuantStatistics scores peptide ion quantifications obtained through alignment between runs.
+  description: | 
+    MS-based shotgun proteomics estimates protein abundances using a proxy: peptides. 
+    Due to the acquisition method for MS2, not every peptide ion present can be identified in every run. One approach to mitigate this problem is to 
+    align information obtained from similar runs to the current run, therefore getting more quantifications. This tool scores the quantifications 
+    obtained through alignment based on peak and run properties to obtain a measurement of reliability for the alignments.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/AlignmentBasedQuantStatistics.html

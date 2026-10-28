@@ -1,53 +1,45 @@
-{% set version = "1.8.0" %}
+{% set version = "1.32.0" %}
 {% set name = "BiocSklearn" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 464a950f3ec6b712df3701177b3ce5a5
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 2bbe5be26f6b8b7b380f3ec0f517b850
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: python
-# Suggests: testthat, restfulSE, HDF5Array, BiocStyle
+  run_exports: '{{ pin_subpackage("bioconductor-biocsklearn", max_pin="x.x") }}'
+  noarch: generic
+# Suggests: testthat, HDF5Array, BiocStyle, rmarkdown, knitr
 # SystemRequirements: python (>= 2.7), sklearn, numpy, pandas, h5py
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
-    - r-bbmisc
-    - r-knitr
     - r-reticulate
-    - python
-    - scikit-learn
-    - pandas
-    - numpy
-    - h5py
+    - python >=2.7
   run:
-    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - bioconductor-basilisk >=1.22.0,<1.23.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
-    - r-bbmisc
-    - r-knitr
     - r-reticulate
-    - python
-    - scikit-learn
-    - pandas
-    - numpy
-    - h5py
+    - python >=2.7
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'interface to python sklearn via Rstudio reticulate'
-  description: 'This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.'
+  summary: interface to python sklearn via Rstudio reticulate
+  description: This package provides interfaces to selected sklearn elements, and demonstrates fault tolerant use of python modules requiring extensive iteration.
 

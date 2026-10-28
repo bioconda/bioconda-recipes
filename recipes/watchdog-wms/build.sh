@@ -14,6 +14,9 @@ cp -R * "${OUT}/"
 # remove the GNU mac binary and install it using conda
 rm "${OUT}/core_lib/external/getopt_mac"
 
+# use the javafx library installed by conda
+rm -r "${OUT}/jars/libs/modules/"
+
 # rename the sh scripts
 mv "${OUT}/watchdog.sh" "${OUT}/watchdog-cmd.sh"
 mv "${OUT}/workflowDesigner.sh" "${OUT}/watchdog-gui.sh"

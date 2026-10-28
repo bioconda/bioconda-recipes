@@ -1,0 +1,60 @@
+{% set name = "ccsmeth" %}
+{% set version = "0.5.0" %}
+{% set hash = "9f6bd61ebf1e7e7a4b6d0690658ccf0a70936faf3229db7998ef3ad6ef3e3a54" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/PengNi/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - ccsmeth=ccsmeth.ccsmeth:main
+  script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage("ccsmeth", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools
+    - pip
+  run:
+    - python >=3.8
+    - setuptools
+    - numpy >=1.20.0
+    - scikit-learn >=1.0.2
+    - statsmodels >=0.13.2
+    - pytorch >=1.2.0,<=2.1.0
+    - pysam >=0.19.0
+    - tqdm >=4.64.0
+    - bedtools =2.30.0
+    - pybedtools >=0.8.1
+    - pytabix >=0.1
+    - pbccs >=6.4.0
+    - pbmm2 >=1.9.0
+    - samtools >=1.12
+
+test:
+  imports:
+    - ccsmeth
+    - ccsmeth.utils
+  commands:
+    - ccsmeth --help
+
+about:
+  home: https://github.com/PengNi/ccsmeth
+  license: BSD-3-Clause-Clear
+  license_family: BSD
+  license_file: LICENSE
+  summary: Detecting DNA methylation from PacBio CCS read
+  dev_url: https://github.com/PengNi/ccsmeth
+
+extra:
+  recipe-maintainers:
+    - PengNi

@@ -1,0 +1,50 @@
+{% set name = "proteomiqon-psmbasedquantification" %}
+{% set version = "0.0.12" %}
+{% set sha256 = "cfec0ce447efda163789fccdf8e9c9c6436eb4ec21849ba26c6ae00af749b3fb" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PSMBasedQuantification/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - grep -q "PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll" "$PREFIX/bin/proteomiqon-psmbasedquantification"
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The quantification tool was designed to allow label-free quantification as well as quantification of full metabolic labeled samples.
+  description: | 
+    Given an MS run in the mzLite or mzml format and a list of fdr controlled peptide spectrum matches, this tool iterates accross all identified MS/MS scans and groups them by
+    the assigned peptide ion. The scan times of each MS/MS spectrum are then weighted according to the quality of each match to build an reliable estimator for the scan time of
+    the peptide ion in question. This scan time estimator, combined with the monoisotopic m/z, is then used to extract an ion chromatogram. Using wavelet based peak detection 
+    techniques we identify all peaks present in the XIC and select the most probable peak our target for quantification. Using parameter estimation techniques we subsequently 
+    use peak fitting to fit a set of two gaussian models to the detected peak, from whom the one with the better fit is selected. This allows us not only to report how well 
+    the signal fitted to the theoretical expected peak shape but also to obtain accurate estimates for the peak area, our estimator for peptide ion abundance.
+    The quantification tool was designed to allow label-free quantification as well as quantification of full metabolic labeled samples. For this we use the known identity 
+    of one of the the peptide ions and calculate the m/z of the unobserved differentially labeled counterpart to extract and quantify the corresponding XIC.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PSMBasedQuantification.html
