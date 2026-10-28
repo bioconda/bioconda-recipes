@@ -1,0 +1,43 @@
+{% set name = "phylonium" %}
+{% set version = "1.7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/evolbioinf/phylonium/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 87fc0828c4c96dc9b84e0bac640e7e1aaba749a9f218e1d4c4fbaa02d80412a0
+
+build:
+  number: 0
+  skip: true  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - make
+    - pkg-config
+  host:
+    - libdivsufsort
+  run:
+    - libdivsufsort
+
+test:
+  commands:
+    - phylonium --help
+
+about:
+  home: https://github.com/evolbioinf/phylonium
+  summary: Fast estimation of evolutionary distances from similar genomes
+  license: GPL-3.0-or-later
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btz903

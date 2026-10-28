@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "assessorfdata-1.20.0"
+installBiocDataPackage.sh "assessorfdata-1.28.0"

@@ -1,44 +1,53 @@
-{% set name = "metagenomics-focus" %}
-{% set version = "1.8" %}
-{% set sha256 = "1eadde87e4d666d88003df213eef7f52c75d5aa062e3a47fe0bf8d6e66e09bfc" %}
+{% set name = "focus" %}
+{% set version = "2.0.0" %}
 
 package:
-  name: focus
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: '{{ sha256 }}'
+  url: https://github.com/metageni/FOCUS/archive/v{{ version }}.tar.gz
+  sha256: b1a098abbdf4c981493ff3829f315f5407b1f07eb01915ddf9cc378346cf7af7
 
 build:
-  noarch: python
   number: 0
-  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -q
+  run_exports:
+    - {{ pin_subpackage("focus", max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.8
     - pip
-    - pytest
-    - setuptools >=38.6.0
-    - setuptools_scm
+    - setuptools >=68
+    - wheel
   run:
-    - python >=3
+    - python >=3.8
+    - click >=8.0
     - numpy >=1.12.1
     - scipy >=0.19.0
-    - kmer-jellyfish >=2.2.6
-    - unzip
-    - setuptools >=38.6.0
-    - setuptools_scm
+    - jellyfish  # from bioconda
 
 test:
+  imports:
+    - focus_app
+    - focus_app.focus
+    - focus_app.cli
   commands:
     - focus --help
+    - focus --version
 
 about:
-  home: https://edwards.sdsu.edu/FOCUS
-  license: GPL-3.0
-  license_family: GPL
+  home: https://github.com/metageni/FOCUS
+  license: GPL-3.0-or-later
   license_file: COPYING
-  summary: 'FOCUS is an innovative and agile model to profile and report organisms present in metagenomic samples based on composition usage without sequence length dependencies.'
-  dev_url: https://github.com/metageni/FOCUS
+  summary: FOCUS - An Agile Profiler for Metagenomic Data
+  description: |
+    FOCUS uses k-mer counting (Jellyfish) and non-negative least squares (NNLS)
+    to estimate the relative abundance of organisms in a metagenome without
+    assembly or read mapping.
+
+extra:
+  recipe-maintainers:
+    - metageni
