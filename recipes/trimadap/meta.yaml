@@ -1,21 +1,26 @@
-package:
-  name: trimadap
-  version: "r11"
+{% set name = "trimadap" %}
+{% set version = "r11" %}
 
-build:
-  number: 6
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/lh3/trimadap/archive/ddfef210563830d9193b40949da3523b6fb93003.tar.gz
-  sha256: 0aad29cc8f2fb65b464785b5787a29c0e0a6eab59f08eea82dffe15165151d4f
+  url: https://github.com/lh3/trimadap/archive/ec5a764e1834363ae0c4b52f52bdb114ff7af265.tar.gz
+  sha256: 40f1c0d0266d7c06f37392e6c73af7ef78a140ef74c740bf0e86bbf1e3654d05
+  patches:
+    - trimadap-aarch64.patch  # [arm64 or aarch64]
+
+build:
+  number: 7
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -25,8 +30,14 @@ test:
     - trimadap-mt test.fa
 
 about:
-  home: https://github.com/lh3/trimadap
+  home: "https://github.com/lh3/trimadap"
   license: MIT
   license_family: MIT
-  summary: Fast but inaccurate adapter trimmer for Illumina reads.
+  license_file: "LICENSE.txt"
+  summary: "Fast but inaccurate adapter trimmer for Illumina reads."
+  dev_url: "https://github.com/lh3/trimadap"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

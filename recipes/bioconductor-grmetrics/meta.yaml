@@ -1,21 +1,54 @@
-{% set version = "1.32.0" %}
+{% set version = "1.36.0" %}
 {% set name = "GRmetrics" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Functions for calculating and visualizing growth-rate inhibition (GR) metrics.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL-3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
-  summary: Calculate growth-rate inhibition (GR) metrics
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 4cc3c3b71b873738d5066cb370653046
 
 build:
-  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-grmetrics", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, BiocStyle, tinytex
+requirements:
+  host:
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-drc
+    - r-ggplot2
+    - r-plotly
+  run:
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-drc
+    - r-ggplot2
+    - r-plotly
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3
+  summary: Calculate growth-rate inhibition (GR) metrics
+  description: Functions for calculating and visualizing growth-rate inhibition (GR) metrics.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   identifiers:
@@ -25,37 +58,4 @@ extra:
     name: bioconductor-grmetrics
     path: recipes/bioconductor-grmetrics
     version: 1.8.0
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
-# Suggests: knitr, rmarkdown, BiocStyle, tinytex
-requirements:
-  host:
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - r-base
-    - r-drc
-    - r-ggplot2
-    - r-plotly
-  run:
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - r-base
-    - r-drc
-    - r-ggplot2
-    - r-plotly
-
-source:
-  md5: eeda95aa1c3d989869038bc56556bc03
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
-test:
-  commands:
-    - $R -e "library('{{ name }}')"
 

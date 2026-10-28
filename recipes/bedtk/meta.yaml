@@ -1,22 +1,18 @@
-# Upstream source is not versioned by Git tags but with define BEDTK_VERSION in ./bedtk.c.
-# The `bedtk version | grep` test checks if version and commit are in sync.
-{% set upstream_version = "0.0-r25-dirty" %}
-{% set upstream_commit = "fee50660b1717c4b4620c46308400f4edb9f6c72" %}
-{% set version = upstream_version | replace("-", ".") %}
-{% set sha256 = "c636f5ac11edc36fce81c59cb7b0627a6bb40f30d004ac4f930657cdb49c03ae" %}
+{% set version = "1.2" %}
+{% set github = "https://github.com/lh3/bedtk" %}
 
 package:
   name: bedtk
   version: {{ version }}
 
 source:
-  url: https://github.com/lh3/bedtk/archive/{{ upstream_commit }}.tar.gz
-  sha256: {{ sha256 }}
+  url: "{{ github }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c0e1f454337dbd531659662ccce6c35831e7eec75ddf7b7751390b869e6ce9f0
 
 build:
-  number: 6
+  number: 0
   run_exports:
-    - {{ pin_subpackage("bedtk", max_pin="x.x.x") }}  
+    - {{ pin_subpackage('bedtk', max_pin="x") }}
 
 requirements:
   build:
@@ -24,20 +20,20 @@ requirements:
     - make
   host:
     - zlib
-  run:
 
 test:
   commands:
     - bedtk
-    - bedtk version | grep -qxF '{{ upstream_version }}'
+    - bedtk version
 
 about:
-  home: https://github.com/lh3/bedtk
-  dev_url: https://github.com/lh3/bedtk
-  doc_url: https://github.com/lh3/bedtk
+  home: "{{ github }}"
+  dev_url: "{{ github }}"
+  doc_url: "{{ github }}"
   license: MIT
-  license_file: LICENSE.txt
-  summary: Bedtk is a set of simple tools to process BED files.
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Bedtk is a set of simple tools to process BED files."
   description: >
     Bedtk is a set of simple tools to process BED files.
     It so far implements intersection, subtraction, sorting, merging and computing the breadth of coverage.
@@ -48,7 +44,10 @@ about:
     For example, sorting, merging and intersection can be done in one go without Unix pipes.
 
 extra:
-  identifiers:
-    - biotools:bedtk
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:bedtk
+  recipe-maintainers:
+    - mjsteinbaugh
