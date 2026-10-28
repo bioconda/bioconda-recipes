@@ -1,5 +1,5 @@
 {% set name = "rhinotype" %}
-{% set version = "2.0.0" %}
+{% set version = "3.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 26f29cd0bd82153a4d3df95ab41dc073de7247f2c1c7ab78ea6a4e198329408e
+  sha256: 84886cc85669ac5585f79de3cb49b8f8ec1a12c5ec029a77c6245ddc10167fdc
 
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps -vv
   entry_points:
     - rhinotype = rhinotype.main:main
 
@@ -31,6 +33,7 @@ requirements:
     - python >=3.8
     - scipy >=1.15
     - seaborn >=0.13
+    - plotly >=5
 
 test:
   imports:
@@ -49,6 +52,4 @@ extra:
   recipe-maintainers:
     - Ephantus-Wambui
     - laitanawe
-  skip-lints:
-    - missing_run_exports
-
+  skip-lints: []
