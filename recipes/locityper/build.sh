@@ -21,4 +21,6 @@ git clone https://github.com/smarco/WFA2-lib WFA2
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --no-track --verbose --root "${PREFIX}" --path .
+cargo install --no-track --verbose --root "${PREFIX}" \
+    --no-default-features --features libscip \
+    --path .

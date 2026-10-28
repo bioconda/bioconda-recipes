@@ -25,8 +25,8 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 if [[ "$unamestr" == 'Darwin' ]];
 then
   # build statically linked binary with Rust
-  CONDA_BUILD=TRUE RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" RUST_BACKTRACE=1 cargo install -v -v -j 1 --locked --verbose --root $PREFIX --path .
+  CONDA_BUILD=TRUE CARGO_PROFILE_RELEASE_LTO=false RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup,-headerpad_max_install_names" RUST_BACKTRACE=1 cargo install -v -v -j 1 --locked --verbose --root $PREFIX --path .
 else 
   # build statically linked binary with Rust
-  CONDA_BUILD=TRUE RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v --locked --verbose --root $PREFIX --path .
+  CONDA_BUILD=TRUE CARGO_PROFILE_RELEASE_LTO=false RUSTFLAGS="-L $PREFIX/lib64" RUST_BACKTRACE=1 cargo install -v -v --locked --verbose --root $PREFIX --path .
 fi
