@@ -1,36 +1,46 @@
-{% set version = "1.28.0" %}
+{% set version = "1.52.0" %}
 {% set name = "hpar" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 1446695a52e111ef2864712f12b586a0
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 5c2f733a152c83667e4aab3e743803fe
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hpar", max_pin="x.x") }}'
   noarch: generic
-# Suggests: org.Hs.eg.db, GO.db, knitr, BiocStyle, testthat
+
+# Suggests: org.Hs.eg.db, GO.db, AnnotationDbi, knitr, BiocStyle, testthat, rmarkdown, dplyr, DT
 requirements:
   host:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
     - r-base
   run:
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
     - r-base
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Human Protein Atlas in R'
-  description: 'The hpar package provides a simple R interface to and data from the Human Protein Atlas project.'
+  summary: Human Protein Atlas in R
+  description: The hpar package provides a simple R interface to and data from the Human Protein Atlas project.
+
 extra:
   identifiers:
     - biotools:hpar

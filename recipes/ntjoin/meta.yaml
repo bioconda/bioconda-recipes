@@ -1,43 +1,47 @@
-{% set version = "1.0.1" %}
+{% set version = "1.1.7" %}
 
 package:
   name: ntjoin
   version: {{ version }}
 
 source:
-  url: https://github.com/bcgsc/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
-  sha256: 6fbb61308e0a2ac8a883ba1023126ff5529d6589f9e4fb79094931196e2c9c73 
+  url: https://github.com/BirolLab/ntJoin/releases/download/v{{ version }}/ntJoin-{{ version }}.tar.gz 
+  sha256: 03f7268b8f42177115e0b54ae183ae0dea3a260e544435931184e776bc034dba 
 
 build:
   number: 0
-  skip: True  # [py2k]
+  noarch: generic
+  run_exports: 
+    - {{ pin_subpackage("ntjoin", max_pin="x") }}
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - llvm-openmp # [osx]
   host:
-    - python
+    - make
+    - python <=3.12
     - pip
     - zlib
-    - llvm-openmp # [osx]
+    - btllib >=1.7.1
   run:
     - python-igraph
     - pybedtools
     - pymannkendall
     - bedtools >=2.21.0
-    - samtools
-    - python
+    - pysam >=0.16.0
+    - samtools >=1.10
+    - python <=3.12
     - zlib
-    - llvm-openmp # [osx]
     - make
+    - btllib >=1.7.1
+    - packaging
 
 test:
   commands:
     - ntJoin help 
+    - ntJoin check_install
+    - samtools --help
 
 about:
-  home: http://www.bcgsc.ca/platform/bioinfo/software/ntjoin
-  license: GPL-3.0
+  home: https://github.com/BirolLab/ntJoin
+  license: GPL-3.0-or-later
   license_file: LICENSE
   summary: 'Genome assembly scaffolder using minimizer graphs'

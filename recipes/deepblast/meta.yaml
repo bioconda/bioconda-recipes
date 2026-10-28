@@ -1,0 +1,55 @@
+{% set name = "DeepBLAST" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "80a73e6afcf153b733cf39793b6429330c4235dd2716033b2cc0870add7e3138" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0]|lower }}/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - numpy
+    - scipy
+    - pandas
+    - pytorch >=1.4
+    - scikit-learn
+    - numba
+    - pytorch-lightning >=0.8.1
+    - matplotlib-base
+    - pillow
+    - faiss
+    - biopython >=1.78,<2.0
+    - transformers
+    - sentencepiece
+    - tensorboard
+
+test:
+  imports:
+    - deepblast
+
+about:
+  summary: Neural Networks for Protein Sequence Alignment.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: COPYING.txt
+  home: https://github.com/flatironinstitute/deepblast
+  dev_url: https://github.com/flatironinstitute/deepblast
+
+extra:
+  identifiers:
+    - doi:10.1101/2020.11.03.365932

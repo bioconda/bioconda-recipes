@@ -1,38 +1,41 @@
 {% set name = "bx-python" %}
-{% set version = "0.8.8" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "ad0808ab19c007e8beebadc31827e0d7560ac0e935f1100fb8cc93607400bb47" %}
+{% set version = "0.15.1" %}
+{% set sha256 = "8c7102ffbf970139bcd792d320923b32f630ea20fde4898e9084c69b8ef06bb2" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/bx_python-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3" # [not osx]
+    - export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3 -fno-define-target-os-macros"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - pkg-config
   host:
-    - cython
-    - numpy
-    - pip
     - python
-    - python-lzo
+    - pip
     - setuptools
-    - six
+    - cython
+    - numpy >=1.25
     - zlib
   run:
-    - numpy
     - python
-    - python-lzo
-    - six
+    - pyparsing
+    - numpy >=1.25
 
 test:
   imports:
@@ -51,20 +54,26 @@ test:
     - bx.motif.io
     - bx.motif.logo
     - bx.phylo
+    - bx.phylo.newick
     - bx.pwm
     - bx.seq
     - bx.tabular
     - bx_extras
-  requires:
-    - nose
 
 about:
-  home: https://github.com/bxlab/bx-python
+  home: "https://github.com/bxlab/bx-python"
+  summary: "Tools for manipulating biological data, particularly multiple sequence alignments."
   license: MIT
   license_family: MIT
-  license_file: 'LICENSE'
-  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+  license_file: LICENSE
+  doc_url: "https://bx-python.readthedocs.io/en/latest"
+  dev_url: "https://github.com/bxlab/bx-python"
 
 extra:
-  container:
-    extended-base: true
+  identifiers:
+    - biotools:bx-python
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nsoranzo

@@ -1,0 +1,73 @@
+{% set name = "rmats-long" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/r/rmats-long/rmats_long-{{ version }}.tar.gz
+  sha256: 891082caea6523b88d9b57637f1ce5178d437d3fff2e925fab183e4c6622085b
+
+build:
+  number: 0
+  skip: True  # [py < 311]
+  entry_points:
+    - rmats-long = rmats_long.command_line_interface:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools >=80.0.0
+    - cython >=3.2.0
+    - pip
+  run:
+    - python
+    - bioconductor-biocparallel
+    - bioconductor-drimseq
+    - matplotlib-base >=3.7
+    - networkx >=2.8
+    - numpy >=1.24
+    - pandas >=2
+    - pydot >=3
+    - r-base
+    - r-cowplot
+    - r-ggplot2
+    - r-ggrepel
+    - r-ggvenndiagram
+    - r-mclogit
+    # Specifying the r-stringi version so that the conda-forge version
+    # of r-stringi is used along with a compatible icu version:
+    # https://github.com/mamba-org/boa/issues/115
+    - r-stringi >=1.7.8
+    - r-this.path
+    - rpy2 >=3.5
+    - samtools
+    - threadpoolctl >=3.6
+
+test:
+  imports:
+    - rmats_long
+  commands:
+    - rmats-long --help > /dev/null
+
+about:
+  home: "https://github.com/Xinglab/rMATS-long"
+  summary: "Differential isoform analysis using long-read RNA-seq data."
+  license: "BSD-2-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/Xinglab/rMATS-long"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # r-this.path not yet on conda-forge for arm64
+    #- osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

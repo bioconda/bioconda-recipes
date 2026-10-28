@@ -1,35 +1,38 @@
 {% set name = "dehomopolymerate" %}
-{% set version = "0.4.0" %}
-{% set sha256 = "89b825e8092600cd8a81c81db6b40c1f206ea6b0f1853a15185aefaf24d02383" %}
+{% set version = "0.4.1" %}
+{% set sha256 = "7cfec4dc0da0829ebbaed9200ea4d96ab1165f068470871d9513d42a462d8880" %}
 {% set user = "tseemann" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 build:
-    number: 0
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 source:
-    url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
-    build:
-        - {{ compiler('c') }}
-    host:
-        - zlib
-    run:
-        - zlib
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
 
 test:
-    commands:
-        - {{ name }} -v | grep '{{ version }}'
-        - {{ name }} -h
+  commands:
+    - {{ name }} -v | grep '{{ version }}'
+    - {{ name }} -h
 
 about:
-    home: https://github.com/{{ user }}/{{ name }}
-    license: GPL3
-    license_file: LICENSE
-    summary: Collapse homopolymer runs in FASTQ files
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Collapse homopolymer runs in FASTQ files
 

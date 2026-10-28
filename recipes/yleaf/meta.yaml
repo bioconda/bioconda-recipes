@@ -1,0 +1,65 @@
+{% set name = "yleaf" %}
+{% set version = "4.1.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/genid/Yleaf/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ccdd984797320f87e63ab08e9953f4948dd01ddd067044f02279f5df1af83422
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - Yleaf = yleaf.Yleaf:main
+    - predict_haplogroup = yleaf.predict_haplogroup:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - python-graphviz
+    - networkx
+    - numpy
+    - pandas
+    - python-dateutil
+    - pytz
+    - six
+    - samtools
+    - bcftools
+    - minimap2
+
+test:
+  imports:
+    - yleaf
+  commands:
+    - Yleaf --help
+    - predict_haplogroup --help
+    - samtools --version
+    - bcftools --version
+    - minimap2 --version
+    # 3.2.1 shipped without yleaf/data (setup.py glob did not recurse); guard against that.
+    - python -c "import pathlib, yleaf; d = pathlib.Path(yleaf.__file__).parent / 'data'; n = sum(p.is_file() for p in d.rglob('*')); assert n >= 266, n; assert (d / 'hg38' / 'new_positions.txt').is_file()"
+
+about:
+  home: https://github.com/genid/Yleaf
+  summary: Y-chromosome haplogroup prediction from next-generation sequencing data.
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE.txt
+  dev_url: https://github.com/genid/Yleaf
+  doc_url: https://github.com/genid/Yleaf
+
+extra:
+  identifiers:
+    - doi:10.1093/molbev/msy032
+  recipe-maintainers:
+    - musharna

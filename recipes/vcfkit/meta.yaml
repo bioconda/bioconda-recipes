@@ -1,32 +1,29 @@
-{% set name = "VCF-kit" %}
-{% set version = "0.1.6" %}
-{% set sha256 = "e44319bc057ff4f90cc3a777bb6b1794e5dc3dcf56fe2753fee199f782fed6b6" %}
+{% set version = "0.2.9" %}
+{% set sha256 = "1534727cc059453df3cfe27e326b7b5c8f99792ed086fd69a7a558f7a0f66462" %}
 
 package:
-  name: {{ name|lower|replace("-","") }}
+  name: vcfkit
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: e44319bc057ff4f90cc3a777bb6b1794e5dc3dcf56fe2753fee199f782fed6b6
+  url: https://pypi.io/packages/source/V/VCF-kit/VCF-kit-{{ version }}.tar.gz
+  sha256: 1534727cc059453df3cfe27e326b7b5c8f99792ed086fd69a7a558f7a0f66462
   patches:
     - setup.patch
-    # Fixes https://github.com/AndersenLab/VCF-kit/issues/22
-    - numpy.patch
 
 build:
-  number: 3
+  number: 0
+  noarch: python
   entry_points:
     - vk=vcfkit.vk:main
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
+    - cython
+    - numpy
     - pip
-    - python <3
-    - cython >=0.24.1
+    - python
   run:
     - awesome-slugify
     - biopython
@@ -35,10 +32,10 @@ requirements:
     - docopt
     - intervaltree ==2.1.0
     - jinja2
-    - matplotlib
+    - matplotlib-base
     - networkx ==1.11
     - numpy
-    - python <3
+    - python
     - requests
     - scipy
     - tabulate

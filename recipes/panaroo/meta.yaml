@@ -1,15 +1,18 @@
-{% set version = "1.1.2" %} # put in correct version here
+{% set version = "1.8.1" %} 
 {% set name = "panaroo" %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
+
 source:
   url: https://github.com/gtonkinhill/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: b128069c8071d3a374df0b8557eb10e0760a1af070d90e408abca598d857570c
+  sha256: b909740a0e7ab371a871a18467f1eaa61d5d0581117c62f440bd16c16b37c302
+
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - panaroo = panaroo.__main__:main
     - run_prokka = panaroo.run_prokka:main
@@ -19,16 +22,22 @@ build:
     - panaroo-spydrpick = panaroo.spydrpick:main
     - panaroo-img = panaroo.estimate_img_params:main
     - panaroo-fmg = panaroo.estimate_many_genes_params:main
+    - panaroo-msa = panaroo.post_run_alignment_gen:main
+    - panaroo-integrate = panaroo.integrate:main
+    - panaroo-gene-neighbourhood = panaroo.get_neighborhood:main
+  run_exports:
+    - {{ pin_subpackage('panaroo', max_pin="x") }}
+
 requirements:
   host:
-    - python >=3
+    - python >=3.6
     - pip
+    - setuptools
   run:
-    - python >=3
+    - python >=3.6
     - networkx
     - numba
-    - numpy 
-    - mkl
+    - numpy
     - scipy
     - scikit-learn
     - gffutils
@@ -36,11 +45,16 @@ requirements:
     - joblib
     - tqdm
     - python-edlib
-    - matplotlib
+    - matplotlib-base
     - plotly
     - dendropy
-    - cd-hit
+    - intbitset
+    - biocode
     - mafft
+    - prank
+    - mash
+    - cd-hit
+
 test:
   imports:
     - panaroo
@@ -52,8 +66,13 @@ test:
     - panaroo-spydrpick --help
     - panaroo-img --help
     - panaroo-fmg --help
+    - panaroo-msa --help
+
 about:
   home: https://gtonkinhill.github.io/panaroo
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: 'panaroo - an updated pipeline for pan-genome investigation'
+  summary: 'panaroo - an updated pipeline for pangenome investigation'
+  doc_url: https://gtonkinhill.github.io/panaroo/#/gettingstarted/quickstart
+  dev_url: https://github.com/gtonkinhill/panaroo

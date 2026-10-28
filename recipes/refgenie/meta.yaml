@@ -1,5 +1,5 @@
 {% set name = "refgenie" %}
-{% set version = "0.8.2" %}
+{% set version = "0.13.0" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,26 +7,32 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "dca32279f3021fe7a5318b834cb9e5c36eda12a6d86f99f01ee174ebe79de60c"
+  sha256: "dc1a132b492feb8950f59737a87ea9626c8d400f728041ca3dd93ad860504404"
 
 build:
   noarch: python
   number: 0
   entry_points:
-    - refgenie = refgenie.refgenie:main
+    - refgenie = refgenie.__main__:main
     - import_igenome = refgenie.add_assets_igenome:main
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
     - pip
-    - python >=3
+    - python >=3.10
+    - setuptools
   run:
-    - logmuse >=0.2
-    - piper >=0.12.1
+    - python >=3.10
+    - logmuse >=0.2.6
+    - piper >=0.15.0
     - pyfaidx >=0.5.5.2
-    - python >=3
-    - refgenconf >=0.5.3
+    - refgenconf >=0.13.0
+    - rich >=9.0.1
+    - ubiquerg >=0.9.0
+    - yacman >=0.9.5
 
 test:
   imports:
@@ -40,9 +46,11 @@ about:
   license: "BSD-2-Clause"
   license_family: "BSD"
   license_file: "LICENSE.txt"
-  summary: "Refgenie creates a standardized folder structure for reference genome files and indexes. You can download pre-built genomes or build your own for any fasta file"
+  summary: "Refgenie creates a standardized folder structure for reference genome files and indexes."
+  description: |
+    Refgenie creates a standardized folder structure for reference genome files and indexes. You can download pre-built genomes or build your own for any fasta file
 
 extra:
   recipe-maintainers:
-    - michalstolarczyk
+    - stolarczyk
     - apeltzer

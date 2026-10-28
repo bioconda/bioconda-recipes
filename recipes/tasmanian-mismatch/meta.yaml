@@ -1,0 +1,71 @@
+{% set name = "tasmanian-mismatch" %}
+{% set version = "2.1.0" %}
+
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 9c411a3265d40fc570116d64eec38ed56f93c0dd85ac23ec7478ba63d6271bff
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    # On macOS, llvmdev (also pulled in by clangdev) ships lib/libLLVM.dylib, which
+    # clobbers the one rustc links against -> "dyld: missing symbol called".
+    # bindgen (rust-htslib) only needs libclang there.
+    - llvmdev  # [linux]
+    - clangdev  # [linux]
+    - libclang  # [osx]
+    - pkg-config
+    - make
+    - cmake
+    - patchelf  # [linux]
+  host:
+    - htslib
+    - zlib
+  run:
+    - python >=3.10
+    - bokeh >=3,<4
+    - polars >=0.20,<2
+    - pandas
+
+test:
+  commands:
+    - tasmanian-mismatch --help
+    - tasmanian-diagnostics --help
+    - tasmanian-rescale-quality --help
+
+about:
+  home: "https://github.com/nebiolabs/tasmanian-mismatch"
+  license: "LGPL-2.1-or-later"
+  license_family: LGPL
+  license_file:
+    - LICENCE.txt
+    - THIRDPARTY.yml
+  summary: "Tasmanian tool to analyze mismatches in sequencing data (Rust + Python hybrid)."
+  description: |
+    Version 2.x is a Rust-based rewrite of tasmanian-mismatch.
+    Some functionality relies on Python components, which are installed
+    via Conda (pixi is not used in this environment).
+
+    The original Python-only implementation is available in 1.x releases.
+  dev_url: "https://github.com/nebiolabs/tasmanian-mismatch"
+
+extra:
+  recipe-maintainers:
+    - aerijman
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

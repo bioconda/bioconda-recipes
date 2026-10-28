@@ -1,0 +1,34 @@
+{% set name = "pbaa" %}
+{% set version = "1.2.0" %}
+{% set pbaa_sha256 = "c47cd9896d68f6234240e336fd7c99cf320162e3e988810e6e5b396eb6b29273" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/PacificBiosciences/pbAA/releases/download/{{ version }}/pbaa
+    sha256: {{ pbaa_sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/pbAA
+  license: BSD-3-Clause-Clear
+  summary: PacBio tool to cluster HiFi reads and generate high quality consensus sequences
+
+extra:
+  recipe-maintainers:
+    - zeeev
+  skip-lints:
+    #repackaged binary
+    - should_be_noarch_generic
+
+build:
+  number: 0
+  skip: True  # [osx]
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage('pbaa', max_pin='x.x') }}
+
+test:
+  commands:
+    - pbaa -h

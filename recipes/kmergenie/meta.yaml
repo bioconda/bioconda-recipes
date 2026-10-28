@@ -1,14 +1,16 @@
 {% set name = "kmergenie" %}
-{% set version = "1.7016" %}
-{% set md5 = "7036f9cac24b0dee526b7db710b89f00" %}
+{% set version = "1.7051" %}
+{% set md5 = "4cce0cf67b3e6499c3e6870389a6e560" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 4
-  skip: True # [not py27]
+  number: 11
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('kmergenie', max_pin="x.x") }}
 
 source:
   url: http://kmergenie.bx.psu.edu/{{ name }}-{{ version }}.tar.gz
@@ -16,26 +18,34 @@ source:
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - pkg-config
   host:
-    - python
+    - python 2.7.*
+    - r-base 4.0.*
     - zlib
-    - r-base
+    - wget
   run:
-    - python
-    - zlib
-    - r-base
+    - python 2.7.*
+    - r-base 4.0.*
+    - ntcard
 
 test:
   commands:
     - kmergenie --help
 
 about:
-  home: http://kmergenie.bx.psu.edu/
-  license: 'free software license'
-  summary: 'KmerGenie estimates the best k-mer length for genome de novo assembly'
+  home: "http://kmergenie.bx.psu.edu"
+  license: "Free Software License"
+  license_file: LICENSE
+  summary: "KmerGenie estimates the best k-mer length for genome de novo assembly."
+  doc_url: "http://kmergenie.bx.psu.edu/README"
+  dev_url: "http://kmergenie.bx.psu.edu"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:kmergenie
     - doi:10.1093/bioinformatics/btt310

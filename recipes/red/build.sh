@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd src_2.0
+
 mkdir -p ${PREFIX}/bin
 make bin
 make

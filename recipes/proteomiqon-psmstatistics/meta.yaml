@@ -1,0 +1,50 @@
+{% set name = "proteomiqon-psmstatistics" %}
+{% set version = "0.0.10" %}
+{% set sha256 = "4baaa282e0ca6683176d587927183c4b245d9cf50a53d9d9e12624aa2dc162e8" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PSMStatistics/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-psmstatistics"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMStatistics/ProteomIQon.PSMStatistics.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmstatistics"
+    - grep -q "PSMStatistics/ProteomIQon.PSMStatistics.dll" "$PREFIX/bin/proteomiqon-psmstatistics"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  summary: The PSMStatistics tool utilizes semi supervised machine learning techniques to integrate search engine scores as well as the mentioned quality scores into one single consensus score.
+  description: | 
+    To measure the similarity of in silico generated spectra and measured MS/MS scans we use our own implementations of three established search enginge scores: 
+    SEQUEST, Andromeda and XTandem. Additionally, we also record quality control parameters such as the mass difference between the precursor ion and the theoretically 
+    calulated mass or the uniquness of each score in comparison to 'competing' peptides within the search space. The PSMStatistics tool utilizes semi supervised machine 
+    learning techniques to integrate search engine scores as well as the mentioned quality scores into one single consensus score.
+    Since the search space is extended by so called decoys - reversed counterparts of peptides within the search space - we can estimate the distribution of 'true negatives' and 
+    calculate local (PEP values) and global (Q values) false discovery rates at each consensus score. The reported peptides at user defined local and global FDR cutoffs can then
+    be used as inputs for any downstream analysis be it ProteinInference or PSMBasedQuantification.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/PSMStatistics.html

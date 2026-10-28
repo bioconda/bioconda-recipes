@@ -1,26 +1,32 @@
-{% set name = "hts-nim-tools" %}
-{% set version = "0.1.5" %}
-{% set revision = "e4249bf" %}
-{% set sha256hash = "d45468183f66497c6c5cc183e0fd363709844d6f474326411eb57c74ffa4a4c3" %}
+{% set version = "0.3.31" %}
+{% set sha256 = "fdb2a2f867b45d568c26f1b416f487a47746872678f9b9d3179665c89e2330c7" %}
 
 package:
-  name: {{ name|lower }}
+  name: hts-nim-tools
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/{{ name }}/archive/{{ revision }}.tar.gz
-  sha256: {{ sha256hash }}
+- url: https://github.com/brentp/hts-nim-tools/archive/refs/tags/v0.2.1.tar.gz
+  sha256: {{ sha256 }}
+- url: https://github.com/brentp/hts-nim/archive/v{{ version }}.tar.gz
+  sha256: e2e8572156cced4557fcb75ecf5a7ee072bcc7abf81066d4b54d5bf674dab3e0
+  folder: hts-nim
 
 build:
-  number: 2
-  skip: True  # [osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('hts-nim-tools', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - nim  # [not arm64]
   host:
     - pcre
     - htslib
+    - curl
+    - tar
   run:
     - pcre
     - htslib
@@ -31,6 +37,16 @@ test:
     - hts_nim_tools count-reads -h
 
 about:
-  home: https://github.com/brentp/hts-nim-tools
+  home: "https://github.com/brentp/hts-nim-tools"
   license: MIT
-  summary: useful command-line tools written to show-case hts-nim
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Useful command-line tools written to show-case hts-nim."
+  dev_url: "https://github.com/brentp/hts-nim-tools"
+  doc_url: "https://brentp.github.io/hts-nim"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    # errors out; logs unable to catch the exact error
+    #- osx-arm64

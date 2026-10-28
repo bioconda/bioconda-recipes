@@ -1,8 +1,9 @@
-{% set version = "0.16.11" %}
-{% set sha256 = "56588e97fb0cde3b8cf4825a5950d89c9b3d1587f3a13fa2556016a3fcf746e5" %}
+{% set name = "bioconda-utils" %}
+{% set version = "5.1.0" %}
+{% set sha256 = "bdf7ac7af06811fe22022e4001d39da1c89712ef969f708b8df6076302c9a300" %}
 
 package:
-  name: bioconda-utils
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,61 +11,74 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
-  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.7
+    - python =3.13
     - pip
+    - setuptools <82
+    - setuptools-scm >=8
   run:
-    - python >=3.7
-    - conda 4.6.14
-    - conda-build 3.18.12
-    - conda-verify 3.1.*
-    - argh 0.26.*
-    - colorlog 3.1.*
-    - tqdm >=4.26
-    - ruamel_yaml 0.15.*
-    - pyaml 17.12.*
-    - networkx 1.11
-    - pandas 0.23.*
+    # Keep in sync with
+    # https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-requirements.txt
+    # (The '.*' is removed as the '=' already does that)
+    - conda-forge-pinning =2026.01.07.13.16.30
+    - setuptools <82
+    - python =3.13
+    - conda =26.7
+    - conda-libmamba-solver =26.7
+    - conda-build =26.7
+    - conda-index =0.12
+    - conda-package-streaming =0.13
+    - mamba =2.5
+    - typer =0.26
+    - colorlog =6
+    - tqdm =4.67
+    - yaspin =3
+    - ruamel.yaml =0.18
+    - pyaml =26.2
+    - networkx =3.6
+    - pandas =3.0
     - libblas * *openblas
-    - boltons 18.*
-    - jsonschema 2.6.*
-    - conda-forge-pinning 2019.09.27
-    - anaconda-client 1.6.*
-    - involucro 1.1.*
-    - skopeo 0.1.35
-    - git 2.14.*
-    - regex 2018.08.29
-    - aiohttp 3.4.*
-    - aiofiles 0.4.*
-    - aioftp 0.12.*
-    - backoff 1.6.*
-    - cachetools 3.0.*
-    - gitpython >=3.0.8,3.0.*
-    - gidgethub 3.0.*
-    - pyjwt 1.7.*
-    - beautifulsoup4 4.6.*
-    - galaxy-lib >=18.9.1
-    - jinja2 2.10.*
-    - sphinx
-    - sphinx-autodoc-typehints
-    - alabaster 0.7.*
-    - docutils
-    - requests 2.22.*
-    - gunicorn 19.9.*
-    - celery 4.2.*
-    - aiohttp-jinja2 1.1.*
-    - aiohttp-security 0.4.*
-    - aiohttp-session 2.7.*
-    - aioredis 1.2.*
-    - cryptography 2.*
-    - markdown 3.1.*
+    - boltons =25.0
+    - jsonschema =4.26
+    - jinja2 =3.1
+    - anaconda-client =1.14
+    - galaxy-tool-util =26
+    - involucro >=1.2,<2
+    - skopeo =1.22
+    - findutils
+    - git =2
+    - regex =2026
+    - aiohttp =3.13
+    - aiohttp-jinja2
+    - aiohttp-session
+    - aiohttp-security
+    - aiofiles =25
+    - aioftp =0.27
+    - backoff =2.2
+    - cachetools =7.0
+    - gitpython =3.1
+    - gidgethub =5
+    - pyjwt >=2.4.0
+    - beautifulsoup4 =4
+    - requests =2.33
+    - pygithub
+    - diskcache =5
+    - platformdirs =4
+    - tabulate =0.10
+    - psutil
+    - py-rattler-build >=0.67.0,<0.68
+    - conda-smithy >=2026.8.5,<2027
 
 test:
   imports:
@@ -73,18 +87,19 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
-    - >
-      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
-      CONDA_AUTO_UPDATE_CONDA=0
-      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
-      --file="$( python -c
-      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
-      )"
-      2>&1 | tee /dev/stderr | grep -qF 'All requested packages already installed.'
+    #- >
+      #CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      #CONDA_AUTO_UPDATE_CONDA=0
+      #"${PREFIX}/bin/mamba" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      #--file="$( python -c
+      #'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      #)" 2>&1 | grep -qF 'All requested packages already installed'
 
 about:
-  home: http://bioconda.github.io/build-system.html
+  home: "https://bioconda.github.io/contributor/build-system.html"
   license: MIT
   license_family: MIT
-  summary: Utilities for building and managing bioconda recipes.
-  dev_url: https://github.com/bioconda/bioconda-utils
+  license_file: "LICENSE.md"
+  summary: "Utilities for building and managing bioconda recipes."
+  dev_url: "https://github.com/bioconda/bioconda-utils"
+  doc_url: "https://bioconda.github.io/contributor/guidelines.html"

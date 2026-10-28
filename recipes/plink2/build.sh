@@ -1,17 +1,21 @@
-# Portable sha1 sums across linux and os x
-sed -i.bak -e "s/shasum/openssl sha1 -r/g" plink_first_compile
-# Remove "make plink" so we can call it with overrides
-sed -i.bak -e "s/make plink//g" plink_first_compile
-# This downloads and builds a local zlib-1.2.8
-./plink_first_compile
+#!/bin/bash
+set -xe
 
-# Build using Makefile.std as recommended in the README
-if [[ -z "$OSX_ARCH" ]]; then
-    make CFLAGS="-Wall -O2 -I$PREFIX/include" BLASFLAGS="-L$PREFIX/lib -lopenblas" -f Makefile.std plink
-else
-    make -f Makefile.std plink
+cd 2.0/build_dynamic
+
+# The Makefile sets its own CFLAGS/CXXFLAGS and ignores LDFLAGS, so point the
+# compilers at the host prefix through the environment instead.
+export CPATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+
+# Link against conda's zstd rather than the bundled copy.
+args=(CC="${CC}" CXX="${CXX}" STATIC_ZSTD=)
+if [[ "$(uname)" != "Darwin" ]]; then
+  # OpenBLAS ships LAPACK and LAPACKE, so a single -lopenblas is enough.
+  args+=(BLASFLAGS="-L${PREFIX}/lib -lopenblas")
 fi
 
-# Install as plink2
-mkdir -p $PREFIX/bin
-cp plink $PREFIX/bin/plink2
+make -j"${CPU_COUNT}" "${args[@]}"
+
+mkdir -p "${PREFIX}/bin"
+install -m 755 plink2 pgen_compress "${PREFIX}/bin/"

@@ -1,0 +1,63 @@
+{% set version = "0.2.23" %}
+{% set name = "gia" %}
+{% set build_number = "0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+  
+source: 
+  url: https://github.com/noamteyssier/gia/archive/{{ version }}.tar.gz
+  sha256: 57f843d61281e7e243ee3ebf16f9aa2e96f9fe0e03a02e14e9b7a43ad3b6d949
+
+
+build:
+  run_exports:
+    - {{ pin_subpackage('gia', max_pin="x") }}
+  number: {{ build_number }}
+ 
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - make
+    - cmake
+    - unzip
+    - curl
+  # all the host and run requirements match those needed for htslib
+  host:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
+  run:
+    - libcurl
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+    - openssl  # [not osx]
+
+test:
+  commands:
+    - gia help
+
+
+about:
+  home: https://github.com/noamteyssier/gia
+  license: MIT
+  summary: Genomic Interval Arithmetic (gia)
+
+
+extra:
+  recipe-maintainers:
+    - mrvollger
+    - noamteyssier
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  

@@ -1,0 +1,70 @@
+{% set version = "1.8.0" %}
+{% set name = "ggkegg" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 151b740f08ad91cf519d89fa7e2e3be9
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-ggkegg", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, clusterProfiler, bnlearn, rmarkdown, BiocStyle, AnnotationDbi, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggraph
+    - r-gtable
+    - r-igraph
+    - r-magick
+    - r-patchwork
+    - r-shadowtext
+    - r-stringr
+    - r-tibble
+    - r-tidygraph
+    - r-xml
+  run:
+    - bioconductor-biocfilecache >=3.0.0,<3.1.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggraph
+    - r-gtable
+    - r-igraph
+    - r-magick
+    - r-patchwork
+    - r-shadowtext
+    - r-stringr
+    - r-tibble
+    - r-tidygraph
+    - r-xml
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Analyzing and visualizing KEGG information using the grammar of graphics
+  description: This package aims to import, parse, and analyze KEGG data such as KEGG PATHWAY and KEGG MODULE. The package supports visualizing KEGG information using ggplot2 and ggraph through using the grammar of graphics. The package enables the direct visualization of the results from various omics analysis packages.
+  license_file: LICENSE
+

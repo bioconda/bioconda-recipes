@@ -1,0 +1,50 @@
+{% set name = "pytransaln" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/monagrland/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0a46c62ab6eaecfccfd5541d9cc725a840837e29bc7d6558b1a2e7eeb0a24d2a
+
+build:
+  entry_points:
+    - pytransaln = pytransaln.pytransaln:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('pytransaln', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - setuptools >=61.0.0
+    - pip
+  run:
+    - python
+    - biopython >=1.80,<2
+    - pandas >=1.3,<3
+    - matplotlib-base >=3.6,<4
+    - pyhmmer >=0.12.0
+
+test:
+  imports:
+    - pytransaln
+  commands:
+    - pip check
+    - pytransaln --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/monagrland/pytransaln
+  summary: Translation-guided nucleotide alignment for coding sequences
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - kbseah
