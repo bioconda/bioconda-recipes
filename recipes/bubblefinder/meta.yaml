@@ -1,10 +1,11 @@
 {% set name = "bubblefinder" %}
-{% set version = "1.0.4" %}
+{% set version = "1.0.5" %}
 {% set build_number = 0 %}
 
 {% set ogdf_tag = "elderberry-202309" %}
 {% set vendored_log_version = "1.15.3" %}
 {% set vendored_log_tag = "v" + vendored_log_version %}
+{% set spqr_rust_commit = "13377db7276843e023774f1bf614772374cff9f1" %}
 
 {% set sdsl_commit = "349de444ded81547cb55a718abeada41960531b5" %}
 {% set libhandlegraph_commit = "b95f7637968b4c8c3c4d1bad13aaa1835c607fe0" %}
@@ -20,8 +21,11 @@ package:
 
 source:
   - url: https://github.com/algbio/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 02d72996a1abee106833f682c4dfa19416d0bbba9232d740ea960cea7e934e8e
+    sha256: a00e33cbf929a83930d9c51c8601e39f0849234850d7df0567974dae9392e7ae
     folder: .
+  - url: https://github.com/algbio/spqr-rust/archive/{{ spqr_rust_commit }}.tar.gz
+    sha256: ca4a607c737455b309540b6e035fd0a174c0e5a536a09b1b95b930c99be741bb
+    folder: spqr-rust-src
   - url: https://github.com/ogdf/ogdf/archive/refs/tags/{{ ogdf_tag }}.tar.gz
     sha256: 3438205d3a6ff69d24c3a6db748d2a5a78688605baf3092456073901a2b623f3
     folder: ogdf-src
@@ -60,6 +64,7 @@ requirements:
     - cmake
     - make
     - pkg-config
+    - {{ compiler('rust') }}
     - libgomp        # [linux]
     - llvm-openmp    # [osx]
   host:
@@ -73,6 +78,7 @@ requirements:
 
 test:
   commands:
+    - BubbleFinder --version
     - BubbleFinder --help
     - test -x "${PREFIX}/bin/snarls_bf"
 
