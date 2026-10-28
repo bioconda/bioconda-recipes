@@ -1,0 +1,80 @@
+{% set name = "cfm-id" %}
+{% set version = "4.4.10" %}
+{% set commit = "cced92452e0f230acacc0427d19908b266811dc9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://bitbucket.org/wishartlab/cfm-id-code/get/{{ commit }}.tar.gz
+  sha256: 41dd958bc70e353eb2e8956b5c93ac63421dd720a8580360074ccb2effd7d7cb
+  patches:
+    - make-cxx-standard-overridable.patch
+    - rdkit-operator-returns-raw-bond.patch
+    - add-cfloat-include.patch
+
+build:
+  number: 0
+  skip: True  # [aarch64 or arm64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  run_constrained:
+    - cfm <0a0
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.7
+  host:
+    - boost-cpp
+    - liblbfgs =1.10
+    - lp_solve =5.5
+    - rdkit >=2021.03.1,<2024
+  run:
+    - boost-cpp
+    - lp_solve =5.5
+    - rdkit >=2021.03.1,<2024
+
+test:
+  commands:
+    - which cfm-id
+    - which cfm-predict
+    - which cfm-annotate
+    - which cfm-id-precomputed
+    - which fraggraph-gen
+    - fraggraph-gen CC 2 + fullgraph
+    - fraggraph-gen CC 2 "*" fragonly
+    - test -d "${PREFIX}/share/{{ name }}-{{ version }}/cfmid4"
+
+about:
+  home: https://cfmid.wishartlab.com/
+  license: LGPL-2.1-only
+  license_family: LGPL
+  license_file: LICENSE.md
+  summary: CFM-ID 4 - Competitive Fragmentation Modeling for MS/MS prediction and metabolite identification
+  description: |
+    CFM-ID applies Competitive Fragmentation Modeling to predict ESI-MS/MS
+    spectra from molecular structures, to annotate peaks, and to rank candidate
+    structures against an experimental spectrum.
+
+    This package provides the CFM-ID 4 generation. The older `cfm` package
+    (version 33) is CFM-ID 3-era software; the two install binaries with the
+    same names and cannot be installed together.
+
+    Pretrained CFM-ID 4 parameters are installed under
+    $PREFIX/share/cfm-id-<version>/. The upstream repository also ships
+    ~172 MB of cross-validation models, which are not needed at runtime and are
+    deliberately not packaged.
+  dev_url: https://bitbucket.org/wishartlab/cfm-id-code
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1021/acs.analchem.1c01465
+    - doi:10.1093/nar/gkac383

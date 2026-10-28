@@ -1,0 +1,60 @@
+{% set version = "1.0" %}
+
+package:
+  name: r-locom2
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/LOCOM2_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/LOCOM2/LOCOM2_{{ version }}.tar.gz
+  sha256: abb48ae535928fbf88bf270478741fb8139853c6c0e2564556b3d3fce6ec3c9d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("r-locom2", max_pin="x.x") }}'
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - r-base
+    - bioconductor-biocparallel
+    - r-rcpp >=1.0.11
+    - r-rcpparmadillo
+    - r-abind
+    - r-car
+    - r-matrixstats
+    - r-permute
+    - libblas
+    - liblapack
+  run:
+    - r-base
+    - bioconductor-biocparallel
+    - r-rcpp >=1.0.11
+    - r-rcpparmadillo
+    - r-abind
+    - r-car
+    - r-matrixstats
+    - r-permute
+
+test:
+  commands:
+    - $R -e "library('LOCOM2')"
+
+about:
+  home: https://github.com/yijuanhu/LOCOM2
+  license: GPL-2.0-or-later
+  summary: A Logistic Regression Model for Testing Microbial Differential Abundance
+  description: Testing differential abundance at individual taxa and in a whole microbial community based on the log-ratio of relative abundances, accommodating continuous, discrete, and multivariate traits with confounder adjustment.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - MartinaCardinali
