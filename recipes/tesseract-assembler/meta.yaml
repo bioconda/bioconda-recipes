@@ -1,6 +1,6 @@
 {% set name = "tesseract-assembler" %}
-{% set version = "1.6.1" %}
-{% set sha256 = "73a9eeb853919b4f1e3cda333cc6fd61566ca0fb1a9533527a74c681975a7f9e" %}
+{% set version = "1.6.2" %}
+{% set sha256 = "f74a840cf9b31f8898d06436bb05f338393278cf7fee264967ead20fe6e87bc7" %}
 
 package:
   name: {{ name }}
@@ -46,43 +46,25 @@ requirements:
 
 test:
   commands:
-    - tesseract-asm --version
-    - tesseract-asm --help
-    # The flag checks live in run_test.sh, against help text captured to a file.
-    #
-    # They were `tesseract-asm --help | grep -q -- --flag` and that is a race: grep -q exits on
-    # the first match and closes the pipe while TesserACT is still writing, TesserACT takes
-    # SIGPIPE and exits 141, and under pipefail the pipeline fails. Whether it fails depends
-    # on which flag matches soon enough to kill the writer first, so it passed here and on
-    # ARM and failed on the Linux runner, on --model, with --model plainly present in the
-    # help it had just printed.
-    # The functional test lives in run_test.sh, which conda-build picks up automatically from
-    # the recipe directory. An assembler that installs but cannot assemble is worth catching
-    # here rather than in someone's pipeline.
+    # Since 1.6.1 the package's user command is `tesseract`; the engine and the model fetcher
+    # are its helpers in $PREFIX/libexec/tesseract (installed by `make install`).
+    - tesseract --version
+    - tesseract --help
+    - tesseract models --help
 
 about:
   home: "https://github.com/iowa69/TesserACT"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "De novo short-read assembler for bacterial isolates, with optional genus models."
+  summary: "De novo assembler for bacterial isolates from paired-end Illumina reads, with optional organism models."
   description: |
-    TesserACT assembles bacterial isolates from paired-end Illumina reads. It builds a de
-    Bruijn graph over a ladder of k-mer sizes, simplifies it, resolves repeats with
-    paired-end information, closes gaps and polishes the result, in C++17 with no
-    dependencies beyond a compiler, zlib and pthreads.
-
-    Where a repeat is longer than a sequencing fragment there is no paired evidence to
-    settle it, and TesserACT stops rather than guessing. Supplying a genus model built from
-    closed genomes of the same organism lets it settle those junctions from independent
-    evidence instead. Measured on 666 Klebsiella pneumoniae isolates that each have a closed
-    reference genome, with leave-cluster-out models so no test genome is in its own panel:
-    higher genome fraction and fewer mismatches per 100 kb than SPAdes, longer NGA50, at the
-    cost of slightly more redundant sequence and slightly more misassemblies.
-
-    With a model carrying a plasmid panel it also labels every contig chromosomal, plasmid
-    or unknown, groups the contigs of one plasmid, and marks contigs whose two ends join as
-    complete replicons. Pre-built Klebsiella models are attached to the GitHub releases.
+    TesserACT assembles bacterial genomes from paired-end Illumina reads with one command,
+    `tesseract -1 R1.fq.gz -2 R2.fq.gz -o OUTDIR`. It checks the reads before assembling,
+    builds de Bruijn graphs over a ladder of k-mer sizes, resolves repeats with read pairs,
+    writes verified circular replicons, and checks every output, with a plain-language summary.
+    Optional organism models (`tesseract models download`, then `--organism NAME`) lay the
+    chromosome out from the conserved gene order of closed genomes of the same species.
   doc_url: "https://github.com/iowa69/TesserACT/blob/v{{ version }}/README.md"
   dev_url: "https://github.com/iowa69/TesserACT"
 
