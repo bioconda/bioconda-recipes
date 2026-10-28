@@ -1,0 +1,113 @@
+--- a/svdwide.h
++++ b/svdwide.h
+@@ -27,7 +27,7 @@
+       inline unsigned int rows() const { return n; }
+       inline unsigned int cols() const { return n; }
+ 
+-      void perform_op(double *x_in, double* y_out);
++      void perform_op(const double *x_in, double* y_out);
+ };
+ 
+ class SVDWideOnline
+@@ -78,7 +78,7 @@
+       inline unsigned int cols() const { return n; }
+ 
+       // y = X X' * x
+-      void perform_op(double *x_in, double* y_out);
++      void perform_op(const double *x_in, double* y_out);
+ 
+       // y = X X' * x
+       MatrixXd perform_op_mat(const MatrixXd x);
+
+--- a/svdwide.cpp
++++ b/svdwide.cpp
+@@ -1,9 +1,9 @@
+ 
+ #include "svdwide.h"
+ 
+-void SVDWide::perform_op(double *x_in, double* y_out)
++void SVDWide::perform_op(const double *x_in, double* y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, n);
+    verbose && STDOUT << timestamp() << "Matrix operation "
+       << nops << std::endl;
+@@ -18,9 +18,9 @@
+ }
+ 
+ // y = X X' * x
+-void SVDWideOnline::perform_op(double *x_in, double* y_out)
++void SVDWideOnline::perform_op(const double *x_in, double* y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, n);
+    unsigned int actual_block_size;
+ 
+@@ -115,7 +115,7 @@
+ // Note: size of x must be number of samples, size y must be number of SNPs
+ void SVDWideOnline::crossprod(double *x_in, double *y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, p);
+    unsigned int actual_block_size = stop[0] - start[0] + 1;
+ 
+
+--- a/svdtall.h
++++ b/svdtall.h
+@@ -27,7 +27,7 @@
+       inline unsigned int rows() const { return n; }
+       inline unsigned int cols() const { return n; }
+ 
+-      void perform_op(double *x_in, double* y_out);
++      void perform_op(const double *x_in, double* y_out);
+ };
+ 
+ class SVDTallOnline
+@@ -78,7 +78,7 @@
+       inline unsigned int cols() const { return n; }
+ 
+       // y = X X' * x
+-      void perform_op(double *x_in, double* y_out);
++      void perform_op(const double *x_in, double* y_out);
+ 
+       // y = X X' * x
+       MatrixXd perform_op_mat(const MatrixXd x);
+
+--- a/svdtall.cpp
++++ b/svdtall.cpp
+@@ -1,9 +1,9 @@
+ 
+ #include "svdtall.h"
+ 
+-void SVDTall::perform_op(double *x_in, double* y_out)
++void SVDTall::perform_op(const double *x_in, double* y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, n);
+    verbose && STDOUT << timestamp() << "Matrix operation "
+       << nops << std::endl;
+@@ -18,9 +18,9 @@
+ }
+ 
+ // y = X X' * x
+-void SVDTallOnline::perform_op(double *x_in, double* y_out)
++void SVDTallOnline::perform_op(const double *x_in, double* y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, n);
+    unsigned int actual_block_size;
+ 
+@@ -115,7 +115,7 @@
+ // Note: size of x must be number of samples, size y must be number of SNPs
+ void SVDTallOnline::crossprod(double *x_in, double *y_out)
+ {
+-   Map<VectorXd> x(x_in, n);
++   Map<const VectorXd> x(x_in, n);
+    Map<VectorXd> y(y_out, p);
+    unsigned int actual_block_size = stop[0] - start[0] + 1;
+ 
