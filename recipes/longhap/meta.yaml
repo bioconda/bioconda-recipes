@@ -1,0 +1,71 @@
+{% set name = "longhap" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 77e9e4dbe71e114b902390d6a7507f2ee3b2aa99f20ae13e31d00f8e8a583f21
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - longhap = longhap:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.11
+    - cyvcf2 >=0.31.4
+    - pysam >=0.23.3
+    - numpy >=2.4.1
+    - pandas >=2.3.3
+    - pyarrow >=22.0.0
+    - scipy >=1.17.0
+    - pyfaidx >=0.9.0.3
+    - tqdm >=4.67.1
+
+test:
+  imports:
+    - longhap
+  requires:
+    - pip
+  commands:
+    - longhap --help
+    - longhap --version
+    - pip check
+
+about:
+  home: https://github.com/AkeyLab/LongHap
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Read-based variant phasing with methylation integration for long-read sequencing
+  description: |
+    LongHap is a read-based variant phasing algorithm that integrates methylation
+    signals native to long-read sequencing data, such as PacBio Revio HiFi and ONT
+    sequencing, into a unified framework. As input, LongHap requires variant calls
+    in VCF format, aligned sequencing reads in BAM format, and, optionally,
+    methylation calls. LongHap uses a stepwise approach to co-phase SNVs, INDELs,
+    and SVs: it first phases pairs of variants based on sequence information,
+    embedding complex and low-support variants into the broader haplotype context
+    using loopy belief propagation, then identifies differentially methylated sites
+    on the fly and leverages them as additional phase-informative markers to extend
+    the inferred phase blocks. LongHap outputs a phased VCF and, optionally,
+    haplotagged read alignments and the set of differentially methylated sites used
+    for phasing.
+  dev_url: https://github.com/AkeyLab/LongHap
+
+extra:
+  recipe-maintainers:
+    - biermanr
+    - arpfennig
