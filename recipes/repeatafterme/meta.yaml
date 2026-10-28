@@ -1,13 +1,13 @@
 {% set name = "RepeatAfterMe" %}
-{% set version = "0.0.7" %}
+{% set version = "1.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/Dfam-consortium/RepeatAfterMe/archive/refs/tags/RepeatAfterMe_V{{ version }}.tar.gz
-  sha256: 8a4c96be6c0fcedf24ee28796fea3bffef022c7479d8f49fbd2f83e56d697f26
+  url: https://github.com/Dfam-consortium/RepeatAfterMe/archive/refs/tags/{{ version }}.tar.gz
+  sha256: 33d99539de572e50b2bf9274166f8987b34bac83afa63faae653e1d4bc05a3d1
   patches:
     - 0001-Makefile.patch
     - 0002-dnautil-macOS.patch
@@ -15,12 +15,17 @@ source:
 build:
   number: 0
   run_exports:
-    - {{ pin_subpackage('repeatafterme', max_pin="x.x") }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   build:
-    - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - make
+    - python >=3
+    - pkg-config
   host:
     - libgomp  # [linux]
     - llvm-openmp  # [osx]
@@ -39,7 +44,7 @@ about:
   license_file: LICENSE
   summary: "A package for the extension of repetitive DNA sequences."
   dev_url: "https://github.com/Dfam-consortium/RepeatAfterMe"
-  doc_url: "https://github.com/Dfam-consortium/RepeatAfterMe/blob/RepeatAfterMe_V{{ version }}/README.md"
+  doc_url: "https://github.com/Dfam-consortium/RepeatAfterMe/blob/{{ version }}/README.md"
 
 extra:
   additional-platforms:
