@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+java_options=()
+dry_run=false
+args=()
+while (($#)); do
+    if [[ $1 == --java-options ]]; then
+        shift
+        read -r -a java_options <<< "${1?--java-options requires a value}"
+    elif [[ $1 == --dry-run ]]; then
+        dry_run=true
+    else
+        args+=("$1")
+    fi
+    shift
+done
+if [[ ${args[0]+x} ]]; then
+    set -- "${args[@]}"
+else
+    set --
+fi
+
+if [[ ${1:-} == --list ]]; then
+    shift
+    set -- --help "$@"
+fi
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+cmd=("$script_dir/../lib/gatk4-lite-jvm/bin/java" \
+    -Dsamjdk.use_async_io_read_samtools=false \
+    -Dsamjdk.use_async_io_write_samtools=true \
+    -Dsamjdk.use_async_io_write_tribble=false \
+    -Dsamjdk.compression_level=2)
+if [[ ${java_options[0]+x} ]]; then
+    cmd+=("${java_options[@]}")
+fi
+cmd+=(-jar "$script_dir/../share/gatk4-lite/gatk.jar" "$@")
+
+if "$dry_run"; then
+    printf '%q ' "${cmd[@]}"
+    printf '\n'
+    exit 0
+fi
+exec "${cmd[@]}"
