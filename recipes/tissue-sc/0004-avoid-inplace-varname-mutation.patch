@@ -1,0 +1,33 @@
+--- a/tissue/main.py	2026-10-28 16:07:14.560802091 +0100
++++ b/tissue/main.py	2026-10-28 16:07:23.315521872 +0100
+@@ -300,7 +300,14 @@
+         Adds to adata the [numpy matrix]: spatial_adata.obsm["predicted_expression"], spatial_adata.obsm["combined_loo_expression"]
+             - matrix of predicted gene expressions (same number of rows as spatial_adata, columns are target_genes)
+     '''
+-    # change all genes to lower
++    # operate on copies so the caller's AnnData objects are not modified in place by
++    # the var_names handling below; results are written back to the callers at the end
++    spatial_orig = spatial_adata
++    RNAseq_orig = RNAseq_adata
++    spatial_adata = spatial_adata.copy()
++    RNAseq_adata = RNAseq_adata.copy()
++    
++    # change all genes to lower (on the copies)
+     target_genes = [t.lower() for t in target_genes]
+     spatial_adata.var_names = [v.lower() for v in spatial_adata.var_names]
+     RNAseq_adata.var_names = [v.lower() for v in RNAseq_adata.var_names]
+@@ -387,10 +394,11 @@
+ 
+     # gets predictions for target genes followed by conf genes
+     predicted_expression_target[conf_genes] = predicted_expression_conf[conf_genes].copy()
+-    spatial_adata.obsm[method+"_predicted_expression"] = predicted_expression_target
++    # write results back to the caller's AnnData objects
++    spatial_orig.obsm[method+"_predicted_expression"] = predicted_expression_target
+     
+-    spatial_adata.uns["conf_genes_used"] = conf_genes
+-    spatial_adata.uns["target_genes_used"] = target_genes
++    spatial_orig.uns["conf_genes_used"] = conf_genes
++    spatial_orig.uns["target_genes_used"] = target_genes
+ 
+ 
+ def knn_impute (spatial_adata, RNAseq_adata, genes_to_predict, n_neighbors, **kwargs):
