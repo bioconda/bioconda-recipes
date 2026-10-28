@@ -2,21 +2,14 @@
 
 set -xe
 
-mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include"
+mkdir -p "${PREFIX}/bin" "${PREFIX}/lib" "${PREFIX}/include" "${PREFIX}/man/man1"
 
-# The bundled SSE->NEON shim (s2n-lite.h) reinterprets uint32x4_t results
-# through signed int32x4_t intrinsics, which GCC on aarch64 rejects. Permit
-# the conversion as GCC itself suggests (clang/macOS already accepts it).
-case "$(uname -m)" in
-    aarch64 | arm64)
-        export CFLAGS="${CFLAGS} -flax-vector-conversions"
-        ;;
-esac
+# The command-line CFLAGS below replaces the Makefile's -O3, so add it back.
+# On Linux the compiler activation also puts -O2 in CPPFLAGS, which the
+# Makefile places after CFLAGS; drop it so -O3 is the last -O.
+export CFLAGS="${CFLAGS} -O3"
+export CPPFLAGS="${CPPFLAGS//-O2/}"
 
-# CC drives the Makefile's OpenMP auto-detection. The override-makefile.patch
-# lets the Makefile append its OpenMP/GPL/SSE4.2 flags on top of conda's
-# CFLAGS/CPPFLAGS rather than having them clobbered by the command line.
-# LIBS is left untouched so the Makefile keeps -lpthread -lz -lm.
 make \
     CC="${CC}" \
     CFLAGS="${CFLAGS}" \
@@ -28,3 +21,4 @@ make \
 install -m 0755 minibwa "${PREFIX}/bin"
 install -m 0644 libminibwa.a "${PREFIX}/lib"
 install -m 0644 minibwa.h "${PREFIX}/include"
+install -m 0644 minibwa.1 "${PREFIX}/man/man1"
