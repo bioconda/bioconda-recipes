@@ -1,0 +1,43 @@
+{% set version = "0.3.1" %}
+{% set name = "ziggypep" %}
+{% set sha256 = "9393c12ebb713219cc1e4b18c0037b2fad1b6e5d8168ecc4738e27679daa3a08" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  build:
+
+  run:
+    - perl >=5.32.0
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - {{ name }} -v 
+    - {{ name }} -h
+    - {{ name }} -C
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Identify signal peptides in proteins
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

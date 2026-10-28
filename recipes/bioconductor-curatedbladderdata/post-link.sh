@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "curatedbladderdata-1.42.0"
+installBiocDataPackage.sh "curatedbladderdata-1.46.0"

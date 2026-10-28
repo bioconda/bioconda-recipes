@@ -1,5 +1,6 @@
+{% set name = "epic" %}
 package:
-  name: epic
+  name: {{name}}
   version: "0.2.12"
 
 source:
@@ -9,7 +10,10 @@ source:
     - patch
 
 build:
-  number: 7
+  number: 8
+  run_exports:
+    - {{ pin_subpackage(name, max_pin = "x") }}
+
   skip: True  # [py>=37]
   script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt && $PYTHON setup.py build_ext --inplace
 
@@ -65,3 +69,6 @@ about:
   license: GNU General Public License v3 (GPLv3)
   summary: 'Chip-Seq broad peak/domain finder.'
 
+extra:
+  additional-platforms:
+    - linux-aarch64

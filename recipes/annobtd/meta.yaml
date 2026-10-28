@@ -1,0 +1,52 @@
+# bioconda recipe for annoBTD, filled in for the v2.0.0 tag. For a new release: tag it, set version and
+# the tarball sha256 below, and open a pull request against bioconda/bioconda-recipes
+# with this directory as recipes/annobtd/.
+{% set version = "2.0.0" %}
+
+package:
+  name: annobtd
+  version: {{ version }}
+
+source:
+  url: https://github.com/mrmckain/annoBTD/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 471fe2a4f3a15633f6a4158dc7be0c2fd54cace29c556b15d5522dda56a29c3c
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("annobtd", max_pin="x") }}
+
+requirements:
+  run:
+    - perl >=5.26
+    - blast >=2.12
+    - aragorn =1.2.41
+    - curl
+    - tar
+    - gzip
+
+test:
+  commands:
+    - annobtd 2>&1 | grep -q usage
+    - annobtd-fetch-refdb --help 2>&1 | grep -q -i usage
+    - perl $PREFIX/share/annobtd/test/unit_boundary.pl
+
+about:
+  home: https://github.com/mrmckain/annoBTD
+  license: AGPL-3.0-only
+  license_file: LICENSE.txt
+  license_family: AGPL
+  dev_url: https://github.com/mrmckain/annoBTD
+  doc_url: https://github.com/mrmckain/annoBTD#readme
+  summary: Plastid genome annotation from GenBank guide genomes, with boundaries settled by lineage conventions
+  description: |
+    annoBTD annotates plastid (chloroplast) genomes from GenBank guide genomes chosen
+    for each target by k-mer similarity and filtered for annotation consistency, then
+    settles gene boundaries by the lineage's conventions mined from every complete
+    plastome in GenBank. The reference database (1.5 GB) is downloaded separately with
+    annobtd-fetch-refdb.
+
+extra:
+  recipe-maintainers:
+    - mrmckain
