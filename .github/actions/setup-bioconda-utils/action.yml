@@ -10,11 +10,11 @@ inputs:
     default: paperbenni/bioconda-utils
   utils-ref:
     description: >-
-      Pinned commit from the extras branch, including the current CLI, shared
-      metadata cache, and conda/rattler container caches. Bump this default to
-      roll out a new version everywhere at once.
+      Pinned commit from the extras branch, including the current CLI and shared
+      cache root for metadata and conda/rattler container downloads. Bump this
+      default to roll out a new version everywhere at once.
     required: false
-    default: 3f0ad1097c01d926cc3991dc09956d1d1d778eea
+    default: 450c1de1e69b26ee7c22afe4e96e2d1e29bfb39e
   cache:
     description: Restore and save utils metadata and downloaded build dependencies.
     required: false
@@ -75,7 +75,6 @@ runs:
         cache_dir="$(pixi run python -c 'import platformdirs; print(platformdirs.user_cache_path("bioconda-utils"))')"
         echo "host=$cache_dir" >> "$GITHUB_OUTPUT"
         echo "BIOCONDA_UTILS_CACHE=$cache_dir" >> "$GITHUB_ENV"
-        echo "BIOCONDA_UTILS_CONTAINER_CACHE=${RUNNER_TEMP}/bioconda-container-cache" >> "$GITHUB_ENV"
         # Cache keys must be unique across bulk matrix workers.
         echo "id=$(pixi run python -c 'import uuid; print(uuid.uuid4())')" >> "$GITHUB_OUTPUT"
 
@@ -83,12 +82,10 @@ runs:
       if: inputs.cache == 'true'
       uses: actions/cache@v4
       with:
-        path: |
-          ${{ steps.caches.outputs.host }}
-          ${{ runner.temp }}/bioconda-container-cache
-        key: bioconda-build-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-${{ github.run_id }}-${{ steps.caches.outputs.id }}
+        path: ${{ steps.caches.outputs.host }}
+        key: bioconda-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-${{ github.run_id }}-${{ steps.caches.outputs.id }}
         restore-keys: |
-          bioconda-build-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-
+          bioconda-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-
 
     - name: Configure conda for Bioconda builds
       shell: bash
