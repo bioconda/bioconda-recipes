@@ -1,4 +1,4 @@
-{% set version = '2.1.3' %}
+{% set version = '2.4.0' %}
 
 package:
   name: r-sigminer
@@ -8,18 +8,21 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/sigminer_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/sigminer/sigminer_{{ version }}.tar.gz
-  sha256: ceee8f21e1d34495872812092ea3abae63b3fef945a46f670611ed8894cced7d
+  sha256: b08212bc100960eb8d13775f534ecade2478dfd3ebc89c143334f830dcb5caf0
 
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports:
+    - {{ pin_subpackage('r-sigminer', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
     - r-base
     - r-nmf
@@ -34,6 +37,7 @@ requirements:
     - r-ggpubr
     - bioconductor-maftools
     - r-magrittr
+    - r-parallelly
     - r-purrr
     - r-rlang >=0.1.2
     - r-tidyr
@@ -51,6 +55,7 @@ requirements:
     - r-ggpubr
     - bioconductor-maftools
     - r-magrittr
+    - r-parallelly
     - r-purrr
     - r-rlang >=0.1.2
     - r-tidyr
@@ -62,7 +67,9 @@ test:
 about:
   home: https://github.com/ShixiangWang/sigminer
   license: MIT
-  summary: Genomic alterations including single nucleotide substitution, copy number alteration,
+  summary: "Mutational Signature Analysis and Visualization in R"
+  description: |
+    Genomic alterations including single nucleotide substitution, copy number alteration,
     etc. are the major force for cancer initialization and development. Due to the specificity
     of molecular lesions caused by genomic alterations, we can generate characteristic
     alteration spectra, called 'signature' (Wang, Shixiang, et al.  (2020) <DOI:10.1101/2020.04.27.20082404>
@@ -74,3 +81,7 @@ about:
   license_file:
     - {{ environ["PREFIX"] }}/lib/R/share/licenses/MIT
     - LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,8 +1,9 @@
-{% set version = "0.0.7" %}
-{% set sha256 = "85112aadd966965839f8655815ec6448aea699993d4c69f4754b4892e9c93975" %}
+{% set name = "proteomiqon-psmstatistics" %}
+{% set version = "0.0.10" %}
+{% set sha256 = "4baaa282e0ca6683176d587927183c4b245d9cf50a53d9d9e12624aa2dc162e8" %}
 
 package:
-  name: proteomiqon-psmstatistics
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -12,18 +13,26 @@ source:
 build:
   noarch: generic
   number: 0
-  script:
-    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.PSMStatistics
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build: 
+    - {{ stdlib('c') }}
   host:
-    - dotnet-sdk
+    - unzip
   run:
-    - dotnet-runtime
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
 
 test:
   commands:
-    - proteomiqon-psmstatistics --help
+    - test -x "$PREFIX/bin/proteomiqon-psmstatistics"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMStatistics/ProteomIQon.PSMStatistics.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmstatistics"
+    - grep -q "PSMStatistics/ProteomIQon.PSMStatistics.dll" "$PREFIX/bin/proteomiqon-psmstatistics"
+
 
 about:
   home: https://csbiology.github.io/ProteomIQon/

@@ -1,6 +1,8 @@
 #!/bin/sh
 
-./configure --enable-tests --prefix="${PREFIX}" BAMTOOLS_CFLAGS="-I${PREFIX}/include/" BAMTOOLS_LIBS="-L${PREFIX}/lib/ -lbamtools"
-make
+set -xe
+
+./configure --enable-tests --prefix="${PREFIX}" --disable-bamtools
+make -j ${CPU_COUNT}
 make install
 make check

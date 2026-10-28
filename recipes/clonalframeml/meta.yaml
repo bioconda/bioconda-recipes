@@ -1,25 +1,49 @@
-package:
-  name: clonalframeml
-  version: "1.12"
+{% set name = "clonalframeml" %}
+{% set version = "1.20" %}
 
-build:
-  number: 2
+package:
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/xavierdidelot/ClonalFrameML/archive/v1.12.tar.gz
-  sha256: ef76705c1a0f1343184f956cd0bdc96c2cfdbb998177330b09b6df84c74c2de6
+  url: https://github.com/xavierdidelot/ClonalFrameML/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ae797b187793599876a325cd5011959c82fc2b0f72b11b973b0cd1a3d47f6fb2
+  patches:
+    - 0001-makefile.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
     - ClonalFrameML 2>&1 | grep "ClonalFrameML"
 
 about:
-  home: https://github.com/xavierdidelot/ClonalFrameML
-  license: GPLv3
-  summary: Efficient inferencing of recombination in bacterial genomes
+  home: "https://github.com/xavierdidelot/ClonalFrameML"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Efficient inferencing of recombination in bacterial genomes."
+  doc_url: "https://github.com/xavierdidelot/clonalframeml/wiki"
+  dev_url: "https://github.com/xavierdidelot/ClonalFrameML"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:clonalframeml

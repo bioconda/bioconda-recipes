@@ -1,6 +1,6 @@
 {% set name = "upimapi" %}
-{% set version = "1.7.0" %}
-{% set sha256 = "0b529ae9a72d5f32a17caab016e80cdd8b89c03cd3319212cc6b895f787a31ce" %}
+{% set version = "1.14.0" %}
+{% set sha256 = "68c09031d1c5d5451abfc1ef1d88321aff2ecd1dfb81c755ea88755332cf8017" %}
 
 package:
   name: {{ name|lower }}
@@ -13,20 +13,27 @@ source:
 build:
   noarch: generic
   number: 0
-  script: "mkdir -p $PREFIX/bin && cp upimapi.py $PREFIX/bin && cp resources/* $PREFIX/bin"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/bin && 
+    cp upimapi.py $PREFIX/bin &&
+    chmod +x $PREFIX/bin/upimapi.py &&
+    ln -s $PREFIX/bin/upimapi.py $PREFIX/bin/upimapi
 
 requirements:
   run:
-    - pandas <=1.3.0
+    - pandas
     - diamond
     - psutil
     - tqdm
     - requests
-    - biopython =1.78
+    - biopython
+    - pyyaml
 
 test:
   commands:
-    - upimapi.py -v 
+    - upimapi -v 
 
 about:
   home: https://github.com/iquasere/UPIMAPI
@@ -47,4 +54,3 @@ about:
 extra:
   recipe-maintainers:
     - iquasere
-

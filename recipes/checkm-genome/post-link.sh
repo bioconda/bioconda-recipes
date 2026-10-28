@@ -6,7 +6,7 @@ if [[ -r $CHECKM_ROOT_DIR/genome_tree/genome_tree.derep.txt ]]; then
   echo "Using checkm data at $CHECKM_ROOT_DIR" >> $PREFIX/.messages.txt
 else
   FN="checkm_data_2015_01_16.tar.gz"
-  URL="https://data.ace.uq.edu.au/public/CheckM_databases/checkm_data_2015_01_16.tar.gz"
+  URL="https://zenodo.org/record/7401545/files/checkm_data_2015_01_16.tar.gz"
   SHA256="971ec469348bd6c3d9eb96142f567f12443310fa06c1892643940f35f86ac92c"
 
   # Create staging area.
@@ -23,7 +23,7 @@ else
     cp $CHECKM_DATA_PATH $TARBALL
   else
     # Download tarball.
-    wget --no-check-certificate -O $TARBALL $URL
+    wget -O $TARBALL $URL
   fi
 
   # Check that sha256sum matches expected.

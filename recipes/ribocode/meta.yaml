@@ -1,5 +1,5 @@
-{% set version = "1.2.14" %}
-{% set sha256 = "54bf2304e5d37919bdbe76585a95cfcf3ab6182f3e983cc53cf6fd896f8100db" %}
+{% set version = "1.2.15" %}
+{% set sha256 = "c59a45c3d5871615b5c8035469cc7faefb9db186a5609d85c62ef8e714f3bc08" %}
 
 package:
   name: ribocode
@@ -8,10 +8,14 @@ package:
 source:
   url: "https://github.com/zhengtaoxiao/RiboCode/archive/refs/tags/v{{ version }}.tar.gz"
   sha256: {{ sha256 }}
+  patches:
+    - fix-version.patch
 
 build:
-  number: 0
+  number: 1
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('ribocode', max_pin='x.x') }}
   entry_points:
     - RiboCode=RiboCode.RiboCode:main
     - RiboCode_onestep=RiboCode.RiboCode_onestep:main
@@ -23,7 +27,7 @@ build:
 
 requirements:
   host:
-    - python
+    - python >=3.8,<3.11
     - pip
     - setuptools
     - numpy
@@ -37,7 +41,7 @@ requirements:
     - minepy
     - statsmodels
   run:
-    - python
+    - python >=3.8,<3.11
     - numpy
     - pysam >0.8.4
     - matplotlib-base
@@ -66,4 +70,5 @@ about:
   home: https://github.com/xryanglab/RiboCode
   license: MIT
   license_family: MIT
+  license_file: LICENSE
   summary: A package for detecting the actively translated ORFs using ribosome-profiling data

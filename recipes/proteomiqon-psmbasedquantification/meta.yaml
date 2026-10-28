@@ -1,8 +1,9 @@
-{% set version = "0.0.7" %}
-{% set sha256 = "106085931d058ca3b3fd4d7cb24915b22b002f31547944e36bdaa9c9617a20ca" %}
+{% set name = "proteomiqon-psmbasedquantification" %}
+{% set version = "0.0.12" %}
+{% set sha256 = "cfec0ce447efda163789fccdf8e9c9c6436eb4ec21849ba26c6ae00af749b3fb" %}
 
 package:
-  name: proteomiqon-psmbasedquantification
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -12,18 +13,25 @@ source:
 build:
   noarch: generic
   number: 0
-  script:
-    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.PSMBasedQuantification
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
+  build: 
+    - {{ stdlib('c') }}
   host:
-    - dotnet-sdk
+    - unzip
   run:
-    - dotnet-runtime
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
 
 test:
   commands:
-    - proteomiqon-psmbasedquantification --help
+    - test -x "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - test -f "$PREFIX/lib/dotnet/tools/PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-psmbasedquantification"
+    - grep -q "PSMBasedQuantification/ProteomIQon.PSMBasedQuantification.dll" "$PREFIX/bin/proteomiqon-psmbasedquantification"
 
 about:
   home: https://csbiology.github.io/ProteomIQon/

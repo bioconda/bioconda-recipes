@@ -1,8 +1,10 @@
 #!/bin/bash
-#mkdir /Users/runner/.R
-#FC=$FC
-#CXX=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
-#CXX98=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
-#CXX11=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include
-#CXX14=$CXX -I$PREFIX/include -I$PREFIX/lib/R/library/Rcpp/include" > /Users/runner/.R/Makevars
-$R CMD INSTALL --build .
+
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export LC_ALL="en_US.UTF-8"
+
+Rscript -e "Rcpp:::CxxFlags()"
+
+$R CMD INSTALL --build . "${R_ARGS}"

@@ -1,22 +1,26 @@
-{% set version = "2.12" %}
+{% set version = "2.14" %}
 
 package:
   name: 'illumina-utils'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/i/illumina-utils/illumina-utils-{{ version }}.tar.gz
-  sha256: '5a4835f8f1ef630e9cc501209202833f3f30f6d8fdb64d7ea1afde23f3052f7d'
+  url: https://pypi.io/packages/source/i/illumina-utils/illumina_utils-{{ version }}.tar.gz
+  sha256: '5536158e97f9264d428fb7666b9f60a9a19568a2dbd77331426e8043f9d55564'
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('illumina-utils', max_pin="x") }}
 
 requirements:
   host:
     - python >=3
     - pip
+    - setuptools >=61
+    - wheel
   run:
     - python >=3
     - matplotlib-base
@@ -37,6 +41,7 @@ test:
 
 about:
   home: https://github.com/meren/illumina-utils
-  license: GNU General Public v3 or later (GPLv3+)
+  license: GPL-3.0-or-later
   license_family: GPL3
+  license_file: COPYING
   summary: A library and collection of scripts to work with Illumina paired-end data (for CASAVA 1.8+).

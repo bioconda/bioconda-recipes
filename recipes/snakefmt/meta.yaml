@@ -1,34 +1,34 @@
-{% set version = "0.6.0" %}
+{% set name = "snakefmt" %}
+{% set version = "2.1.0" %}
 
 package:
-  name: snakefmt
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/s/snakefmt/snakefmt-{{ version }}.tar.gz
-  sha256: b52a8c43b9cc81b017eedf81d5536128b472facb0a244f131573d0b7536b2661
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6a6ce79ff5b0ee18888896cb1660eb888a41592dbc36dccfd2c4f2a161d6dd7f
 
 build:
   number: 0
   noarch: python
   entry_points:
     - snakefmt = snakefmt.snakefmt:main
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('snakefmt', max_pin="x.x") }}
 
 requirements:
   host:
-    - black >=22.1.0,<23.0
-    - click >=8.0.0,<9.0.0
+    - python >=3.11,<4.0
     - pip
-    - python >=3.7
-    - toml >=0.10.2,<0.11.0
-    - poetry >=0.12
+    - hatchling
   run:
-    - black >=22.1.0,<23.0
-    - click >=8.0.0,<9.0.0
-    - python >=3.7
-    - toml >=0.10.2,<0.11.0
-    - importlib_metadata >=1.7,<2.0.0
+    - python >=3.11,<4.0
+    - black >=26.3.1,<27.0
+    - click >=8.2.0,<9.0
+    - pathspec >=1.0.0
+    - go-shfmt >=3.13,<4.0
 
 test:
   imports:
@@ -37,11 +37,13 @@ test:
     - snakefmt --help
 
 about:
-  home: https://github.com/snakemake/snakefmt
+  home: "https://github.com/snakemake/snakefmt"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: The uncompromising Snakemake code formatter
+  summary: "The uncompromising Snakemake code formatter."
+  dev_url: "https://github.com/snakemake/snakefmt"
+  doc_url: "https://github.com/snakemake/snakefmt/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:

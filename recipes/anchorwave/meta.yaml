@@ -1,10 +1,10 @@
-{% set name = "AnchorWave" %}
-{% set version = "1.0.1" %}
-{% set tag = "v1.0.1" %}
-{% set sha256 = "61d24bb6b22c9697c18e1721b543873fcb79065db9eec61e3663e7724574639b" %}
+{% set name = "anchorwave" %}
+{% set version = "1.3.1" %}
+{% set tag = "v1.3.1" %}
+{% set sha256 = "2288de8ba58dea3e944b51c92c840f4634bec32ff6e8112ecaa14c546af3e780" %}
 
 package:
-  name: {{ name | lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -12,27 +12,48 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: True  # [not linux]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib("c") }}
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - make
-    - cmake >=3
+    - ninja
+    - cmake >=3.10
+    - pkg-config
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - zlib
   run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
     - gmap
     - minimap2
-    - zlib
 
 test:
   commands:
-    - 'anchorwave | grep "Usage: anchorwave"'
+    - 'anchorwave --version | grep -F "anchorwave v{{ version }}"'
+    - 'anchorwave --help 2>&1 | grep -F "Usage: anchorwave"'
+    - 'anchorwave genoAli -h 2>&1 | grep -F "fa3^2 (default: 50000)"'
+    - 'printf "%s\n" ">reference" "ACGTACGT" > reference.fa'
+    - 'printf "%s\n" ">query" "ACGTTCGT" > query.fa'
+    - 'anchorwave ali -r reference.fa -s query.fa > alignment.fa'
+    - 'test "$(grep -c ''^>'' alignment.fa)" -eq 2'
 
 about:
-  home: https://github.com/baoxingsong/AnchorWave
+  home: "https://github.com/baoxingsong/AnchorWave"
   license: MIT
-  summary: 'Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation'
-  dev_url: https://github.com/baoxingsong/AnchorWave
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Sensitive alignment of genomes with high sequence diversity, extensive structural polymorphism, and whole-genome duplication variation."
+  dev_url: "https://github.com/baoxingsong/AnchorWave"
+  doc_url: "https://github.com/baoxingsong/AnchorWave/blob/v{{ version }}/README.md"
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

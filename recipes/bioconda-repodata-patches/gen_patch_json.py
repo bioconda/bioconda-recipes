@@ -50,30 +50,24 @@ def _add_removals(instructions, subdir):
     instructions["remove"].extend(tuple(set(currvals)))
 
 
-def _gen_patch_instructions(index, new_index, subdir):
-    instructions = {
-        "patch_instructions_version": 1,
-        "packages": defaultdict(dict),
-        "revoke": [],
-        "remove": [],
-    }
-
+def _gen_patch_instructions_per_key(index_per_key, new_index, subdir):
     #_add_removals(instructions, subdir)
+    instructions = defaultdict(dict)
 
     # diff all items in the index and put any differences in the instructions
-    for fn in index:
+    for fn in index_per_key:
         assert fn in new_index
 
         # replace any old keys
-        for key in index[fn]:
-            assert key in new_index[fn], (key, index[fn], new_index[fn])
-            if index[fn][key] != new_index[fn][key]:
-                instructions['packages'][fn][key] = new_index[fn][key]
+        for key in index_per_key[fn]:
+            assert key in new_index[fn], (key, index_per_key[fn], new_index[fn])
+            if index_per_key[fn][key] != new_index[fn][key]:
+                instructions[fn][key] = new_index[fn][key]
 
         # add any new keys
         for key in new_index[fn]:
-            if key not in index[fn]:
-                instructions['packages'][fn][key] = new_index[fn][key]
+            if key not in index_per_key[fn]:
+                instructions[fn][key] = new_index[fn][key]
 
     return instructions
 
@@ -82,17 +76,23 @@ def has_dep(record, name):
     return any(dep.split(' ')[0] == name for dep in record.get('depends', ()))
 
 
+def parse_version(version):
+    if not isinstance(version, str):
+        version = '.'.join(version)
+    return pkg_resources.parse_version(version)
+
+
 changes = set([])
 
 
-def _gen_new_index(repodata, subdir):
+def _gen_new_index_per_key(repodata, packages_key, subdir):
     """Make any changes to the index by adjusting the values directly.
 
     This function returns the new index with the adjustments.
     Finally, the new and old indices are then diff'ed to produce the repo
     data patches.
     """
-    index = copy.deepcopy(repodata["packages"])
+    index = copy.deepcopy(repodata[packages_key])
 
     for fn, record in index.items():
         record_name = record["name"]
@@ -123,7 +123,103 @@ def _gen_new_index(repodata, subdir):
                     deps[i] = 'r-base >={},<{}'.format(minVersion, maxVersion)
                     break
 
+        # Bioconductor data packages are noarch: generic and incorrectly pin curl to >=7.38.1,<8, rather than >=7,<8
+        if subdir == "noarch" and record_name.startswith('bioconductor-') and has_dep(record, "curl"):
+            for i, dep in enumerate(deps):
+                if dep.startswith('curl >=7.'):
+                    deps[i] = 'curl'
+                    break
+
+        # Old perl- packages don't pin perl-5.22, time cut-off is Jan 1, 2018
+        if record_name.startswith('perl-') and (not has_dep(record, "perl")) and record.get('timestamp', 0) < 1514761200000:
+            deps.append('perl >=5.22.0,<5.23.0')
+
+        # Nanoqc requires bokeh >=2.4,<3
+        if record_name.startswith('nanoqc') and has_dep(record, "bokeh") and record.get('timestamp', 0) < 1592397000000:
+            for i, dep in enumerate(deps):
+                if dep.startswith('bokeh'):
+                    deps[i] = 'bokeh >=2.4,<3'
+                    break
+
+        # Pin all old packages that do not have a pin to openssl 1.1.1 which should have been available
+        # TODO once we have updated to openssl 3, below timestamp should be updated
+        if has_dep(record, "openssl") and record.get("timestamp", 0) < 1678355208942:
+            for i, dep in enumerate(deps):
+                if dep.startswith("openssl") and has_no_upper_bound(dep):
+                    deps[i] = "openssl >=1.1.0,<=1.1.1"
+                    break
+
+        # some htslib packages depend on openssl without this being listed in the dependencies
+        if record_name.startswith('htslib') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and record.get('timestamp', 0) < 1678355208942:
+            for v, b in [("1.3", "1"), ("1.3.1", "0"), ("1.3.1", "1"), ("1.3.2", "0"), ("1.4", "0"), ("1.4.1", "0"), ("1.5", "0"), ("1.6", "0"), ("1.7", "0"), ("1.8", "0"), ("1.8", "1")]:
+                if version==v and record['build']==b:
+                    deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # add openssl dependency to old samtools packages that neither depend on htslib nor on openssl
+        if record_name.startswith('samtools') and record['subdir']=='linux-64' and not has_dep(record, "openssl") and not has_dep(record, "htslib"):
+            deps.append('openssl >=1.1.0,<=1.1.1')
+
+        # future HTSlib versions are binary compatible until they bump their soversion
+        if has_dep(record, 'htslib'):
+            # skip deps prior to 1.10, which was the first with soversion 3
+            # TODO adjust replacement (exclusive) upper bound with each new compatible HTSlib
+            _pin_looser(fn, record, 'htslib', min_lower_bound='1.10', upper_bound='1.25')
+
+        # future libdeflate versions are compatible until they bump their soversion; relax dependencies accordingly
+        if record_name in ['htslib', 'staden_io_lib', 'fastp', 'pysam'] and has_dep(record, 'libdeflate'):
+            # skip deps that allow anything <1.3, which contained an incompatible library filename
+            # TODO adjust the replacement (exclusive) upper bound each time a compatible new libdeflate is released
+            _pin_looser(fn, record, 'libdeflate', min_lower_bound='1.3', upper_bound='1.27')
+
+        # nanosim <=3.1.0 requires scikit-learn<=0.22.1
+        if record_name.startswith('nanosim') and has_dep(record, "scikit-learn") and parse_version(version) <= parse_version("3.1.0"):
+            for i, dep in enumerate(deps):
+                if dep.startswith("scikit-learn") and has_no_upper_bound(dep):
+                    deps[i] += ",<=0.22.1"  # append an upper bound
+                    break
+
+        # snakemake <8.1.2 requires pulp <2.8.0
+        if record_name == 'snakemake-minimal' and has_dep(record, "pulp") and parse_version(version) < parse_version("8.1.2"):
+            for i, dep in enumerate(deps):
+                if dep.startswith("pulp") and has_no_upper_bound(dep):
+                    deps[i] = "pulp >=2.0,<2.8.0"
+
+        # snakemake-minimal >=9.6.0,<=9.19.0 was missing the dependency: referencing
+        # it was fixed for build 1 of version 9.19.0 here: https://github.com/bioconda/bioconda-recipes/pull/64534
+        if record_name == 'snakemake-minimal' and parse_version(version) >= parse_version("9.6.0") and parse_version(version) <= parse_version("9.19.0") and not has_dep(record, "referencing"):
+            deps.append('referencing')
+
+        # snakemake requires pandas <3
+        if record_name.startswith('snakemake') and has_dep(record, "pandas"):
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <3"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<3"
+
+        # scprep <=1.2.3 requires pandas <2.1
+        if record_name == 'scprep' and has_dep(record, "pandas") and parse_version(version) <= parse_version("1.2.3"):
+            for i, dep in enumerate(deps):
+                if dep == "pandas":
+                    deps[i] = "pandas <2.1"
+                elif dep.startswith("pandas") and has_no_upper_bound(dep):
+                    deps[i] += ",<2.1"
+
     return index
+
+
+def has_no_upper_bound(dep):
+    """Check if a dependency has an upper bound."""
+    dep_parts = dep.split(' ', 1)
+    bounds = dep_parts[1].split(",") if len(dep_parts) > 1 else []
+    for bound in bounds:
+        if bound.startswith("<"):
+            # upper bound
+            return False
+        elif not (bound.startswith(">") or bound.startswith("<")):
+            # If there is no < or > operator, then it is an exact pin (e.g. =1.2, or 1.2, or 1.2.*)
+            return False
+    return True
 
 
 def _replace_pin(old_pin, new_pin, deps, record):
@@ -200,7 +296,7 @@ def _pin_stricter(fn, record, fix_dep, max_pin, upper_bound=None):
             new_upper = upper_bound.split(".")
         upper = pad_list(upper, len(new_upper))
         new_upper = pad_list(new_upper, len(upper))
-        if tuple(upper) > tuple(new_upper):
+        if parse_version(upper) > parse_version(new_upper):
             if str(new_upper[-1]) != "0":
                 new_upper += ["0"]
             depends[dep_idx] = "{} >={},<{}a0".format(dep_parts[0], lower, ".".join(new_upper))
@@ -209,7 +305,7 @@ def _pin_stricter(fn, record, fix_dep, max_pin, upper_bound=None):
             record['depends'] = depends
 
 
-def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
+def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None, min_lower_bound=None):
     depends = record.get("depends", ())
     dep_indices = [q for q, dep in enumerate(depends) if dep.split(' ')[0] == fix_dep]
     for dep_idx in dep_indices:
@@ -222,6 +318,10 @@ def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
         lower = m.group("lower")
         upper = m.group("upper").split(".")
 
+        if min_lower_bound is not None:
+            if parse_version(lower) < parse_version(min_lower_bound):
+                continue
+
         if upper_bound is None:
             new_upper = get_upper_bound(lower, max_pin).split(".")
         else:
@@ -230,7 +330,7 @@ def _pin_looser(fn, record, fix_dep, max_pin=None, upper_bound=None):
         upper = pad_list(upper, len(new_upper))
         new_upper = pad_list(new_upper, len(upper))
 
-        if tuple(upper) < tuple(new_upper):
+        if parse_version(upper) < parse_version(new_upper):
             if str(new_upper[-1]) != "0":
                 new_upper += ["0"]
             depends[dep_idx] = "{} >={},<{}a0".format(dep_parts[0], lower, ".".join(new_upper))
@@ -269,12 +369,24 @@ def main():
         if not isdir(prefix_subdir):
             os.makedirs(prefix_subdir)
 
-        # Step 2a. Generate a new index.
-        new_index = _gen_new_index(repodatas[subdir], subdir)
+        # basic structure of the patch instructions file
+        instructions = {
+            "patch_instructions_version": 1,
+            "packages": defaultdict(dict),
+            "packages.conda": defaultdict(dict),
+            "revoke": [],
+            "remove": [],
+        }
 
-        # Step 2b. Generate the instructions by diff'ing the indices.
-        instructions = _gen_patch_instructions(
-            repodatas[subdir]['packages'], new_index, subdir)
+        # iterate over legacy ("packages") and current ("packages.conda")
+        # top-level key in the repodata.json structure
+        for packages_key in ["packages", "packages.conda"]:
+            # Step 2a. Generate a new index.
+            new_index = _gen_new_index_per_key(repodatas[subdir], packages_key, subdir)
+
+            # Step 2b. Generate the instructions by diff'ing the indices.
+            instructions[packages_key] = _gen_patch_instructions_per_key(
+                repodatas[subdir][packages_key], new_index, subdir)
 
         # Step 2c. Output this to $PREFIX so that we bundle the JSON files.
         patch_instructions_path = join(

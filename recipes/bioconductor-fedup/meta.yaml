@@ -1,26 +1,31 @@
-{% set version = "1.2.0" %}
+{% set version = "1.18.0" %}
 {% set name = "fedup" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 651d47c72d08677aad299153de06a594
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: d20c63efc167b730cb3834166d200a83
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-fedup", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: biomaRt, tidyr, testthat, knitr, rmarkdown, devtools, covr
 requirements:
   host:
-    - 'bioconductor-rcy3 >=2.14.0,<2.15.0'
+    - bioconductor-rcy3 >=2.30.0,<2.31.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -31,7 +36,7 @@ requirements:
     - r-rcolorbrewer
     - r-tibble
   run:
-    - 'bioconductor-rcy3 >=2.14.0,<2.15.0'
+    - bioconductor-rcy3 >=2.30.0,<2.31.0
     - r-base
     - r-data.table
     - r-dplyr
@@ -41,13 +46,15 @@ requirements:
     - r-openxlsx
     - r-rcolorbrewer
     - r-tibble
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Fisher''s Test for Enrichment and Depletion of User-Defined Pathways'
-  description: 'An R package that tests for enrichment and depletion of user-defined pathways using a Fisher''s exact test. The method is designed for versatile pathway annotation formats (eg. gmt, txt, xlsx) to allow the user to run pathway analysis on custom annotations. This package is also integrated with Cytoscape to provide network-based pathway visualization that enhances the interpretability of the results.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Fisher's Test for Enrichment and Depletion of User-Defined Pathways
+  description: An R package that tests for enrichment and depletion of user-defined pathways using a Fisher's exact test. The method is designed for versatile pathway annotation formats (eg. gmt, txt, xlsx) to allow the user to run pathway analysis on custom annotations. This package is also integrated with Cytoscape to provide network-based pathway visualization that enhances the interpretability of the results.
   license_file: LICENSE
 

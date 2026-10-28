@@ -1,28 +1,52 @@
 diff --git a/scripts/scrub.sh b/scripts/scrub.sh
-index fc2f35c..1fdfaab 100755
+index 3f4c2ae..0337ec0 100755
 --- a/scripts/scrub.sh
 +++ b/scripts/scrub.sh
-@@ -27,17 +27,17 @@ done
- shift $((OPTIND-1))
- fastq="$1"
+@@ -32,7 +32,8 @@ THREADS=
+ INTERLEAVED=
  DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"  >/dev/null 2>&1 && pwd  )"
--ROOT=$(dirname $DIR)
+ ROOT=$(dirname $DIR)
 -DB=$ROOT/data/human_filter.db
-+ROOT=${SCRUBBER_ROOT}
++SCRUBBER_SHARE=BIOCONDA_SED_REPLACE
 +DB=${SCRUBBER_SHARE}/data/human_filter.db
  
--if [ "$1" == "test" ] && [ -e "$ROOT/test/scrubber_test.fastq" ];
-+if [ "$1" == "test" ] && [ -e "${SCRUBBER_SHARE}/test/scrubber_test.fastq" ];
+ #Get input
+ while getopts ":i:o:d:p:u:hxrts" opts; do
+@@ -74,10 +75,10 @@ if [ "$INFILE" == "test" ];
+ fi
+ 
+ #TESTING create temp dir and set infile
+-if $RUNTEST && [ -e "$ROOT/test/scrubber_test.fastq" ];
++if $RUNTEST && [ -e "${SCRUBBER_SHARE}/test/scrubber_test.fastq" ];
    then
      TMP_DIR=$(mktemp -d)
 -    cp "$ROOT"/test/* "$TMP_DIR/"
 +    cp "${SCRUBBER_SHARE}"/test/* "$TMP_DIR/"
-     fastq=$TMP_DIR/scrubber_test.fastq
+     INFILE=$TMP_DIR/scrubber_test.fastq
  fi
--python "$ROOT/scripts/fastq_to_fasta.py" < "$fastq" > "$fastq.fasta"
--${ROOT}/bin/aligns_to -db "$ROOT/data/human_filter.db" "$fastq.fasta" | "$ROOT/scripts/cut_spots_fastq.py" "$fastq" ${OPTS} > "$fastq.clean"
-+fastq_to_fasta.py < "$fastq" > "$fastq.fasta"
-+aligns_to -db "${DB}" "$fastq.fasta" | cut_spots_fastq.py "$fastq" ${OPTS} > "$fastq.clean"
- if [ "$1" == "test" ];
+ 
+@@ -94,19 +95,19 @@ if [ ! -e "${INFILE}" ];
+     INFILE="$TMP_F_DIR/temp.fastq"
+ fi
+ #Use infile or temp fastq and generate fasta
+-"$ROOT/scripts/fastq_to_fasta.py" ${INTERLEAVED} < "${INFILE}" > "$TMP_F_DIR/temp.fasta"
++fastq_to_fasta.py < "${INFILE}" > "$TMP_F_DIR/temp.fasta"
+ 
+ if [ "$OUTFILE" ] && [ "$OUTFILE" != "-" ];
    then
-     if [ -e "$TMP_DIR/scrubber_test.fastq.clean" ] &&
+-    "${ROOT}"/bin/aligns_to -db "${DB}" $(if [[ "$THREADS" =~ ^[0-9]+$ ]]; then printf "%s" "-num_threads $THREADS"; fi) "$TMP_F_DIR/temp.fasta" \
+-     | "$ROOT/scripts/cut_spots_fastq.py" "$INFILE" "$REPLACEN" "$SAVEIDSPOTS" "$BADSPOTFILE"  ${INTERLEAVED} > "$OUTFILE"
++    aligns_to -db "${DB}" $(if [[ "$THREADS" =~ ^[0-9]+$ ]]; then printf "%s" "-num_threads $THREADS"; fi) "$TMP_F_DIR/temp.fasta" \
++     | cut_spots_fastq.py "$INFILE" "$REPLACEN" "$SAVEIDSPOTS" "$BADSPOTFILE"  ${INTERLEAVED} > "$OUTFILE"
+     if [ "$SAVEIDSPOTS" ] && [ -e "$TMP_F_DIR/temp.fastq.removed_spots" ];
+       then
+         cp "$TMP_F_DIR/temp.fastq.removed_spots" "$OUTFILE.removed_spots"
+     fi
+     else
+-      "${ROOT}"/bin/aligns_to -db "${DB}" $(if [[ "$THREADS" =~ ^[0-9]+$ ]]; then printf "%s" "-num_threads $THREADS"; fi) "$TMP_F_DIR/temp.fasta" \
+-      | "$ROOT/scripts/cut_spots_fastq.py" "$INFILE" "$REPLACEN" "$SAVEIDSPOTS" "$BADSPOTFILE" ${INTERLEAVED}
++      aligns_to -db "${DB}" $(if [[ "$THREADS" =~ ^[0-9]+$ ]]; then printf "%s" "-num_threads $THREADS"; fi) "$TMP_F_DIR/temp.fasta" \
++      | cut_spots_fastq.py "$INFILE" "$REPLACEN" "$SAVEIDSPOTS" "$BADSPOTFILE" ${INTERLEAVED}
+ fi
+ 
+ #Check if TESTING was successful

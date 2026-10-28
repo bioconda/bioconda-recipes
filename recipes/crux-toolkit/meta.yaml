@@ -1,4 +1,4 @@
-{% set version = "4.1" %}
+{% set version = "4.2" %}
 
 package:
   name: crux-toolkit
@@ -6,23 +6,32 @@ package:
 
 source:
   - url: https://noble.gs.washington.edu/crux-downloads/crux-{{ version }}/crux-{{ version }}.Linux.x86_64.zip  # [linux]
-    sha256: c056f1e632dfaf8d0c6f6769fbdaf78eef6fd586a6b732d88ad0c01fe2da077d  # [linux]
+    sha256: b5c1a02416f0220beb6106e12a7b330932dec396291ae364af8f2153a1e1655d  # [linux]
   - url: https://noble.gs.washington.edu/crux-downloads/crux-{{ version }}/crux-{{ version }}.Darwin.x86_64.zip  # [osx]
-    sha256: 9f7b060e67ec250e4c2a10b783eb1777497ec0d1151e5bc9630f67f411b595ac  # [osx]
+    sha256: 5f1fb9124391cec30608740fdce3aea7fcb3f19330531ea90f6ecf81b8583d00  # [osx]
 
 build:
   number: 0
   script: "mkdir -p $PREFIX/bin; chmod a+x bin/*; cp bin/* $PREFIX/bin"
+  run_exports:
+    - {{ pin_subpackage('crux-toolkit', max_pin="x")}}
+
+  binary_relocation: False
+  detect_binary_files_with_prefix: False
+  missing_dso_whitelist:
+    - /lib64/libpthread.so.0
+    - /lib64/libgomp.so.6
+    - /lib64/libstdc.so.6
+    - /lib64/libm.so.6
+    - /lib64/libgcc_s.so.1
+    - /lib64/libc.so.6
 
 requirements:
-  build:
-    # both needed as run-time dependencies
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-
+  run:
 test:
   commands:
-    - crux version 2> /dev/null | grep -q 'Crux version'
+    - export LD_LIBRARY_PATH=/opt/conda/lib64 crux version
+
 
 about:
   home: http://crux.ms
@@ -32,5 +41,9 @@ about:
   dev_url: https://github.com/crux-toolkit/crux-toolkit
 
 extra:
+  recipe-maintainers:
+    - CharlesEGrant
+    - wsnoble
+    - acquayefrank
   skip-lints:
-    - should_not_be_noarch_source
+    - should_be_noarch_generic

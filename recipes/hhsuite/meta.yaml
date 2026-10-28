@@ -1,18 +1,23 @@
+{% set name = "hhsuite" %}
 {% set version = "3.3.0" %}
 {% set sha256 = "dd67f7f3bf601e48c9c0bc4cf1fbe3b946f787a808bde765e9436a48d27b0964" %}
 
 package:
-  name: hhsuite
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 5
 
 source:
   url: https://github.com/soedinglab/hh-suite/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    - 0001-a3m_compress.patch
     - fix_cs219_include.patch
+    - reformat_pl.patch
+
+build:
+  number: 15
+  run_exports:
+    - {{ pin_subpackage('hhsuite', max_pin="x") }}
 
 requirements:
   build:
@@ -20,26 +25,31 @@ requirements:
     - {{ compiler('c') }}
     - cmake
     - make
+    - pkg-config
+  host:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
-  host:
-    - perl
-    - python
   run:
     - perl
     - python
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
 test:
   commands:
     - hhblits -h > /dev/null
     - hhsearch -h > /dev/null
     - hhalign -h > /dev/null
+    - reformat.pl > /dev/null
 
 about:
-  home: https://github.com/soedinglab/hh-suite
-  license: GPLv3
+  home: "https://github.com/soedinglab/hh-suite"
+  doc_url: "https://github.com/soedinglab/hh-suite/wiki"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: "HH-suite3 for fast remote homology detection and deep protein annotation"
+  summary: "HH-suite3 for fast remote homology detection and deep protein annotation."
+  dev_url: "https://github.com/soedinglab/hh-suite"
 
 extra:
   identifiers:
@@ -47,3 +57,6 @@ extra:
     - biotools:hh-suite
   recipe-maintainers:
     - milot-mirdita
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

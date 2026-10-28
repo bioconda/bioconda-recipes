@@ -1,35 +1,51 @@
-{% set version = "1.2.1" %}
+{% set version = "2.1.6" %}
 
 package:
   name: mbgc 
   version: {{ version }}
 
 build:
-  skip: True  # [osx]  
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mbgc', max_pin="x") }}
 
 source:
   url: https://github.com/kowallus/mbgc/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7c1e01caa8128fe2467132b6ee53b1c2a1375f3127866f1bf81ed2d129bf206a 
+  sha256: 3490081bdc7c013b1247744caa309d80cdd72597d56af00a40bdd7ae31de5e10
+  patches:
+    - asmlib_off.patch  #  [osx and x86_64]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake >=3.4
+    - {{ stdlib('c') }}
+    - cmake >=3.5
     - make
-    - libdeflate =1.2
-    
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+
 test:
   commands:
     - mbgc -v 2>&1 | grep -F {{ version }}
 
 about:
   home: https://github.com/kowallus/mbgc
-  license: GPL3
+  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
-  summary: A tool for compressing collection of genomes in FASTA format
+  license_family: GPL3
+  summary: "A tool for compressing collection of genomes in FASTA format."
+  dev_url: https://github.com/kowallus/mbgc
 
 extra:
-  maintainers:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
     - kowallus
+  identifiers:
+    - doi:10.1093/gigascience/giab099
+    - doi:10.1093/gigascience/giag008

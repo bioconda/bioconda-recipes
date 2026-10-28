@@ -1,0 +1,42 @@
+{% set version = "2.15" %}
+{% set name = "rtk2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/hildebra/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ad848b0108c46ad26cdfc1293e607730e1569bcd85ecc5b458a941670dbf7333
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+    
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - '{{ name }} -h'
+    #- '{{ name }} --version | grep -w "{{ version }}"'
+
+about:
+  home: "https://github.com/hildebra/rtk2"
+  license: 'GPL-2.0-or-later'
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'rtk2 - a CLI rarefaction toolkit for OTU tables.'
+  dev_url: "https://github.com/hildebra/rtk2"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

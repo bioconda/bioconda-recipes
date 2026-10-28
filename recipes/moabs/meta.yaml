@@ -1,15 +1,21 @@
+{% set name = "moabs" %}
 {% set version = "1.3.9.6" %}
+{% set sha256 = "a4fe07e644a3d730f026d8657392dfe30b01a4a7986d654e94372b911fd62b36" %}
 
 package:
-  name: moabs
+  name: {{ name }}
   version: {{ version }}
-
-build:
-  number: 3
 
 source:
   url: https://github.com/sunnyisgalaxy/moabs/archive/v{{ version }}.tar.gz
-  sha256: a4fe07e644a3d730f026d8657392dfe30b01a4a7986d654e94372b911fd62b36
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-moab.patch
+
+build:
+  number: 8
+  run_exports:
+    - {{ pin_subpackage('moabs', max_pin="x") }}
 
 requirements:
   build:
@@ -18,25 +24,16 @@ requirements:
     - {{ compiler('cxx') }}
     - autoconf
     - automake
+    - libtool
+    - pkg-config
   host:
     - zlib
-    - perl
-    - perl-config-simple
-    - ncurses
     - boost-cpp
-    - perl
-    - wget
-    - r-base
-    - r-ggplot2
-    - r-gridextra
+    - ncurses
   run:
-    - zlib
-    - perl
-    - perl-config-simple
-    - ncurses
     - boost-cpp
     - perl
-    - wget
+    - perl-config-simple
     - r-base
     - r-ggplot2
     - r-gridextra
@@ -48,11 +45,17 @@ test:
     - moabs --help
 
 about:
-  home: https://github.com/sunnyisgalaxy/moabs
+  home: "https://github.com/sunnyisgalaxy/moabs"
   license: MIT
-  summary: Methylation analysis on Bisulfite-Sequencing reads
+  license_family: MIT
+  summary: "Methylation analysis on Bisulfite-Sequencing reads."
+  dev_url: "https://github.com/sunnyisgalaxy/moabs"
+  doc_url: "https://github.com/sunnyisgalaxy/moabs/blob/v{{ version }}/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - doi:10.1021/acs.jproteome.8b00708
     - usegalaxy-eu:moabs

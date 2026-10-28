@@ -1,25 +1,30 @@
-{% set version = "1.20.0" %}
+{% set version = "1.36.0" %}
 {% set name = "BiocWorkflowTools" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6d91cd30ba29d8f8911f587dd5ffd285
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: a4620d16f29615793ba5a093c9a9cfe7
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-biocworkflowtools", max_pin="x.x") }}'
   noarch: generic
+
 requirements:
   host:
-    - 'bioconductor-biocstyle >=2.22.0,<2.23.0'
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
     - r-base
     - r-bookdown
     - r-git2r
@@ -30,7 +35,7 @@ requirements:
     - r-stringr
     - r-usethis
   run:
-    - 'bioconductor-biocstyle >=2.22.0,<2.23.0'
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
     - r-base
     - r-bookdown
     - r-git2r
@@ -40,15 +45,18 @@ requirements:
     - r-rstudioapi
     - r-stringr
     - r-usethis
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Tools to aid the development of Bioconductor Workflow packages'
-  description: 'Provides functions to ease the transition between Rmarkdown and LaTeX documents when authoring a Bioconductor Workflow.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Tools to aid the development of Bioconductor Workflow packages
+  description: Provides functions to ease the transition between Rmarkdown and LaTeX documents when authoring a Bioconductor Workflow.
   license_file: LICENSE
+
 extra:
   identifiers:
     - biotools:BiocWorkflowTools

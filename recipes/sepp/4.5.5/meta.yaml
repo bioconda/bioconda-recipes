@@ -1,0 +1,76 @@
+{% set name = "sepp" %}
+{% set version = "4.5.5" %}
+{% set sha256 = "af6b985bc16c96cd7c57bf78b3decce448f976aea612b3fad07b91697e4e1cfd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/smirarab/sepp/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - relocate.run-sepp.sh.patch
+    - relocate.sepp.config.patch
+
+build:
+  number: 4
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('sepp', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools
+    - pip
+    - dendropy >=4.0.0
+    - openjdk >=11
+    - hmmer >=3.1b2
+  run:
+    - python >=3.9
+    - dendropy >=4.0.0
+    - openjdk >=11
+    - hmmer >=3.1b2
+    - pasta >=1.9.2
+    - pplacer >=1.1.alpha17
+
+test:
+  commands:
+    - pplacer --version
+    - run_sepp.py --help
+    - run-sepp.sh
+        $PREFIX/share/sepp/ref/input_fragments.fasta
+        testrun_tiny_sepp
+        -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta
+        -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk
+        -r $PREFIX/share/sepp/ref/RAxML_info-reference-gg-raxml-bl.info
+        -x 1
+        -b 1
+    - grep "f__Halomonadaceae" testrun_tiny_sepp_placement.tog.relabelled.tre
+    - grep "testseqd" testrun_tiny_sepp_placement.tog.relabelled.tre
+    - python -c "import json; d = json.load(open('testrun_tiny_sepp_placement.json')); assert d['fields'][0] == 'edge_num' and isinstance(d['placements'][0]['p'][0][0], int)"
+    - run_upp.py --help
+    - run_upp.py
+        -x 1
+        -s $PREFIX/share/sepp/ref/input_fragments.fasta
+        -a $PREFIX/share/sepp/ref/reference_alignment_tiny.fasta
+        -t $PREFIX/share/sepp/ref/reference_phylogeny_tiny.nwk
+        -o testrun_tiny_upp
+    - run_upp.py
+        -x 1
+        -s $PREFIX/share/sepp/ref/input_fragments.fasta
+        -o testrun_tiny_upp_with_pasta
+
+about:
+  home: "https://github.com/smirarab/sepp"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "SATe-enabled phylogenetic placement."
+  dev_url: "https://github.com/smirarab/sepp"
+  doc_url: "https://github.com/smirarab/sepp/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - biotools:sepp

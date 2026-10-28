@@ -1,5 +1,5 @@
 {% set name = "deepbgc" %}
-{% set version = "0.1.29" %} # remember to update sha256 hash as well
+{% set version = "0.1.31" %} # remember to update sha256 hash as well
 {% set file_ext = "tar.gz" %}
 
 package:
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  sha256: '76aa3bac19fd42b4c6d0f83fbf54a6a43e3638b02e19df7444333aa0d48ab121'
+  sha256: 'f294736ca63790a0429a2802457774da9c07e0b42dee8b2963f42f77ccb06255'
 
 build:
   noarch: python
@@ -16,6 +16,8 @@ build:
   entry_points:
     - deepbgc = deepbgc.main:main
   script: python setup.py install --single-version-externally-managed --record=record.txt
+  run_exports:
+    - {{ pin_subpackage('deepbgc', max_pin="x.x") }}
 
 requirements:
   host:
@@ -35,6 +37,7 @@ requirements:
     - scipy ==1.2.0
     - hmmer >=3.1b2 # needed for antiSMASH compatibility
     - prodigal
+    - protobuf <=3.19.0 # needed to load old model pickle files
 
 test:
   imports:

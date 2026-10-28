@@ -1,63 +1,81 @@
-{% set version = "1.4.2" %}
+{% set version = "2.12.0" %}
 {% set name = "MSstatsPTM" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: dd87d78c52143f6df93113a607a8c76a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 913e3bc8eff20d864cea7f7f50bc717b
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: BiocStyle, knitr, rmarkdown, tinytest, covr
+  run_exports: '{{ pin_subpackage("bioconductor-msstatsptm", max_pin="x.x") }}'
+
+# Suggests: knitr, rmarkdown, tinytest, covr, mockery, testthat (>= 3.0.0)
 requirements:
-  host:
-    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
-    - 'bioconductor-msstats >=4.2.0,<4.3.0'
-    - 'bioconductor-msstatsconvert >=1.4.0,<1.5.0'
-    - 'bioconductor-msstatstmt >=2.2.0,<2.3.0'
-    - r-base
-    - r-checkmate
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - r-gridextra
-    - r-rcpp
-    - r-stringr
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-biostrings >=2.62.0,<2.63.0'
-    - 'bioconductor-msstats >=4.2.0,<4.3.0'
-    - 'bioconductor-msstatsconvert >=1.4.0,<1.5.0'
-    - 'bioconductor-msstatstmt >=2.2.0,<2.3.0'
-    - r-base
-    - r-checkmate
-    - r-data.table
-    - r-dplyr
-    - r-ggplot2
-    - r-ggrepel
-    - r-gridextra
-    - r-rcpp
-    - r-stringr
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-msstats >=4.18.0,<4.19.0
+    - bioconductor-msstatsconvert >=1.20.0,<1.21.0
+    - bioconductor-msstatstmt >=2.18.0,<2.19.0
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-gridextra
+    - r-htmltools
+    - r-plotly
+    - r-rcpp
+    - r-stringi
+    - r-stringr
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-msstats >=4.18.0,<4.19.0
+    - bioconductor-msstatsconvert >=1.20.0,<1.21.0
+    - bioconductor-msstatstmt >=2.18.0,<2.19.0
+    - r-base
+    - r-checkmate
+    - r-data.table
+    - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
+    - r-gridextra
+    - r-htmltools
+    - r-plotly
+    - r-rcpp
+    - r-stringi
+    - r-stringr
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Statistical Characterization of Post-translational Modifications'
-  description: 'MSstatsPTM provides general statistical methods for quantitative characterization of post-translational modifications (PTMs). Supports DDA, DIA, and tandem mass tag (TMT) labeling. Typically, the analysis involves the quantification of PTM sites (i.e., modified residues) and their corresponding proteins, as well as the integration of the quantification results. MSstatsPTM provides functions for summarization, estimation of PTM site abundance, and detection of changes in PTMs across experimental conditions.'
+  summary: Statistical Characterization of Post-translational Modifications
+  description: MSstatsPTM provides general statistical methods for quantitative characterization of post-translational modifications (PTMs). Supports DDA, DIA, SRM, and tandem mass tag (TMT) labeling. Typically, the analysis involves the quantification of PTM sites (i.e., modified residues) and their corresponding proteins, as well as the integration of the quantification results. MSstatsPTM provides functions for summarization, estimation of PTM site abundance, and detection of changes in PTMs across experimental conditions.
 

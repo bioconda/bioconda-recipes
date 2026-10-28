@@ -1,39 +1,42 @@
-{% set version = "3.14.0" %}
+{% set version = "3.22.0" %}
 {% set name = "PFAM.db" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 06ccd5cde0c66affe9a65f2dfac54f19
+    - https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 401389a46383ca2ee9318356fce09621
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-pfam.db", max_pin="x.x") }}'
   noarch: generic
 # Suggests: DBI
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'A set of protein ID mappings for PFAM'
-  description: 'A set of protein ID mappings for PFAM assembled using data from public repositories'
+  summary: A set of protein ID mappings for PFAM
+  description: A set of protein ID mappings for PFAM assembled using data from public repositories
 extra:
   parent_recipe:
     name: bioconductor-pfam.db

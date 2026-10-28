@@ -1,63 +1,66 @@
-{% set version = "1.0.0" %}
+{% set version = "1.16.3" %}
 {% set name = "nullranges" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 30ef5a254acf07b6da0933394cac47b2
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 5b65fdef0c5dfe659bf4ff5f235a705d
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-nullranges", max_pin="x.x") }}'
   noarch: generic
-# Suggests: testthat, knitr, rmarkdown, DNAcopy, RcppHMM, AnnotationHub, nullrangesData, excluderanges, EnsDb.Hsapiens.v86, microbenchmark, patchwork, plotgardener, magrittr, cobalt
+
+# Suggests: testthat, knitr, rmarkdown, ks, DNAcopy, RcppHMM, AnnotationHub, ExperimentHub, GenomeInfoDb, nullrangesData, ensembldb, EnsDb.Hsapiens.v86, BSgenome.Hsapiens.UCSC.hg38, patchwork, plotgardener, dplyr, magrittr, tidyr, cobalt, DiagrammeR, MatchIt
 requirements:
   host:
-    - 'bioconductor-genomeinfodb >=1.30.0,<1.31.0'
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
-    - 'bioconductor-interactionset >=1.22.0,<1.23.0'
-    - 'bioconductor-iranges >=2.28.0,<2.29.0'
-    - 'bioconductor-plyranges >=1.14.0,<1.15.0'
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-plyranges >=1.30.0,<1.31.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
     - r-data.table
     - r-ggplot2
     - r-ggridges
-    - r-ks
     - r-progress
     - r-rlang
     - r-scales
-    - r-speedglm
   run:
-    - 'bioconductor-genomeinfodb >=1.30.0,<1.31.0'
-    - 'bioconductor-genomicranges >=1.46.0,<1.47.0'
-    - 'bioconductor-interactionset >=1.22.0,<1.23.0'
-    - 'bioconductor-iranges >=2.28.0,<2.29.0'
-    - 'bioconductor-plyranges >=1.14.0,<1.15.0'
-    - 'bioconductor-s4vectors >=0.32.0,<0.33.0'
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-interactionset >=1.38.0,<1.39.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-plyranges >=1.30.0,<1.31.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
     - r-base
     - r-data.table
     - r-ggplot2
     - r-ggridges
-    - r-ks
     - r-progress
     - r-rlang
     - r-scales
-    - r-speedglm
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Generation of null ranges via bootstrapping or covariate matching'
-  description: 'Modular package for generation of sets of ranges representing the null hypothesis. These can take the form of bootstrap samples of ranges (using the block bootstrap framework of Bickel et al 2010), or sets of control ranges that are matched across one or more covariates. nullranges is designed to be inter-operable with other packages for analysis of genomic overlap enrichment, including the plyranges Bioconductor package.'
+  summary: Generation of null ranges via bootstrapping or covariate matching
+  description: Modular package for generation of sets of ranges representing the null hypothesis. These can take the form of bootstrap samples of ranges (using the block bootstrap framework of Bickel et al 2010), or sets of control ranges that are matched across one or more covariates. nullranges is designed to be inter-operable with other packages for analysis of genomic overlap enrichment, including the plyranges Bioconductor package.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

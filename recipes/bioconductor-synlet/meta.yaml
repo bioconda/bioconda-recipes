@@ -1,51 +1,57 @@
-{% set version = "1.24.0" %}
+{% set version = "2.10.0" %}
 {% set name = "synlet" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 617583fa1a2e8a4887e85cdc41d134fe
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 119f47c9ab21aa82b642ca8ef8f8fe18
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-synlet", max_pin="x.x") }}'
   noarch: generic
-# Suggests: knitr, testthat, rmarkdown
+
+# Suggests: BiocStyle, knitr, testthat, rmarkdown
 requirements:
   host:
-    - 'bioconductor-rankprod >=3.20.0,<3.21.0'
+    - bioconductor-rankprod >=3.36.0,<3.37.0
     - r-base
-    - r-doby
-    - r-dplyr
+    - r-data.table
     - r-ggplot2
     - r-magrittr
+    - r-patchwork
     - r-rcolorbrewer
-    - r-reshape2
   run:
-    - 'bioconductor-rankprod >=3.20.0,<3.21.0'
+    - bioconductor-rankprod >=3.36.0,<3.37.0
     - r-base
-    - r-doby
-    - r-dplyr
+    - r-data.table
     - r-ggplot2
     - r-magrittr
+    - r-patchwork
     - r-rcolorbrewer
-    - r-reshape2
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Hits Selection for Synthetic Lethal RNAi Screen Data'
-  description: 'Select hits from synthetic lethal RNAi screen data. For example, there are two identical celllines except one gene is knocked-down in one cellline. The interest is to find genes that lead to stronger lethal effect when they are knocked-down further by siRNA. Quality control and various visualisation tools are implemented. Four different algorithms could be used to pick up the interesting hits. This package is designed based on 384 wells plates, but may apply to other platforms with proper configuration.'
+  summary: Hits Selection for Synthetic Lethal RNAi Screen Data
+  description: Select hits from synthetic lethal RNAi screen data. For example, there are two identical celllines except one gene is knocked-down in one cellline. The interest is to find genes that lead to stronger lethal effect when they are knocked-down further by siRNA. Quality control and various visualisation tools are implemented. Four different algorithms could be used to pick up the interesting hits. This package is designed based on 384 wells plates, but may apply to other platforms with proper configuration.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:synlet

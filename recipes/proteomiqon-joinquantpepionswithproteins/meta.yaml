@@ -1,8 +1,9 @@
-{% set version = "0.0.1" %}
-{% set sha256 = "1792c40c261df7dd26f4eec6adf58a5516dc265a72f0dd9744e013bd6b1c0a5c" %}
+{% set name = "proteomiqon-joinquantpepionswithproteins" %}
+{% set version = "0.0.5" %}
+{% set sha256 = "e4076d297b4d86492b51da43a105dbfffaa2462f8dbb1dbb9b442dbe4b98ec30" %}
 
 package:
-  name: proteomiqon-joinquantpepionswithproteins
+  name: '{{name}}'
   version: '{{ version }}'
 
 source:
@@ -12,18 +13,27 @@ source:
 build:
   noarch: generic
   number: 0
-  script:
-    - dotnet tool install --add-source $SRC_DIR --tool-path $PREFIX/bin --version {{ version }} ProteomIQon.JoinQuantPepIonsWithProteins
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  
 
 requirements:
+  build: 
+    - {{ stdlib('c') }}
   host:
-    - dotnet-sdk
+    - unzip
   run:
-    - dotnet-runtime
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
 
 test:
   commands:
-    - proteomiqon-joinquantpepionswithproteins --help
+    - test -x "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+    - test -f "$PREFIX/lib/dotnet/tools/JoinQuantPepIonsWithProteins/ProteomIQon.JoinQuantPepIonsWithProteins.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+    - grep -q "JoinQuantPepIonsWithProteins/ProteomIQon.JoinQuantPepIonsWithProteins.dll" "$PREFIX/bin/proteomiqon-joinquantpepionswithproteins"
+
 
 about:
   home: https://csbiology.github.io/ProteomIQon/

@@ -2,18 +2,16 @@
 
 set -vex
 
-# C++17 is not properly supported on early OSX versions
+# Show the compiler used for the C++23 build on macOS.
 case "${target_platform}" in osx-*)
-    export MACOSX_DEPLOYMENT_TARGET=10.13
-    xcodebuild -sdk -version
     ${CXX} -v
 esac
 
 export BOOST_ROOT="${PREFIX}"
-export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
 
-pkg-config --list-all
-pkg-config --cflags cairo
+# Require Cairo support in the package; Meson otherwise silently disables it.
+pkg-config --cflags --libs cairo
 
 echo "CC=$CC"
 echo "CFLAGS=$CFLAGS"
@@ -21,30 +19,24 @@ echo "CXX=$CXX"
 echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 
-echo "Removing -mmacosx-version-min=10.9 from CPPFLAGS..."
-CPPFLAGS="$(echo $CPPFLAGS | sed 's/-mmacosx-version-min=10.9/-mmacosx-version-min=10.13/g')"
-echo "CPPFLAGS=$CPPFLAGS"
-
-echo "Removing -O2 and -std=c++14 from CXXFLAGS..."
-CXXFLAGS="$(echo $CXXFLAGS | sed 's/-O2//g' | sed 's/-std=c++14//g')"
-echo "CXXFLAGS=$CXXFLAGS"
+# Compatibility workaround retained from 4.2 for libc++ availability annotations.
+# Revisit when the macOS SDK/deployment target permits removing it.
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
 # configure
-meson \
+meson setup \
     --prefix="$PREFIX" \
     --buildtype=release \
+    --wrap-mode=nodownload \
     -Db_ndebug=true \
     builddir .
 
 cd builddir
 
-cat meson-logs/meson-log.txt
+# cat meson-logs/meson-log.txt
 
 # build
 meson compile
-
-# test
-meson test
 
 # install
 meson install

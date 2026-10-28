@@ -1,24 +1,27 @@
+{% set name = "cdbtools" %}
+{% set version = "0.99" %}
+{% set sha256 = "68767e8b2fb9de5a6d68ee16df73293f65e02f05cf2f747a9dd6b8854766722c" %}
+
 package:
-  name: cdbtools
-  version: 0.99
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   url: ftp://occams.dfci.harvard.edu/pub/bio/tgi/software/cdbfasta/cdbfasta.tar.gz
-  sha256: 68767e8b2fb9de5a6d68ee16df73293f65e02f05cf2f747a9dd6b8854766722c
-
+  sha256: {{ sha256 }}
   patches:
-    - zlib.patch
+    - 0001-Makefile.patch
 
 build:
-  number: 7
+  number: 12
+  run_exports:
+    - {{ pin_subpackage('cdbtools', max_pin='x.x') }}
 
 requirements:
   build:
     - make
     - {{ compiler('cxx') }}
   host:
-    - zlib
-  run:
     - zlib
 
 test:
@@ -27,8 +30,11 @@ test:
     - cdbyank -v
 
 about:
-  home: http://compbio.dfci.harvard.edu/tgi
-  license: Public Domain
-  summary: CDB (Constant DataBase) indexing and retrieval tools for FASTA files
+  home: "http://compbio.dfci.harvard.edu/tgi"
+  license: "Public Domain"
+  summary: "CDB (Constant DataBase) indexing and retrieval tools for FASTA files."
 
-# vim:set ts=8 sw=2
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

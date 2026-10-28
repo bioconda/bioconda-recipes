@@ -1,0 +1,53 @@
+{% set version = "1.0.6" %}
+
+package:
+  name: bwa-meme
+  version: {{ version }}
+
+source:
+  - url: https://github.com/kaist-ina/BWA-MEME/releases/download/v{{ version }}/Source_BWA-MEME_r1.tar.gz
+    sha256: ff6960428323b74f2fdba29c15a077023880fcb4508287bea9c40d29ad4f2b6d
+
+
+build:
+  number: 3
+  # Compilation fails on OSX:
+  #   ext/safestringlib/include/safe_mem_lib.h:100:16: error: conflicting types for 'memset_s'
+  #   extern errno_t memset_s(void *dest, rsize_t dmax, uint8_t value);
+  #   /Applications/Xcode-9.4.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include/string.h:145:9: note: previous declaration is here
+  #   errno_t memset_s(void *__s, rsize_t __smax, int __c, rsize_t __n) __OSX_AVAILABLE_STARTING(__MAC_10_9, __IPHONE_7_0);
+  # Cause: https://github.com/intel/safestringlib/issues/14
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - make
+    - cmake
+    - {{ compiler('cxx') }}
+    - rust >=1.43
+    
+  host:
+    - zlib
+    - m4
+
+test:
+  commands:
+    - bwa-meme version
+    - bwa-meme_mode2 version
+    - bwa-meme_mode1 version
+    - bwa-meme_mode1.sse41 version
+    - bwa-meme_mode2.sse42 version
+    - bwa-meme_mode3.avx version
+    - bwa-meme_mode3.avx2 version
+    - bwa-meme_mode3.avx512bw version
+    - build_rmis_dna.sh
+    - bwa-meme-train-prmi --version
+about:
+  home: https://github.com/kaist-ina/BWA-MEME
+  license: MIT
+  license_file: LICENSE
+  summary: Faster BWA-MEM2 using learned-index
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btac137

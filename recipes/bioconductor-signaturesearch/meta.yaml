@@ -1,92 +1,108 @@
-{% set version = "1.8.2" %}
+{% set version = "1.24.0" %}
 {% set name = "signatureSearch" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 66c729f89fcb736cce5a617c98ae24f0
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 311f78dda1d746a24c5350b383f7a0ae
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: knitr, testthat, rmarkdown, BiocStyle, org.Hs.eg.db, signatureSearchData, DT
+  run_exports: '{{ pin_subpackage("bioconductor-signaturesearch", max_pin="x.x") }}'
+
+# Suggests: knitr, testthat, rmarkdown, BiocStyle, signatureSearchData, DT
 # SystemRequirements: C++11
 requirements:
-  host:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
-    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
-    - 'bioconductor-clusterprofiler >=4.2.0,<4.3.0'
-    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
-    - 'bioconductor-dose >=3.20.0,<3.21.0'
-    - 'bioconductor-experimenthub >=2.2.0,<2.3.0'
-    - 'bioconductor-fgsea >=1.20.0,<1.21.0'
-    - 'bioconductor-gseabase >=1.56.0,<1.57.0'
-    - 'bioconductor-hdf5array >=1.22.0,<1.23.0'
-    - 'bioconductor-qvalue >=2.26.0,<2.27.0'
-    - 'bioconductor-reactome.db >=1.77.0,<1.78.0'
-    - 'bioconductor-rhdf5 >=2.38.0,<2.39.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-fastmatch
-    - r-ggplot2
-    - r-magrittr
-    - r-matrix
-    - r-rcpp
-    - r-readr
-    - r-reshape2
-    - r-rsqlite
-    - r-scales
-    - r-visnetwork
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-annotationdbi >=1.56.0,<1.57.0'
-    - 'bioconductor-biocgenerics >=0.40.0,<0.41.0'
-    - 'bioconductor-biocparallel >=1.28.0,<1.29.0'
-    - 'bioconductor-clusterprofiler >=4.2.0,<4.3.0'
-    - 'bioconductor-delayedarray >=0.20.0,<0.21.0'
-    - 'bioconductor-dose >=3.20.0,<3.21.0'
-    - 'bioconductor-experimenthub >=2.2.0,<2.3.0'
-    - 'bioconductor-fgsea >=1.20.0,<1.21.0'
-    - 'bioconductor-gseabase >=1.56.0,<1.57.0'
-    - 'bioconductor-hdf5array >=1.22.0,<1.23.0'
-    - 'bioconductor-qvalue >=2.26.0,<2.27.0'
-    - 'bioconductor-reactome.db >=1.77.0,<1.78.0'
-    - 'bioconductor-rhdf5 >=2.38.0,<2.39.0'
-    - 'bioconductor-summarizedexperiment >=1.24.0,<1.25.0'
-    - r-base
-    - r-data.table
-    - r-dplyr
-    - r-fastmatch
-    - r-ggplot2
-    - r-magrittr
-    - r-matrix
-    - r-rcpp
-    - r-readr
-    - r-reshape2
-    - r-rsqlite
-    - r-scales
-    - r-visnetwork
+
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+
+  host:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-clusterprofiler >=4.18.0,<4.19.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-dose >=4.4.0,<4.5.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-fgsea >=1.36.0,<1.37.0
+    - bioconductor-gseabase >=1.72.0,<1.73.0
+    - bioconductor-hdf5array >=1.38.0,<1.39.0
+    - bioconductor-org.hs.eg.db >=3.22.0,<3.23.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-reactome.db >=1.95.0,<1.96.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-fastmatch
+    - r-ggplot2
+    - r-magrittr
+    - r-matrix
+    - r-rcpp
+    - r-readr
+    - r-reshape2
+    - r-rsqlite
+    - r-scales
+    - r-tibble
+    - r-visnetwork
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+
+  run:
+    - bioconductor-annotationdbi >=1.72.0,<1.73.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-clusterprofiler >=4.18.0,<4.19.0
+    - bioconductor-delayedarray >=0.36.0,<0.37.0
+    - bioconductor-dose >=4.4.0,<4.5.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - bioconductor-fgsea >=1.36.0,<1.37.0
+    - bioconductor-gseabase >=1.72.0,<1.73.0
+    - bioconductor-hdf5array >=1.38.0,<1.39.0
+    - bioconductor-org.hs.eg.db >=3.22.0,<3.23.0
+    - bioconductor-qvalue >=2.42.0,<2.43.0
+    - bioconductor-reactome.db >=1.95.0,<1.96.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-base
+    - r-data.table
+    - r-dplyr
+    - r-fastmatch
+    - r-ggplot2
+    - r-magrittr
+    - r-matrix
+    - r-rcpp
+    - r-readr
+    - r-reshape2
+    - r-rsqlite
+    - r-scales
+    - r-tibble
+    - r-visnetwork
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Environment for Gene Expression Searching Combined with Functional Enrichment Analysis'
-  description: 'This package implements algorithms and data structures for performing gene expression signature (GES) searches, and subsequently interpreting the results functionally with specialized enrichment methods.'
+  summary: Environment for Gene Expression Searching Combined with Functional Enrichment Analysis
+  description: This package implements algorithms and data structures for performing gene expression signature (GES) searches, and subsequently interpreting the results functionally with specialized enrichment methods.
 

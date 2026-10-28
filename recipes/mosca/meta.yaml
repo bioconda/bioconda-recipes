@@ -1,6 +1,6 @@
 {% set name = "mosca" %}
-{% set version = "1.3.5" %}
-{% set sha256 = "b2c650ad4d220a0cd1928f9c72521172519b46502567c7974558c76ff34433f8" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "1eba9c082273dd46badd2d5ff8df56aabdc496214e337331d000f54399893a94" %}
 
 package:
   name: {{ name|lower }}
@@ -12,64 +12,28 @@ source:
 
 build:
   noarch: generic
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("mosca", max_pin="x.x") }}
+  script: >
+    mkdir -p $PREFIX/share/MOSCA $PREFIX/bin && 
+    cp -r workflow/* resources/*.json resources/*.txt $PREFIX/share/MOSCA && 
+    chmod +x $PREFIX/share/MOSCA/mosca.py && 
+    ln -s $PREFIX/share/MOSCA/mosca.py $PREFIX/bin/mosca
 
 requirements:
   run:
-    - python >=3.6
-    - fastqc >=0.11.9
-    - sortmerna 2.1b
-    - seqtk
-    - trimmomatic >=0.39
-    - megahit >=1.2.9
-    - spades >=3.14.1
-    - fraggenescan >=1.31
-    - diamond >=2.0.2
-    - upimapi >=1.0.4
-    - htseq =0.12.*
-    - bowtie2 2.3
-    - maxbin2 >=2.2.7
-    - checkm-genome >=1.1.0
-    - bioconductor-deseq2 >=1.10.1
-    - bioconductor-edger >=3.14.0
-    - r-pheatmap
-    - r-optparse
-    - blast >=2.5.0
-    - krona >=2.7.1
-    - seqkit >=0.13.2
-    - svn >=1.9.7
-    - reportlab >=3.5.45
-    - openpyxl >=3.0.3
-    - xlrd =1.2
-    - r-rcolorbrewer >=1.1.2
-    - pandas >=1.1.4
-    - scikit-learn >=0.23.1
-    - lxml >=4.6.1
-    - biopython >=1.78
-    - perl
-    - progressbar33 >=2.4
-    - tqdm >=4.33.0
-    - xlsxwriter >=1.3.7
-    - recognizer >=1.4.0
-    - maxquant >=1.6.10
-    - quast >=5.0.2
-    - keggcharter >=0.1.1
-    - samtools >=1.11
-    - snakemake >=5.27.4
-    - metaphlan =3
-    - searchgui =3.3
-    - peptide-shaker =1.16
-    - bioconductor-pcamethods =1.82.0
-    - bioconductor-vsn =3.58.0
-    - bioconductor-rots =1.18.0
+    - python >=3.9, <3.12
+    - pandas
+    - snakemake <8
 
 test:
   commands:
-    - mosca.py -v
+    - mosca -v
 
 about:
   home: https://github.com/iquasere/MOSCA
-  license: GNU General Public License v3 (GPL-3.0)
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: LICENSE
   summary: 'MOSCA - Meta-Omics Software for Community Analysis'
@@ -86,7 +50,7 @@ about:
     Peptide-to-Spectrum matching, with the annotated ORFs as reference database.
     Final steps include differential expression analysis for both MT and MP, and
     metabolic pathways analysis through KEGG Pathways.
-  doc_url: https://github.com/iquasere/MOSCA/blob/master/README.md
+  doc_url: https://github.com/iquasere/MOSCA/wiki
   dev_url: https://github.com/iquasere/MOSCA
 
 extra:

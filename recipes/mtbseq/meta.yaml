@@ -1,39 +1,40 @@
+{% set version = "1.1.0" %}
+
 package:
   name: mtbseq
-  version: "1.0.4"
+  version: {{ version }}
 
 source:
-  url: https://github.com/ngs-fzb/MTBseq_source/archive/v{{ PKG_VERSION }}.zip
-  sha256: 21d5a8174a802e9b6a817a4f36149e586cb37ac6c40675e0314347c748457a3f
+  url: https://github.com/ngs-fzb/MTBseq_source/archive/v{{ version }}.zip
+  sha256: 6d0582ae44a180de78591e9c2dfa510afcb5f0ae0eeca1c049045b0c25c5594d
 
 build:
-  number: 2
+  number: 1
   noarch: generic
-  
+  run_exports:
+    - {{ pin_subpackage("mtbseq", max_pin="x.x") }}
+    
 requirements:
   host:
   run:
     - perl >=5.22
     - openjdk >=8,<9
     - gatk ==3.8
-    - bwa ==0.7.17
+    - bwa >=0.7.17
     - samtools ==1.6
     - perl-number-format
     - perl-statistics-basic >=1.6611
     - perl-mce >=1.836
-    - picard >=2.17.0
+    - picard >=2.17.0,<3
 
 test:
   commands:
-    - MTBseq --version >/dev/null
-    - MTBseq --help >/dev/null
-
+    - MTBseq --check >/dev/null
 
 about:
   home: https://github.com/ngs-fzb/MTBseq_source
   license: GPLv3
   license_file: GPL.md
-
   summary: "Pipeline for WGS analysis of M. tuberculosis"
   description: |
     MTBseq is a semi-automated pipeline for mapping, variant calling and

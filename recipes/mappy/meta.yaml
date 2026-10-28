@@ -1,33 +1,45 @@
-{% set version = "2.24" %}
+{% set name = "mappy" %}
+{% set version = "2.31" %}
 
 package:
-  name: mappy
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/m/mappy/mappy-{{ version }}.tar.gz
-  sha256: 35a2fb73ef14173283d5abb31e7a318429e0330c3be95851df38dd83d4ff9af9
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/mappy-{{ version }}.tar.gz
+  sha256: 152a358c11cba1f992968e2611f1e0a1f4a87aaaa3602d93e4f59d7c1db8f3b2
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - python
+    - setuptools <82
     - cython
-    - setuptools
+    - pip
     - zlib
   run:
     - python
-    - zlib
 
 test:
   imports:
     - mappy
 
 about:
-  home: https://github.com/lh3/minimap2
+  home: "https://github.com/lh3/minimap2"
   license: MIT
-  summary: 'Minimap2 Python binding'
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Minimap2 Python binding."
+  dev_url: "https://github.com/lh3/minimap2"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

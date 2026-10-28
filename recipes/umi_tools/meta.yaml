@@ -1,21 +1,22 @@
 {% set name = "umi_tools" %}
-{% set version = "1.1.2" %}
-{% set sha256hash = "92cfa2531ee55e1700d878bd4158bd9c69e3042e03312fde5c3ffbee86f4ddea" %}
+{% set version = "1.1.6" %}
+{% set sha256 = "ccf87cf808f24af4bcfe953be9e06a289a51b321c7742aba821d0dc18f7a1c60" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/CGATOxford/UMI-tools/archive/refs/tags/{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  url: https://github.com/CGATOxford/UMI-tools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
-  skip: True  # [py27 or py == 39]
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
   entry_points:
     - umi_tools = umi_tools.umi_tools:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
@@ -23,6 +24,7 @@ requirements:
   host:
     - python
     - pip
+    - setuptools
   run:
     - python
     - matplotlib-base
@@ -36,12 +38,26 @@ requirements:
 
 test:
   commands:
-    - umi_tools --help
+    - "umi_tools --help"
 
 about:
-  home: https://github.com/CGATOxford/UMI-tools
-  license: MIT License
+  home: "https://github.com/CGATOxford/UMI-tools"
+  license: MIT
   license_family: MIT
-  summary: 'Tools for dealing with Unique Molecular Identifiers
-            (UMIs) / Random Molecular Tags (RMTs)'
-  dev_url: https://github.com/CGATOxford/UMI-tools
+  license_file: LICENSE
+  summary: "Tools for dealing with Unique Molecular Identifiers
+            (UMIs) / Random Molecular Tags (RMTs)."
+  dev_url: "https://github.com/CGATOxford/UMI-tools"
+  doc_url: "https://umi-tools.readthedocs.io/en/latest"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/gr.209601.116
+    - usegalaxy-eu:umi_tools_count
+    - usegalaxy-eu:umi_tools_extract
+    - usegalaxy-eu:umi_tools_group
+    - usegalaxy-eu:umi_tools_whitelist
+    - usegalaxy-eu:umi_tools_dedup

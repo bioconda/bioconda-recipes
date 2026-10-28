@@ -1,26 +1,29 @@
-{% set version = "0.1.4.0" %}
+{% set version = "0.1.4.2" %}
 
 package:
   name: simplesam
   version: {{ version }}
 
 source:
-  url: https://github.com/mdshw5/simplesam/archive/v{{ version }}.tar.gz
-  sha256: 84b226f10d1499432638bad8bac22323093977bc6113c64ba8d0e92ffaffa65c
+  url: https://pypi.io/packages/source/s/simplesam/simplesam-{{ version }}.tar.gz
+  sha256: e71fc4559dfa0343aee5e82973615273aa01cda8ccf58d904f53d210f3bbaf15
 
 build:
   noarch: python
   number: 0
   script: "python -m pip install . --no-deps --ignore-installed -vv"
+  run_exports:
+    - {{ pin_subpackage("simplesam", max_pin="x.x") }}
 
 requirements:
   host:
     - pip
     - python
+    - setuptools-scm
   run:
-    - pip
     - python
     - six
+    - setuptools  # uses pkg_resources
 
 test:
   imports:
@@ -32,3 +35,7 @@ about:
   summary: 'Simple pure Python SAM parser and objects for working with SAM records'
   dev_url: https://github.com/mdshw5/simplesam
   doc_url: http://simplesam.readthedocs.io/en/latest/
+
+extra:
+  skip-lints:
+    - uses_setuptools

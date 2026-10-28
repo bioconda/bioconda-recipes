@@ -1,58 +1,56 @@
-{% set version = "1.2.0" %}
+{% set name = "plannotate" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "c0b83e6895cca4895143d5e05704f9e99c9da71389a9575b2e6f2bc913b3d4d6" %}
 
 package:
-  name: plannotate
+  name: {{ name }}
   version: {{ version }}
+
+source:
+  url: https://github.com/mmcguffi/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
-
-source:
-  url: https://github.com/barricklab/pLannotate/archive/refs/tags/v{{version}}.tar.gz
-  sha256: d58d11592d62efdcf6834c6aa6188f58efb1129132e13c6342f1a523e0aa7497
+  run_exports:
+    - {{ pin_subpackage('plannotate', max_pin="x") }}
 
 requirements:
   host:
-    - biopython >1.77
-    - bokeh >=2.4.1
-    - click
-    - curl
-    - blast >=2.10.1
-    - diamond >=2.0.13
-    - numpy
-    - pandas
-    - python ==3.7.*
+    - python >=3.10
     - pip
-    - ripgrep >=13.0.0
-    - streamlit >=1.2.0
-    - tabulate >=0.8.9
-    - trnascan-se >=2.0.7
+    - setuptools
   run:
-    - biopython >1.77
-    - bokeh >=2.4.1
-    - click
-    - curl
+    - python >=3.10
+    - biopython >=1.81
+    - numpy >=1.23
+    - pandas >=1.5,<3
+    - pyyaml >=6
+    - rich >=13
+    - typer >=0.12
     - blast >=2.10.1
     - diamond >=2.0.13
-    - numpy
-    - pandas
-    - python ==3.7.*
-    - ripgrep >=13.0.0
-    - streamlit >=1.2.0
-    - tabulate >=0.8.9
-    - trnascan-se >=2.0.7
+    - infernal >=1.1.4
+    - bokeh >=3.4,<4
+    - tabulate >=0.9
 
 test:
   commands:
     - plannotate batch --help
 
 about:
-  home: https://github.com/barricklab/pLannotate
-  license: GPL-3
+  home: "https://github.com/mmcguffi/pLannotate"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
   license_file: LICENSE
-  summary: Webserver and command line tool for annotating engineered plasmids
+  summary: "Webserver and command line tool for annotating engineered plasmids."
+  dev_url: "https://github.com/mmcguffi/pLannotate"
+  doc_url: "https://github.com/mmcguffi/pLannotate/blob/v{{ version }}/README.md"
 
 extra:
   recipe-maintainers:
+    - mmcguffi
     - rpetit3
+  identifiers:
+    - biotools:plannotate

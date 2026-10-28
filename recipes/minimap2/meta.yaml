@@ -1,34 +1,53 @@
-{% set version = "2.24" %}
+{% set name = "minimap2" %}
+{% set version = "2.31" %}
 
 package:
-  name: minimap2
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/lh3/minimap2/archive/v{{ version }}.tar.gz
-  sha256: 2e3264300661cf1fce6adabffe6970ec59d46f3e8150dd40fa4501ff4f6c0dbc
+  url: https://github.com/lh3/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: bff334a0e4512644e2f3e29944aeec408f49450f4f74dc39fe89e5273869255b
+  patches:
+    - override-makefile.patch
 
 build:
-  number: 1
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
   host:
     - zlib
   run:
     - k8
-    - zlib
 
 test:
   commands:
     - minimap2 2>&1 | grep 'Usage'
     - paftools.js version | grep {{ version }}
     - sdust  2>&1 | grep 'Usage'
+    - test -e $PREFIX/lib/libminimap2.a
+    - test -e $PREFIX/include/minimap.h
 
 about:
-  home: https://github.com/lh3/minimap2
+  home: "https://github.com/lh3/minimap2"
   license: MIT
-  license_file: LICENSE.txt
+  license_family: MIT
+  license_file: "LICENSE.txt"
   summary: 'A versatile pairwise aligner for genomic and spliced nucleotide sequences.'
+  dev_url: "https://github.com/lh3/minimap2"
+  doc_url: "https://lh3.github.io/minimap2/minimap2.html"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:{{ name| lower }}
+    - usegalaxy-eu:{{ name| lower }}
+    - doi:10.1093/bioinformatics/bty191

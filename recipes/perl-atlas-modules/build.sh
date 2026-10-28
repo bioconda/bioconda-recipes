@@ -21,7 +21,7 @@ mkdir -p $PERLLIB
 # to 'UNKNOWN' which disrupts cpanm
 
 if [[ ${HOST} =~ .*darwin.* && ("$HOME" == 'UNKNOWN' || -z "$HOME") ]]; then
-    export HOME=/Users/distiller
+    export HOME=/tmp
 fi
 
 cpanm -l $PERLLIB MooseX::FollowPBP \
@@ -33,8 +33,6 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Date::Parse \
                     Test::MockObject \
                     Text::TabularDisplay \
-                    Log::Dispatch::File \
-                    IO::CaptureOutput \
                     TIMB/DBI-1.636.tar.gz \
                     MIYAGAWA/Class-Trigger-0.15.tar.gz \
                     TMTM/Class-DBI-v3.0.17.tar.gz \
@@ -42,9 +40,11 @@ cpanm -l $PERLLIB MooseX::FollowPBP \
                     Proc::ProcessTable
 
 
-cpanm -l $PERLLIB --force Mail::Sendmail
+cpanm -l $PERLLIB --force Mail::Sendmail \
+                          DROLSKY/Log-Dispatch-2.70.tar.gz \
+                          Log::Dispatch::File
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PERL5LIB=$PERL5LIB:$atlasprodDir/perl_modules:$PERLLIB/lib/perl5" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
 
-patch ${PREFIX}/lib/perl5/5.26.2/perl_lib/lib/perl5/Class/DBI.pm ${RECIPE_DIR}/Class-DBI_last_insert.patch
+patch ${PREFIX}/lib/perl5/${perl_version}/perl_lib/lib/perl5/Class/DBI.pm ${RECIPE_DIR}/Class-DBI_last_insert.patch

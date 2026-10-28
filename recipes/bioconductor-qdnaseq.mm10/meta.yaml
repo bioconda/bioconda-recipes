@@ -1,39 +1,48 @@
-{% set version = "1.24.0" %}
+{% set version = "1.40.0" %}
 {% set name = "QDNAseq.mm10" %}
-{% set bioc = "3.14" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 8eee61f517fb5c014b0b850f0ba24726
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 85339d53a3e32fcede0b59e64e973548
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-qdnaseq.mm10", max_pin="x.x") }}'
   noarch: generic
+
 requirements:
   host:
-    - 'bioconductor-qdnaseq >=1.30.0,<1.31.0'
+    - bioconductor-qdnaseq >=1.46.0,<1.47.0
     - r-base
   run:
-    - 'bioconductor-qdnaseq >=1.30.0,<1.31.0'
+    - bioconductor-qdnaseq >=1.46.0,<1.47.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
   license: GPL
-  summary: 'Bin annotation mm10'
-  description: 'This package provides QDNAseq bin annotations for the mouse genome build mm10.'
+  summary: Bin annotation mm10
+  description: This package provides QDNAseq bin annotations for the mouse genome build mm10.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   parent_recipe:
     name: bioconductor-qdnaseq.mm10
