@@ -1,44 +1,40 @@
 {% set name = "vafator" %}
-{% set version = "2.2.2" %}
+{% set version = "3.0.0" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 2390443d1e51466c159abd8b7c58de1b13170a4ce90ea252dc6164c33215b34f
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: aacc929d8c995a34dd6195e29355cd6f1fa90903e877fcf2f1a09d64e4a4e325
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - vafator=vafator.command_line:annotator
-    - multiallelics-filter=vafator.command_line:multiallelics_filter
-    - vafator2decifer=vafator.command_line:vafator2decifer
-    - hatchet2bed=vafator.command_line:hatchet2bed
-  script: "{{ PYTHON }} -m pip install . -vv"
+    - vafator = vafator.command_line:annotator
+    - multiallelics-filter = vafator.command_line:multiallelics_filter
+    - vafator2decifer = vafator.command_line:vafator2decifer
+    - hatchet2bed = vafator.command_line:hatchet2bed
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage('vafator', max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - cyvcf2 >=0.30.14,<0.31
-    - pandas >=1.3.3,<1.4
+    - python >=3.11,<3.12
     - pip
-    - pysam >=0.19.1,<0.20
-    - python >=3.7,<=3.9
-    - pybedtools >=0.9.0,<0.10
-    - logzero >=1.7.0,<1.8
-    - scipy >=1.8.1,<1.9
   run:
-    - cyvcf2 >=0.30.14,<0.31
-    - pandas >=1.3.3,<1.4
-    - pysam >=0.19.1,<0.20
-    - python >=3.7,<=3.9
-    - pybedtools >=0.9.0,<0.10
-    - logzero >=1.7.0,<1.8
-    - scipy >=1.8.1,<1.9
+    - python >=3.11,<3.12
+    - pandas >=3.0.1
+    - pysam >=0.21.0
+    - cyvcf2 >=0.31,<0.32
+    - logzero >=1.7.0,<2
+    - pybedtools >=0.12.0,<0.13
+    - numpy >=2.4.3
+    - scipy >=1.17.1,<2
+    - setuptools
 
 test:
   imports:
@@ -59,7 +55,7 @@ about:
     alignment files. We implement a set of basic coverage annotations and also more sophisticated published 
     annotations used to assess the quality of every variant call."
   doc_url: "https://github.com/tron-bioinformatics/vafator"
-  dev_url: 
+  dev_url: "https://github.com/tron-bioinformatics/vafator"
 
 extra:
   recipe-maintainers:

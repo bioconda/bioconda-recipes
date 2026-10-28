@@ -1,15 +1,32 @@
 #!/bin/bash
-
 set -xe
 
-# Remove configure.ac C(XX)?FLAGS override
-sed -i.bak 's/ *CX\?X\?FLAGS/#\0/p' configure.ac
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -O3"
+
+case $(uname -m) in
+    aarch64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+	;;
+    arm64)
+	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+	;;
+esac
+
 # Remove MACOS_DEPLOYMENT_TARGET override
 sed -i.bak 's/MACOSX_DEPLOYMENT_TARGET=/#\0/' configure.ac
 sed -i.bak 's/export MACOSX_DEPLOYMENT_TARGET=/#\0/' src/Makefile.am
 
-export M4="$BUILD_PREFIX/bin/m4" 
-./autogen.sh
-./configure --prefix=$PREFIX
-make -j ${CPU_COUNT}
+rm -f *.bak src/*.bak
+
+autoreconf -if
+./configure --prefix="${PREFIX}" \
+	CXX="${CXX}" \
+	CXXFLAGS="${CXXFLAGS}" \
+	CPPFLAGS="${CPPFLAGS}" \
+	LDFLAGS="${LDFLAGS}" \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
+
+make ARFLAGS="rcs" -j"${CPU_COUNT}"
 make install
