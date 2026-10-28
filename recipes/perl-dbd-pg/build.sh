@@ -1,7 +1,9 @@
 #!/bin/bash
-
 set -o errexit -o pipefail
+
 export DBDPG_TEMPDIR=/tmp
+
+export LC_ALL="en_US.UTF-8"
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -14,7 +16,7 @@ elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
     make
-    make test
+    make test -j"${CPU_COUNT}"
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'

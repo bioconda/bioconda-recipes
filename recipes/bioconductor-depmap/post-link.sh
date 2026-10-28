@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "depmap-1.20.0"
+installBiocDataPackage.sh "depmap-1.24.0"

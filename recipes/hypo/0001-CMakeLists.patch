@@ -1,0 +1,98 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9d37981..62ea729 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,9 +19,9 @@ endif()
+ 
+ 
+ 
+-set(CMAKE_CXX_STANDARD 17)
++set(CMAKE_CXX_STANDARD 14)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+-set(CMAKE_CXX_EXTENSIONS ON)  # Compiler-specific features are not used.
++set(CMAKE_CXX_EXTENSIONS OFF)  # Compiler-specific features are not used.
+ 
+ # Output directories for binaries and libraries.
+ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+@@ -61,6 +61,15 @@ include_directories (
+ find_package(OpenMP REQUIRED)
+ find_package(ZLIB REQUIRED)
+ 
++if (OPENMP_FOUND)
++    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
++    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
++    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
++    message("Using OpenMP")
++else()
++    message(WARNING "OpenMP must be available to your compiler or it will be REALLLLLLLLLLY slow: ${CMAKE_C_COMPILER} ${CMAKE_CXX_COMPILER}")
++endif()
++
+ # Install External libs
+ 
+ if(CMAKE_BUILD_TYPE MATCHES Conda)
+diff --git a/external/spoa/CMakeLists.txt b/external/spoa/CMakeLists.txt
+index 2528666..7abfb0a 100644
+--- a/external/spoa/CMakeLists.txt
++++ b/external/spoa/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.2)
++cmake_minimum_required(VERSION 3.5)
+ project(spoa LANGUAGES CXX VERSION 3.0.0)
+ 
+ include(GNUInstallDirs)
+diff --git a/external/suk/external/sdsl-lite/CMakeLists.txt b/external/suk/external/sdsl-lite/CMakeLists.txt
+index 657949f..d6b8279 100644
+--- a/external/suk/external/sdsl-lite/CMakeLists.txt
++++ b/external/suk/external/sdsl-lite/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 2.8.11)
++cmake_minimum_required(VERSION 3.5)
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+ include(AppendCompilerFlags)
+ 
+diff --git a/external/suk/external/sdsl-lite/external/googletest/googletest/CMakeLists.txt b/external/suk/external/sdsl-lite/external/googletest/googletest/CMakeLists.txt
+index 36d0a9e..50941b8 100644
+--- a/external/suk/external/sdsl-lite/external/googletest/googletest/CMakeLists.txt
++++ b/external/suk/external/sdsl-lite/external/googletest/googletest/CMakeLists.txt
+@@ -45,7 +45,7 @@ endif()
+ # ${gtest_BINARY_DIR}.
+ # Language "C" is required for find_package(Threads).
+ project(gtest CXX C)
+-cmake_minimum_required(VERSION 2.6.4)
++cmake_minimum_required(VERSION 3.5)
+ 
+ if (COMMAND set_up_hermetic_build)
+   set_up_hermetic_build()
+diff --git a/external/suk/external/sdsl-lite/external/libdivsufsort/CMakeLists.txt b/external/suk/external/sdsl-lite/external/libdivsufsort/CMakeLists.txt
+index 571d0d9..20e2f4c 100644
+--- a/external/suk/external/sdsl-lite/external/libdivsufsort/CMakeLists.txt
++++ b/external/suk/external/sdsl-lite/external/libdivsufsort/CMakeLists.txt
+@@ -1,5 +1,5 @@
+ ### cmake file for building libdivsufsort Package ###
+-cmake_minimum_required(VERSION 2.4.4)
++cmake_minimum_required(VERSION 3.5)
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+ include(AppendCompilerFlags)
+ 
+diff --git a/external/suk/external/slog/CMakeLists.txt b/external/suk/external/slog/CMakeLists.txt
+index b5c459c..ac5a8d2 100644
+--- a/external/suk/external/slog/CMakeLists.txt
++++ b/external/suk/external/slog/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
++cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+ project(slog LANGUAGES CXX VERSION 1.0.0)
+ 
+ include(GNUInstallDirs)
+diff --git a/external/suk/external/slog/include/slog/Monitor.hpp b/external/suk/external/slog/include/slog/Monitor.hpp
+index e824127..6ab241f 100644
+--- a/external/suk/external/slog/include/slog/Monitor.hpp
++++ b/external/suk/external/slog/include/slog/Monitor.hpp
+@@ -21,6 +21,7 @@
+  */
+ #pragma once
+ #include <chrono>
++#include <string>
+ 
+ using TP = std::chrono::time_point<std::chrono::steady_clock>;
+ 

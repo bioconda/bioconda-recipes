@@ -1,28 +1,36 @@
-package:
-  name: collect_mgf
-  version: 1.0
+{% set name = "collect_mgf"  %}
 
-build:
-  number: 6
+package:
+  name: "collect_mgf"
+  version: "1.0"
 
 source:
   url: http://www.ms-utils.org/collect_mgf.c
   sha256: a6c85122d011b2794f18808e7057f00883143433b6564d7c3be0f61afd7f7e25 
 
+build:
+  number: 7
+  # sed: 1: "1i#include <unistd.h>": command i expects \ followed by text
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
 requirements:
   build:
     - {{ compiler('c') }}
-  host:
 
 test:
   commands:
     - collect_mgf
 
 about:
-  home: http://www.ms-utils.org/collect_mgf.c
+  home: "http://www.ms-utils.org/collect_mgf.c"
   license: GPL-3.0
-  summary: Collects MGF files and dd_results from an XMass setup_QDD.tcl experiment to a single MGF file.
+  summary: "Collects MGF files and dd_results from an XMass setup_QDD.tcl experiment to a single MGF file."
 
 extra:
   identifiers:
     - biotools:collect_mgf
+  additional-platforms:
+    - linux-aarch64
+    #- osx-arm64

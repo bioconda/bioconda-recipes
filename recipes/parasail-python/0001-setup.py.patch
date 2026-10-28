@@ -1,8 +1,16 @@
 diff --git a/setup.py b/setup.py
-index 4465048..fcf4451 100644
+index 4465048..5d954ea 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -239,6 +239,10 @@ def build_autotools(patch_m4=False):
+@@ -28,7 +28,6 @@ CLASSIFIERS = [
+     "Development Status :: 5 - Production/Stable",
+     "Intended Audience :: Science/Research",
+     "Natural Language :: English",
+-    "License :: OSI Approved :: BSD License",
+     "Operating System :: OS Independent",
+     "Programming Language :: C",
+     "Programming Language :: Python",
+@@ -239,6 +238,10 @@ def build_autotools(patch_m4=False):
              print("{} already exists! Skipping build.".format(binary))
          else:
              os.chdir(os.path.join(top,tdir))
@@ -13,7 +21,7 @@ index 4465048..fcf4451 100644
              CPPFLAGS=""
              if tool == 'm4' and patch_m4:
                  CPPFLAGS="CPPFLAGS=-D_IO_IN_BACKUP=0x100"
-@@ -265,12 +269,13 @@ def build_autotools(patch_m4=False):
+@@ -265,12 +268,13 @@ def build_autotools(patch_m4=False):
                  os.chdir(save_cwd)
                  return False
              print("making and installing {}".format(tool))
@@ -32,7 +40,7 @@ index 4465048..fcf4451 100644
                  print("make of {} failed".format(tool))
                  os.chdir(save_cwd)
                  return False
-@@ -324,14 +329,14 @@ def build_parasail(libname):
+@@ -324,14 +328,14 @@ def build_parasail(libname):
          # on OSX, homebrew perl might not support threading and automake
          # build will fail
          print('Prepending /usr/bin to PATH')
@@ -49,3 +57,37 @@ index 4465048..fcf4451 100644
              print("PATH={}".format(os.environ['PATH']))
              if not build_autotools():
                  if not build_autotools(True):
+@@ -344,11 +348,24 @@ def build_parasail(libname):
+ 
+     if find_file('config.status', parasail_root) is None:
+         print("configuring parasail in directory {}".format(parasail_root))
++        my_env = os.environ.copy()
+         retcode = subprocess.Popen([
+             './configure',
+             '--enable-shared',
+-            '--disable-static'
+-            ], cwd=parasail_root).wait()
++            '--disable-static',
++            '--disable-option-checking',
++            '--enable-silent-rules',
++            '--disable-dependency-tracking',
++            '--with-zlib',
++            "--libdir='$PREFIX/lib'",
++            "CC='$CC'",
++            "CFLAGS='$CFLAGS -O3'",
++            "CXX='$CXX'",
++            "CXXFLAGS='$CXXFLAGS -O3'",
++            "CPPFLAGS='$CPPFLAGS -I$PREFIX/include'",
++            "LDFLAGS='$LDFLAGS -L$PREFIX/lib'",
++            "PKG_CONFIG_PATH='$PREFIX/lib/pkgconfig'"
++            ], shell=True, env=my_env, cwd=parasail_root).wait()
+         if 0 != retcode:
+             raise RuntimeError("configure failed")
+     else:
+@@ -530,5 +547,6 @@ if __name__ == "__main__":
+         zip_safe=False,
+         classifiers=CLASSIFIERS,
+         install_requires=INSTALL_REQUIRES,
++        options={"bdist_wheel": {"universal": "1"}},
+     )
+ 

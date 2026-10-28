@@ -1,0 +1,47 @@
+{% set name = "mumu" %}
+{% set version = "1.1.4" %}
+{% set sha256 = "1b78df5d68898ed6c4c471cbc5f1f0662e24d2465bf206e0bc8521080b93df42" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/frederic-mahe/mumu/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True  # [win or (osx and x86_64)]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - mumu --version
+    - mumu --help
+    - test -f ${PREFIX}/share/man/man1/mumu.1
+
+about:
+  home: https://github.com/frederic-mahe/mumu
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Post-clustering curation of metabarcoding data (C++ reimplementation of lulu)"
+  description: |
+    mumu is a fast, stand-alone C++20 reimplementation of the R package lulu.
+    It performs post-clustering curation of amplicon-based metabarcoding data
+    by detecting spurious OTUs and merging them with their parent OTUs based
+    on co-occurrence patterns and sequence similarity.
+  dev_url: https://github.com/frederic-mahe/mumu
+  doc_url: https://github.com/frederic-mahe/mumu#readme
+
+extra:
+  recipe-maintainers:
+    - frederic-mahe
