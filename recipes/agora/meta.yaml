@@ -1,0 +1,40 @@
+{% set name = "agora" %}
+{% set version = "3.1" %}
+{% set commit = "f9dd78faab145bacb1808ed468b37c3cfb84fadd" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DyogenIBENS/Agora/archive/{{ commit }}.tar.gz
+  sha256: d1ca8bdd15f1654df42c21aaecc5831fa465abb550b81297d99a45dc6ca44888
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.5
+    - psutil
+
+test:
+  commands:
+    - agora-basic.py 2>&1 | grep "Not enough arguments"
+    - ALL.extractGeneFamilies.py "$PREFIX/share/agora/example/data/Species.nwk" "$PREFIX/share/agora/example/data/GeneTreeForest.nhx.bz2" "-OUT.ancGenesFiles=/tmp/agora_test.%s.list.bz2" > /dev/null
+
+about:
+  home: https://github.com/DyogenIBENS/Agora
+  license: GPL-3.0-or-later OR CeCILL-2.0
+  license_file:
+    - LICENSE-GPL3.txt
+    - LICENSE-CeCILL2.txt
+  summary: "AGORA: Algorithm for Gene Order Reconstruction in Ancestors"
+  doc_url: https://github.com/DyogenIBENS/Agora/blob/master/doc/HowTo.md
+
+extra:
+  identifiers:
+    - doi:10.1038/s41559-022-01956-z

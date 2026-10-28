@@ -1,39 +1,49 @@
-{% set version = "1.0.1.1" %}
+{% set version = "2.2.2.1" %}
+
 package:
   name: poseidon-xerxes
   version: {{ version }}
 
+# documentation of preprocessing selectors:
+# https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
 source:
-  - url: https://github.com/poseidon-framework/poseidon-analysis-hs/releases/download/v{{ version }}/xerxes-conda-linux # [linux]
-    md5: c1165839313a768ac12d1c8dbe7b2f0a # [linux]
-  - url: https://github.com/poseidon-framework/poseidon-analysis-hs/releases/download/v{{ version }}/xerxes-macOS-X64 # [osx]
-    md5: f101c7d0448b486b86edc259c7838a92 # [osx]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/xerxes-conda-linux # [linux]
+    sha256: 9ce116df9b642094d28e2b8cd52c40a0f0bbe2e93b795f7dbd973ac40271eca3 # [linux]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/xerxes-macOS-X64 # [osx and x86_64]
+    sha256: 3884e49d85167867fc2ad3661560f8003cf3e5768bef47473709431e5d05d63c # [osx and x86_64]
+  - url: https://github.com/poseidon-framework/poseidon-hs/releases/download/v{{ version }}/xerxes-macOS-ARM64 # [osx and arm64]
+    sha256: e688c0acc88f3aac47add484cfe139de636e37aac4a96d4ea06bb6361ba0061c # [osx and arm64]
 
 build:
-  number: 1
-  script:
-    - "mkdir -p $PREFIX/bin"
-    - "mv xerxes* $PREFIX/bin/xerxes"
-    - "chmod u+x $PREFIX/bin/xerxes"
+  number: 0
   run_exports:
-    - {{ pin_subpackage("poseidon-xerxes", max_pin=None) }}
+    - {{ pin_subpackage('poseidon-xerxes', max_pin=None) }}
 
 requirements:
   build:
     # Precompiled binaries still link against libgcc
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
     - gmp
   run:
-    - zlib
+    - ca-certificates
     - gmp
 
 test:
   commands:
-      - xerxes --version
+     - xerxes --version
 
 about:
-  home: https://www.poseidon-adna.org/#/
+  home: "https://www.poseidon-adna.org/#"
   license: MIT
+  license_family: MIT
   summary: "A tool (xerxes) to analyse genotype databases formatted using Poseidon."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.7554/eLife.98317.1
