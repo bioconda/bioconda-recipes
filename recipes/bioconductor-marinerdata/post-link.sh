@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "marinerdata-1.6.0"
+installBiocDataPackage.sh "marinerdata-1.10.0"

@@ -1,17 +1,18 @@
 {% set name = "phispy" %}
 {% set ucname = "PhiSpy" %}
-{% set version = "4.2.21" %}
+{% set version = "5.0.10" %}
+{% set sha256 = "8329fa472b84e150b3ef59b9388830f238dc69b290af2a1ea95567dde29ec6f8" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ ucname }}-{{ version }}.tar.gz
-  sha256: 1dc3ec45c15328577557908517254d8e4ba152416f0e6bbad39e965b86730e28
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 8
+  number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
@@ -19,12 +20,16 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - pkg-config
   host:
     - pip
     - python
+    - setuptools
+    - wheel
+    - numpy
   run:
-    - biopython <=1.81
+    - biopython
     - numpy
     - python
     - hmmer

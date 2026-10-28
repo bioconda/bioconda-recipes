@@ -1,33 +1,39 @@
 {% set name = "eigensoft" %}
-{% set version = "8.0.0" %}
+{% set version = "9.0.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/DReichLab/EIG/archive/v{{ version }}.tar.gz
-  sha256: e3459e8ac0134da369910454854eae5c7b261e8816318ccbd2d371b4c6c35741
+  sha256: 6b9535115f3f37045a721a9ec630b39eec4d4e84fba8b4a753731a284ff05587
   patches:
     - 0001-Add-gfortran-to-LDLIBS.patch
-    - 0002-replace-finite.patch
-    - 0003-remove-wrong-cflag.patch  # [osx]
+    - 0002-remove-wrong-cflag.patch
+    - 0003-macos.patch  # [osx]
 
 build:
-  number: 6
+  number: 0
+  # v9.0.0 is for linux only according to changelog
+  skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage('eigensoft', max_pin='x.x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - gsl
     - openblas
+    - liblapack
+    - argp-standalone  # [osx]
   run:
     - gsl
     - openblas
+    - argp-standalone  # [osx]
     - perl
 
 test:
@@ -38,10 +44,12 @@ test:
     - which mergeit
 
 about:
-  home: https://github.com/DReichLab/EIG
-  license: Custom OSS
-  license_file: LICENSE.txt
-  summary: The EIGENSOFT package implements methods for analzing population structure and performing stratification correction
+  home: "https://github.com/DReichLab/EIG"
+  license: "Custom OSS"
+  license_file: "LICENSE.txt"
+  summary: "The EIGENSOFT package implements methods for analyzing population structure and performing stratification correction."
+  dev_url: "https://github.com/DReichLab/EIG"
+  doc_url: "https://github.com/DReichLab/EIG/blob/v{{ version }}/README"
 
 extra:
   additional-platforms:
