@@ -1,0 +1,80 @@
+{% set name = "metabolic-cg" %}
+{% set version = "4.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AndaMM/METABOLIC/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 699d21d958211ec732d3b073c1a75e2c8f79fffb81109ed1f678079034875560
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - perl-bioperl-core
+    - perl-parallel-forkmanager
+    - perl-statistics-descriptive
+    - python
+    - r-base
+    - r-diagram
+    - r-dplyr
+    - r-forcats
+    - r-ggalluvial
+    - r-ggraph
+    - r-ggthemes
+    - r-igraph
+    - r-openxlsx
+    - r-plyr
+    - r-stringr
+    - r-tidygraph
+    - r-tidyverse
+    - hmmer >=3.1b2     # hmmer 2.x lacks --tblout/--domtblout/--cpu
+    - prodigal
+    - diamond >=2.0     # 0.9.x cannot read DIAMOND 2.x databases
+    - bowtie2
+    - minimap2 >=2.19   # map-hifi preset first appears in 2.19
+    - samtools >=1.0    # exclude pre-htslib 0.1.x
+    - sambamba
+    - coverm
+    - curl
+    - tar
+    - gzip
+    - coreutils
+    - sed
+    - grep
+    - gawk
+
+test:
+  commands:
+    - METABOLIC-G.pl -v
+    - METABOLIC-C.pl -v
+    - METABOLIC-C.2nd_run.pl -v
+    - perl -MBio::SeqIO -MBio::Tools::CodonTable -MParallel::ForkManager -MStatistics::Descriptive -e 1
+    - Rscript -e 'for (p in c("openxlsx","diagram","ggraph","igraph","tidyverse","tidygraph","ggalluvial","ggthemes","forcats","stringr","plyr","dplyr")) library(p, character.only = TRUE)'
+
+about:
+  home: https://github.com/AndaMM/METABOLIC
+  dev_url: https://github.com/AndaMM/METABOLIC
+  doc_url: https://github.com/AndaMM/METABOLIC#readme
+  license: GPL-3.0-or-later
+  license_family: GPL
+  license_file: LICENSE
+  summary: Metabolic and biogeochemical functional trait profiler (maintained fork)
+  description: |
+    Maintained fork of AnantharamanLab/METABOLIC.
+    Changes: configurable database directory, -download-db setup mode, GTDB-Tk
+    decoupled (-gtdbtk-dir required for METABOLIC-C), bug fixes. See CHANGELOG
+    on https://github.com/AndaMM/METABOLIC.
+
+extra:
+  identifiers:
+    - doi:10.1186/s40168-021-01213-8
+  recipe-maintainers:
+    - AndaMM

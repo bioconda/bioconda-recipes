@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
-# conda-build entry point. Kept separate from the inline script in meta.yaml so
-# the same steps work when building from a local checkout.
 set -euo pipefail
 
-mkdir -p "${PREFIX}/bin"
-
 make -j"${CPU_COUNT:-4}" CXX="${CXX:-g++}"
-
-install -v -m 0755 tesseract-asm "${PREFIX}/bin"
-install -v -m 0755 tesseract-model "${PREFIX}/bin"
-install -v -m 0755 tesseract-klebsiella "${PREFIX}/bin"
+# Since 1.6.1 the project defines its install layout once, in `make install`: the user command
+# `tesseract` in bin/, its engine and model fetcher (with the fetcher's checksum list) in
+# libexec/tesseract/, and the organism-detection sketch in share/tesseract/.
+make install PREFIX="${PREFIX}"
