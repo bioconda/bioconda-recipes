@@ -1,22 +1,24 @@
-{% set version = "1.0.0" %}
+{% set version = "1.0.1" %}
 
 package:
   name: crussmap
   version: {{ version }}
 
-build:
-  number: 2
-  skip: True  # [win]
-
 source:
-  url: https://github.com/wjwei-handsome/crussmap/archive/{{ version }}.tar.gz
-  sha256: 8307fd2d9a3235e8cf4aa016fa0843f0cb2d4c46eb8901b974f5f66bce3f367a
+  url: https://github.com/wjwei-handsome/crussmap/archive/636b203a51eea6ce8b0524681dd599ae5f28fefc.tar.gz
+  sha256: 3131b762c8403e7ddc307f4626cb68488f6000325985ca83d730d81906ff89df
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('crussmap', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - rust >=1.6
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
     - clangdev
     - pkg-config
     - make
@@ -26,7 +28,6 @@ requirements:
     - libcblas
     - openssl
 
-
 test:
   commands:
     - crussmap -h
@@ -34,10 +35,17 @@ test:
     - crussmap bed -h
 
 about:
-  home: https://github.com/wjwei-handsome/crussmap
+  home: "https://github.com/wjwei-handsome/crussmap"
   license: MIT
-  summary: |
-    crussmap is a faster tool to convert genome coordinates between difference reference assemblies.
+  license_family: MIT
+  license_file: LICENSE
+  summary: "crussmap is a faster tool to convert genome coordinates between difference reference assemblies."
+  dev_url: "https://github.com/wjwei-handsome/crussmap"
+  doc_url: "https://crates.io/crates/crussmap"
+
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - wenjiewei
