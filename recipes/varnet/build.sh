@@ -16,3 +16,9 @@ cat << EOF > $PREFIX/bin/varnet-filter
 python $TARGET/filter.py "\$@"
 EOF
 chmod +x $PREFIX/bin/varnet-filter
+
+cat << EOF > $PREFIX/bin/varnet-download-resources
+#!/bin/bash
+bash $TARGET/download_resources.sh "\$@"
+EOF
+chmod +x $PREFIX/bin/varnet-download-resources
