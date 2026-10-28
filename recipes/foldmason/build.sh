@@ -2,7 +2,7 @@
 
 ARCH_BUILD=""
 case $(uname -m) in
-    x86_64) ARCH_BUILD="-DHAVE_SSE4_1=1" ;;
+    x86_64) ARCH_BUILD="-DHAVE_AVX2=1" ;;
     arm64|aarch64) ARCH_BUILD="-DHAVE_ARM8=1" ;;
 esac
 
