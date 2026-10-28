@@ -1,0 +1,38 @@
+{% set version = "1.4.0" %}
+
+package:
+  name: ont-dorado
+  version: {{ version }}
+
+source:
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-x64.tar.gz  # [linux and x86_64]
+    sha256: ea15250d911c6b6efdb21cc142008b2be8a5c781c8b0a4593b82f27b07385731  # [linux and x86_64]
+  # aarch64 is missing libcublase, which needs a newer glibc than we ship currently
+  #- url: https://cdn.oxfordnanoportal.com/software/analysis/dorado-{{ version }}-linux-arm64-cuda-13.0.tar.gz  # [linux and aarch64]
+  #  sha256: 18c83c06d8913697a134e7f3ba03e810a80a83ccd53974d2899cbb39b8874d44  # [linux and aarch64]
+
+build:
+  number: 0
+  skip: true  # [osx]
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage("ont-dorado", max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - zlib
+    - libcublas 13 # [linux and aarch64]
+
+test:
+  commands:
+    - dorado basecaller --help
+
+about:
+  home: https://github.com/nanoporetech/dorado
+  license: LicenseRef-ONT-Public-License-1.0
+  license_file: LICENCE.txt
+  summary: Oxford Nanopore's Basecaller
