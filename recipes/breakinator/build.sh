@@ -10,5 +10,5 @@ export LIBZ_SYS_STATIC=0
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH:-}"
 
 # --- 2. Build & Install ---
-cargo install --path breakinator --root "${PREFIX}" --no-track --verbose
+cargo install --locked --path breakinator --root "${PREFIX}" --no-track --verbose
 
