@@ -1,4 +1,7 @@
 #!/bin/bash
-make CC=$CC CXX=$CXX 
+
+set -xe
+
+make -j ${CPU_COUNT} CC=$CC CXX=$CXX 
 mkdir -p $PREFIX/bin
 cp squigulator $PREFIX/bin/squigulator

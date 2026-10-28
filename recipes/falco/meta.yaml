@@ -1,44 +1,50 @@
-{% set version = "1.2.3" %}
+{% set name = "falco" %}
+{% set version = "2.0.3" %}
 
 package:
-  name: falco
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 1
-  run_exports:
-    # falco is currently not intended to be stable between minor versions (x.x).
-    - {{ pin_subpackage('falco', max_pin="x.x") }}
-
-
 source:
-  url: https://github.com/smithlabcode/falco/releases/download/v{{ version }}/falco-{{ version }}.tar.gz
-  sha256: b2d4da736efecfa669ad555fbb69862bc7fb57dcf32efcb6c151c47f98b32b8a
+  url: https://github.com/smithlabcode/falco/releases/download/v{{ version }}/{{ name }}-{{ version }}-Source.tar.gz
+  sha256: 3d319f0201cddab42e0fc58c527710eacf8213d64ef678604ca21bab211f8c53
+
+build:
+  number: 0
+  # requires clang >=22
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
-    - autoconf
-    - automake
+    - cmake
+    - pkg-config
+    - clangdev >=22  # [osx]
   host:
     - zlib
     - htslib
+    - isa-l  # [not arm64]
   run:
-    - zlib
     - htslib
-
-about:
-  home: https://github.com/smithlabcode/falco
-  license: GPL-3.0-only
-  license_file: LICENSE
-  summary: |
-    falco is a drop-in C++ implementation of FastQC to assess the quality of sequence reads.
-  doc_url: 'https://falco.readthedocs.io/'
+    - isa-l  # [not arm64]
 
 test:
   commands:
-    - falco
+    - falco --help
+    - falco --version
+
+about:
+  home: "https://github.com/smithlabcode/falco"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "falco is a drop-in C++ implementation of FastQC to assess the quality of sequence reads."
+  doc_url: "https://falco.readthedocs.io"
+  dev_url: "https://github.com/smithlabcode/falco"
 
 extra:
   additional-platforms:
@@ -47,3 +53,7 @@ extra:
   recipe-maintainers:
     - andrewdavidsmith
     - guilhermesena1
+  identifiers:
+    - biotools:falco
+    - usegalaxy-eu:falco
+    - doi:10.12688/f1000research.21142.2

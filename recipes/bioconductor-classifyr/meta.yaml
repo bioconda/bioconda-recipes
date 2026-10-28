@@ -1,34 +1,45 @@
-{% set version = "3.6.2" %}
+{% set version = "3.14.0" %}
 {% set name = "ClassifyR" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 002678b6aeace9d7967b87654547a4f3
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 3eb933f3595f4b4eabdbe575e0d264a6
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-classifyr", max_pin="x.x") }}'
-# Suggests: limma, edgeR, car, Rmixmod, gridExtra (>= 2.0.0), cowplot, BiocStyle, pamr, PoiClaClu, parathyroidSE, knitr, htmltools, gtable, scales, e1071, rmarkdown, IRanges, robustbase, glmnet, class, randomForestSRC, MatrixModels, xgboost, data.tree, ggnewscale
+
+# Suggests: limma, edgeR, car, Rmixmod, gridExtra (>= 2.0.0), cowplot, BiocStyle, pamr, PoiClaClu, knitr, htmltools, gtable, scales, e1071, rmarkdown, IRanges, robustbase, glmnet, class, randomForestSRC, MatrixModels, xgboost, data.tree, ggnewscale, TOP, BiocNeighbors
 requirements:
+
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
   host:
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
-    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-dcanr >=1.26.0,<1.27.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
+    - r-broom
     - r-dplyr
     - r-generics
-    - 'r-ggplot2 >=3.0.0'
+    - r-ggplot2 >=3.5.0
     - r-ggpubr
     - r-ggupset
     - r-ranger
@@ -38,15 +49,20 @@ requirements:
     - r-tidyr
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
+
   run:
-    - 'bioconductor-biocparallel >=1.36.0,<1.37.0'
-    - 'bioconductor-genefilter >=1.84.0,<1.85.0'
-    - 'bioconductor-multiassayexperiment >=1.28.0,<1.29.0'
-    - 'bioconductor-s4vectors >=0.40.0,<0.41.0'
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-dcanr >=1.26.0,<1.27.0
+    - bioconductor-genefilter >=1.92.0,<1.93.0
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
     - r-base
+    - r-broom
     - r-dplyr
     - r-generics
-    - 'r-ggplot2 >=3.0.0'
+    - r-ggplot2 >=3.5.0
     - r-ggpubr
     - r-ggupset
     - r-ranger
@@ -54,19 +70,18 @@ requirements:
     - r-rlang
     - r-survival
     - r-tidyr
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'A framework for cross-validated classification problems, with applications to differential variability and differential distribution testing'
-  description: 'The software formalises a framework for classification and survival model evaluation in R. There are four stages; Data transformation, feature selection, model training, and prediction. The requirements of variable types and variable order are fixed, but specialised variables for functions can also be provided. The framework is wrapped in a driver loop that reproducibly carries out a number of cross-validation schemes. Functions for differential mean, differential variability, and differential distribution are included. Additional functions may be developed by the user, by creating an interface to the framework.'
+  summary: A framework for cross-validated classification problems, with applications to differential variability and differential distribution testing
+  description: The software formalises a framework for classification and survival model evaluation in R. There are four stages; Data transformation, feature selection, model training, and prediction. The requirements of variable types and variable order are fixed, but specialised variables for functions can also be provided. The framework is wrapped in a driver loop that reproducibly carries out a number of cross-validation schemes. Functions for differential mean, differential variability, and differential distribution are included. Additional functions may be developed by the user, by creating an interface to the framework.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:classifyr

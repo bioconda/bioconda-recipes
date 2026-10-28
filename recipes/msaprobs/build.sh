@@ -1,6 +1,18 @@
-#! /bin/bash
+#!/bin/bash
 
-mkdir -p $PREFIX/bin
-pushd MSAProbs
+mkdir -p "$PREFIX/bin"
+
+cd MSAProbs
+
+case $(uname -m) in
+    aarch64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8-a|' Makefile && rm -f *.bak
+	;;
+    arm64)
+	sed -i.bak 's|-march=x86-64-v3|-march=armv8.4-a|' Makefile && rm -f *.bak
+	;;
+esac
+
 make all
-cp msaprobs $PREFIX/bin/msaprobs
+
+install -v -m 0755 msaprobs "$PREFIX/bin"

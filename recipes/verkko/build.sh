@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+mkdir -p "$PREFIX/bin"
+
 # taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
 if [ "$(uname)" == "Darwin" ]; then
 
@@ -8,12 +10,23 @@ if [ "$(uname)" == "Darwin" ]; then
     export HOME=`pwd`
     echo "HOME is $HOME"
     mkdir -p $HOME/.cargo/registry/index/
+    
+    export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
 fi
 
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -O3"
+export CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include"
+# this is defaulted to system type (e.g. x86_64-unknown-linux-gnu) which breaks subsequent copy makefile as it wants just rukki/target/release/rukki not rukki/target/x86_64-unknown-linux-gnu/release/target
+unset CARGO_BUILD_TARGET
+
+# on osx we remove the built-in boost and make sure todepend on the system boost
 pushd src
+if [ "$(uname)" == "Darwin" ]; then
+   rm -rf ./canu/src/utgcns/libboost/
+fi
 make clean && make -j$CPU_COUNT
 popd
 
-mkdir -p "$PREFIX/bin"
 cp -rf bin/* $PREFIX/bin/
 cp -rf lib/* $PREFIX/lib/

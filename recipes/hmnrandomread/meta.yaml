@@ -1,45 +1,59 @@
 {% set name = "hmnrandomread" %}
-{% set version = "0.10.0" %}
+{% set version = "0.13.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/guillaume-gricourt/HmnRandomRead/archive/{{ version }}.tar.gz 
-  sha256: dc589ef91be1a4c5694aad3e34a4cd0b1818c131b03153e76634f01ed0719854
+  url: https://github.com/guillaume-gricourt/HmnRandomRead/archive/{{ version }}.tar.gz
+  sha256: 2a3ff155ed81b9d7e835e56ae910179c2751d302a56d3ae2a87a9eff8c094b19
 
 build:
-  number: 3
-  skip: true [osx]
+  number: 0
+  script:
+    - export LIBCLANG_PATH="$BUILD_PREFIX/lib"
+    - cargo bundle-licenses --format yaml --output THIRDPARTY.yaml
+    - cargo install -v --locked --no-track --profile=release --root $PREFIX --path .
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - clang
+    - libclang
     - make
-    - {{ compiler('cxx') }}
-    - htslib
+    - perl
+    - pkg-config
+    - cargo-bundle-licenses
   host:
-    - htslib
+    - zlib
+    - curl
+    - openssl
   run:
-    - python
-    - pytest
-    - htslib
+    - openssl
 
 test:
-  source_files:
-    - Makefile
   commands:
-    - which HmnRandomRead
-  requires:
-    - make
+    - HmnRandomRead version
 
 about:
-  home: https://github.com/guillaume-gricourt/HmnRandomRead
-  summary: A sequence-read simulator program for NGS
-  description: A sequence-read simulator program for NGS
+  home: "https://github.com/guillaume-gricourt/HmnRandomRead"
+  summary: "A sequence-read simulator program for NGS."
+  description: "A sequence-read simulator program for NGS."
   license: MIT
-  license_file: LICENSE
+  license_family: MIT
+  license_file: 
+    - LICENSE
+    - "THIRDPARTY.yaml"
+  dev_url: "https://github.com/guillaume-gricourt/HmnRandomRead"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - guillaume-gricourt

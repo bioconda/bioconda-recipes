@@ -1,17 +1,19 @@
-{% set version = "1.24.0" %}
+{% set version = "1.32.0" %}
 {% set name = "zFPKM" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: a167e99447d7fd6b5081152a7d4472a4
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 76ea02fc47fe715109c89972d5db266f
+
 build:
   number: 0
   rpaths:
@@ -19,31 +21,35 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-zfpkm", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: knitr, limma, edgeR, GEOquery, stringr, printr, rmarkdown
 requirements:
   host:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-checkmate
     - r-dplyr
     - r-ggplot2
     - r-tidyr
   run:
-    - 'bioconductor-summarizedexperiment >=1.32.0,<1.33.0'
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
     - r-base
     - r-checkmate
     - r-dplyr
     - r-ggplot2
     - r-tidyr
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL-3 | file LICENSE'
-  summary: 'A suite of functions to facilitate zFPKM transformations'
-  description: 'Perform the zFPKM transform on RNA-seq FPKM data. This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID 24215113). Reference recommends using zFPKM > -3 to select expressed genes. Validated with encode open/closed chromosome data. Works well for gene level data using FPKM or TPM. Does not appear to calibrate well for transcript level data.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 | file LICENSE
+  summary: A suite of functions to facilitate zFPKM transformations
+  description: Perform the zFPKM transform on RNA-seq FPKM data. This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID 24215113). Reference recommends using zFPKM > -3 to select expressed genes. Validated with encode open/closed chromosome data. Works well for gene level data using FPKM or TPM. Does not appear to calibrate well for transcript level data.
   license_file: LICENSE
+
 extra:
   parent_recipe:
     name: bioconductor-zfpkm

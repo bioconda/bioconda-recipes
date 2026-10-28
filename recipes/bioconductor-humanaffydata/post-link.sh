@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "humanaffydata-1.28.0"
+installBiocDataPackage.sh "humanaffydata-1.36.0"
