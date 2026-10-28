@@ -1,0 +1,81 @@
+{% set name = "remeta" %}
+{% set version = "0.11.2" %}
+{% set sha256 = "83b185d599643ba90511e8489f0b65e2cbe025ecd1267c2ac48d5fbed4248dce" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rgcgithub/remeta/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patches/use-conda-shared-libs.patch
+
+build:
+  number: 0
+  skip: true  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - cmake
+    - make
+    - binutils  # [linux]
+
+  host:
+    - eigen
+    - htslib
+    - libdeflate
+    - libboost-devel
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - openssl
+    - libopenblas
+    - liblapack
+    - liblapacke
+    - libgomp  # [linux]
+
+  run:
+    - htslib
+    - libboost
+    - libdeflate
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+    - openssl
+    - libopenblas
+    - liblapack
+    - liblapacke
+    - libgomp  # [linux]
+
+test:
+  commands:
+    - remeta --version > /dev/null
+
+about:
+  home: https://rgcgithub.github.io/remeta/
+  dev_url: https://github.com/rgcgithub/remeta
+  doc_url: https://rgcgithub.github.io/remeta/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Meta-analysis of single variants and gene-based tests using REGENIE summary statistics.
+  description: |
+    remeta is a collection of C++ programs for meta-analysis of single
+    variants and gene-based tests using summary statistics from regenie.
+    It supports effect-size meta-analysis, p-value meta-analysis, burden,
+    SKATO, ACATV, LD matrix construction, and annotation indexing.
+
+extra:
+  recipe-maintainers:
+    - james-edward-hart
+  identifiers:
+    - doi:10.1038/s41588-025-02390-0
