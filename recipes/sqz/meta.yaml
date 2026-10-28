@@ -1,0 +1,43 @@
+{% set name = "sqz" %}
+{% set version = "0.2.2" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version | replace('-', '.') }}
+
+source:
+  url: https://github.com/codialab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 40f3996f0ea456a76ca64e2c476b44bb8cac61afa4beffe7ba619e7ad081f5a0
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - sqz --help
+
+about:
+  home: https://github.com/codialab/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "sqz is a tool for compressing and decompressing path annotations in GFA files."
+  dev_url: https://githubcom/codialab/{{ name }}
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  recipe-maintainers:
+    - heringerp
+  skip-lints:
+    - compiler_needs_stdlib_c
