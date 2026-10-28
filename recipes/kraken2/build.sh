@@ -16,6 +16,10 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
 
+# install_kraken2.sh substitutes VERSION into each script's --version output,
+# and upstream doesn't always update it on release.
+echo "${PKG_VERSION}" > VERSION
+
 ./install_kraken2.sh "${outdir}/libexec"
 
 for bin in kraken2 kraken2-build kraken2-inspect k2; do
