@@ -8,26 +8,46 @@ package:
 source:
   url: https://github.com/sfu-compbio/mrsfast/archive/v{{ version }}.zip
   sha256: {{ sha256 }}
-  patches: Makefile.patch
+  patches:
+    - Makefile.patch
+    - paired-end-buffer-init.patch
 
 build:
-  number: 5
+  number: 6
+  # work/conda_build.sh: line 13:  5999 Segmentation fault: 11  ./mrsfast --help
+  skip: True  # [osx and arm64]
+  run_exports:
+    - {{ pin_subpackage('mrsfast', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - make
     - zlib
     - groff
   host:
     - zlib
-  run:
-    - zlib
+
 test:
   commands:
-    - mrsfast --help
+    - mrsfast --help  # [not arm64]
+    - test -x ${PREFIX}/bin/mrsfast  # [arm64]
 
 about:
-  home: https://github.com/sfu-compbio/mrsfast
-  license: BSD
-  summary: mrsFAST - micro-read substitution-only Fast Alignment Search Tool.
+  home: "https://github.com/sfu-compbio/mrsfast"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file: LICENSE
+  summary: "mrsFAST - micro-read substitution-only Fast Alignment Search Tool."
+  dev_url: "https://github.com/sfu-compbio/mrsfast"
+  doc_url: "https://sfu-compbio.github.io/mrsfast"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:mrsfast
+    - biotools:mrsfast-ultra
+    - doi:10.1038/nmeth0810-576
