@@ -22,6 +22,8 @@ if [[ "$(uname -m)" == "arm64" ]]; then
 	cd ..
 fi
 
+
+
 echo "--- NIM BUILD ---"
 nim --version
 echo "----------"
@@ -31,6 +33,13 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
  	sed -i.bak 's|gcc|$(CC)|' Makefile
 	sed -i.bak 's|g++|$(CXX)|' Makefile
 	rm -rf *.bak
+	# Reserve Mach-O header padding so conda-build's install_name_tool can
+    # rewrite rpaths at packaging time. Nim doesn't honour $LDFLAGS, so we
+    # inject it via nim.cfg. Fixes the "larger updated load commands do not
+    # fit" error on fu-sw (and prevents recurrence on other Nim binaries).
+    cat >> nim.cfg <<'EOF'
+passL:"-Wl,-headerpad_max_install_names"
+EOF
 else
 	# Trying to fix build when gcc or g++ are required
 	echo "LINUX: Patching Makefile"

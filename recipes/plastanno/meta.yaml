@@ -1,5 +1,5 @@
 {% set name = "plastanno" %}
-{% set version = "2.0.0" %}
+{% set version = "3.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/maidinhvn/plastanno/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 092762cdc9b93ef769566615ca1901ce41437200625fac413a07db1af886c77f
+  sha256: fabd1459b6be8df1828f504796b87c6377a3ac02861650ea78124bdbb9a16553
 
 build:
   noarch: python
@@ -15,8 +15,6 @@ build:
   run_exports:
     - {{ pin_subpackage("plastanno", max_pin="x") }}
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
-  entry_points:
-    - plastanno = plastanno.cli:main
 
 requirements:
   host:
@@ -29,11 +27,15 @@ requirements:
     - pandas
     - matplotlib-base
     - platformdirs
+    - numpy
+    - scipy
     - blast
     - exonerate
     - hmmer
     - aragorn
-    - trnascan-se        # only used by the optional --trnascan tRNA source
+    # Required from 3.0.0: the default --trna-mode is `hybrid`, and the
+    # pipeline checks for the binary before it starts work.
+    - trnascan-se
 
 test:
   imports:
