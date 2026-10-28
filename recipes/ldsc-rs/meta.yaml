@@ -1,0 +1,52 @@
+{% set name = "ldsc-rs" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sharifhsn/ldsc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 83110eabcb83f509ac6c0af7744a663c9f279a696c287fa57f9d7f9eb3822376
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - ldsc --version | grep -F "{{ version }}"
+    - ldsc --help | grep -F "LD Score Regression"
+    - ldsc h2 --help | grep -F -- "--h2"
+
+about:
+  home: https://github.com/sharifhsn/ldsc
+  dev_url: https://github.com/sharifhsn/ldsc
+  doc_url: https://github.com/sharifhsn/ldsc/blob/v{{ version }}/README.md
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast Rust reimplementation of LD Score Regression (LDSC)
+  description: |
+    ldsc-rs is a compiled Rust reimplementation of Bulik-Sullivan et al.'s
+    LD Score Regression (LDSC): SNP heritability (h2), genetic correlation
+    (rg), LD score computation (l2), summary-statistics munging and
+    annotation building. The installed binary is named `ldsc` and also
+    accepts the original Python LDSC flag syntax (--h2, --rg, --l2).
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - lyh970817
