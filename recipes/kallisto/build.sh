@@ -15,24 +15,28 @@ case $(uname -m) in
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
     x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+	# removed: -march=x86-64-v3 required AVX2 and defeated the
+	# -DENABLE_AVX2=OFF -DCOMPILATION_ARCH=OFF passed to bifrost
+	# below via ARCH_OPTS. See bioconda/bioconda-recipes#42633.
 	;;
 esac
 
+# Required for '-DUSE_BAM=ON'.
 cd ext/htslib || exit 1
 autoreconf -if
 ./configure
+make -j${CPU_COUNT}
 cd ../.. || exit 1
 
 case $(uname -m) in
     x86_64)
-	ARCH_OPTS="-DENABLE_AVX2=OFF -DCOMPILATION_ARCH=OFF"
+	ARCH_OPTS='-DENABLE_AVX2=OFF -DCOMPILATION_ARCH=OFF'
 	;;
     aarch64)
-	ARCH_OPTS="-DCOMPILATION_ARCH=OFF"
+	ARCH_OPTS='-DCOMPILATION_ARCH=OFF'
 	;;
     arm64)
-	ARCH_OPTS="-DCOMPILATION_ARCH=ON"
+	ARCH_OPTS='-DCOMPILATION_ARCH=ON'
 	;;
     *)
 	;;
@@ -53,11 +57,13 @@ cmake -S . -B build -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_CXX_STANDARD_LIBRARIES='-lhdf5 -lbz2 -llzma -lcurl -lcrypto -lpthread' \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
 	-DUSE_HDF5=ON -DUSE_BAM=ON -DBUILD_FUNCTESTING=ON -DMAX_KMER_SIZE=64 \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${ARCH_OPTS}" \
+	${ARCH_OPTS} \
 	"${CONFIG_ARGS}"
 
 cmake --build build --clean-first --target install

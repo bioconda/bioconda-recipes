@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "sampleclassifierdata-1.30.0"
+installBiocDataPackage.sh "sampleclassifierdata-1.34.0"

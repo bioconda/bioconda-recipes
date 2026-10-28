@@ -1,32 +1,25 @@
-{% set version = "1.30.0" %}
+{% set version = "1.32.0" %}
 {% set name = "motifmatchr" %}
-{% set bioc = "3.21" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: Quickly find motif matches for many motifs and many sequences. Wraps C++ code from the MOODS motif calling library, which was developed by Pasi Rastas, Janne Korhonen, and Petri Martinmäki.
-  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
-  license: "GPL-3.0-or-later"
-  license_family: GPL3
-  license_file: LICENSE
-  summary: "Fast Motif Matching in R."
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 3287cf01b93c9965ea1875a273fc6c48
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: {{ pin_subpackage('bioconductor-motifmatchr', max_pin="x") }}
-
-extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
-  identifiers:
-    - biotools:motifmatchr
-
-package:
-  name: bioconductor-{{ name|lower }}
-  version: {{ version }}
+  run_exports: '{{ pin_subpackage("bioconductor-motifmatchr", max_pin="x.x") }}'
 
 # Suggests: testthat, knitr, rmarkdown, BSgenome.Hsapiens.UCSC.hg19
 # SystemRequirements: C++11
@@ -35,46 +28,54 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
-    - pkg-config
   host:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-bsgenome >=1.74.0,<1.75.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-rsamtools >=2.22.0,<2.23.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - bioconductor-tfbstools >=1.44.0,<1.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-tfbstools >=1.48.0,<1.49.0
     - r-base
     - r-matrix
     - r-rcpp
     - r-rcpparmadillo
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-biostrings >=2.74.0,<2.75.0
-    - bioconductor-bsgenome >=1.74.0,<1.75.0
-    - bioconductor-genomeinfodb >=1.42.0,<1.43.0
-    - bioconductor-genomicranges >=1.58.0,<1.59.0
-    - bioconductor-iranges >=2.40.0,<2.41.0
-    - bioconductor-rsamtools >=2.22.0,<2.23.0
-    - bioconductor-s4vectors >=0.44.0,<0.45.0
-    - bioconductor-summarizedexperiment >=1.36.0,<1.37.0
-    - bioconductor-tfbstools >=1.44.0,<1.45.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-bsgenome >=1.78.0,<1.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - bioconductor-tfbstools >=1.48.0,<1.49.0
     - r-base
     - r-matrix
     - r-rcpp
     - r-rcpparmadillo
 
-source:
-  sha256: ee7d2c995a3b01c96b817a97eca67304b7ed899cc28e0d3e5e849a8236ea0d48
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL-3 + file LICENSE
+  summary: Fast Motif Matching in R
+  description: Quickly find motif matches for many motifs and many sequences. Wraps C++ code from the MOODS motif calling library, which was developed by Pasi Rastas, Janne Korhonen, and Petri Martinmäki.
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - biotools:motifmatchr
+

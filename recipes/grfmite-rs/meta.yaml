@@ -1,0 +1,43 @@
+{% set name = "grfmite-rs" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KGerhardt/grfmite-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4c9428e0668a89ee8cf89a376c24d1fb167c07bf7421b3a051604135554f6133
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('grfmite-rs', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - command -v grf_rs
+    - command -v grfmite-rs
+
+about:
+  home: https://github.com/KGerhardt/grfmite-rs
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Fast parallel Rust reimplementation of GRF MITE detection (grf-main -c 1), used by TIR-Learner."
+  description: |
+    grfmite-rs is a from-scratch Rust implementation of the single GRF mode TIR-Learner
+    uses: grf-main -c 1 (MITE candidate detection). It is a drop-in, work-stealing,
+    parallel replacement that removes GRF's per-chunk runtime tail. It is NOT a full GRF
+    port -- only the MITE path is implemented; a complete GRF overhaul is future work.
+    The package installs the `grf_rs` binary and a `grfmite-rs` alias.
+
+extra:
+  recipe-maintainers:
+    - KGerhardt

@@ -1,0 +1,40 @@
+{% set version = "0.1.1" %}
+{% set name = "alnstats" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Poshi/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 4bdefe99c72e2d2c70ca95ca3f9a33ba7406e64dc2094f6fb2cca1756ee38c3e
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('alnstats', max_pin="x.x") }}
+  script: |
+    cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    cargo install -v --locked --no-track --path . --root $PREFIX
+    rm -rf $CARGO_HOME $RUSTUP_HOME
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - alnstats --version
+
+about:
+  home: https://github.com/Poshi/alnstats
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "A high-performance command-line tool designed to calculate yield and duplicate statistics from BAM, SAM, or CRAM alignment files"
+
+extra:
+  recipe-maintainers:
+    - Poshi
