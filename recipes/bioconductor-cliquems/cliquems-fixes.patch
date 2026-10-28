@@ -1,0 +1,54 @@
+diff --git a/DESCRIPTION b/DESCRIPTION
+--- a/DESCRIPTION
++++ b/DESCRIPTION
+@@ -22,7 +22,6 @@ LinkingTo: Rcpp, BH, RcppArmadillo
+ URL: http://cliquems.seeslab.net
+ BugReports: https://github.com/osenan/cliqueMS/issues
+ biocViews: Metabolomics, MassSpectrometry, Network, NetworkInference
+-SystemRequirements: C++11
+ Encoding: UTF-8
+ RoxygenNote: 7.3.2
+ Collate: 'allGenerics.R' 'allClasses.R' 'buildNetwork.R' 'cliqueMS.R'
+diff --git a/R/buildNetwork.R b/R/buildNetwork.R
+--- a/R/buildNetwork.R
++++ b/R/buildNetwork.R
+@@ -136,8 +136,10 @@ setMethod("createNetwork", "XCMSnExp", function(mzdata, peaklist,
+    filter = TRUE, mzerror = 5e-6, intdiff = 1e-4, rtdiff = 1e-4) {
+ 
+     eicmat <- defineEIC(mzdata)
+-    sparseeic <- slam::as.simple_triplet_matrix(t(eicmat))
++    eicmatnoNA <- nato0(eicmat)
++    sparseeic <- slam::as.simple_triplet_matrix(t(eicmatnoNA))
+     cosTotal <- coop::cosine(sparseeic) # compute cosine cor
++    cosTotal[is.nan(cosTotal)] <- 0
+     if(filter == TRUE) {
+         filterOut <- filterFeatures(cosTotal, peaklist,
+             mzerror = mzerror,
+diff --git a/R/findIsotopes.R b/R/findIsotopes.R
+--- a/R/findIsotopes.R
++++ b/R/findIsotopes.R
+@@ -57,9 +57,11 @@ filterIso <- function(isodf, network) {
+         function(x) {
+             sort(as.matrix(isodfSorted[x,])) }
+     ))
+-    isodf$weight <- igraph::E(network,
+-        P = as.numeric(t(isodfSorted)))$weight
+     ## as.numeric is important to acces correct weight values
++    eids <- igraph::get_edge_ids(network, as.numeric(t(isodfSorted)))
++    weights <- numeric(length(eids))
++    weights[eids > 0] <- igraph::E(network)$weight[eids[eids > 0]]
++    isodf$weight <- weights
+     ## First filter isotopes pointing to two different parents
+     inlinks <- as.numeric(names(
+         which(table(isodf[,"ifeature"]) > 1)))
+diff --git a/src/Makevars b/src/Makevars
+--- a/src/Makevars
++++ b/src/Makevars
+@@ -8,7 +8,6 @@
+ ##
+ ## And with R 3.4.0, and RcppArmadillo 0.7.960.*, we turn C++11 on as OpenMP
+ ## support within Armadillo prefers / requires it
+-CXX_STD = CXX11
+ 
+ PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) 
+ PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
