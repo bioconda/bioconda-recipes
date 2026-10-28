@@ -1,0 +1,56 @@
+{% set name = "tissue-sc" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/tissue_sc-{{ version }}.tar.gz
+  sha256: 07195fdd1c502f05e7c56d46e9d421fbab94119a74166c8be5a9c9ec2d71c556
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - flit-core >=3.2,<4
+  run:
+    - python >=3.8
+    - anndata
+    - matplotlib-base
+    - numpy
+    - pandas
+    - scanpy
+    - scikit-image
+    - scikit-learn
+    - scipy
+    - squidpy >=1.2.3
+
+test:
+  imports:
+    - tissue
+    - tissue.main
+    - tissue.downstream
+    - tissue.experiments
+    - tissue.utils
+    - tissue.SpaGE.main
+  requires:
+    - pip
+  commands:
+    - pip check
+
+about:
+  home: https://github.com/sunericd/TISSUE
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Uncertainty-calibrated prediction of single-cell spatial transcriptomics.
+  dev_url: https://github.com/sunericd/TISSUE
+  doc_url: https://github.com/sunericd/TISSUE#tissue-tutorials
