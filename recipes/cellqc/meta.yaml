@@ -1,5 +1,5 @@
 {% set name = "cellqc" %}
-{% set version = "0.3.2" %}
+{% set version = "0.3.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,10 +7,10 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 1e1e69c08fb5a6065a6278b68c7e63b1ac5750e7a96fbb592ad074f5d01b1204
+  sha256: 4106ed727110c3b66c93d16cf454b2055f5144d1b78a82269058326927759e20
 
 build:
-  number: 0
+  number: 1
   noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -53,12 +53,7 @@ requirements:
     - bioconductor-zellkonverter
     - bioconductor-scdblfinder
     - bioconductor-celda
-    # --- DoubletFinder install step and its dependencies ---
-    # TODO: submit an r-doubletfinder recipe so this becomes a real dependency.
-    - r-remotes
-    - r-rocr
-    - r-fields
-    - r-kernsmooth
+    - r-doubletfinder >=2.0.6
 
 test:
   imports:
@@ -82,14 +77,6 @@ about:
     statistic from the Cell Ranger BAM. Per sample it writes a cleaned .h5ad
     with its .obs and .var as TSVs, plus a cohort metrics.csv, an HTML report
     and a PDF slide deck.
-
-    DoubletFinder is GitHub-only and cannot be a conda dependency. Either
-    install it after this package:
-
-        Rscript -e "remotes::install_github('chris-mcginnis-ucsf/DoubletFinder', upgrade=FALSE)"
-
-    or set doublet.run: [scdblfinder] and doublet.decider: scdblfinder in the
-    config, which needs nothing beyond this package.
 
 extra:
   recipe-maintainers:
