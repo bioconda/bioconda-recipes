@@ -1,0 +1,53 @@
+{% set name = "metapointfinder" %}
+{% set version = "1.01" %}
+{% set sha256 = "598b25b3fcf62cdcf25700291294b26fd4d99bfe87f4b61cb846dcd2297a2546" %}
+{% set wget_version = "1.21.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/aldertzomer/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("metapointfinder", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12.3
+    - r-base >=4.4,<4.5.0
+  run:
+    - diamond =2.1.14
+    - bioconductor-pwalign =1.2.0
+    - bioconductor-biostrings =2.74.0
+    - wget ={{ wget_version }}
+    - kma =1.4.15
+
+test:
+  commands:
+    - python3 -V
+    - R -e "suppressPackageStartupMessages(library('pwalign'))" 2> /dev/null | grep "R version"
+    - R -e "suppressPackageStartupMessages(library('Biostrings'))" 2> /dev/null | grep "R version"
+    - R -e "suppressPackageStartupMessages(library('parallel'))" 2> /dev/null | grep "R version"
+    - diamond --version
+    - kma -v
+    - wget -V | grep "Wget {{ wget_version }}"
+    - metapointfinder.py --version
+
+about:
+  home: https://github.com/aldertzomer/metapointfinder
+  dev_url: https://github.com/aldertzomer/metapointfinder
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: MetaPointFinder is a tool for detecting and scoring resistance-
+      associated point mutations directly from long-read and short-read
+      metagenomics sequencing data, using the AMRFinder database as reference.
+  extra:
+    recipe-maintainers:
+       - samnooij

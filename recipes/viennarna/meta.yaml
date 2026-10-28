@@ -1,22 +1,26 @@
-{% set version = "2.4.15" %}
-{% set sha256 = "9ae7614586941ff3471596eade743bd2ec416b2d5c185f35ef93b9845c761d10" %}
+{% set version = "2.7.2" %}
+{% set sha256 = "1ab5f4a4f76fc85a2243546088e45f5d85f2d7a56cc656e969b005cce9bfab5f" %}
 
 package:
   name: viennarna
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # Ronny said VRNA is stable in x.x releases
     - {{ pin_subpackage('viennarna', max_pin='x.x') }}
 
 source:
-  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_4_x/ViennaRNA-{{ version }}.tar.gz
+  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_7_x/ViennaRNA-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - fix_python_module_copy.patch
 
 requirements:
   build:
+    - make
+    - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
@@ -24,8 +28,12 @@ requirements:
     - perl
     - python
     - zlib
+    - mpfr # [not osx]
+    - gsl # [not osx]
+    - lapack
     - llvm-openmp # [osx]
   run:
+    - perl
     - python
     - llvm-openmp # [osx]
 
@@ -34,13 +42,21 @@ test:
     - RNAalifold --version
     - RNAeval    --version
     - RNAfold    --version
+    - RNAplot    --version
     - RNAplfold  --version
     - RNAsubopt  --version
     - RNAlocmin  --version
     - kinwalker  --help >& /dev/null
+    - python -c "import RNA"
+    - perl -MRNA -e "print qq(ok\n)"
 
 about:
   home: http://www.tbi.univie.ac.at/RNA/
   license: custom
   license_file: COPYING
-  summary: Vienna RNA package -- RNA secondary structure prediction and comparison
+  summary: ViennaRNA package -- RNA secondary structure prediction and comparison
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

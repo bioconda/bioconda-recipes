@@ -1,47 +1,55 @@
-{% set version = "1.20.0" %}
+{% set version = "1.42.0" %}
 {% set name = "seqPattern" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ab8ef689eea1d8ad55dd8d12da9bde40
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: e56f0663a24b852cc5b2d31c1bfc0419
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-seqpattern", max_pin="x.x") }}'
   noarch: generic
+
 # Suggests: BSgenome.Drerio.UCSC.danRer7, CAGEr, RUnit, BiocGenerics, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
-    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
-    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
     - r-kernsmooth
     - r-plotrix
   run:
-    - 'bioconductor-biostrings >=2.56.0,<2.57.0'
-    - 'bioconductor-genomicranges >=1.40.0,<1.41.0'
-    - 'bioconductor-iranges >=2.22.0,<2.23.0'
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
     - r-kernsmooth
     - r-plotrix
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: GPL-3
-  summary: 'Visualising oligonucleotide patterns and motif occurrences across a set of sorted sequences'
-  description: 'Visualising oligonucleotide patterns and sequence motifs occurrences across a large set of sequences centred at a common reference point and sorted by a user defined feature.'
+  summary: Visualising oligonucleotide patterns and motif occurrences across a set of sorted sequences
+  description: Visualising oligonucleotide patterns and sequence motifs occurrences across a large set of sequences centred at a common reference point and sorted by a user defined feature.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:seqpattern

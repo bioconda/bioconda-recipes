@@ -1,0 +1,44 @@
+{% set name = "IRMA" %}
+{% set version = "1.4.0" %}
+{% set sha256 = "2ed4741e877e466b7546894a03cf12a98a93cfc2130a420a29dc9e8395e36be2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CDCgov/irma/releases/download/v{{ version }}/irma-v{{ version }}-universal.zip
+  sha256: {{ sha256 }}
+  patches:
+    - irma-check-dir-writable.patch
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('irma', max_pin="x.x") }}
+  binary_relocation: false
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl
+    - r-base >=3.5.1
+    - parallel >=20200422
+    - pigz >=2.8
+    - blat >=35
+    - samtools >=1.21
+    - minimap2 >=2.29
+    - zip >=3.0
+
+test:
+  commands:
+    - IRMA -h 2>&1  | grep -q "Usage"
+    - LABEL -h 2>&1 | grep -q "Usage"
+
+about:
+  home: https://wonder.cdc.gov/amd/flu/irma/
+  license: Apache Software License, Apache-2.0
+  summary: "IRMA: Iterative Refinement Meta-Assembler for the robust assembly, variant calling, and phasing of highly variable RNA viruses."
+  license_family: APACHE

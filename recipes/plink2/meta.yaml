@@ -1,33 +1,64 @@
+{% set name = "plink2" %}
+# PEP 440 form of the upstream tag: v2.0.0-a.X.Y -> 2.0.0aX.postY, and
+# v2.0.0-b.X.0 -> 2.0.0bX (v2.0.0-b.X.Y -> 2.0.0bX.postY). Conda orders this
+# after the older 2.0.0a.X.Y spellings.
+{% set version = "2.0.0a7.post13" %}
+{% set tag = "v2.0.0-a.7.13" %}
+
 package:
-  name: plink2
-  version: "2.00a2.3"
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/chrchang/plink-ng/archive/refs/tags/{{ tag }}.tar.gz
+  sha256: d125cd76cc284aa41c133add511b5030413e764b40d731fd38588dbd5104c6f6
 
 build:
   number: 0
-
-source:
-  url: http://s3.amazonaws.com/plink2-assets/alpha2/plink2_linux_x86_64.zip # [linux]
-  sha256: 3fa20a2058df542e928b11d715cc314c01d7c5961525b55fd17a088e6caa9cc9 # [linux]
-  url: http://s3.amazonaws.com/plink2-assets/alpha2/plink2_mac.zip # [osx]
-  sha256: c53d6301c51ebbec3a923ead5a16ee8b8dea7ec89d5df0861430b1a5fa811970 # [osx]
-  url: http://s3.amazonaws.com/plink2-assets/alpha2/plink2_win64.zip # [osw]
-  sha256: c2a0620f851ac2cf98a37ac84f9dff1ba208d9c86714b91cc3f2d784d0833a42 # [osw]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin=None) }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
   host:
-    - openblas # [not osx]
+    - zlib
+    - zstd
+    - openblas  # [linux]
   run:
-    - openblas # [not osx]
+    - libopenblas  # [linux]
 
 test:
   commands:
-    - plink2 --help | grep "PLINK v2.00a2.3"
+    - plink2 --version | grep "PLINK v{{ tag[1:] }}"
+    - test -x "${PREFIX}/bin/pgen_compress"
+    - plink2 --dummy 200 500 --out dummy
+    - plink2 --pfile dummy --maf 0.05 --freq --pca 2 --out out
+    - test -s out.afreq
+    - test -s out.eigenvec
 
 about:
-  home: https://www.cog-genomics.org/plink2
-  license: GPL-3
-  license_file: LICENSE
-  summary: Whole genome association analysis toolset
-  description: Whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner.
+  home: https://www.cog-genomics.org/plink/2.0/
+  dev_url: https://github.com/chrchang/plink-ng
+  doc_url: https://www.cog-genomics.org/plink/2.0/
+  license: GPL-3.0-or-later AND LGPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - 2.0/COPYING
+    - 2.0/COPYING.LESSER
+  summary: Whole genome association analysis toolset (PLINK 2.0)
+  description: |
+    PLINK 2.0 is a whole-genome association analysis toolset designed to
+    handle VCF files, dosage data and multiallelic variants at biobank scale,
+    using its .pgen/.pvar/.psam fileset.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s13742-015-0047-8
+    - biotools:plink

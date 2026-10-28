@@ -1,0 +1,46 @@
+{% set name = "mzpaf" %}
+{% set version = "0.2.0b0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/mzpaf-{{ version }}.tar.gz
+  sha256: e92bdf1f7ec2e2ad2c7917787294679a52ac7c9515b0de74cb5ad677b8e1f6d8
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mzpaf', max_pin="x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pyteomics
+
+test:
+  imports:
+    - mzpaf
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/HUPO-PSI/mzPAF
+  summary: HUPO-PSI Peptide peak annotation format
+  license: CC-BY-1.0
+  license_family: CC
+  license_file: LICENSE
+  dev_url: https://github.com/HUPO-PSI/mzPAF/implementations/python
+  doc_url: https://mzpaf.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - hechth

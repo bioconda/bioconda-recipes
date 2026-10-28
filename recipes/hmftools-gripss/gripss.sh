@@ -1,5 +1,5 @@
 #!/bin/bash
-# hmftools gripss executable shell script
+# hmftools GRIPSS executable shell script
 # https://github.com/hartwigmedical/hmftools/tree/master/gripss
 set -eu -o pipefail
 

@@ -1,27 +1,32 @@
-{% set version = "1.52.0" %}
+{% set version = "1.74.0" %}
 {% set name = "flowViz" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 51dd133450b7713b65bc51f32be828ed
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 67412502fcf54698276b0b04ca6a8b95
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-flowviz", max_pin="x.x") }}'
   noarch: generic
-# Suggests: colorspace, flowStats, knitr, testthat
+
+# Suggests: colorspace, flowStats, knitr, rmarkdown, markdown, testthat
 requirements:
   host:
-    - 'bioconductor-biobase >=2.48.0,<2.49.0'
-    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
     - r-base
     - r-hexbin
     - r-idpmisc
@@ -31,8 +36,8 @@ requirements:
     - r-mass
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=2.48.0,<2.49.0'
-    - 'bioconductor-flowcore >=2.0.0,<2.1.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-flowcore >=2.22.0,<2.23.0
     - r-base
     - r-hexbin
     - r-idpmisc
@@ -41,14 +46,17 @@ requirements:
     - r-latticeextra
     - r-mass
     - r-rcolorbrewer
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
   license: Artistic-2.0
-  summary: 'Visualization for flow cytometry'
-  description: 'Provides visualization tools for flow cytometry data.'
+  summary: Visualization for flow cytometry
+  description: Provides visualization tools for flow cytometry data.
+
 extra:
   identifiers:
     - biotools:flowviz

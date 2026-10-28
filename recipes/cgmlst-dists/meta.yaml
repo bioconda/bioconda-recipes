@@ -1,32 +1,44 @@
 {% set name = "cgmlst-dists" %}
-{% set version = "0.2.0" %}
-{% set sha256 = "20dfd9a6aa61d7cda5c2a83d89f9d4a551422ae8fb7be8943928f4326313b379" %}
+{% set version = "0.6.0" %}
+{% set sha256 = "53609de760407e4cb4e024b09a8b10684df139f5d229c91a9a6e40664aaf6440" %}
 {% set user = "tseemann" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 build:
-    number: 0
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 source:
-    url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
-    build:
-        - {{ compiler('c') }}
-    host:
-    run:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
-    commands:
-        - cgmlst-dists -v | grep -F '{{ version }}'
-        - cgmlst-dists -h
+  commands:
+    - cgmlst-dists -v | grep -F '{{ version }}'
+    - cgmlst-dists -h
 
 about:
-    home: https://github.com/{{ user }}/{{ name }}
-    license: GPL3
-    license_file: LICENSE
-    summary: Convert cgMLST table to distance matrix
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Convert cgMLST table to distance matrix
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

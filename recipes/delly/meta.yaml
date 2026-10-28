@@ -1,28 +1,31 @@
-{% set version = "0.8.5" %}
-{% set sha256 = "70cb34713bc2f07fc1937df94516783e2f9bc4b3da9d09b672ebb11900285c07" %}
+{% set version = "2.7.0" %}
+{% set sha256 = "e0965d4a6f9f5336f7697049d40b6621fa0946dcc1747ff93cee1abfdb842e20" %}
 
 package:
   name: delly
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url: https://github.com/dellytools/delly/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  sha256: {{ sha256 }}
 
 build:
   number: 0
+  run_exports:
+    - {{ pin_subpackage("delly", max_pin="x.x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
     - zlib
     - bzip2
     - boost-cpp
+    - xz
     - htslib
   run:
-    - zlib
-    - bzip2
     - boost-cpp
     - htslib
 
@@ -36,3 +39,19 @@ about:
   license_family: BSD
   license_file: LICENSE
   summary: Structural variant discovery by integrated paired-end and split-read analysis
+  dev_url: "https://github.com/dellytools/delly"
+  doc_url: "https://github.com/dellytools/delly/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/bts378
+    - biotools:delly2
+    - usegalaxy-eu:delly_cnv
+    - usegalaxy-eu:delly_classify
+    - usegalaxy-eu:delly_lr
+    - usegalaxy-eu:delly_call
+    - usegalaxy-eu:delly_merge
+    - usegalaxy-eu:delly_filter

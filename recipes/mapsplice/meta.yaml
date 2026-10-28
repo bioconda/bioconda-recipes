@@ -1,13 +1,14 @@
+{% set name = "mapsplice" %}
 {% set version = "2.2.1" %}
-{% set sha256hash = "4f3c1cb49ba0abcfc952de5946ee0b56db28c51f4f4d4f5abca66b4461ca7d05" %}
+{% set sha256 = "4f3c1cb49ba0abcfc952de5946ee0b56db28c51f4f4d4f5abca66b4461ca7d05" %}
 
 package:
-  name: mapsplice
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: http://protocols.netlab.uky.edu/~zeng/MapSplice-v{{ version }}.zip
-  sha256: {{ sha256hash }}
+  sha256: {{ sha256 }}
   patches:
     - patches/mapsplice.patch
     - patches/mapsplice_makefile.patch
@@ -16,34 +17,37 @@ source:
     - patches/samtools_misc.patch
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('mapsplice', max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - make
     - {{ compiler('cxx') }}
-
   host:
     - python
     - zlib
     - ncurses
-
   run:
     - python
-    - zlib
     - ncurses
 
 test:
   commands:
-    - mapsplice.py -v 2>&1 | grep MapSplice > /dev/null
+    - mapsplice.py 2>&1 | grep "mapsplice" > /dev/null
 
 about:
-  home: http://www.netlab.uky.edu/p/bioinfo/MapSplice2
-  summary: MapSplice is a software for mapping RNA-seq data to reference genome for splice junction discovery that depends only on reference genome, and not on any further annotations.
+  home: "http://www.netlab.uky.edu/p/bioinfo/MapSplice2"
+  summary: "MapSplice is a software for mapping RNA-seq data to reference genome for splice junction discovery that depends only on reference genome, and not on any further annotations."
   license: Custom
-  license_file: Copyright.txt
+  license_file: "Copyright.txt"
+  doc_url: "http://www.netlab.uky.edu/p/bioinfo/MapSplice2"
+  dev_url: "https://github.com/davidroberson/MapSplice2"
 
 extra:
   identifiers:
     - biotools:mapsplice
+  additional-platforms:
+    - linux-aarch64

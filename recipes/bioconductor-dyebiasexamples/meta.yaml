@@ -1,40 +1,43 @@
-{% set version = "1.28.0" %}
+{% set version = "1.50.0" %}
 {% set name = "dyebiasexamples" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: bb954be42591c919e97a5a83a2a3ce86
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 8662597cc0c843ef8e9670fdd3ed9560
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-dyebiasexamples", max_pin="x.x") }}'
   noarch: generic
 # Suggests: dyebias, convert, Biobase
 requirements:
   host:
-    - 'bioconductor-geoquery >=2.56.0,<2.57.0'
-    - 'bioconductor-marray >=1.66.0,<1.67.0'
+    - bioconductor-geoquery >=2.78.0,<2.79.0
+    - bioconductor-marray >=1.88.0,<1.89.0
     - r-base
   run:
-    - 'bioconductor-geoquery >=2.56.0,<2.57.0'
-    - 'bioconductor-marray >=1.66.0,<1.67.0'
+    - bioconductor-geoquery >=2.78.0,<2.79.0
+    - bioconductor-marray >=1.88.0,<1.89.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
   license: GPL-3
-  summary: 'Example data for the dyebias package, which implements the GASSCO method.'
-  description: 'Data for the dyebias package, consisting of 4 self-self hybrizations of self-spotted yeast slides, as well as data from Array Express accession E-MTAB-32'
+  summary: Example data for the dyebias package, which implements the GASSCO method.
+  description: Data for the dyebias package, consisting of 4 self-self hybrizations of self-spotted yeast slides, as well as data from Array Express accession E-MTAB-32
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 

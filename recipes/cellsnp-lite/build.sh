@@ -1,15 +1,15 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
+mkdir -p "${PREFIX}/bin"
 
-if [ "`uname`" == "Darwin" ]; then
-    make CC=${CC} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
-else
-    make CC=${CC} htslib_include_dir=${PREFIX}/include htslib_lib_dir=${PREFIX}/lib
-fi
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CFLAGS="${CFLAGS} -g -Wall -O3 -Wno-implicit-function-declaration"
 
-mkdir -p ${PREFIX}/bin
-cp -f cellsnp-lite ${PREFIX}/bin
+autoreconf -if
+./configure --prefix="${PREFIX}" CC="${CC}" CFLAGS="${CFLAGS}" \
+	LDFLAGS="${LDFLAGS}" CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include" \
+	--disable-option-checking --enable-silent-rules --disable-dependency-tracking
 
+make -j"${CPU_COUNT}"
+make install

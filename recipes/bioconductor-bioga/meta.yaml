@@ -1,0 +1,65 @@
+{% set version = "1.4.0" %}
+{% set name = "BioGA" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: e7659a070844422d82736ad55acd2bd0
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bioga", max_pin="x.x") }}'
+
+# Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-biocviews >=1.78.0,<1.79.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-animation
+    - r-base
+    - r-ggplot2
+    - r-rcpp
+    - r-rlang
+    - r-sessioninfo
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocstyle >=2.38.0,<2.39.0
+    - bioconductor-biocviews >=1.78.0,<1.79.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-animation
+    - r-base
+    - r-ggplot2
+    - r-rcpp
+    - r-rlang
+    - r-sessioninfo
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Bioinformatics Genetic Algorithm (BioGA)
+  description: Genetic algorithm are a class of optimization algorithms inspired by the process of natural selection and genetics. This package allows users to analyze and optimize high throughput genomic data using genetic algorithms.  The functions provided are implemented in C++ for improved speed and efficiency, with an easy-to-use interface for use within R.
+  license_file: LICENSE
+

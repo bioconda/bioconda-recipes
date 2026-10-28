@@ -1,24 +1,27 @@
-{% set version = "1.1" %}
+{% set version = "1.2" %}
+
 package:
   name: fit_nbinom
   version: '{{ version }}'
 
 source:
   url: 'https://github.com/joachimwolff/fit_nbinom/archive/{{ version }}.tar.gz'
-  sha256: d2a0c5e931152dfa32fee6a4d19aa8a24677c485d76f80c9ab0f15c18c8e5226
+  sha256: ec4494292fb1282b3ed90afb1732cb5a81b9ea5f373b98fce006d978f556d1f8
 
 build:
-  number: 2
-  script: "python -m pip install --no-deps --ignore-installed ."
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vvv"
   noarch: python
+  run_exports:
+    - {{ pin_subpackage('fit_nbinom', max_pin="x") }}
 
 requirements:
   host:
     - python
   run:
     - python
-    - numpy >=1.15
-    - scipy >=1.2
+    - numpy >=1.19
+    - scipy >=1.10
 
 test:
   imports:
@@ -26,7 +29,9 @@ test:
 
 about:
   home: https://github.com/joachimwolff/fit_nbinom/
-  license: GPL3
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
   summary: Script to fit negative binomial distributions via maximum likelihood estimation.
 
 

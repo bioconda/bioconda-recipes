@@ -1,46 +1,44 @@
 {% set name = "pmx_biobb" %}
-{% set version = "1.0.0" %}
+{% set version = "5.2.2" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "2a1b39ada54a2d4b3fb178f49c60b27cfd6c0df116c603a6cd82aa28294f03f7" %}
+{% set hash_value = "0f0270a4b721b2d7caccb66d05effdfecc704c7a4e296f8222763c9aedfc8961" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-1.0.1.{{ file_ext }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  entry_points:
-    - pmx = pmx.scripts.cli:entry_point
+  number: 2
+  skip: True  # [py>=315]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x') }}
+
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
-    - make
+    - {{ stdlib('c') }}
   host:
-    - python ==3.7.*
+    - python
+    - pip
     - setuptools
-    - numpy
-    - scipy
-    - matplotlib-base
-    - future
   run:
-    - python ==3.7.*
-    - perl
+    - python
     - numpy
     - scipy
     - matplotlib-base
-    - future
+    - rdkit
+
 
 test:
-  commands:
-    - pmx -v
+  imports:
+    - pmx
 
 
 about:
@@ -64,4 +62,5 @@ about:
   dev_url: ''
 
 extra:
-  recipe-maintainers: ''
+  recipe-maintainers:
+    - RubenChM

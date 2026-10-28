@@ -1,0 +1,42 @@
+{% set name = "phylodeep_data_bd" %}
+{% set version = "0.6" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: ca0f0b48e743c1600c455596a6d5d11fea9e0a2ea94a3f116f421d753b6f0731
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation"
+  run_exports:
+    - {{ pin_subpackage('phylodeep_data_bd', max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3
+  run:
+    - python >=3
+    - pandas >=1.0.0
+
+test:
+  imports:
+    - phylodeep_data_bd
+  commands:
+    - bd_ci_paths --help
+
+about:
+  home: "https://github.com/evolbioinfo/phylodeep_data_bd"
+  summary: "Package containing data for the phylodeep package."
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - annazhukova

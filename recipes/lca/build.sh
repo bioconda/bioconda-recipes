@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# https://bioconda.github.io/troubleshooting.html#zlib-errors
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+mkdir -p "${PREFIX}/bin"
 
-make
-mkdir -p ${PREFIX}/bin
-mv LCA ${PREFIX}/bin/
+rm -f *.bak
+
+make -j"${CPU_COUNT}"
+
+install -v -m 0755 LCA "${PREFIX}/bin"

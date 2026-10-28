@@ -1,0 +1,50 @@
+{% set name = "somalier" %}
+{% set version = "0.3.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/brentp/somalier/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7dc3c8764d9dd962221b653353be0e444ac98e53d1c872e47d745674215f2da2
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - nim >=2.0.4  # [not arm64]
+  host:
+    - curl
+    - openblas
+    - htslib
+  run:
+    - openblas
+    - htslib
+
+test:
+  commands:
+    - somalier -h
+
+about:
+  home: "https://github.com/brentp/somalier"
+  dev_url: "https://github.com/brentp/somalier"
+  doc_url: "https://github.com/brentp/somalier/blob/v{{ version }}/README.md"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Fast sample-swap and relatedness checks on BAMs/CRAMs/VCFs/GVCFs."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1186/s13073-020-00761-2
+    - biotools:somalier
+  skip-lints:
+    - compiler_needs_stdlib_c

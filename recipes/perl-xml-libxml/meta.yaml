@@ -1,29 +1,41 @@
+{% set name = "perl-xml-libxml" %}
+{% set version = "2.0210" %}
+
 package:
-  name: perl-xml-libxml
-  version: "2.0132"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/XML-LibXML-2.0132.tar.gz
-  md5: 43546fd9a3974f19323f9fb04861ece9
+  url: https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/XML-LibXML-{{ version }}.tar.gz
+  sha256: a29bf3f00ab9c9ee04218154e0afc8f799bf23674eb99c1a9ed4de1f4059a48d
 
 build:
   number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
   host:
     - perl
     - perl-xml-sax
     - perl-xml-namespacesupport
+    - perl-alien-build
+    - perl-alien-libxml2
+    - libiconv
     - libxml2
+    - xz
+    - zlib
   run:
     - perl
     - perl-xml-sax
     - perl-xml-namespacesupport
+    - perl-alien-libxml2
+    - libxml2
 
 test:
-  # Perl 'use' tests
   imports:
     - XML::LibXML
     - XML::LibXML::AttributeHash
@@ -43,6 +55,12 @@ test:
     - XML::LibXML::XPathContext
 
 about:
-  home: https://bitbucket.org/shlomif/perl-xml-libxml
-  license: Perl
-  summary: 'Interface to Gnome libxml2 xml parsing and DOM library'
+  home: "https://bitbucket.org/shlomif/perl-xml-libxml"
+  license: "Perl_5"
+  summary: "Interface to Gnome libxml2 xml parsing and DOM library."
+  dev_url: "https://bitbucket.org/shlomif/perl-xml-libxml"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,45 +1,53 @@
-{% set version = "1.40.0" %}
+{% set version = "1.62.0" %}
 {% set name = "hyperdraw" %}
-{% set bioc = "3.11" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: b70d99b7bf181f8785945d44eb059e8a
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 161e5ccedc20d03aeac5b87ac137205a
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-hyperdraw", max_pin="x.x") }}'
   noarch: generic
+
 # SystemRequirements: graphviz
 requirements:
   host:
-    - 'bioconductor-graph >=1.66.0,<1.67.0'
-    - 'bioconductor-hypergraph >=1.60.0,<1.61.0'
-    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-hypergraph >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - graphviz
   run:
-    - 'bioconductor-graph >=1.66.0,<1.67.0'
-    - 'bioconductor-hypergraph >=1.60.0,<1.61.0'
-    - 'bioconductor-rgraphviz >=2.32.0,<2.33.0'
+    - bioconductor-graph >=1.88.0,<1.89.0
+    - bioconductor-hypergraph >=1.82.0,<1.83.0
+    - bioconductor-rgraphviz >=2.54.0,<2.55.0
     - r-base
     - graphviz
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
-  summary: 'Visualizing Hypergaphs'
-  description: 'Functions for visualizing hypergraphs.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 2)
+  summary: Visualizing Hypergaphs
+  description: Functions for visualizing hypergraphs.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
 extra:
   identifiers:
     - biotools:hyperdraw

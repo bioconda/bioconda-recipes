@@ -28,5 +28,6 @@ find "$INPUT_DIR"
 start-asap -i "$INPUT_DIR" -o "$OUTPUT_DIR" -r "$INPUT_DIR"/e_coli.gbk -g Escherichia -s coli --verbose
 
 # Produced config.xls
-file "$OUTPUT_DIR"/config.xls
-
+if [ ! -f "$OUTPUT_DIR"/config.xls ]; then
+    return 1;
+fi
