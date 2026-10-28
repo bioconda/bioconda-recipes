@@ -1,0 +1,64 @@
+{% set name = "keggcharter" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "53735598428a7a2eb75c763f2eba04efecd9c8fae3d69ea7a29747ffc60396cd" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iquasere/KEGGCharter/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
+  script: >
+    mkdir -p $PREFIX/bin &&
+    mkdir -p $PREFIX/share &&
+    cp *.py resources/*.txt resources/*.tsv $PREFIX/share &&
+    chmod +x $PREFIX/share/keggcharter.py &&
+    ln -s $PREFIX/share/keggcharter.py $PREFIX/bin/keggcharter
+  run_exports:
+    - {{ pin_subpackage("keggcharter", max_pin="x.x") }}
+
+requirements:
+  run:
+    - matplotlib-base
+    - tqdm
+    - pandas
+    - biopython
+    - reportlab
+    - openpyxl
+    - poppler
+    - mscorefonts
+    - requests
+    - lxml
+
+test:
+  commands:
+    - keggcharter -v
+
+about:
+  home: https://github.com/iquasere/KEGGCharter
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'A tool for representing genomic potential and transcriptomic expression into KEGG pathways'
+  description: |
+    KEGGCharter takes as input a quantification table of proteins with corresponding
+    KEGG IDs available and maps that information into KEGG metabolic maps using 
+    the KEGG API. Both genomic potential (from either genomics or metagenomics)
+    and gene expression quantification (from either (meta)transcriptomics or
+    (meta)proteomics) can be represented. Genomic information is mapped in a binary
+    exists or not rule, for each taxon available KEGGCharter will assign a color
+    which will be included in the boxes corresponding to functions present in that
+    taxon. Gene expression quantification is mapped as differential expression
+    where quantification between the several columns specified is represented as
+    a single row heatmap for each function present in the data.
+  doc_url: https://github.com/iquasere/KEGGCharter/blob/master/README.md
+  dev_url: https://github.com/iquasere/KEGGCharter
+
+extra:
+  recipe-maintainers:
+    - iquasere

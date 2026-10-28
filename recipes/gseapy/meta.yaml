@@ -1,42 +1,41 @@
+{% set name = "gseapy" %}
+{% set version = "1.3.1" %}
+
 package:
-  name: gseapy
-  version: "0.9.16"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/bc/eb/3a9b5671662e66fa403e956213ad0e5087c4c07ff6e5eafa0850fc29a46d/gseapy-0.9.16.tar.gz
-  sha256: dff73e2d1fa091328cbc2b015975723edd31f33e0f585b9db9263d6da1dc1d78
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gseapy-{{ version }}.tar.gz
+  sha256: b4ac3958db15db5c9d1eaec95f4e96c709921d2415d2f3e678d2fa02469762c7
 
 build:
-  noarch: python
+  number: 0
   entry_points:
     - gseapy = gseapy.__main__:main
-  number: 0
+  script:
+    - {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir --use-pep517
+  run_exports:
+    - {{ pin_subpackage("gseapy", max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
   host:
-    - python >3
+    - python
+    - pip
     - setuptools
-    - numpy >=1.13.0
-    - scipy
-    - pandas >=0.16
-    - matplotlib >=1.4.3
-    - beautifulsoup4 >=4.4.1
-    - requests
-    - lxml
-    - html5lib
-    - bioservices
-
+    - setuptools-rust
+    - toml
   run:
-    - python >3
+    - python
     - numpy >=1.13.0
     - scipy
-    - pandas >=0.16
-    - matplotlib >=1.4.3
-    - beautifulsoup4 >=4.4.1
+    - pandas
+    - matplotlib-base >=2.2
     - requests
-    - lxml
-    - html5lib
-    - bioservices
+    - pyopengl
 
 test:
   imports:
@@ -45,12 +44,18 @@ test:
     - gseapy --help
 
 about:
-  home: https://github.com/zqfang/gseapy
-  license: MIT License
-  summary: 'Gene Set Enrichment Analysis in Python'
-  license_family: MIT
+  home: "https://github.com/zqfang/gseapy"
+  license: "BSD-3-Clause"
+  summary: "Gene Set Enrichment Analysis in Python."
+  license_family: BSD
+  license_file: LICENSE
+  dev_url: "https://github.com/zqfang/gseapy"
+  doc_url: "https://gseapy.readthedocs.io/en/latest"
 
 extra:
-  container:
-    # matplotlib needs opengl support
-    extended-base: true
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btac757
+    - biotools:gseapy

@@ -1,5 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
-make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${SRC_DIR}/src/sdslLite/include -L${SRC_DIR}/src/sdslLite/lib -I${PREFIX}/include -L${PREFIX}/lib"
-mkdir -p $PREFIX/bin
-cp src/alfred $PREFIX/bin
+CXXFLAGS="${CXXFLAGS} -O3 -D__STDC_FORMAT_MACROS -I${PREFIX}/include -std=c++17" LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -pthread" make -j${CPU_COUNT} CXX="${CXX}" prefix="${PREFIX}" install

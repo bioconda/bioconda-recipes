@@ -1,40 +1,43 @@
-{% set version = "1.24.0" %}
+{% set version = "1.48.0" %}
 {% set name = "harbChIP" %}
-{% set bioc = "3.10" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: af8b667dfbc4aa3e6a72177101a32f47
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 699ecebf9e0766d4c4ed0728e4eed043
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-harbchip", max_pin="x.x") }}'
   noarch: generic
 requirements:
   host:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
-    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
   run:
-    - 'bioconductor-biobase >=2.46.0,<2.47.0'
-    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
-    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - bioconductor-biobase >=2.70.0,<2.71.0
+    - bioconductor-biostrings >=2.78.0,<2.79.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
     - r-base
     - curl
+    - bioconductor-data-packages >=20260207
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
   license: Artistic-2.0
   summary: 'Experimental Data Package: harbChIP'
-  description: 'data from a yeast ChIP-chip experiment'
+  description: data from a yeast ChIP-chip experiment
 

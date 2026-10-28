@@ -1,33 +1,41 @@
-{% set name = "abawaca" %}
 {% set version = "1.00" %}
 
 package:
-  name: {{ name }}
+  name: abawaca
   version: {{ version }}
 
 source:
   url: https://github.com/CK7/abawaca/archive/v{{ version }}.tar.gz
   sha256: 57465bb291c3a9af93605ffb11d704324079036205e5ac279601c9e98c467529
+  patches:
+    - 0001-Use-CXX-and-flags.patch
 
 build:
-  number: 1
+  number: 9
+  run_exports:
+    - {{ pin_subpackage('abawaca', max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('cxx') }}
-  run:
+    - pkg-config
 
 test:
   commands:
     - abawaca 2>&1 | grep Usage
 
 about:
-  home: 'https://github.com/CK7/abawaca'
-  license: "open source"
-  summary: "abawaca is a binning program for metagenomics"
+  home: "https://github.com/CK7/abawaca"
+  license: "Open Source"
+  summary: "abawaca is a binning program for metagenomics."
+  dev_url: "https://github.com/CK7/abawaca"
 
 extra:
-  maintainers:
+  recipe-maintainers:
     - keuv-grvl
   identifiers:
     - doi:10.1038/nature14486
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

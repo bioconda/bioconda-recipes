@@ -1,24 +1,27 @@
 {% set name = "pyrle" %}
-{% set version = "0.0.28" %}
+{% set version = "0.0.46" %}
 
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8902cc14fc675a0d567480bcb28a3ffd7991c3902876c3c3f4aeecec13eb584a
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 3bae50e2df6e5a8384560ce9d9a0a304cd2cf6b2f35ea5958e6709a17558f506
 
 build:
   number: 0
-  skip: True  # [not py3k]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - python
+    - pip
     - setuptools
     - cython
   run:
@@ -27,12 +30,23 @@ requirements:
     - tabulate
     - numpy
     - natsort
+    - setuptools
 
 test:
   imports:
     - pyrle
 
 about:
-  home: https://github.com/endrebak/pyrle
+  home: "https://github.com/endrebak/pyrle"
   license: MIT
-  summary: Genomic Rle-objects for Python
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Genomic Rle-objects for Python."
+  dev_url: "https://github.com/endrebak/pyrle"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - uses_setuptools

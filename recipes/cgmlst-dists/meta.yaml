@@ -1,0 +1,44 @@
+{% set name = "cgmlst-dists" %}
+{% set version = "0.6.0" %}
+{% set sha256 = "53609de760407e4cb4e024b09a8b10684df139f5d229c91a9a6e40664aaf6440" %}
+{% set user = "tseemann" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - cgmlst-dists -v | grep -F '{{ version }}'
+    - cgmlst-dists -h
+
+about:
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-3.0-or-later
+  license_file: LICENSE
+  summary: Convert cgMLST table to distance matrix
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

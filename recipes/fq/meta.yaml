@@ -1,0 +1,48 @@
+{% set name = "fq" %}
+{% set version = "0.12.0" %}
+{% set sha256 = "d17ef77d2f57ace316a7b35d910c5cd73be2a0d70ec7fcd31f2d0e3afbe1273c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/stjude-rust-labs/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - fq -h
+
+about:
+  home: "https://github.com/stjude-rust-labs/fq"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "fq is a library to generate and validate FASTQ file pairs."
+  description: >
+    fq provides subcommands for filtering, generating, subsampling, and
+    validating FASTQ files.
+  dev_url: "https://github.com/stjude-rust-labs/fq"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - claymcleod
+    - Midnighter
+    - zaeleus
+  skip-lints:
+    - compiler_needs_stdlib_c

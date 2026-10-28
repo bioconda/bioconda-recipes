@@ -1,0 +1,42 @@
+{% set name = "sercol" %}
+{% set version = "1.0.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: c55f89402b8eb5f064bda8ecff6c2aadfc1ffb933d5369cfa667124e7344938e
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('sercol', max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.9
+    - setuptools >=64
+  run:
+    - pandas >=2.0.0,<3
+    - python >=3.9
+    - serializable >=1.0.0,<2
+
+test:
+  imports:
+    - sercol
+
+about:
+  home: "https://github.com/openvax/sercol"
+  license: Apache-2.0
+  license_file: LICENSE
+  license_family: APACHE
+  summary: "Rich collection class with grouping and filtering helpers"
+
+extra:
+  recipe-maintainers:
+    - jonasscheid

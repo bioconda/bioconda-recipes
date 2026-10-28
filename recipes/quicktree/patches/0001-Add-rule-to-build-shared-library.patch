@@ -1,0 +1,45 @@
+From 6c92fb5efd973d1fa6a7ae05515ba54302be95c5 Mon Sep 17 00:00:00 2001
+From: Travis Wrightsman <tw493@cornell.edu>
+Date: Tue, 23 Jan 2024 23:01:04 -0500
+Subject: [PATCH] Add rule to build shared library
+
+---
+ Makefile | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 14e42a4..a85599b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -14,15 +14,20 @@ COMMON = $(OBJ)/align.o \
+ QUICKTREEOBJ = $(COMMON) $(OBJ)/quicktree.o $(OBJ)/buildtree.o $(OBJ)/tree.o
+ 
+ 
+-CC	= gcc
+-CFLAGS  = -c -I$(INC) -O2 -Wunused-result
++CC	= $(CC)
++CFLAGS ?= -O3
++CFLAGS += -Wno-unused-result -Wno-fortify-source -Wno-parentheses
++CFLAGS += -c -I$(INC) -fPIC
+ 
+-LFLAGS = -g 
++LDFLAGS += -g
+ 
+-all: quicktree
++all: quicktree libquicktree.so
+ 
+ quicktree : $(QUICKTREEOBJ)
+-	$(CC) $(LFLAGS) -o $@ $(QUICKTREEOBJ) -lm
++	$(CC) $(LDFLAGS) -o $@ $(QUICKTREEOBJ) -lm
++
++libquicktree.so: $(QUICKTREEOBJ)
++	$(CC) -shared $(LFLAGS) -o $@ $(QUICKTREEOBJ) -lm
+ 
+ $(OBJ)/quicktree.o : $(SRC)/quicktree.c $(INC)/version.h
+ 	$(CC) $(CFLAGS) -o $(OBJ)/quicktree.o $(SRC)/quicktree.c
+@@ -52,4 +57,4 @@ $(OBJ)/options.o : $(SRC)/options.c $(INC)/options.h
+ 	$(CC) $(CFLAGS) -o $(OBJ)/options.o $(SRC)/options.c
+ 
+ clean:
+-	rm $(OBJ)/*.o quicktree
++	rm -f $(OBJ)/*.o quicktree libquicktree.so

@@ -1,0 +1,60 @@
+{% set name = "varifier" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/iqbal-lab-org/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: d452fc77542fb89d6c9009033375dfb80f62de2182e75523a9012ff7ba5e5683
+
+build:
+  number: 0
+  entry_points:
+    - varifier = varifier.__main__:main
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed . -vv"
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+    - minimap2 >=2.17
+    - mummer4
+  run:
+    - mummer4
+    - minimap2 >=2.17
+    - biopython
+    - cluster_vcf_records >=0.13.2
+    - mappy >=2.17
+    - pandas
+    - pyfastaq >=3.14.0
+    - pymummer
+    - pysam
+    - python >=3.6
+    - seaborn
+
+test:
+  imports:
+    - varifier
+    - varifier.tasks
+  commands:
+    - varifier --help
+    - varifier vcf_eval --help
+    - varifier make_truth_vcf --help
+
+about:
+  home: "https://github.com/iqbal-lab-org/varifier"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "varifier: variant call verification"
+
+extra:
+  recipe-maintainers:
+    - mbhall88
+    - martinghunt
+    - leoisl

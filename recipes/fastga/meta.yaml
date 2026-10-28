@@ -1,0 +1,70 @@
+{% set commit = "178afcbba2f79abc1686e3bd2b8a916969467e83" %}
+
+package:
+  name: fastga
+  version: 1.5.20260729
+
+source:
+  # Post-v1.5 commit, not a tag: the v1.5 tarball cannot read the .1ano files that
+  # current FASTAN writes. See the PR description -- upstream changed the ANO record
+  # definition in 0a4a4db ("ANO file definition change", 2026-04-23), three months
+  # after v1.5 was tagged, and there has been no release since.
+  url: https://github.com/thegenemyers/FASTGA/archive/{{ commit }}.tar.gz
+  sha256: 9bb7b506f4c6445819119ab41ad2bbbed25e20a4f6286d6d1c6a5c77ff1eddf0
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('fastga', max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib  
+  run:
+    - zlib
+
+test:
+  commands:
+    - FastGA 2>&1 | grep Usage
+    - FAtoGDB 2>&1 | grep Usage
+    - GIXmake 2>&1 | grep Usage
+    - ALNtoPAF 2>&1 | grep Usage
+    - ALNtoPSL 2>&1 | grep Usage
+    - GDBshow 2>&1 | grep Usage
+    - GDBstat 2>&1 | grep Usage
+    - GIXshow 2>&1 | grep Usage
+    - ALNshow 2>&1 | grep Usage
+    - ALNplot 2>&1 | grep Usage
+    - GDBtoFA 2>&1 | grep Usage
+    - GIXrm 2>&1 | grep Usage
+    - GIXcp 2>&1 | grep Usage
+    - GIXmv 2>&1 | grep Usage
+    - ALNchain 2>&1 | grep Usage
+    - ALNreset 2>&1 | grep Usage
+    - PAFtoALN 2>&1 | grep Usage
+    - PAFtoPSL 2>&1 | grep Usage
+    - ONEview
+    - FastKS 2>&1 | grep Usage
+    - ANOtoBED 2>&1 | grep Usage
+    - BEDtoANO 2>&1 | grep Usage
+    - ANOstat 2>&1 | grep Usage
+    - ANOshow 2>&1 | grep Usage
+
+about:
+  home: https://github.com/thegenemyers/FASTGA
+  license: BSD-like
+  license_file: LICENSE
+  summary: "FastGA - A Fast Genome Aligner."
+  dev_url: https://github.com/thegenemyers/FASTGA
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - c-zhou
+

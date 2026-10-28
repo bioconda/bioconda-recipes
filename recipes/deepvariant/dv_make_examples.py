@@ -20,9 +20,12 @@ class DVHelp(argparse._HelpAction):
         conda_path = os.path.dirname(os.path.realpath(sys.executable))
         lib_path = os.path.join(os.path.dirname(conda_path), "lib")
         py_exe = sys.executable
-        cmd = ("export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+        cmd = ("export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
                "{py_exe} {bin_dir}/make_examples.zip --help")
-        print(subprocess.check_output(cmd.format(**locals()), shell=True))
+        try:
+            print(subprocess.check_output(cmd.format(**locals()), shell=True))
+        except subprocess.CalledProcessError as e:
+            print(e.stdout.decode('UTF-8'))
         print()
         print("Wrapper arguments")
         parser.print_help()
@@ -36,6 +39,7 @@ def main():
     parser.add_argument("--regions", help="Genomic region to process")
     parser.add_argument("--logdir", required=True)
     parser.add_argument("--examples", required=True, help="Output directory for examples")
+    parser.add_argument("--gvcf", help="Output directory for gvcf files. Generates output files as {{gvcf}}/{{sample}}.gvcf.tfrecord@{{cores}}.gz")
     parser.add_argument("-h", "--help", action=DVHelp)
 
     args = parser.parse_args()
@@ -46,10 +50,13 @@ def main():
     py_exe = sys.executable
     split_inputs = " ".join(str(x) for x in range(0, int(args.cores)))
     regions = ("--regions %s" % args.regions) if args.regions else ""
-    cmd = ("export PATH={conda_path}:$PATH && export LD_LIBRARY_PATH={lib_path}:$LD_LIBRARY_PATH && "
+    gvcf = ("--gvcf {args.gvcf}/{args.sample}.gvcf.tfrecord@{args.cores}.gz".format(**locals())) if args.gvcf else ""
+    cmd = ("export PATH={conda_path}:\"$PATH\" && export LD_LIBRARY_PATH={lib_path}:\"$LD_LIBRARY_PATH\" && "
            "parallel --eta --halt 2 --joblog {args.logdir}/log --res {args.logdir} "
            "{py_exe} {bin_dir}/make_examples.zip "
            "--mode calling --ref {args.ref} --reads {args.reads} {regions} "
+           "{gvcf} "
+           "--sample_name {args.sample} "
            "--examples {args.examples}/{args.sample}.tfrecord@{args.cores}.gz --task {{}} "
            "::: {split_inputs}")
     sys.exit(subprocess.call(cmd.format(**locals()), shell=True))

@@ -1,53 +1,80 @@
 {% set name = "pyopenms" %}
-{% set version = "2.4.0" %}
+{% set version = "3.6.0" %}
 
 package:
-  name: {{ name|lower  }}
-  version: {{ version  }}
+  name: {{ name }}
+  version: {{ version }}
+{% if "dev" in version %}
 
 source:
-  - url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
-    sha256: 86e8176b0f89cc86a10f5c3e60c34140d591e9e6c85f129ccbfa13ecb16a9af2 
-    patches:
-      - library.patch 
-  - url: http://ftp.mi.fu-berlin.de/pub/OpenMS/contrib-sources/WildMagic5.tar.gz
-    sha256: cbdc9fa23880070b46b63764eb34795e25d099d2d06c259ad58c21d7bea45772
-    folder: wildmagic
+  git_url: https://github.com/OpenMS/OpenMS.git
+  git_rev: develop
+  md5: unused
+{% else %}
+
+source:
+  url: https://github.com/OpenMS/OpenMS/releases/download/v{{ version }}/OpenMS-{{ version }}.tar.gz
+  sha256: 70c7f7afff938634b5e87a7c9f71856a4469ae0e45d66dd50655460dbf6d6535
+  patches:
+    # libopenms does not install BrukerTimsFile.h.
+    - 0001-bind_format-include-BrukerTimsFile.h-only-with-WITH_OPENTIMS.patch
+{% endif %}
 
 build:
   number: 0
-  skip: True  # [py3k or osx]
+  skip: true  # [py < 311]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - cmake
-    - autoconf
-    - automake
+    - {{ stdlib('c') }}
+    - ninja
+    - cmake >=3.24
   host:
     - python
-    - autowrap
-    - numpy
-    - pip
-    - seqan-library ==1.4.2
-    - openms {{ version }}
+    - nanobind >=3.1,<4
+    - numpy >=2.0
+    - pandas >=3
+    - matplotlib-base >=3.5
+    - libopenms =={{ version }}
+    - libarrow =23=*_cpu
+    - libboost-headers
+    - eigen >=3.4.0
   run:
     - python
-    - autowrap
-    - numpy
-    - openms {{ version }}
+    - libopenms =={{ version }}
+    - numpy >=2.0
+    - pandas >=3
+    - matplotlib-base >=3.5
 
 test:
+  imports:
+    - pyopenms
   commands:
-    - python -c "import pyopenms; print(pyopenms.__version__)"
+    - python -c "import pyopenms as oms; assert oms.__version__ == '{{ version }}', oms.__version__; print(oms.__version__)"
+    - python -c "import pyopenms as oms; n = oms.ModificationsDB().getNumberOfModifications(); assert n > 100, n; print(n)"
 
 about:
-  home: https://github.com/OpenMS/OpenMS
-  license: BSD
+  home: "https://github.com/OpenMS/OpenMS"
+  license: "BSD-3-Clause"
+  license_family: BSD
   license_file: LICENSE
-  summary: OpenMS is an open-source software C++ library for LC-MS data management and analyses
+  summary: "Python bindings for OpenMS, an open-source software C++ library for LC-MS data management and analyses."
+  dev_url: "https://github.com/OpenMS/OpenMS"
+  doc_url: "https://openms.readthedocs.io/en/latest"
 
 extra:
+  recipe-maintainers:
+    - timosachsenberg
+    - jonasscheid
+  additional-platforms:
+    - osx-arm64
   identifiers:
     - biotools:openms
-    - doi:10.1038/nmeth.3959
+    - doi:10.1038/s41592-024-02197-7
+{% if "dev" in version %}
+  skip-lints:
+    - uses_vcs_url
+{% endif %}

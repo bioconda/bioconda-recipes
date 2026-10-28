@@ -1,29 +1,32 @@
-{% set version = "1.7.1" %}
+{% set version = "1.7.3" %}
 
 package:
   name: isescan
   version: {{ version }}
 
 source:
-  url: https://github.com/xiezhq/ISEScan/archive/v{{ version }}.tar.gz
-  sha256: 33fd49c268c0778faa9429edea96d7d00fd6dc4b53734535b35f428c83ed21f8
+  url: https://github.com/xiezhq/ISEScan/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cf3d7f0c272aa3527dd14565e8c7b29b8fed23a3bf880b10eda0fdfee0873fd9
   patches:
-    # removes hard-coded paths from constants.py
-    - constants.patch
+    - sse2neon.patch  # [aarch64 or arm64]
 
 build:
   number: 1
-  skip: True # [osx]
+  run_exports:
+      - {{ pin_subpackage('isescan', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - sse2neon  # [aarch64 or arm64]
   run:
     - python >=3
     - numpy >=1.8
     - scipy >=0.13.1
     - fastcluster
-    - fraggenescan <=1.30
+    - fraggenescan >=1.32
     - hmmer >=3.1b2
     - blast >=2.2.31
     - biopython >=1.62
@@ -34,5 +37,15 @@ test:
 
 about:
   home: https://github.com/xiezhq/ISEScan
-  license: GNU General Public License
-  summary: 'A python pipeline to identify IS (Insertion Sequence) elements in genome and metagenome '
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - ssw201507/license.ssw.txt
+  summary: 'A python pipeline to identify IS (Insertion Sequence) elements in genomes and metagenomes'
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  identifiers:
+    - doi:10.1093/bioinformatics/btx433

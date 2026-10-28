@@ -1,0 +1,42 @@
+{% set name = "nebulizer" %}
+{% set version = "0.7.2" %}
+{% set hash_value = "049fe95c84e8fe4cc7e299061d84ce7fbb9660e3234749a1f832de2348951d51" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/pjbriggs/nebulizer/archive/v{{ version }}.tar.gz
+  sha256: {{ hash_value }}
+
+build:
+  number: 0
+  noarch: python
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - nebulizer = nebulizer.cli:nebulizer
+  run_exports:
+    - {{ pin_subpackage('nebulizer', max_pin="x.x") }}
+  
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+    - bioblend
+    - mako
+    - click <=6.7
+
+test:
+  commands:
+    - nebulizer --help
+
+about:
+  home: https://github.com/pjbriggs/nebulizer
+  license: AFL-3.0
+  license_file: LICENSE
+  summary: Command-line utilities to help with managing users, data libraries and tools in a Galaxy instance
+  doc_url: https://nebulizer.readthedocs.io/en/latest/
+  dev_url: https://github.com/pjbriggs/nebulizer

@@ -1,43 +1,47 @@
-{% set version = "4.0.2" %}
+{% set name = "rmats" %}
+{% set version = "4.4.0" %}
 
 package:
-  name: rmats
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  sha256: afab002a9ae836d396909aede96318f6dab6e5818078246419dd563624bf26d1
-  url: https://sourceforge.net/projects/rnaseq-mats/files/MATS/rMATS.{{ version }}.tgz
-  patches:
-    - linux.patch
+  sha256: 974a4038dfea70c5760e6b41beb8b44d6989bf30e1a0869d105120165fe734a0
+  url: https://github.com/Xinglab/rmats-turbo/releases/download/v{{ version }}/rmats_turbo_v{{ version|replace(".","_") }}.tar.gz
 
 build:
-  number: 4
-  skip: True  # [py3k or osx]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
+    - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - {{ stdlib('c') }}
+    - libgomp  # [linux]
+    - cmake
   host:
     - python
+    - cython
     - numpy
-    - scipy
-    - gsl 1.16
+    - gsl
     - zlib
-    - libgfortran
+    - libblas
+    - liblapack
+    - setuptools
   run:
     - python
     - numpy
-    - scipy
-    - gsl 1.16
+    - gsl
     - zlib
-    - libgfortran
-    - star >=2.5
+    - star >=2.5  # [not (osx and arm64)]
 
 test:
   commands:
-    - rmats.py
+    - rmats.py --version
     - $PREFIX/rMATS/rMATS_C/rMATSexe | grep "Fail to open"
 
 about:
@@ -47,6 +51,6 @@ about:
   license_file: LICENSE
 
 extra:
-  skip-lints:
-    # This seems to need an old libgfortran
-    - should_use_compilers
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,0 +1,47 @@
+{% set name = "mlgenotype" %}
+{% set version = "0.1.12" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  #url: "https://test-files.pythonhosted.org/packages/40/e4/483d6d723f3727abbd96404009b773408cebe8d6a0c6478a6f43e9f4d88f/mlgenotype-0.1.12.tar.gz"
+  sha256: e89eb045be093204671c6110a341b4b1dd8ae78c41ba1b1e59b3b4a4c8cabc76
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install --ignore-installed --no-deps . -vv"
+  entry_points:
+    - rfmodelpredict=mlgenotype.rfmodelpredict:main
+    - rfmodeltrain=mlgenotype.rfmodeltrain:main
+    - rftrainpredict=mlgenotype.rftrainpredict:main
+    - figure1calcs=mlgenotype.figure1calcs:main
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+  run:
+    - python >=3.7
+    - pandas >=1.0
+    - scikit-learn ==1.0.2
+
+test:
+  commands:
+    - rfmodeltrain --help
+    - rfmodelpredict --help
+
+about:
+  home: https://github.com/nhansen/mlgenotype
+  license: MIT
+  license_file: LICENSE.md
+  summary: "A package with utilities for training random forest classifiers to recognize SVs in short read datasets"
+  doc_url: https://github.com/nhansen/mlgenotype
+  dev_url: https://github.com/nhansen/mlgenotype
+
+extra:
+  recipe-maintainers:
+    - nhansen

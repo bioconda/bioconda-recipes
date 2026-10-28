@@ -1,0 +1,56 @@
+{% set name = "pydmtools" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source: 
+  url: https://pypi.org/packages/source/p/pydmtools/pydmtools-{{ version }}.tar.gz
+  sha256: cd6da42965e6e13a57d681bcddd3b42c94f0bda773b7f4103ecd979c0e83d6ac
+  
+build:
+  number: 0
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CFLAGS="${CFLAGS} -O3"
+    - export C_INCLUDE_PATH="$PREFIX/include"
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - numpy
+    - curl
+    - libcurl
+    - zlib
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - pydmtools
+  commands:
+    - python -c "import pydmtools as pydm; assert(pydm.numpy == 1); assert(pydm.remote == 1)"
+
+about:
+  home: "https://github.com/ZhouQiangwei/pydmtools"
+  license: MIT
+  license_family: MIT
+  license_file: "LICENSE.txt"
+  summary: "Python extension in C for fast access to DNA methylation DM files."
+  dev_url: "https://github.com/ZhouQiangwei/pydmtools"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c

@@ -1,8 +1,9 @@
 #!/bin/bash
+pushd LDhelmet_v1.10
 
-export BOOST_INCLUDE_DIR=${PREFIX}/include
-export BOOST_LIBRARY_DIR=${PREFIX}/lib
-
-make
-chmod +x ldhelmet
-cp ldhelmet $PREFIX/bin
+make \
+    CC="${CXX} ${CXXFLAGS} ${CPPFLAGS} -fcommon" \
+    INC_FLAG="-I${PREFIX}/include" \
+    LIB_FLAG="${LDFLAGS}"
+install -d "${PREFIX}/bin"
+install ldhelmet "${PREFIX}/bin/"
