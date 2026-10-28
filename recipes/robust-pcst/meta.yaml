@@ -1,0 +1,66 @@
+{% set name = "robust-pcst" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bionetslab/robust/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 6da47fda5bcf8140e665d63fa9218a62a1f0997ba61203eeeceef782d8dc5e29
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77
+  run:
+    - python >={{ python_min }}
+    - numpy
+    - pandas
+    - networkx
+    - matplotlib-base
+    - pcst-fast
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  imports:
+    - robust_pcst
+    - robust_pcst.cli
+  commands:
+    - pip check
+    - command -v robust-pcst
+
+about:
+  home: https://github.com/bionetslab/robust
+  dev_url: https://github.com/bionetslab/robust
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Robust disease module mining via enumeration of diverse prize-collecting Steiner trees
+  description: |
+    ROBUST mines disease modules from a protein-protein interaction network and a
+    set of seed genes. It enumerates diverse prize-collecting Steiner trees that
+    connect the seeds and reports the nodes that recur across trees, written as
+    GraphML, CSV or an edge list.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btab876
+  recipe-maintainers:
+    - JohannesKersting
+  notes: |
+    Installs the command "robust-pcst", which takes seven positional arguments:
+    network edge list, seed file, output file, initial fraction (alpha),
+    reduction factor (beta), number of Steiner trees and threshold (theta), e.g.
+    robust-pcst network.txt seeds.txt out.graphml 0.25 0.9 30 0.1
+    A newer, study-bias-aware version of ROBUST is packaged as robust-bias-aware.
