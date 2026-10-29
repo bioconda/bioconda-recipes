@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "chipseqdbdata-1.22.0"
+installBiocDataPackage.sh "chipseqdbdata-1.26.0"

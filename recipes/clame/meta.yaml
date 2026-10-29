@@ -10,21 +10,27 @@ source:
   sha256: ccead68e51391f443b3c91d2234acd03ee2993d2c1ec730029093b30a3e61a2c
   
 build:
-  number: 2
-  skip: True # [osx]
+  number: 3
+  # binning.cpp:12:10: fatal error: 'tr1/unordered_map' file not found
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name,max_pin="x") }}
 
 requirements:
   build:
     - make
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - openmp  # [linux]
     - cmake
+    - pkg-config
+  host:
     - sdsl-lite
-    - libstdcxx-ng # [linux]
-    - libgomp # [linux]
-    - openlibm # [linux]
-    - gcc_impl_linux-64 # [linux]
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - openlibm  # [linux]
+  run:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
     
 test:
   commands:
@@ -34,13 +40,17 @@ test:
     - mapping -h 2>&1 | grep "mapping" > /dev/null
 
 about:
-  home: https://github.com/andvides/CLAME
-  license: GPL-3.0
+  home: "https://github.com/andvides/CLAME"
+  license: "GPL-3.0-or-later"
   license_file: LICENSE
-  license_family: GPL
+  license_family: GPL3
   summary: "CLAME is a binning software for metagenomic reads. It immplements a fm-index search algorithm for nucleotide sequence alignment. Then it uses strongly connected component strategy to bin sequences with similar DNA composition."
+  dev_url: "https://github.com/andvides/CLAME"
 
 extra:
   identifiers:
     - doi:10.1186/s12864-018-5191-y
-  
+  additional-platforms:
+    - linux-aarch64
+    # missing sdsl-lite
+    #- osx-arm64

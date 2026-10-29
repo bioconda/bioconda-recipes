@@ -1,10 +1,43 @@
 #!/bin/bash
+set -xe
 
-mkdir -p build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx2"
-make -j"${CPU_COUNT}"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CXXFLAGS="${CXXFLAGS} -O3"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 
-mkdir -p $PREFIX/bin
-cp bin/needle $PREFIX/bin
-chmod +x $PREFIX/bin/needle
+case $(uname -m) in
+    aarch64)
+    export CXXFLAGS="${CXXFLAGS} -march=armv8-a"
+    ;;
+    arm64)
+    export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
+    ;;
+    x86_64)
+    export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
+    ;;
+    *)
+    ;;
+esac
+
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    export CONFIG_ARGS=(
+        -DCMAKE_FIND_FRAMEWORK=NEVER
+        -DCMAKE_FIND_APPBUNDLE=NEVER
+    )
+    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+else
+    export CONFIG_ARGS=()
+fi
+
+cmake -S . \
+      -B build \
+      -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_CXX_COMPILER="${CXX}" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+      -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.12 \
+      "${CONFIG_ARGS[@]}"
+
+ninja -C build -j "${CPU_COUNT}"
+ninja -C build install

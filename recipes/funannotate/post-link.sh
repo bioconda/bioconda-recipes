@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+ROOT=$(python -c "from importlib.util import find_spec; print(find_spec('funannotate').submodule_search_locations.pop())")
+chmod -R ugo+x $ROOT/aux_scripts
+
 cat >> "${PREFIX}"/.messages.txt <<- EOF
     
 ##########################################################################################
