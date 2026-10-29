@@ -47,6 +47,11 @@ bowtie2-inspect \
 bowtie2-inspect-l \
 bowtie2-inspect-s \
 "
+# On x86_64 the Makefile also builds the AVX2 (x86-64-v3) aligners, and
+# bowtie2-align-{s,l} exec them at runtime when the CPU supports it
+if [[ "$(uname -m)" == "x86_64" ]]; then
+	binaries="${binaries} bowtie2-align-s-v256 bowtie2-align-l-v256"
+fi
 directories="scripts"
 
 for i in ${binaries}; do
