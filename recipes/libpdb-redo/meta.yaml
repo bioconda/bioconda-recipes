@@ -1,7 +1,5 @@
 {% set name = "libpdb-redo" %}
-{% set version = "3.3.1" %}
-{% set sha256 = "5cf99e93e307266d5c5741bd16e3a85cb20e54df8603cafb0147451006caeb45" %}
-{% set build_number = 0 %}
+{% set version = "3.5.2" %}
 
 package:
   name: {{ name }}
@@ -9,16 +7,21 @@ package:
 
 source:
   url: https://github.com/PDB-REDO/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  sha256: 9061695b2b35672d829605bf8c441f8f0cbcc6cd61a102bc8a7720a71bce78b1
+  # macOS libc++ needs explicit headers and lacks std::make_const_iterator.
+  patches:
+    - fix-macos-libcxx.patch  # [osx]
 
 build:
-  number: {{ build_number }}
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
+    # Patch version update may be destructive.
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
 
 requirements:
   build:
     - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
     - cmake
     - ninja
     - pkg-config
@@ -26,8 +29,11 @@ requirements:
     - clipper
     - eigen
     - gsl
-    - libcifpp ==9.0.4
+    - libcifpp 10.0.*
     - zlib
+  run:
+    # 'libcifpp' may change its public API in patch releases.
+    - {{ pin_compatible("libcifpp", max_pin="x.x.x") }}
 
 about:
   home: "https://pdb-redo.eu"
