@@ -1,0 +1,21 @@
+--- a/tissue/main.py	2026-10-28 14:18:39.635008034 +0100
++++ b/tissue/main.py	2026-10-28 14:19:05.659550463 +0100
+@@ -236,6 +236,18 @@
+             
+     else:
+         raise Exception ("method not recognized")
++    
++    # sanitize graph parameters stored in uns to ensure h5ad round-trip compatiblity
++    # - remove None/tuple entries (anndata >= 0.12.1 serializes None with the "null" encoding,
++    #   which older anndata readers cannot handle; tuple radii break h5ad writes)
++    # - replace None radius with the computed default radius, when available
++    if "spatial_neighbors" in adata.uns and "params" in adata.uns["spatial_neighbors"]:
++        if radius is not None and adata.uns["spatial_neighbors"]["params"].get("radius") is None:
++            adata.uns["spatial_neighbors"]["params"]["radius"] = float(radius)
++        adata.uns["spatial_neighbors"]["params"] = {
++            key: value for key, value in adata.uns["spatial_neighbors"]["params"].items()
++            if value is not None and not isinstance(value, tuple)
++        }
+ 
+ 
+ def load_spatial_graph(adata, npz_filepath, add_identity=True):

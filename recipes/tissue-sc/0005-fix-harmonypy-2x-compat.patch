@@ -1,0 +1,27 @@
+--- tissue_sc-1.0.1/tissue/main.py	2024-01-30 22:56:18.291020400 +0100
++++ tissue_sc-1.0.1_patched5/tissue/main.py	2026-10-28 16:49:10.309426786 +0100
+@@ -387,7 +387,7 @@
+     
+     See predict_gene_expression() for details on arguments
+     '''
+-    from scanpy.external.pp import harmony_integrate
++    import harmonypy
+     from scipy.spatial.distance import cdist
+     
+     # combine anndatas
+@@ -401,7 +401,14 @@
+     
+     # run Harmony
+     sc.tl.pca(joint_adata)
+-    harmony_integrate(joint_adata, 'batch', verbose=False)
++    # run_harmony is called directly (rather than via scanpy.external.pp.harmony_integrate)
++    # because harmonypy >= 2.0 changed the Z_corr orientation: it is now (n_obs x n_pcs),
++    # but scanpy's wrapper still transposes it, producing an invalid obsm shape.
++    harmony_out = harmonypy.run_harmony(joint_adata.obsm['X_pca'].astype(np.float64), joint_adata.obs, 'batch', verbose=False)
++    Z_corr = np.asarray(harmony_out.Z_corr)
++    if Z_corr.shape[0] != joint_adata.n_obs:
++        Z_corr = Z_corr.T
++    joint_adata.obsm['X_pca_harmony'] = Z_corr
+     
+     # kNN imputation
+     knn_mat = cdist(joint_adata[joint_adata.obs["batch"] == "spatial"].obsm['X_pca_harmony'][:,:np.min([30,joint_adata.obsm['X_pca_harmony'].shape[1]])],
