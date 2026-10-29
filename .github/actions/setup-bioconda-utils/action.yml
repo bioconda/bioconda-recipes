@@ -1,0 +1,104 @@
+name: Setup bioconda-utils via pixi
+description: >-
+  Check out a pinned bioconda-utils revision and provision its pixi environment.
+  A utils bump and its workflow changes land atomically in one recipes PR.
+
+inputs:
+  utils-repository:
+    description: Repository containing utils-ref. Switch back to bioconda/bioconda-utils when extras lands upstream.
+    required: false
+    default: paperbenni/bioconda-utils
+  utils-ref:
+    description: >-
+      Pinned commit from the extras branch, including the current CLI and shared
+      cache root for metadata and conda/rattler container downloads. Bump this
+      default to roll out a new version everywhere at once.
+    required: false
+    default: 450c1de1e69b26ee7c22afe4e96e2d1e29bfb39e
+  cache:
+    description: Restore and save utils metadata and downloaded build dependencies.
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Check out bioconda-utils
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.utils-repository }}
+        ref: ${{ inputs.utils-ref }}
+        # setuptools-scm needs history and tags for the CLI version.
+        fetch-depth: 0
+        path: bioconda-utils
+
+    - name: Point pixi at the utils manifest
+      shell: bash
+      run: echo "PIXI_PROJECT_MANIFEST=${{ github.workspace }}/bioconda-utils/pixi.toml" >> "$GITHUB_ENV"
+
+    - name: Set up pixi
+      uses: prefix-dev/setup-pixi@v0
+      with:
+        pixi-version: v0.78.0
+        manifest-path: bioconda-utils/pixi.toml
+        environments: default
+
+    - name: Fetch upstream release tags
+      # Forks may contain recent release commits without their version tags.
+      # setuptools-scm must see the canonical tags before building metadata.
+      shell: bash
+      working-directory: bioconda-utils
+      run: git fetch --tags https://github.com/bioconda/bioconda-utils.git
+
+    - name: Install bioconda-utils into pixi env
+      shell: bash
+      run: pixi run -e default install
+
+    - name: Select released image for unreleased utils
+      # Released utils selects its matching Quay image itself. Development
+      # versions need the nearest release image, rather than an unpublished tag.
+      shell: bash
+      working-directory: bioconda-utils
+      run: |
+        version="$(pixi run python -c 'from bioconda_utils import __version__; print(__version__)')"
+        if [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          exit 0
+        fi
+        release="$(git describe --tags --abbrev=0 --match 'v[0-9]*')"
+        echo "BUILD_ENV_IMAGE=quay.io/bioconda/bioconda-utils-build-env-cos7:${release#v}" >> "$GITHUB_ENV"
+
+    - name: Locate build caches
+      if: inputs.cache == 'true'
+      id: caches
+      shell: bash
+      run: |
+        cache_dir="$(pixi run python -c 'import platformdirs; print(platformdirs.user_cache_path("bioconda-utils"))')"
+        echo "host=$cache_dir" >> "$GITHUB_OUTPUT"
+        echo "BIOCONDA_UTILS_CACHE=$cache_dir" >> "$GITHUB_ENV"
+        # Cache keys must be unique across bulk matrix workers.
+        echo "id=$(pixi run python -c 'import uuid; print(uuid.uuid4())')" >> "$GITHUB_OUTPUT"
+
+    - name: Restore build caches
+      if: inputs.cache == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.caches.outputs.host }}
+        key: bioconda-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-${{ github.run_id }}-${{ steps.caches.outputs.id }}
+        restore-keys: |
+          bioconda-build-v2-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('bioconda-utils/pixi.lock') }}-
+
+    - name: Configure conda for Bioconda builds
+      shell: bash
+      run: |
+        set -e
+        pixi run conda config --set always_yes yes
+        pixi run conda config --add channels bioconda
+        pixi run conda config --add channels conda-forge
+        pixi run conda config --remove channels defaults || true
+        pixi run conda config --set channel_priority strict
+        pixi run conda config --set conda_build.pkg_format 2
+
+        if [[ ${BIOCONDA_DISABLE_BUILD_PREP:-0} == 0 ]]; then
+          conda_bld="$(pixi run python -c 'from conda_build.config import Config; print(Config().croot, end="")')"
+          pixi run conda config --add channels "file://${conda_bld}"
+        fi

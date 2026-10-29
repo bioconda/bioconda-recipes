@@ -1,0 +1,41 @@
+name: Publish mulled manifests
+on:
+  workflow_call:
+    secrets:
+      QUAY_LOGIN:
+        required: true
+      QUAY_OAUTH_TOKEN:
+        required: true
+
+jobs:
+  publish:
+    name: Publish multi-arch manifests
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: biocontainers-manifest-publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download mulled image records
+        uses: actions/download-artifact@v6
+        with:
+          pattern: mulled-images-*
+          path: /tmp/mulled-images
+
+      - uses: ./.github/actions/setup-bioconda-utils
+
+      - name: Log in to Quay
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: $oauthtoken
+          password: ${{ secrets.QUAY_OAUTH_TOKEN }}
+
+      - name: Publish and verify manifests
+        env:
+          QUAY_LOGIN: ${{ secrets.QUAY_LOGIN }}
+          QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        run: |
+          set -e
+          pixi run bioconda-utils create-mulled-manifests /tmp/mulled-images
