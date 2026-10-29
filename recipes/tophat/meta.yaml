@@ -1,36 +1,64 @@
+{% set name = "tophat" %}
+{% set version = "2.1.2" %}
+
 package:
-  name: tophat
-  version: 2.1.1
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  - url: http://ccb.jhu.edu/software/tophat/downloads/tophat-2.1.1.Linux_x86_64.tar.gz # [linux]
-    md5: 97fe58465a01cb0a860328fdb1993660 # [linux]
-  - url: https://ccb.jhu.edu/software/tophat/downloads/tophat-2.1.1.OSX_x86_64.tar.gz # [osx]
-    md5: 1e4e7f8d08f182d2db3202975f284294 # [osx]
+  url: https://github.com/infphilo/tophat/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 15016b82255dad085d4ee7d970e50f0e53a280d466335553d47790d8344ff4b1
+  patches:
+    - 0001-configure.ac.patch
+    - 0002-make_pair.patch
+    - 0004-Makefile.patch
 
 build:
-  number: 4
-  # There's some issue with the wrapper script at least on linux, but we should no longer build this anyway
-  skip: true
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - python >=3
+    - make
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - gnuconfig
+  host:
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - boost-cpp
+    - ncurses
+    - zlib
   run:
-    - python
-    - bowtie2 <=2.2.5
+    - python >=3
+    - setuptools
+    - libgomp  # [linux]
+    - llvm-openmp  # [osx]
+    - ncurses
+    - boost-cpp
+    - bowtie2
 
 test:
   commands:
     - (tophat --version 2>&1) > /dev/null
 
 about:
-  home: http://ccb.jhu.edu/software/tophat/index.shtml
-  license: Boost Software License
-  summary: A spliced read mapper for RNA-Seq
+  home: "http://ccb.jhu.edu/software/tophat"
+  license: "Boost Software License"
+  summary: "A spliced read mapper for RNA-Seq."
+  doc_url: "http://ccb.jhu.edu/software/tophat"
+  dev_url: "https://github.com/infphilo/tophat"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:tophat2
     - usegalaxy-eu:tophat2
-  skip-lints:
-    - should_be_noarch_generic
-    - should_not_be_noarch_source

@@ -1,0 +1,55 @@
+{% set name = "libpdb-redo" %}
+{% set version = "3.5.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PDB-REDO/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9061695b2b35672d829605bf8c441f8f0cbcc6cd61a102bc8a7720a71bce78b1
+  # macOS libc++ needs explicit headers and lacks std::make_const_iterator.
+  patches:
+    - fix-macos-libcxx.patch  # [osx]
+
+build:
+  number: 0
+  run_exports:
+    # Patch version update may be destructive.
+    - {{ pin_subpackage(name, max_pin="x.x.x") }}
+
+requirements:
+  build:
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+    - cmake
+    - ninja
+    - pkg-config
+  host:
+    - clipper
+    - eigen
+    - gsl
+    - libcifpp 10.0.*
+    - zlib
+  run:
+    # 'libcifpp' may change its public API in patch releases.
+    - {{ pin_compatible("libcifpp", max_pin="x.x.x") }}
+
+about:
+  home: "https://pdb-redo.eu"
+  dev_url: "https://github.com/PDB-REDO/libpdb-redo"
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Library containing shared code for various PDB-REDO programs."
+  description: |
+    This library contains code shared by the various tools we develop at the NKI for the [PDB-REDO](https://pdb-redo.eu/) project.
+
+extra:
+  identifiers:
+    - doi:10.1107/S0907444911054515
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

@@ -1,0 +1,57 @@
+{% set version = "1.4.0" %}
+{% set name = "survClust" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: df9608806f9b2f71051c623664359d85
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-survclust", max_pin="x.x") }}'
+
+# Suggests: knitr, testthat (>= 3.0.0), gplots, htmltools, BiocParallel
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-pdist
+    - r-rcpp
+    - r-survival
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-multiassayexperiment >=1.36.0,<1.37.0
+    - r-base
+    - r-pdist
+    - r-rcpp
+    - r-survival
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Identification Of Clinically Relevant Genomic Subtypes Using Outcome Weighted Learning
+  description: survClust is an outcome weighted integrative clustering algorithm used to classify multi-omic samples on their available time to event information. The resulting clusters are cross-validated to avoid over overfitting and output classification of samples that are molecularly distinct and clinically meaningful. It takes in binary (mutation) as well as continuous data (other omic types).
+  license_file: LICENSE
+

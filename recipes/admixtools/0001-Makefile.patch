@@ -1,0 +1,141 @@
+diff --git a/src/Makefile b/src/Makefile
+index 5c53edf..470cf10 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -2,18 +2,18 @@ HOMEL=$(PWD)
+ TOP=../bin
+ BIN=$(HOMEL)/../bin
+ 
+-override LDLIBS += -lgsl -lopenblas -lm -lnick
++override LDLIBS += -lgsl -lopenblas -lm -lnick -pthread
+ # Some Linux distributions require separate lapacke library
+ # override LDLIBS += -llapacke
+-override LDFLAGS += -g  -p -pg -L./nicksrc
+-override CFLAGS += -c -g -p -pg -Wimplicit -I./ -I./nicksrc -fno-common
++override LDFLAGS += -L$(PREFIX)/lib -L./nicksrc
++override CFLAGS += -g -O3 -Wimplicit -I$(PREFIX)/include -I./ -I./nicksrc -fno-common -fPIC
+ # Mac additions using homebrew installations
+ #override CFLAGS += -I/usr/local/opt/openblas/include -I/usr/local/opt/gsl/include
+ #override LDFLAGS += -L/usr/local/opt/openblas/lib -L/usr/local/opt/gsl/lib
+ # Harvard Medical School O2 cluster additions
+ ifdef SLURM_CONF
+-override CFLAGS += -I/n/app/openblas/0.2.19/include -I/n/app/gsl/2.3/include
+-override LDFLAGS += -L/n/app/openblas/0.2.19/lib -L/n/app/gsl/2.3/lib/
++override CFLAGS += -I$(PREFIX)/include -I/n/app/openblas/0.2.19/include -I/n/app/gsl/2.3/include -fPIC
++override LDFLAGS += -L$(PREFIX)/lib -L/n/app/openblas/0.2.19/lib -L/n/app/gsl/2.3/lib/
+ TOP=../bin
+ BIN=$(HOMEL)/../bin
+ endif
+@@ -22,23 +22,23 @@ ND = nicksrc
+ NLIB = $(ND)/libnick.a
+ 
+ PROGS= qp3Pop qpDstat qpF4ratio qpAdm qpWave qp4diff dowtjack qpBound qpGraph qpreroot qpff3base qpDpart qpfstats qpfmv  qpmix 
+-PROGS2 = rexpfit.r  wtjack.pl 
++PROGS2 = rexpfit.r wtjack.pl
+ PROGS3 = convertf mergeit snpunion simpjack2 grabpars  easystats easycheck easylite  multimerge geno_single transpose merge_transpose
+ PROGS4 = multimerge merge_transpose transpose geno_single nickhash
+-PERLP = jackdiff mkpretty numlines getresult xtractcol 
++PERLP = jackdiff mkpretty numlines getresult xtractcol
+ 
+-CC = cc
++CC = $(CC)
+ 
+-all: $(NLIB) $(PROGS) $(PROGS3)  $(PROGS4) 
++all: $(NLIB) $(PROGS) $(PROGS3) $(PROGS4)
+ 
+ 
+ $(NLIB):
+ 	$(MAKE) -C $(ND)
+ 
+-## an ubuntu user found he needed: make all LDLIBS="-llapack" 
++## an ubuntu user found he needed: make all LDLIBS="-llapack"
+ 
+ statsubs.o:     tables nicksrc/statsubs.c
+-	$(CC)  $(CFLAGS) -o statsubs.o nicksrc/statsubs.c
++	$(CC) $(CFLAGS) -o statsubs.o nicksrc/statsubs.c
+ 
+ 
+ qpDstat: $(NLIB) qpDstat.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o egsubs.o regsubs.o geno.o
+@@ -104,50 +104,50 @@ qqAdm: $(NLIB) qqAdm.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o r
+ qpWave: $(NLIB) qpWave.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o regsubs.o f4rank.o eigsubs.o eigx.o geno.o
+ 
+ qpmix:  $(NLIB)  qpmix.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o eigsubs.o eigx.o regsubs.o qpfitr1.o gslrank1.o  geno.o
+-qptestr1:  $(NLIB)  qptestr1.o  gslrank1.o 
++qptestr1:  $(NLIB)  qptestr1.o  gslrank1.o
+ 
+ oldqpmix:  $(NLIB)  oldqpmix.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o regsubs.o
+ qqpmix:  $(NLIB)  qqpmix.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o regsubs.o
+ mkweights:  $(NLIB)  mkweights.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o regsubs.o
+- 
++
+ w2p:  $(NLIB)  w2p.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o  egsubs.o regsubs.o
+ 
+ simpjack2: $(NLIB) simpjack2.o
+ 
+ install:	all dirs tables
+ 	mkdir -p $(TOP)
+-	cp $(PROGS) $(TOP)
+-	cp $(PROGS2) $(TOP)
+-	cp $(PROGS3) $(TOP)
+-	cp $(PROGS3) $(TOP)
+-	cp ../perlsrc/* $(TOP) 
+-	cp fxtract $(BIN)
+-	cp -r script $(BIN) 
++	install -v -m 0755 $(PROGS) $(TOP)
++	install -v -m 0755 $(PROGS2) $(TOP)
++	install -v -m 0755 $(PROGS3) $(TOP)
++	install -v -m 0755 $(PROGS3) $(TOP)
++	install -v -m 0755 ../perlsrc/* $(TOP)
++	install -v -m 0755 fxtract $(BIN)
++	cp -rf script $(BIN)
+ 
+ uninstall:
+ 	rm -f tables
+ 	rm -f $(TOP)/*
+ 
+-tables:    
+-	echo "tables made"  > tables
+-	cp twtable  $(HOMEL)/admixtables
+-	
+-dirs:	
++tables:
++	echo "tables made" > tables
++	cp -f twtable $(HOMEL)/admixtables
++
++dirs:
+ 	mkdir -p  $(HOMEL)/admixtables
+ 
+-clean: 
+-	rm -f *.o 
++clean:
++	rm -f *.o
+ 	rm -f *junk*
+ 	rm -f core
+ 	$(MAKE) -C $(ND) clean
+-	rm -f $(PROGS) $(PROGS3) $(PROGS4) 
++	rm -f $(PROGS) $(PROGS3) $(PROGS4)
+ 
+ clobber: clean rmdirs uninstall
+ 
+ 
+-rmdirs: 
+-	rm -rf $(HOMEL)/admixtables 
+-	rm -rf $(BIN)/script 
++rmdirs:
++	rm -rf $(HOMEL)/admixtables
++	rm -rf $(BIN)/script
+ 
+ ## gsl-config may help here
+ 
+@@ -158,9 +158,9 @@ qqpGraph: $(NLIB) qqpGraph.o gslqp.o qpgsubs.o qpsubs.o mcio.o ldsubs.o admutils
+ 
+ qpreroot: qpreroot.o qpgsubs.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o egsubs.o regsubs.o geno.o
+ 
+-diffmean: diffmean.o 
++diffmean: diffmean.o
+ 
+-gcount: gcount.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o egsubs.o regsubs.o  geno.o 
++gcount: gcount.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o egsubs.o regsubs.o  geno.o
+ 
+ kimf: kimf.o gslkim.o qpgsubs.o qpsubs.o mcio.o mapfile.o ldsubs.o admutils.o egsubs.o regsubs.o
+ 

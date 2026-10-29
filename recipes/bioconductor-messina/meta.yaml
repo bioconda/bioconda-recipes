@@ -1,54 +1,64 @@
-{% set version = "1.38.0" %}
+{% set version = "1.46.0" %}
 {% set name = "messina" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: ad9cfdec37597c8a312b49085f1ff124
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 57e3910b826e488105bdc5c78c398cce
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-messina", max_pin="x.x") }}'
+
 # Suggests: knitr (>= 1.5), antiProfilesData (>= 0.99.2), Biobase (>= 2.22.0), BiocStyle
 requirements:
-  host:
-    - r-base
-    - 'r-foreach >=1.4.1'
-    - 'r-ggplot2 >=0.9.3.1'
-    - 'r-plyr >=1.8'
-    - 'r-rcpp >=0.11.1'
-    - 'r-survival >=2.37-4'
-    - libblas
-    - liblapack
-  run:
-    - r-base
-    - 'r-foreach >=1.4.1'
-    - 'r-ggplot2 >=0.9.3.1'
-    - 'r-plyr >=1.8'
-    - 'r-rcpp >=0.11.1'
-    - 'r-survival >=2.37-4'
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - r-base
+    - r-foreach >=1.4.1
+    - r-ggplot2 >=0.9.3.1
+    - r-plyr >=1.8
+    - r-rcpp >=0.11.1
+    - r-survival >=2.37-4
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - r-base
+    - r-foreach >=1.4.1
+    - r-ggplot2 >=0.9.3.1
+    - r-plyr >=1.8
+    - r-rcpp >=0.11.1
+    - r-survival >=2.37-4
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'EPL (>= 1.0)'
-  summary: 'Single-gene classifiers and outlier-resistant detection of differential expression for two-group and survival problems'
-  description: 'Messina is a collection of algorithms for constructing optimally robust single-gene classifiers, and for identifying differential expression in the presence of outliers or unknown sample subgroups.  The methods have application in identifying lead features to develop into clinical tests (both diagnostic and prognostic), and in identifying differential expression when a fraction of samples show unusual patterns of expression.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: EPL (>= 1.0)
+  summary: Single-gene classifiers and outlier-resistant detection of differential expression for two-group and survival problems
+  description: Messina is a collection of algorithms for constructing optimally robust single-gene classifiers, and for identifying differential expression in the presence of outliers or unknown sample subgroups.  The methods have application in identifying lead features to develop into clinical tests (both diagnostic and prognostic), and in identifying differential expression when a fraction of samples show unusual patterns of expression.
+
 extra:
+  additional-platforms:
+    - linux-aarch64
   identifiers:
     - biotools:messina
   parent_recipe:

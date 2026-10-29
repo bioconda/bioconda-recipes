@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "timerquant-1.32.0"
+installBiocDataPackage.sh "timerquant-1.39.0"

@@ -1,0 +1,32 @@
+--- tissue_sc-1.0.1/tissue/downstream.py	2024-01-29 23:10:26.721476300 +0100
++++ ts_ds_patched/tissue/downstream.py	2026-10-28 17:42:11.262842647 +0100
+@@ -769,6 +769,29 @@
+     '''
+     from wpca import PCA, WPCA, EMPCA
+     
++    # Compatibility shims for wpca 0.1 (unmaintained since 2016) with modern
++    # scikit-learn and scipy: translate the removed `force_all_finite` kwarg of
++    # check_array (replaced by `ensure_all_finite` in scikit-learn >= 1.6) and the
++    # removed `eigvals` kwarg of scipy.linalg.eigh (replaced by `subset_by_index`
++    # in scipy >= 1.5), which wpca still uses internally.
++    import types
++    import wpca.utils as _wpca_utils
++    import wpca.wpca as _wpca_wpca
++    import scipy.linalg as _scipy_linalg
++    _wpca_check_array_orig = _wpca_utils.check_array
++    def _wpca_check_array_compat(X, **kwargs):
++        if 'force_all_finite' in kwargs:
++            kwargs['ensure_all_finite'] = kwargs.pop('force_all_finite')
++        return _wpca_check_array_orig(X, **kwargs)
++    _wpca_utils.check_array = _wpca_check_array_compat
++    _wpca_wpca.check_array = _wpca_check_array_compat
++    _wpca_eigh_orig = _scipy_linalg.eigh
++    def _wpca_eigh_compat(a, **kwargs):
++        if 'eigvals' in kwargs:
++            kwargs['subset_by_index'] = kwargs.pop('eigvals')
++        return _wpca_eigh_orig(a, **kwargs)
++    _wpca_wpca.linalg = types.SimpleNamespace(eigh=_wpca_eigh_compat)
++    
+     predicted = f"{imp_method}_predicted_expression"
+     
+     # get gene names/order

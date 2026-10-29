@@ -1,67 +1,74 @@
-{% set version = "1.18.0" %}
+{% set version = "1.26.0" %}
 {% set name = "alevinQC" %}
-{% set bioc = "3.18" %}
+{% set bioc = "3.22" %}
 
 package:
-  name: 'bioconductor-{{ name|lower }}'
+  name: bioconductor-{{ name|lower }}
   version: '{{ version }}'
+
 source:
   url:
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz'
-    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: fa79ac8ac72e4d6d16c096886e9f759d
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 32c51a6cc456a519e7ed8914b3b9fd23
+
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-alevinqc", max_pin="x.x") }}'
+
 # Suggests: knitr, BiocStyle, testthat (>= 3.0.0), BiocManager
 # SystemRequirements: C++11
 requirements:
-  host:
-    - 'bioconductor-tximport >=1.30.0,<1.31.0'
-    - r-base
-    - r-cowplot
-    - r-dplyr
-    - r-dt
-    - r-ggally
-    - 'r-ggplot2 >=3.4.0'
-    - r-rcpp
-    - r-rjson
-    - r-rlang
-    - 'r-rmarkdown >=2.5'
-    - r-shiny
-    - r-shinydashboard
-    - libblas
-    - liblapack
-  run:
-    - 'bioconductor-tximport >=1.30.0,<1.31.0'
-    - r-base
-    - r-cowplot
-    - r-dplyr
-    - r-dt
-    - r-ggally
-    - 'r-ggplot2 >=3.4.0'
-    - r-rcpp
-    - r-rjson
-    - r-rlang
-    - 'r-rmarkdown >=2.5'
-    - r-shiny
-    - r-shinydashboard
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+  host:
+    - bioconductor-tximport >=1.38.0,<1.39.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-dt
+    - r-ggally
+    - r-ggplot2 >=3.4.0
+    - r-rcpp
+    - r-rjson
+    - r-rlang
+    - r-rmarkdown >=2.5
+    - r-shiny
+    - r-shinydashboard
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-tximport >=1.38.0,<1.39.0
+    - r-base
+    - r-cowplot
+    - r-dplyr
+    - r-dt
+    - r-ggally
+    - r-ggplot2 >=3.4.0
+    - r-rcpp
+    - r-rjson
+    - r-rlang
+    - r-rmarkdown >=2.5
+    - r-shiny
+    - r-shinydashboard
+
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - $R -e "library('{{ name }}')"
+
 about:
-  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'MIT + file LICENSE'
-  summary: 'Generate QC Reports For Alevin Output'
-  description: 'Generate QC reports summarizing the output from an alevin, alevin-fry, or simpleaf run. Reports can be generated as html or pdf files, or as shiny applications.'
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Generate QC Reports For Alevin Output
+  description: Generate QC reports summarizing the output from an alevin, alevin-fry, or simpleaf run. Reports can be generated as html or pdf files, or as shiny applications.
   license_file: LICENSE
 

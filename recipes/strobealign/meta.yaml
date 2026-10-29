@@ -1,28 +1,26 @@
-{% set version = "0.13.0" %}
+{% set version = "0.19.1" %}
 
 package:
   name: strobealign
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage("strobealign", max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 source:
   url: https://github.com/ksahlin/strobealign/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 50f1585a8b3b733680067aa7ae20146a7d94d064d9fa234df0715bfcc5289c41
+  sha256: 97f3122f863cd78f075ada40a1a7bde41734035bfdc5eca2224900d4000630d0
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
-    - cmake
-    - make
-  host:
-    - zlib
-  run:
-    - zlib
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -30,11 +28,15 @@ test:
 
 about:
   home: https://github.com/ksahlin/strobealign
-  license: MIT
   summary: Align short reads using dynamic seed size with strobemers
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - marcelm

@@ -1,34 +1,31 @@
 {% set name = "pneumo-typer" %}
-{% set version = "1.0.1" %}
-{% set sha256 = "26ff14bc8bd48588e6b2332dfa25fcae2239a89d981a00622b16818a926cf194" %}
+{% set version = "2.0.2" %}
+{% set sha256 = "a5abe985afa2b4f230aa58bbfc7eeed3af396e3daec24687c790a2a6ffaa1167" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-    url: https://www.microbialgenomic.cn/temp_dir/pneumo-typer-v{{ version }}.tar.gz
-    sha256: {{ sha256 }}
+  url: https://www.microbialgenomic.cn/gz/pneumotyperData/pneumo-typer-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
     
 build:
-  number: 3
+  number: 0
   noarch: generic
   run_exports:
-    - {{ pin_subpackage('pneumo-typer', max_pin="x") }}
-requirements:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
-  #channels:
-  
+requirements:
   run:
     - blast
-    - perl-gd
+    - perl-gd >=2.74
     - perl-gd-svg
-    - perl-svg
+    - perl-svg >=2.87
+    - perl-lwp-protocol-https
     - perl-bioperl-core
     - prodigal
-    - blat
-
-    #- git
+    - ucsc-blat
     
 test:
   commands:
@@ -36,13 +33,16 @@ test:
     - makeblastdb -h
     #- blat
     - pneumo-typer -h
+    - update_mlstdb_cgmlstdb -m T -c F
     - prodigal -h
 
 about:
   home: 'https://www.microbialgenomic.cn/Pneumo-Typer.html'
-  summary: 'Pneumo-Typer is a comprehensive prediction and visualization of serotype and sequence type for streptococcus pneumoniae using assembled genomes.'
-  license: GNU General Public License v3.0 or any later version (GPL-3.0-or-later)
+  summary: 'Pneumo-Typer is a high-throughput capsule genotype visualization tool with integrated serotype and sequence type prediction for Streptococcus pneumoniae'
+  description: 'Pneumo-Typer is a stand-alone perl application, which requires blat, prodigal, NCBI BLAST+, and several perl Modules (GD, GD::SVG, Net::OAuth, JSON, LWP::UserAgent, HTTP::Request::Common, Data::Random, Config::Tiny) to be installed before use.'
+  doc_url: 'https://github.com/Xiangyang1984/Pneumo-Typer'
+  license: "GPL-3.0-or-later"
 
 extra:
   author:
-    - Xiangyang Li <lixiangyang@fudan.edu.cn>
+    - Dr. Xiangyang Li <lixiangyang@fudan.edu.cn>
