@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# conda-build extracts the archive's outer directory before running this file.
 for required in LICENSE RIASO/riaso/Cargo.toml RIASO/riaso/Cargo.lock RIASO/riaso/scripts/build_binary.sh RIASO/riaso/scripts/collect_libs.sh; do
     if [[ ! -e "${SRC_DIR}/${required}" ]]; then
         printf 'Missing source archive entry: %s\n' "${required}" >&2
@@ -17,8 +16,15 @@ export CARGO_TARGET_DIR="${SRC_DIR}/riaso-cargo-target"
 export CARGO_BUILD_JOBS="${CPU_COUNT:-2}"
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 
-# Reuse the upstream bundling implementation in a build-only copy. Avoid
-# activating a named environment, and retain conda's compiler/Rust flags.
+printf 'Rust linker: %s\n' "${CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER}"
+printf 'Compiler sysroot: %s\n' "$("${CC}" --print-sysroot)"
+glibc_macros="$("${CC}" -dM -E -include features.h - </dev/null)"
+if ! grep -qx '#define __GLIBC__ 2' <<< "${glibc_macros}" || \
+   ! grep -qx '#define __GLIBC_MINOR__ 17' <<< "${glibc_macros}"; then
+    printf 'Expected compiler sysroot glibc 2.17\n' >&2
+    exit 1
+fi
+
 python - <<'PY'
 from pathlib import Path
 
@@ -35,23 +41,18 @@ command = 'cargo build --release --bin riaso'
 if body.count(command) != 1:
     raise SystemExit("Upstream cargo build command changed; review the recipe")
 body = body.replace(command, command + ' --locked')
-# Keep this next to collect_libs.sh because upstream resolves it via $0.
 Path("scripts/.bioconda-build_binary.sh").write_text(
     '#!/usr/bin/env bash\nset -euo pipefail\n' + body, encoding="utf-8"
 )
 PY
 bash scripts/.bioconda-build_binary.sh
 
-# Install the complete dist tree privately, preserving its relative layout
-# and symlinks. Do not invoke build_conda_package.sh: conda-build creates the
-# final package and metadata from the files installed under PREFIX.
 bundle="${PREFIX}/share/riaso"
 mkdir -p "${PREFIX}/bin" "${bundle}"
 cp -a dist/. "${bundle}/"
 install -m 644 "${SRC_DIR}/LICENSE" "${bundle}/LICENSE"
 chmod 755 "${bundle}/riaso" "${bundle}/bin/riaso"
 
-# Keep bundled libraries private; the original launcher sets FONTCONFIG_FILE.
 cat > "${PREFIX}/bin/riaso" <<'SH'
 #!/bin/sh
 set -eu
@@ -65,6 +66,5 @@ exec "$bindir/../share/riaso/riaso" "$@"
 SH
 chmod 755 "${PREFIX}/bin/riaso"
 
-# Verify the installed tree before conda-build packages it.
 env -i "${PREFIX}/bin/riaso" --version
 env -i "${PREFIX}/bin/riaso" --HELP > /dev/null
