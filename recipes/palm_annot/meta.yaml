@@ -1,0 +1,48 @@
+{% set name = "palm_annot" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "4bc18653f97f5a968338005efb9067cd68ae68484481ce3adb3a9324cf593f5a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rcedgar/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3.8
+    - hmmer
+    - diamond
+    - palmscan
+
+test:
+  commands:
+    - palm_annot.py --help 2>&1 | grep -i "RdRp"
+    - fev2tsv.py --help 2>&1 | head -5
+
+about:
+  home: https://github.com/rcedgar/palm_annot
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "HMM-based annotation of viral RdRp palmprint regions"
+  description: |
+    palm_annot finds RNA-dependent RNA polymerase (RdRp) regions in
+    nucleotide or protein sequences using HMM profiles and palmprint
+    motifs, with optional palmcore (150pp150) trimming. It improves
+    sensitivity and false-positive rate compared with the PSSM-based
+    palmscan, while still calling palmscan2 internally for PSSM
+    search and pamerge.
+  dev_url: https://github.com/rcedgar/palm_annot
+
+extra:
+  recipe-maintainers:
+    - shoichisakaguchi
