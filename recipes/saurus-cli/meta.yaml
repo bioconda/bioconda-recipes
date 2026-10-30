@@ -1,0 +1,73 @@
+{% set name = "saurus-cli" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bbeckley-hub/saurus-cli/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 04e929ff3b79bf3e081a043cd699a77909a07ba3e9f47cfed34fd959cdefba3d
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  entry_points:
+    - saurus = saurus_cli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.9
+    - pandas >=1.5.0
+
+test:
+  imports:
+    - saurus_cli
+  commands:
+    - saurus --help
+    - saurus --version
+    - saurus --examples
+    - saurus --about
+    - test -d ${PREFIX}/share/saurus/data/mrsa
+    - saurus --lineage USA300 --count
+
+about:
+  home: https://saurus-db.org/
+  license: MIT
+  license_file: LICENSE
+  summary: 'Command-line interface for the SAURUS Staphylococcus aureus genomic surveillance database'
+  description: |
+    SAURUS-CLI provides programmatic, reproducible access to 139,257
+    Staphylococcus aureus genomes typed by MLST, spa, SCCmec (two
+    independent callers), agr, and capsule serotype, plus AMR genes,
+    virulence factors, plasmid replicons, and BioSample-derived
+    metadata (country, source, host, collection year).
+
+    The full data bundle ships inside the package. After installation,
+    queries run locally with no downloads, no API keys, and no network
+    access required. SAURUS-CLI is part of the ARGUS initiative, a
+    family of open genomic surveillance tools covering the six WHO
+    priority ESKAPE pathogens.
+  doc_url: https://saurus-db.org/manual.html
+  dev_url: https://github.com/bbeckley-hub/saurus-cli
+
+extra:
+  recipe-maintainers:
+    - bbeckley-hub
+  identifiers:
+    - doi:10.1186/s12864-026-12609-x
+  keywords:
+    - staphylococcus-aureus
+    - mrsa
+    - amr
+    - genomic-surveillance
+    - eskape
+    - argus
