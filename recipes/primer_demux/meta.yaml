@@ -1,0 +1,53 @@
+{% set name = "primer_demux" %}
+{% set version = "0.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/huiN95/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d73ba50b09b0e7184b7995e4cfb553a08ab414a92084e116d2f790bf912aa17c
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - make
+    - pkg-config
+    - cargo-bundle-licenses
+
+  host:
+    - openssl
+    - zlib
+    - bzip2
+    - xz
+    - libcurl
+
+test:
+  commands:
+    - primer_demux --help > /dev/null
+
+about:
+  home: https://github.com/huiN95/primer_demux
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Primer demultiplexing tool for sequencing data
+  description: |
+    primer_demux is a command-line tool for demultiplexing sequencing reads
+    by primer or barcode-like sequence patterns.
+  dev_url: https://github.com/huiN95/primer_demux
+
+extra:
+  recipe-maintainers:
+    - huiN95
