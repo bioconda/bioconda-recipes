@@ -9,6 +9,9 @@ for required in LICENSE RIASO/riaso/Cargo.toml RIASO/riaso/Cargo.lock RIASO/rias
 done
 
 cd "${SRC_DIR}/RIASO/riaso"
+export CARGO_HOME="${CARGO_HOME:-${SRC_DIR}/.cargo-home}"
+mkdir -p "${CARGO_HOME}"
+export CARGO_HOME="$(cd "${CARGO_HOME}" && pwd -P)"
 export CONDA_PREFIX="${PREFIX}"
 export HDF5_DIR="${PREFIX}"
 export PKG_CONFIG_PATH="${PREFIX}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
