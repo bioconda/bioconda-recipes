@@ -43,7 +43,11 @@ body = body[:body.index(flags_start)] + body[body.index(end):]
 command = 'cargo build --release --bin riaso'
 if body.count(command) != 1:
     raise SystemExit("Upstream cargo build command changed; review the recipe")
-body = body.replace(command, command + ' --locked')
+body = body.replace(command, command + ' --locked --target x86_64-unknown-linux-gnu')
+artifact = '$CARGO_TARGET_DIR/release/riaso'
+if body.count(artifact) != 1:
+    raise SystemExit("Upstream binary copy path changed; review the recipe")
+body = body.replace(artifact, '$CARGO_TARGET_DIR/x86_64-unknown-linux-gnu/release/riaso')
 Path("scripts/.bioconda-build_binary.sh").write_text(
     '#!/usr/bin/env bash\nset -euo pipefail\n' + body, encoding="utf-8"
 )
