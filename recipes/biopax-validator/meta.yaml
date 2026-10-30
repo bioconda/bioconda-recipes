@@ -1,0 +1,52 @@
+{% set name = "biopax-validator" %}
+{% set version = "6.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://downloads.sourceforge.net/project/biopax/validator/biopax-validator-{{ version }}-all.zip
+  sha256: eb220dc1fb79ed47edd5b6ee73ec9f6bf43b6e4d44a21cec8b3d892ef3436bc6
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('biopax-validator', max_pin="x") }}
+
+requirements:
+  run:
+    - openjdk >=17
+
+test:
+  commands:
+    - biopax-validator 2>&1 | grep -q "BioPAX Validator"
+    - biopax-validator-client 2>&1 | grep -q "Available parameters"
+
+about:
+  home: https://biopax.github.io/validator/
+  dev_url: https://github.com/BioPAX/validator
+  doc_url: https://biopax.github.io/validator/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Validates BioPAX data against the specification and best practice rules
+  description: |
+    The BioPAX Validator checks BioPAX Level 3 data for syntactic errors and for
+    violations of BioPAX best practice rules, and reports the result as XML, HTML
+    or BioPAX. It can run fully offline, loading the required OBO ontologies
+    locally, or delegate validation to the remote BioPAX Validator service.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btt452
+  notes: |
+    Two wrapper scripts are installed on $PATH. "biopax-validator" validates
+    offline and loads the required ontologies locally. "biopax-validator-client"
+    sends the data to the remote BioPAX Validator service.
+    JVM options are passed through the JAVA_OPTS environment variable, e.g.
+    JAVA_OPTS="-Xmx4g" biopax-validator input.owl --output=report.html
+    Upstream recommends at least 2 GB of heap. Startup takes about a minute
+    while the ontologies are loaded. Example input files are installed in
+    $CONDA_PREFIX/share/biopax-validator-<version>/sampleData.
