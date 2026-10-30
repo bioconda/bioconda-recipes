@@ -1,0 +1,69 @@
+{% set name = "g2pinsight" %}
+{% set version = "1.0.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9a4e3447faa2809e486808bc6af21cbff5f6f4a0e7c9d9def3adb40ef8fe3fc5
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - G2PInsight = G2PInsight.main:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=65
+    - wheel
+  run:
+    - python >=3.8
+    - numpy
+    - pandas
+    - scikit-learn
+    - scipy
+    - joblib
+    - matplotlib-base
+    - pillow
+    - numba
+    - lightgbm
+    - xgboost
+    - catboost
+    - shap
+    - plotly
+    # PyPI pin is kaleido>=0.2,<1 (plotly write_image); conda name differs
+    - python-kaleido >=0.2,<1
+    - seaborn
+    - bed-reader
+    - psutil
+    # bioconda tools (preferred over bundled Linux-only binaries when on PATH)
+    - plink
+    - gemma
+
+test:
+  imports:
+    - G2PInsight
+  commands:
+    - G2PInsight --version
+    - G2PInsight --help
+
+about:
+  home: https://github.com/ZBaoyi/G2PInsight
+  summary: Genome-wide association / genotype-to-phenotype analysis toolkit
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  doc_url: https://github.com/ZBaoyi/G2PInsight
+  dev_url: https://github.com/ZBaoyi/G2PInsight
+
+extra:
+  recipe-maintainers:
+    - ZBaoyi
