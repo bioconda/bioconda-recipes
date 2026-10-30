@@ -1,0 +1,52 @@
+{% set name = "parabam" %}
+{% set version = "3.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/parabam-{{ version }}.tar.gz
+  sha256: e3fa9e720c60bc11ae639e7f869ee6b9caea153fed324fe30c91abf6dfc0c9b3
+  patches:
+    - remove-argparse.patch
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - setuptools <81
+    - python <=3.10
+    - cython
+    - pip
+    - pysam >=0.18.0
+    - libxcrypt
+  run:
+    - python <=3.10
+    - numpy
+    - libxcrypt
+    - pysam >=0.18.0
+
+test:
+  imports:
+    - parabam
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/cancerit/parabam
+  summary: Parallel BAM File Analysis
+  license: GPL-1.0-or-later
+#  license_file: PLEASE_ADD_LICENSE_FILE
+
+extra:
+  recipe-maintainers:
+    - Smeds
