@@ -32,5 +32,3 @@ echo "$(cat header.txt $gem_path/bin/ascli)" > $gem_path/bin/ascli
 echo "$(cat header.txt $gem_path/bin/asession)" > $gem_path/bin/asession
 
 ln -sf $gem_path/bin/* $PREFIX/bin
-
-ascli conf ascp install && ascli config ascp info
