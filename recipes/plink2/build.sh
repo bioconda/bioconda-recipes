@@ -3,6 +3,10 @@ set -xe
 
 cd 2.0/build_dynamic
 
+export CFLAGS="${CFLAGS} -I${PREFIX}/include"
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPATH="${PREFIX}/include"
+
 # Link against conda's zstd rather than the bundled copy.
 # MAC_NEW_LAPACK unset since macOS build target is still 11.0.
 args=(CC="${CC}" CXX="${CXX}" STATIC_ZSTD= MAC_NEW_LAPACK=)
