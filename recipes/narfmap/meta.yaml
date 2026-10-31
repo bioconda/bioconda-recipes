@@ -1,6 +1,6 @@
 {% set name = "narfmap" %}
-{% set version = "1.4.2" %}
-{% set sha256 = "ffb2d92c9a953c28ebd433cec055a8368453077e99457c978f05d2ac5b36a9d6" %}
+{% set version = "1.4.3" %}
+{% set sha256 = "f9d06b926fc2a525be1b2aeebca3ad74196429adaf39f0cbfd58cf67b8368d28" %}
 
 package:
   name: {{ name }}
@@ -11,33 +11,40 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 4
-  skip: True  # [osx]
+  number: 0
+  #skip: True  # [osx]
   run_exports:
-    - {{ pin_subpackage("narfmap", max_pin="x") }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - make
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
     # Last version of conda-forge::boost that included static files (.a)
-    - boost >=1.69, <=1.71
-    - boost-cpp >=1.69, <=1.71  # last version to have static libs
+    - boost >=1.69,<1.72
+    - boost-cpp >=1.69,<1.72  # last version to have static libs
   run:
-    - zlib
     # Last version of conda-forge::boost that included static files (.a)
-    - boost >=1.69, <=1.71
-    - boost-cpp >=1.69, <=1.71  # last version to have static libs
+    - boost >=1.69, <1.72
+    - boost-cpp >=1.69,<1.72  # last version to have static libs
 
 test:
   commands:
     - dragen-os -h
 
 about:
-  home: https://github.com/bioinformaticsorphanage/NARFMAP
-  license: GPL-3
+  home: "https://github.com/bioinformaticsorphanage/NARFMAP"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   licence_file: COPYRIGHT
   summary: "NARFMAP is a fork of the Dragen mapper/aligner Open Source Software."
+  dev_url: "https://github.com/bioinformaticsorphanage/NARFMAP"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
