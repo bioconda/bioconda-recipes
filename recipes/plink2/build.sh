@@ -15,3 +15,15 @@ make -j"${CPU_COUNT}" "${args[@]}"
 
 mkdir -p "${PREFIX}/bin"
 install -m 755 plink2 pgen_compress "${PREFIX}/bin/"
+
+cd ../utils/ldsc
+make -j"${CPU_COUNT}" "${args[@]}"
+install -m 755 ldsc "${PREFIX}/bin/"
+
+cd ../mtag
+make -j"${CPU_COUNT}" "${args[@]}"
+install -m 755 mtag "${PREFIX}/bin/"
+
+cd ../vcf_subset
+make -j"${CPU_COUNT}" "${args[@]}"
+install -m 755 vcf_subset "${PREFIX}/bin/"
