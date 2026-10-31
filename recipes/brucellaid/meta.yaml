@@ -1,0 +1,74 @@
+# Bioconda recipe. The sha256 is that of the GitHub tarball for tag v{{ version }}
+# (curl -sL <url> | sha256sum). To publish, copy this folder to
+# bioconda-recipes/recipes/brucellaid and open a pull request. For a new release: tag it,
+# bump `version`, recompute the sha256 and reset `number` to 0.
+{% set name = "brucellaid" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/BrucellaID/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bf1877e60e377592e36400d38eaf2a93f48c5a39922486a7c418dd7303ccd818
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - brucellaid = brucellaid.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - mash >=2.3
+    - bbmap >=38.0
+    - xlsxwriter >=3
+
+test:
+  imports:
+    - brucellaid
+  commands:
+    - brucellaid --version
+    - brucellaid --help
+    - mash --version
+    - seal.sh --version
+    # The reference data has to be in the package, not only in the repository
+    # (no ": " anywhere in these lines, YAML would read a plain scalar containing one as a mapping)
+    - python -c "from brucellaid.references import load_references; assert len(load_references()) == 16"
+    - python -c "from brucellaid.mlst import load_profiles; assert len(load_profiles()[1]) == 122"
+    # Two copies of one read that matches nothing, to run MASH, Seal and the reports end to end. Two,
+    # because MASH is run with -m 2 and would otherwise have no k-mer left to sketch
+    - python -c "s = ''.join('ACGT'[(i*i+3*i+1)%4] for i in range(150)); r = '@r\n' + s + '\n+\n' + 'I'*len(s) + '\n'; open('reads.fastq','w').write(r+r)"
+    - brucellaid -r1 reads.fastq -o test_out -s test
+    - test -s test_out/brucellaid.json
+    - python -c "import json; s = json.load(open('test_out/brucellaid.json'))['samples'][0]; assert s['identified'] is False, s"
+    # Bioconda also runs the tests as root in a container, so leave no root-owned folder behind
+    - rm -rf test_out reads.fastq
+
+about:
+  home: https://github.com/duceppemo/BrucellaID
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Identify the Brucella species of a read set with MASH, and type it with MLST
+  description: |
+    BrucellaID reads a fastq sample, compares it with MASH to 16 Brucella reference genomes to name the
+    species and the closest reference, and calls the nine alleles of the Whatmore MLST scheme with Seal from
+    BBTools to give the sequence type. It takes single-end or paired-end reads, or a folder of samples, and
+    writes a table per sample, a table per locus, every MASH distance and a JSON report. The reference sketch
+    and the MLST database are shipped with the package.
+  dev_url: https://github.com/duceppemo/BrucellaID
+  doc_url: https://github.com/duceppemo/BrucellaID/wiki
+
+extra:
+  recipe-maintainers:
+    - duceppemo
