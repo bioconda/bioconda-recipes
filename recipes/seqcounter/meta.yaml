@@ -42,7 +42,9 @@ test:
     - printf '>ref1\nTTCGAACGCTGACGTCAGCATCGATTGCAGCTAGCTTAGCGATCGGATCGA\n' > refs.fasta
     - seqcounter -ref refs.fasta -r1 refs.fasta -o test_out
     - test -s test_out/refseqcounts.json
-    - python -c "import json; counts = json.load(open('test_out/refseqcounts.json'))['samples'][0]['counts']; assert counts == {'ref1': 1}, counts"
+    # No ": " anywhere in this line: YAML would read a plain scalar containing one as a mapping, and conda-build
+    # then tries to write a dict into the test script ("write() argument must be str, not dict")
+    - python -c "import json; c = json.load(open('test_out/refseqcounts.json'))['samples'][0]['counts']; assert c['ref1'] == 1, c"
     # Bioconda also runs the tests as root in a container: leave no root-owned folder behind
     - rm -rf test_out refs.fasta
 
