@@ -1,0 +1,66 @@
+{% set name = "modisco-lite" %}
+{% set version = "3.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/m/modisco-lite/modisco_lite-{{ version }}.tar.gz
+  sha256: 733fe1699a144f6e93fa45aabebfe8ca1ff7be13c7e95d138ea9cc26e60698ce
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - modisco = modiscolite.cli:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+    - click
+    - numpy >=1.21.5
+    - scipy >=1.6.2
+    - numba >=0.53.1
+    - scikit-learn >=1.0.2
+    - leidenalg ==0.11.0
+    - python-igraph >=0.9.11
+    - tqdm >=4.38.0
+    - pandas >=1.4.3
+    - logomaker >=0.8
+    - matplotlib-base
+    - h5py >=3.7.0
+    - hdf5plugin
+    - memelite
+    - jinja2
+    - joblib
+    - numba-progress
+
+test:
+  imports:
+    - modiscolite
+    - modiscolite.report
+  requires:
+    - pip
+  commands:
+    - pip check
+    - modisco --help
+
+about:
+  home: https://github.com/jmschrei/tfmodisco-lite
+  summary: Transcription factor motif discovery from importance scores (TF-MoDISco lite).
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/jmschrei/tfmodisco-lite
+
+extra:
+  recipe-maintainers:
+    - musharna
