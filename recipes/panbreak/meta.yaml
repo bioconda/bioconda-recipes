@@ -1,0 +1,63 @@
+{% set name = "panbreak" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/yykaya/PanBreak/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 18338016e4fd86d43d5189e8adca0ec9da31ce1ecde5797191a55f1cedc72b1f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - panbreak = panbreak.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - pysam >=0.21
+    - numpy >=1.22
+    - matplotlib-base >=3.5
+    - minimap2 >=2.24
+    - odgi >=0.8
+
+test:
+  source_files:
+    - tests
+  imports:
+    - panbreak
+  commands:
+    - panbreak --version
+    - panbreak --help
+    - panbreak check --require minimap2 odgi
+    - python -m unittest discover -s tests -v
+
+about:
+  home: https://github.com/yykaya/PanBreak
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Local pangenome graph bubble annotation and junction k-mer genotyping of structural variants and TE insertions from short reads
+  description: |
+    PanBreak builds a pangenome graph of one locus from many assemblies with pggb and odgi, calls
+    and annotates every structural bubble (deletions, insertions, transposable elements, tandem
+    duplications), designs allele-specific junction k-mers that are tested for specificity against
+    all assemblies, and genotypes these alleles in short-read cohorts directly from existing
+    BAM/CRAM files. pggb is not a dependency; run it from its container or install it separately.
+    BLAST+ is optional and used for TE classification when available.
+  dev_url: https://github.com/yykaya/PanBreak
+  doc_url: https://github.com/yykaya/PanBreak#readme
+
+extra:
+  recipe-maintainers:
+    - yykaya
