@@ -1,0 +1,51 @@
+{% set name = "spatial-continuum" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/Lukecele/spatial-continuum-oncology/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: c4cc002ae2ac94509d06b2764c6345d27ce2f133777d0fe881138621ae3d51a0
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - cri-calc = spatial_continuum.cri_calc:main
+    - spatial-continuum-audit = spatial_continuum.audit:main
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage("spatial-continuum", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - spatial_continuum
+  commands:
+    - cri-calc --help
+    - spatial-continuum-audit --help
+
+about:
+  home: https://github.com/Lukecele/spatial-continuum-oncology
+  dev_url: https://github.com/Lukecele/spatial-continuum-oncology
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE-MIT
+  summary: "Universal biophysical reaction-diffusion transport framework and Bedside Composite Resistance Index (CRI) for NSCLC."
+  description: "A zero-dependency biophysical transport framework and bedside clinical decision engine solving steady-state reaction-diffusion equations across perivascular cords and avascular nests, evaluating pharmacological sanctuaries, and computing the Composite Resistance Index (CRI) in EGFR-mutant lung adenocarcinoma."
+
+extra:
+  recipe-maintainers:
+    - Lukecele
+  identifiers:
+    - doi:10.21203/rs.3.rs-11530312/v1
+    - doi:10.5281/zenodo.23748047

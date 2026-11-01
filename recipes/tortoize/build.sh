@@ -18,11 +18,10 @@ cmake -S . -B build -G Ninja \
 	-DCMAKE_INSTALL_PREFIX="${PREFIX}" \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_COMPILER="${CXX}" \
-	-DCMAKE_CXX_STANDARD=20 \
 	-DBUILD_TESTING=ON \
 	-DCIFPP_SHARE_DIR="${PREFIX}/share/libcifpp" \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
-	"${CONFIG_ARGS}"
+	${CONFIG_ARGS}
 
 cmake --build build --config Release -j "${CPU_COUNT}"
 ctest -V -C Release --test-dir build
