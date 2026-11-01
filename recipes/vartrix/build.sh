@@ -1,7 +1,15 @@
 #!/bin/bash -euo
 
-mkdir -p ${PREFIX}/bin
+export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+export CFLAGS="${CFLAGS} -O3 -std=gnu11"
+export LIBCLANG_PATH="$BUILD_PREFIX/lib"
 
-mv vartrix_* vartrix
-chmod 755 vartrix
-cp -f vartrix ${PREFIX}/bin
+mkdir -p "${PREFIX}/bin"
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+RUST_BACKTRACE=1
+cargo install --verbose --locked --no-track --profile=release --root "$PREFIX" --path .
+
+"${STRIP}" "$PREFIX/bin/vartrix"

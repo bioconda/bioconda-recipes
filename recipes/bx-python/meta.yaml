@@ -1,9 +1,9 @@
 {% set name = "bx-python" %}
-{% set version = "0.15.1" %}
-{% set sha256 = "8c7102ffbf970139bcd792d320923b32f630ea20fde4898e9084c69b8ef06bb2" %}
+{% set version = "0.16.0" %}
+{% set sha256 = "28d53abb81019e89d73fe82c58ff7213cc3cafdcc0f5c0505fcf4fc47f6785d1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -11,14 +11,15 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [py < 311]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-    - export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3" # [not osx]
+    - export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3"  # [not osx]
     - export CFLAGS="${CFLAGS} -I${PREFIX}/include -O3 -fno-define-target-os-macros"  # [osx]
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -28,7 +29,7 @@ requirements:
   host:
     - python
     - pip
-    - setuptools
+    - setuptools >=77.0.0
     - cython
     - numpy >=1.25
     - zlib

@@ -1,13 +1,13 @@
 {% set name = "gbdraw" %}
-{% set version = "0.13.0" %}
+{% set version = "0.14.3" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/satoshikawato/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: c6387a4ff129a265b35187a6ddd790db6c10eded4f88d5ab66fc59d9da0c4679
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b4a9145643ddb2f05193e7f44f1734e45c91ccc48cf06a32ab9cbf381b9f4600
 
 
 
@@ -19,7 +19,7 @@ build:
     - mkdir -p $PREFIX/fonts
     - cp -f gbdraw/data/*.ttf $PREFIX/fonts/
   entry_points:
-    - gbdraw = gbdraw.cli:main
+    - gbdraw = _gbdraw_console:main
   run_exports:
     - {{ pin_subpackage("gbdraw", max_pin="x.x") }}
 
@@ -27,15 +27,18 @@ requirements:
   host:
     - python >=3.10
     - pip
-    - setuptools
+    - setuptools >=77
   run:
-    - python >=3.10
+    - python >=3.10,<3.14
+    - numpy >=1.23
     - pandas
     - fonttools
     - biopython
     - svgwrite
     - cairosvg
     - bcbio-gff
+    - tomli
+    - losat ==0.1.0
 
 test:
   imports:
@@ -45,12 +48,15 @@ test:
     - gbdraw circular --help
     - gbdraw linear --help
     - cairosvg --help
+    - losat --version
 
 about:
   home: "https://github.com/satoshikawato/gbdraw"
   license: "MIT"
   license_family: "MIT"
-  license_file: "LICENSE.txt"
+  license_file:
+    - "LICENSE.txt"
+    - "LICENSE_LIBERATION_FONTS.txt"
   summary: "A genome diagram generator for microbes and organelles."
   description: "For details, see https://github.com/satoshikawato/gbdraw"
   fonts_license: "SIL OFL, Version 1.1"

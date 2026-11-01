@@ -1,0 +1,37 @@
+--- a/SpatialDE/base.py	2019-07-09 20:11:30.000000000 +0200
++++ b/SpatialDE/base.py	2026-10-28 22:03:30.365648793 +0100
+@@ -9,7 +9,15 @@
+ from scipy import optimize
+ from scipy import linalg
+ from scipy import stats
+-from scipy.misc import derivative
++def _derivative(f, x0, n=1, dx=1e-6):
++    '''Numerical derivative of f at x0 (replacement for removed scipy.misc.derivative).
++    Uses central differences; matches the dx=1e-6 default of scipy.misc.derivative.'''
++    if n == 1:
++        return (f(x0 + dx) - f(x0 - dx)) / (2 * dx)
++    elif n == 2:
++        return (f(x0 + dx) - 2 * f(x0) + f(x0 - dx)) / dx ** 2
++    else:
++        raise NotImplementedError('only n=1 and n=2 supported')
+ from scipy.special import logsumexp
+ 
+ with warnings.catch_warnings():
+@@ -175,7 +183,7 @@
+     max_mu_hat = mu_hat(max_delta, UTy, UT1, S, n, Yvar)
+     max_s2_t_hat = s2_t_hat(max_delta, UTy, S, n, Yvar)
+ 
+-    s2_logdelta = 1. / (derivative(LL_obj, np.log(max_delta), n=2) ** 2)
++    s2_logdelta = 1. / (_derivative(LL_obj, np.log(max_delta), n=2) ** 2)
+ 
+     return max_ll, max_delta, max_mu_hat, max_s2_t_hat, s2_logdelta
+ 
+@@ -226,7 +234,7 @@
+ 
+         # Estimate standard error of Fraction Spatial Variance
+         FSV = make_FSV(UTy, S, n, Gower)
+-        s2_FSV = derivative(FSV, np.log(max_delta), n=1) ** 2 * s2_logdelta
++        s2_FSV = _derivative(FSV, np.log(max_delta), n=1) ** 2 * s2_logdelta
+         
+         results.append({
+             'g': exp_tab.columns[g],

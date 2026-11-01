@@ -1,0 +1,29 @@
+--- a/tissue/main.py	2026-10-28 14:14:25.625055478 +0100
++++ b/tissue/main.py	2026-10-28 14:20:09.204877909 +0100
+@@ -70,7 +70,7 @@
+     df = df.loc[genes_prevalence > min_gene_prevalence_spatial,:]
+     
+     # create AnnData
+-    spatial_adata = ad.AnnData(X=df, dtype='float64')
++    spatial_adata = ad.AnnData(X=df.astype(np.float64))
+     spatial_adata.obs_names = df.index.values
+     spatial_adata.obs_names = spatial_adata.obs_names.astype(str)
+     spatial_adata.var_names = df.columns
+@@ -117,7 +117,7 @@
+     del genes_prevalence
+     
+     # create AnnData
+-    RNAseq_adata = ad.AnnData(X=df.T, dtype='float64')
++    RNAseq_adata = ad.AnnData(X=df.T.astype(np.float64))
+     RNAseq_adata.obs_names = df.T.index.values
+     RNAseq_adata.var_names = df.T.columns
+     del df
+@@ -394,7 +394,7 @@
+     intersection = np.intersect1d(spatial_adata.var_names, RNAseq_adata.var_names)
+     subRNA = RNAseq_adata[:, intersection]
+     subspatial = spatial_adata[:, intersection]
+-    joint_adata = ad.AnnData(X=np.vstack((subRNA.X,subspatial.X)), dtype='float32')
++    joint_adata = ad.AnnData(X=np.vstack((subRNA.X,subspatial.X)).astype(np.float32))
+     joint_adata.obs_names = np.concatenate((subRNA.obs_names.values,subspatial.obs_names.values))
+     joint_adata.var_names = subspatial.var_names.values
+     joint_adata.obs["batch"] = ["rna"]*len(subRNA.obs_names.values)+["spatial"]*len(spatial_adata.obs_names.values)
