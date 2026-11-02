@@ -1,0 +1,47 @@
+{% set name = "snakemake-reporter-plugin-nanopub" %}
+{% set version = "0.5.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }
+
+source: 
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/snakemake_reporter_plugin_nanopub-{{ version }}.tar.gz
+  sha256: 4ae986f854dd1e1d8e56ed9d7f76d25f40506236a12a10206a1782b20ae293f0
+
+build: 
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11,<4.0
+    - hatchling
+    - pip
+  run:
+    - python >=3.11.0,<4.0.0
+    - snakemake-interface-common >=1.23.0,<2.0.0
+    - snakemake-interface-report-plugins >=2.0.1,<3.0.0
+    - nanopub >=2.2.2
+    - pyyaml >=6.0.3,<7
+    - rdflib >=7.1.0,<8
+    - graphviz
+
+provides:
+  - snakemake-report-plugin-nanopub
+
+test:
+  imports:
+    - snakemake_report_plugin_nanopub
+    - snakemake_report_plugin_nanopub_cli
+    - snakemake_report_plugin_nanopub_graph
+  commands:
+    - plot-nanopub-knowledge-graph --help
+
+extra:
+  copy_test_source_files: true
+  recipe-maintainers:
+    - cmeesters
