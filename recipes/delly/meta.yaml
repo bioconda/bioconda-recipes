@@ -6,34 +6,13 @@ package:
   name: "{{ name }}"
   version: {{ version }}
 
-source:
-  url: https://github.com/dellytools/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-
 build:
   number: 1
-  run_exports:
-    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
-  build:
-    - make
-    - {{ compiler('cxx') }}
-    - {{ stdlib('c') }}
-  host:
-    - zlib
-    - bzip2
-    - boost-cpp
-    - libdeflate
-    - xz
-    - htslib
   run:
-    - boost-cpp
-    - htslib
-
-test:
-  commands:
-    - delly --help
+    - delly-cli =={{ version }}
+    - delly-scripts =={{ version }}
 
 about:
   home: https://github.com/dellytools/delly
@@ -62,6 +41,36 @@ extra:
     - usegalaxy-eu:delly_filter
 
 outputs:
+  - name: delly-cli
+
+    source:
+      url: https://github.com/dellytools/{{ name }}/archive/v{{ version }}.tar.gz
+      sha256: {{ sha256 }}
+
+    build:
+      run_exports:
+        - {{ pin_subpackage(name, max_pin="x") }}
+
+    requirements:
+      build:
+        - make
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+      host:
+        - zlib
+        - bzip2
+        - boost-cpp
+        - libdeflate
+        - xz
+        - htslib
+      run:
+        - boost-cpp
+        - htslib
+    
+    test:
+      commands:
+        - delly --help
+
   - name: delly-scripts
 
     build:
