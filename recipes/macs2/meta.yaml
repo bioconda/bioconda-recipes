@@ -9,17 +9,22 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/MACS2-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    # keep -ffast-math but drop finite-math-only, so the extensions call
+    # log/exp instead of __log_finite/__exp_finite (gone from glibc >= 2.31)
+    - setup.py.patch
 
 build:
-  number: 5
+  number: 6
   script: {{ PYTHON }} -m pip install . --use-pep517 --no-deps --no-build-isolation --no-cache-dir -vvv
-  skip: True  # [py == 312]
+  skip: True  # [py >= 312]
   run_exports:
     - {{ pin_subpackage('macs2', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - python
     - cython <3.0.0
@@ -37,8 +42,13 @@ test:
   imports:
     - MACS2
     - MACS2.IO.BedGraph
+    - MACS2.IO.CallPeakUnit
+    - MACS2.IO.ScoreTrack
+    - MACS2.Prob
   commands:
     - macs2 -h
+    # no extension may reference glibc's removed __*_finite math symbols
+    - python -c "import glob, os, MACS2; d = os.path.dirname(MACS2.__file__); bad = [f for f in glob.glob(d + '/**/*.so', recursive=True) if b'_finite' in open(f, 'rb').read()]; assert not bad, bad"  # [linux]
 
 about:
   home: "https://github.com/macs3-project/MACS"

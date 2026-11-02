@@ -1,0 +1,34 @@
+diff --git a/panagram/index.py b/panagram/index.py
+index 4b41319..13f4b26 100644
+--- a/panagram/index.py
++++ b/panagram/index.py
+@@ -847,10 +847,13 @@ class Genome:
+     def _load_kmc(self, kmc_dbs):
+         try:
+             from .extra import py_kmc_api
+-        except ModuleNotFoundError:
+-            raise ModuleNotFoundError(
+-                "py_kmc_api failed to install. See https://github.com/kjenike/panagram#readme for more information"
+-            )
++        except ImportError:
++            try:
++                import py_kmc_api
++            except ModuleNotFoundError:
++                raise ModuleNotFoundError(
++                    "py_kmc_api failed to install. See https://github.com/kjenike/panagram#readme for more information"
++                )
+ 
+         self.kmc = py_kmc_api
+         dbs = list()
+@@ -934,7 +937,10 @@ class Genome:
+         vec = self.kmc.CountVec()
+         db.GetCountersForRead(seq, vec)
+ 
+-        pac32 = np.array(vec, dtype="uint32")
++        try:
++            pac32 = np.array(vec, dtype="uint32")
++        except TypeError:  # CountVec without the buffer protocol (upstream KMC)
++            pac32 = np.array(vec.value, dtype="uint32")
+         pac8 = pac32.view("uint8").reshape((len(pac32), 4))
+ 
+         if self.nbytes <= 4:
