@@ -1,0 +1,51 @@
+{% set name = "amplitrim" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 973118c394c3ea4d4102f293dc05a2872766bd592cd06336b50e51a4f98ea2d1
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - amplitrim = amplitrim.cli:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.9
+    - numpy >=1.24
+    - vsearch
+
+test:
+  imports:
+    - amplitrim
+  commands:
+    - amplitrim --version
+    - amplitrim --help
+    - vsearch --version
+
+about:
+  home: https://github.com/paytonyau/amplitrim
+  dev_url: https://github.com/paytonyau/amplitrim
+  doc_url: https://github.com/paytonyau/amplitrim/blob/main/docs/usage.md
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Recommends DADA2 truncLenF, truncLenR and maxEE for paired-end amplicon reads by testing candidate settings on your own reads.
+
+extra:
+  recipe-maintainers:
+    - paytonyau
+  identifiers:
+    - doi:10.5281/zenodo.23860407
