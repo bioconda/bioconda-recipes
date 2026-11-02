@@ -1,0 +1,52 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: diamondonpy
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/d/diamondonpy/diamondonpy-{{ version }}.tar.gz
+  sha256: 38c88155b7075271755f982bb8ddac5986a01f0a1199abfb10e69d2ef30a07f1
+
+build:
+  number: 0
+  entry_points:
+    - diamondonpy = diamondonpy.__main__:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('diamondonpy', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools >=42
+    - wheel
+    - pip
+  run:
+    - python >=3.6
+    - pandas >=1.0.0
+    - numpy >=1.18.0
+    - diamond
+
+test:
+  imports:
+    - diamondonpy
+  commands:
+    - pip check
+    - diamondonpy --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EnzoAndree/diamondonpy
+  summary: A Python wrapper for the DIAMOND bioinformatics tool
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - leightonpayne

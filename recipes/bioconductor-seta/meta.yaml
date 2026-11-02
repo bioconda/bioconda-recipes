@@ -1,0 +1,54 @@
+{% set version = "1.0.0" %}
+{% set name = "SETA" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 11a7e6b41f6adbd163427414f26869a8
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-seta", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, caret, glmnet, corrplot, ggplot2, ggraph, knitr, methods, patchwork, reshape2, rmarkdown, SeuratObject, Seurat, SummarizedExperiment, TabulaMurisSenisData, tidyr, tidytext, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - r-base
+    - r-dplyr
+    - r-mass
+    - r-matrix
+    - r-rlang
+    - r-tidygraph
+  run:
+    - bioconductor-singlecellexperiment >=1.32.0,<1.33.0
+    - r-base
+    - r-dplyr
+    - r-mass
+    - r-matrix
+    - r-rlang
+    - r-tidygraph
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Single Cell Ecological Taxonomic Analysis
+  description: Tools for compositional and other sample-level ecological analyses and visualizations tailored for single-cell RNA-seq data. SETA includes functions for taxonomizing celltypes, normalizing data, performing statistical tests, and visualizing results. Several tutorials are included to guide users and introduce them to key concepts. SETA is meant to teach users about statistical concepts underlying ecological analysis methods so they can apply them to their own single-cell data.
+  license_file: LICENSE
+

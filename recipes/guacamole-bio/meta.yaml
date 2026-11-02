@@ -1,0 +1,66 @@
+{% set version = "1.0.3" %}
+
+package:
+  name: guacamole-bio
+  version: {{ version }}
+
+source:
+  url: https://github.com/CIBIV/GuaCAMOLE/archive/v{{ version }}.tar.gz
+  sha256: 02c5960c6edeff011178501f8a03163c9efaaa2e2cd22c2e5bd619a06230eb93
+
+build:
+  entry_points:
+    - create-reference-dist = guacamole.create_reference_dist:main
+    - guacamole = guacamole.guacamole:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    # This amounts to a promise that all 1.x versions remain backwards compatible
+    - {{ pin_subpackage("guacamole-bio", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61.0
+    - wheel
+    - python-build
+    - pip
+  run:
+    - python >=3.10
+    - pandas
+    - numpy
+    - matplotlib-base
+    - seaborn
+    - biopython
+    - scipy
+    # Writing qpsolvers[cvxopt] doesn't seem to pull in cvxopt so we list both
+    - qpsolvers
+    - cvxopt
+
+test:
+  source_files:
+    - tests/
+    - demo_data/SRR12996245.1pct*
+    - demo_data/demo_db/database150mers.kmer_distrib
+    - demo_data/demo_db/gc_bin_100_kmer_150_insert_100_dist.csv
+    - demo_data/demo_db/seqid2taxid.map
+  requires:
+    - pip
+    - python
+    - pytest
+  commands:
+    - pip check
+    - create-reference-dist --help
+    - guacamole --help
+
+about:
+  home: https://github.com/CIBIV/GuaCAMOLE
+  summary: GC-aware species abundance estimation from metagenomic data.
+  license: GPL-3.0-only
+  license_file: COPYING
+
+extra:
+  recipe-maintainers:
+    - fgp
+    - Laurenz0908

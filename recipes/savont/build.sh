@@ -1,5 +1,4 @@
-#!/bin/bash 
-
+#!/bin/bash
 set -xeuo
 
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"

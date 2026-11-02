@@ -1,5 +1,5 @@
 {% set name = "demultiplex" %}
-{% set version = "1.2.2" %}
+{% set version = "1.2.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,24 +7,25 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/demultiplex-{{ version }}.tar.gz
-  sha256: 27ebc30e52e36048486286348b44806deabb24197e05eb88bbed413676e99181
+  sha256: 905e70a3674aab01c63f6e130ce8b4c9dca54cc0868b932587d4a1045d945990
 
 build:
-  entry_points:
-    - demultiplex = demultiplex.cli:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 1
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
   run_exports:
-    - {{ pin_subpackage(name|lower) }}
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
   host:
     - python >=3.6
     - pip
     - poetry
+    - hatchling
+    - setuptools <82
   run:
     - python >=3.6
+    - setuptools <82
     - biopython >=1.72
     - dict-trie >=1.0.1
     - fastools >=1.1.0
@@ -36,18 +37,16 @@ test:
   imports:
     - demultiplex
   commands:
-    - pip check
     - demultiplex --help
-  requires:
-    - pip
 
 about:
-  home: https://github.com/jfjlaros/demultiplex
-  doc_url: https://demultiplex.readthedocs.io/en/latest/index.html
-  summary: Demultiplex any number of FASTA or a FASTQ files based on a list of barcodes
+  home: "https://github.com/jfjlaros/demultiplex"
+  doc_url: "https://demultiplex.readthedocs.io/en/latest/index.html"
+  summary: "Demultiplex any number of FASTA or a FASTQ files based on a list of barcodes."
   license: MIT
   license_family: MIT
   license_file: LICENSE
+  dev_url: "https://github.com/jfjlaros/demultiplex"
 
 extra:
   recipe-maintainers:

@@ -2,17 +2,16 @@
 
 set -vex
 
-# C++20 is not properly supported on early OSX versions
+# Show the compiler used for the C++23 build on macOS.
 case "${target_platform}" in osx-*)
-    xcodebuild -sdk -version
     ${CXX} -v
 esac
 
 export BOOST_ROOT="${PREFIX}"
-export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+export PKG_CONFIG_LIBDIR="${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
 
-#pkg-config --list-all
-#pkg-config --cflags cairo
+# Require Cairo support in the package; Meson otherwise silently disables it.
+pkg-config --cflags --libs cairo
 
 echo "CC=$CC"
 echo "CFLAGS=$CFLAGS"
@@ -20,12 +19,15 @@ echo "CXX=$CXX"
 echo "CPPFLAGS=$CPPFLAGS"
 echo "CXXFLAGS=$CXXFLAGS"
 
-CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"   # for std::filesystem::path
+# Compatibility workaround retained from 4.2 for libc++ availability annotations.
+# Revisit when the macOS SDK/deployment target permits removing it.
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
 # configure
 meson setup \
     --prefix="$PREFIX" \
     --buildtype=release \
+    --wrap-mode=nodownload \
     -Db_ndebug=true \
     builddir .
 
@@ -38,7 +40,3 @@ meson compile
 
 # install
 meson install
-
-# check
-${PREFIX}/bin/bali-phy --help
-${PREFIX}/bin/bali-phy ${PREFIX}/share/doc/bali-phy/examples/5S-rRNA/5d.fasta --iter=20

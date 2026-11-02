@@ -1,5 +1,5 @@
 {% set name = "pygrgl" %}
-{% set version = "2.4" %}
+{% set version = "2.12" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,19 +7,20 @@ package:
 
 source:
   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 04998bf8f38ffd3f8cc943761f2a97e76fad7b537e068a5928712dfddbd2177d
+  sha256: c16143bc2a538efffd984c9323a2ae45333e2df1c6f528578156fd156974e3db
 
 build:
   number: 0
   entry_points:
     - grg=pygrgl.cli:main
-  script: "{{ PYTHON }} -m pip install . -vv"
+  script: "{{ PYTHON }} -m pip install --no-deps --no-build-isolation . -vv"
   run_exports:
     - {{ pin_subpackage('pygrgl', max_pin="x.x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake
     - make
   host:
@@ -27,6 +28,7 @@ requirements:
     - zlib
     - pip
     - tqdm
+    - setuptools
   run:
     - python
     - tqdm

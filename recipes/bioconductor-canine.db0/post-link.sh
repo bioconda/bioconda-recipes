@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "canine.db0-3.20.0"
+installBiocDataPackage.sh "canine.db0-3.22.0"

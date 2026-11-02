@@ -4,22 +4,29 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
-# Build
-mkdir -p "${PREFIX}/bin"
+mkdir -p build
+cd build
 
-if [[ `uname` == "Darwin" ]]; then
-  export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
-else
-  CONFIG_ARGS="${CONFIG_ARGS} -DUSE_CUDA=ON"
-fi
+EXTRA_FLAGS="-DCMAKE_BUILD_TYPE=Release -DTBB_DIR=${PREFIX}"
 
-cmake -S . -B build \
-  -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-  -DCMAKE_PREFIX_PATH="${PREFIX}" \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER="${CXX}" \
-  -DTBB_DIR="${PREFIX}/lib/cmake/TBB" \
-  ${CONFIG_ARGS} -Wno-dev -Wno-deprecated --no-warn-unused-cli
-
-cmake --build build -j "${CPU_COUNT}"
-install -v -m 0755 bin/dipper ${PREFIX}/bin 
+case "${PKG_NAME}" in
+dipper)
+        cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=OFF -DUSE_HIP=OFF -DUSE_CPU=ON
+        cmake --build . --target install --parallel ${CPU_COUNT}
+        cmake --install .
+    ;;  
+dipper-cuda)
+    if command -v nvcc >/dev/null 2>&1; then
+	    cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=ON -DUSE_HIP=OFF -DUSE_CPU=ON
+	    cmake --build . --target install --parallel ${CPU_COUNT}
+    	cmake --install .
+    fi
+    ;;
+dipper-rocm)
+    if command -v hipcc >/dev/null 2>&1; then
+    	export CXX=hipcc
+    	cmake .. ${CMAKE_ARGS} ${EXTRA_FLAGS} -DUSE_CUDA=OFF -DUSE_HIP=ON -DUSE_CPU=ON
+    	cmake --build . --target install --parallel ${CPU_COUNT}
+    	cmake --install .
+    fi ;;
+esac

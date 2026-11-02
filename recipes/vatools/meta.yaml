@@ -1,0 +1,56 @@
+{% set name = "vatools" %}
+{% set version = "6.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/griffithlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ed5675be08cd90a282451258e75e8b27d2c6b3bf032475d8506b60e941bbf14f
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - vcf-expression-annotator = vatools.vcf_expression_annotator:main
+    - vcf-readcount-annotator = vatools.vcf_readcount_annotator:main
+    - vcf-info-annotator = vatools.vcf_info_annotator:main
+    - vcf-genotype-annotator = vatools.vcf_genotype_annotator:main
+    - vep-annotation-reporter = vatools.vep_annotation_reporter:main
+    - transform-split-values = vatools.transform_split_values:main
+    - ref-transcript-mismatch-reporter = vatools.ref_transcript_mismatch_reporter:main
+  run_exports:
+    - {{ pin_subpackage('vatools', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+  run:
+    - python >=3.10
+    - vcfpy ==0.14.2
+    - pysam
+    - pandas
+    - gtfparse ==2.7.1
+
+test:
+  requires:
+    - testfixtures
+  imports:
+    - vatools
+  commands:
+    - vcf-readcount-annotator --help
+    - vcf-expression-annotator --help
+
+about:
+  home: https://github.com/griffithlab/vatools
+  summary: Tools for annotating VCF files with expression and readcount data
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - chrisamiller

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "asicsdata-1.26.0"
+installBiocDataPackage.sh "asicsdata-1.30.0"

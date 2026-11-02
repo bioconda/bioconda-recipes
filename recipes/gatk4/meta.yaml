@@ -1,6 +1,6 @@
 {% set name = "GATK4" %}
-{% set version = "4.6.2.0" %}
-{% set sha256 = "32d2f90bf13fcb3a8ac765bb2cb8ec1fc9a6cc447055d0156bd1db2092d4e3e8" %}
+{% set version = "4.7.0.0" %}
+{% set sha256 = "d093d2693b1626361a413ca59d6d4a0bf968717f280a8fd9ce060b25eb2ed1db" %}
 
 package:
   name: {{ name|lower }}
@@ -12,9 +12,9 @@ source:
 
 build:
   noarch: generic
-  number: 1
+  number: 0
   run_exports:
-     - {{ pin_subpackage('gatk4', max_pin="x") }}
+     - {{ pin_subpackage('gatk4-main', max_pin="x") }}
 
 requirements:
   host:
@@ -25,7 +25,7 @@ requirements:
     - r-reshape
     - gcnvkernel =0.9
   run:
-    - openjdk >=17
+    - openjdk =17
     - python
     - r-base =4.3.1
     - r-gplots
@@ -42,11 +42,11 @@ test:
     - gatk DetermineGermlineContigPloidy --help
 
 outputs:
-  - name: gatk4
+  - name: gatk4-main
     script: build_main.sh
     requirements:
       run:
-        - openjdk >=17
+        - openjdk =17
         - python
     test:
       commands:
@@ -56,19 +56,64 @@ outputs:
         - gatk DetermineGermlineContigPloidy --help
   - name: gatk4-spark
     script: build_spark.sh
-    build:
-      noarch: generic
     requirements:
       run:
-        - openjdk >=17
+        - openjdk =17
         - python
-        - {{ pin_subpackage("gatk4", exact=True) }}
+        - {{ pin_subpackage("gatk4-main", exact=True) }}
     test:
       commands:
         - gatk -h
         - gatk --list
         - gatk MarkDuplicatesSpark --help
         - gatk DetermineGermlineContigPloidy --help
+  - name: gatk4-lite
+    script: build_lite.sh
+    build:
+      number: 1
+      run_exports:
+        - {{ pin_subpackage('gatk4-lite', max_pin='x') }}
+    requirements:
+      build:
+        - openjdk =17
+        - unzip
+      run:
+        - libstdcxx  # [linux]
+        - libzlib  # [linux]
+      run_constrained:
+        - gatk4-main <0
+    test:
+      commands:
+        - test -x "$PREFIX/lib/gatk4-lite-jvm/bin/java"
+        - "$PREFIX/lib/gatk4-lite-jvm/bin/java --describe-module jdk.security.auth | grep -F com.sun.security.auth.module.UnixLoginModule"
+        - gatk --version
+        - gatk --list
+        - gatk --java-options '' --dry-run HaplotypeCaller
+        - gatk HaplotypeCaller --help
+        - gatk Mutect2 --help
+        - gatk GenotypeGVCFs --help
+        - gatk FilterMutectCalls --help
+        - gatk CreateReadCountPanelOfNormals --help
+    about:
+      home: https://github.com/broadinstitute/gatk
+      license: Apache-2.0 AND (GPL-2.0-or-later WITH Classpath-exception-2.0)
+      license_file:
+        - LICENSE-gatk.txt
+        - LICENSE-openjdk.txt
+        - ASSEMBLY_EXCEPTION-openjdk.txt
+        - ADDITIONAL_LICENSE_INFO-openjdk.txt
+      summary: GATK4 published local JAR with a compact Java 17 runtime
+      description: |
+        gatk4-lite is intended for local, Java-only GATK tools. It contains
+        the unchanged published local JAR and a compact Java 17 runtime.
+        HaplotypeCaller, Mutect2, GenotypeGVCFs, and FilterMutectCalls are
+        tested with this package.
+
+        Python, R, gcnvkernel, the separate Spark JAR, spark-submit, and
+        Google Cloud Dataproc tooling are not included. Tools that require
+        those components need the appropriate GATK output and additional
+        dependencies.
+      dev_url: https://github.com/broadinstitute/gatk
 
 about:
   home: https://www.broadinstitute.org/gatk/

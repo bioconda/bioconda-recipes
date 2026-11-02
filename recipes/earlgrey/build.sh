@@ -56,8 +56,12 @@ chmod a+w ${SCRIPT_DIR}/repeatCraft/example
 # Extract tRNAdb
 tar -zxf ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz --directory ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7 && rm -r ${SCRIPT_DIR}/bin/LTR_FINDER.x86_64-1.0.7/tRNAdb.tar.gz
 
-# test for conda
-df -h
+# Precompile Python bytecode caches now, at build time, so the staged package
+# under ${PACKAGE_HOME} does not write .pyc at runtime (it benefits the helper
+# modules repeatcraft.py imports; entry scripts run as `python foo.py` never use
+# a cache for themselves). `|| true`: some vendored sources may not compile
+# cleanly and must not fail the build.
+"${PYTHON:-python}" -m compileall -q -j 0 "${PACKAGE_HOME}" 2>/dev/null || true
 
 # Set PERL5LIB upon activate/deactivate
 for CHANGE in "activate" "deactivate";

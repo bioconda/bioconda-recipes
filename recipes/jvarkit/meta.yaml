@@ -1,18 +1,27 @@
 {% set name = "jvarkit" %}
-{% set version = "2024.08.25" %}
-{% set sha256 = "1836eae5f27216a3df84d8dbb9282575955149452883d5f86ba1aebb57b59cbf" %}
+{% set version = "2026.04.30" %}
+{% set sha256 = "f8ca47f78fac462426956ec65a7bd417ca52607ddccdba03c9ec5f29d563920d" %}
+# Since v2026.04.30, "bcfparser" is a git submodule of jvarkit providing the
+# BCFCodec/BCFFileReader/BCFIterator/BCFWriter classes that build.gradle compiles
+# via the "bcfparser/src/main/java" source directory. GitHub archive tarballs do
+# not contain submodule contents, so the pinned revision is fetched separately.
+{% set bcfparser_commit = "36b3bb13096431c75277ed8cf5426ea4e7534939" %}
+{% set bcfparser_sha256 = "586c782d8947a1383bcfd9b6567187a4d7628bfe3eae1980ba8271b20a04ddd0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/lindenb/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/lindenb/{{ name|lower }}/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/lindenb/bcfparser/archive/{{ bcfparser_commit }}.tar.gz
+    sha256: {{ bcfparser_sha256 }}
+    folder: bcfparser
 
 build:
   noarch: generic
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage(name, max_pin=None) }}
     # it's date based (yyyy.mm.dd) there's no real semantic pinning, and breaking changes happen (e.g.: tools / libraries being removed)
@@ -20,7 +29,7 @@ build:
 requirements:
   host:
     - openjdk >=11,<20
-    - gradle >=7.4,<8
+    - gradle >=8,<9
     # for realpath on older mac osx:
     - coreutils # [not linux]
     - gawk

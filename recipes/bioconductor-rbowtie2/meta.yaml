@@ -1,37 +1,38 @@
-{% set version = "2.12.3" %}
+{% set version = "2.18.0" %}
 {% set name = "Rbowtie2" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.23" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
-  md5: 0a0bc644c8f368b6b6d667b2a8195b72
   url:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  sha256: cffe3d8151c038a7246940797c1b6115e6909f3365e5d1c8750928bfb30a2fa7
   patches:
-    - 0001-Makefile.patch  # [osx]
+    - 0001-Makefile.patch
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-rbowtie2", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-rbowtie2', max_pin="x.x") }}
 
 # Suggests: knitr, testthat (>= 3.0.0), rmarkdown
 # SystemRequirements: C++11, GNU make, samtools
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
     - r-base
     - r-magrittr
     - libblas
@@ -39,7 +40,7 @@ requirements:
     - zlib
     - liblzma-devel
   run:
-    - bioconductor-rsamtools >=2.22.0,<2.23.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
     - r-base
     - r-magrittr
 
@@ -48,17 +49,17 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 3)
-  summary: An R Wrapper for Bowtie2 and AdapterRemoval
-  description: This package provides an R wrapper of the popular bowtie2 sequencing reads aligner and AdapterRemoval, a convenient tool for rapid adapter trimming, identification, and read merging. The package contains wrapper functions that allow for genome indexing and alignment to those indexes. The package also allows for the creation of .bam files via Rsamtools.
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  summary: "An R Wrapper for Bowtie2 and AdapterRemoval."
+  description: "This package provides an R wrapper of the popular bowtie2 sequencing reads aligner and AdapterRemoval, a convenient tool for rapid adapter trimming, identification, and read merging. The package contains wrapper functions that allow for genome indexing and alignment to those indexes. The package also allows for the creation of .bam files via Rsamtools."
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 extra:
-  skip-lints:
-    - version_constraints_missing_whitespace
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:rbowtie2
-

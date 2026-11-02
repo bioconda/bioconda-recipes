@@ -1,0 +1,49 @@
+{% set name = "gfaidx" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fawaz-dabbaghieh/gfaidx/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ff9836f7be3b35561ae322faea58efa2e04f09966635e6a50ee86001058ef588
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+    - cmake >=4
+    - make
+  host:
+    - zlib
+  run:
+    - zlib
+    - coreutils
+
+test:
+  commands:
+    - gfaidx --version
+    - gfaidx --help
+
+about:
+  home: https://github.com/fawaz-dabbaghieh/gfaidx
+  dev_url: https://github.com/fawaz-dabbaghieh/gfaidx
+  license: MIT AND Custom
+  license_file:
+    - LICENSE
+    - external/argparse/LICENSE
+  summary: Community-based GFA graph indexing and subgraph extraction
+
+extra:
+  recipe-maintainers:
+    - fawaz-dabbaghieh
+  additional-platforms:
+    - osx-arm64

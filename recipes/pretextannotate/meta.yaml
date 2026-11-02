@@ -1,0 +1,55 @@
+{% set name = "pretextannotate" %}
+{% set version = "1.1.3" %}
+{% set sha256 = "a44cb6a6ff0082dab94e671aa56e0f7b20921e226f71cf1d1f3fa90b543348b1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - pretextannotate = pretextannotate.cli:main
+  run_exports:
+    - {{ pin_subpackage( name|lower , max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.12
+    - pillow >=12.1.0
+
+test:
+  imports:
+    - pretextannotate
+  commands:
+    - pretextannotate -h
+
+about:
+  home: https://github.com/sanger-tol/pretextannotate
+  dev_url: https://github.com/sanger-tol/pretextannotate
+  license: MIT
+  license_file: LICENSE
+  summary: A package to annotate a pretext snapshot with size and chromosome information
+  description: |
+    This package uses API calls to NCBI to retrieve chromosome length data
+    (this can instead be given on the CLI). This data is then used to annotate
+    a pretext snapshot with chromosome names and sizes.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
+  recipe-maintainers:
+    - DLBPointon

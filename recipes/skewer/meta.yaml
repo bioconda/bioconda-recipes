@@ -1,34 +1,44 @@
 {% set version = "0.2.2" %}
-{% set md5sum = "593b7e23881417411d1fb2b061aeac80" %}
+{% set sha256 = "bc37afccdf55de047502b87fe56d537cdf78674ccaec1a401b2d29552d6b2dfc" %}
 
 package:
   name: skewer
   version: {{ version }}
 
 source:
-  url: 'https://github.com/relipmoc/skewer/archive/{{ version }}.zip'
-  md5: {{ md5sum }}
+  url: https://github.com/relipmoc/skewer/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+     - 0001-Makefile.patch
 
 build:
-  number: 4
+  number: 5
+  run_exports:
+    - {{ pin_subpackage('skewer', max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - make
-  host:
-  run:
 
 test:
   commands:
     - skewer 2>&1 | grep -qF 'skewer ({{ version }})'
 
 about:
-  home: https://github.com/relipmoc/skewer.git
+  home: "https://github.com/relipmoc/skewer"
   license: MIT
+  license_family: MIT
   license_file: LICENSE
-  summary: A fast and accurate adapter trimmer for paired-end reads.
+  summary: "A fast and accurate adapter trimmer for paired-end reads."
+  dev_url: "https://github.com/relipmoc/skewer"
+  doc_url: "https://github.com/relipmoc/skewer/blob/master/README.md"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:skewer
+    - doi:10.1186/1471-2105-15-182

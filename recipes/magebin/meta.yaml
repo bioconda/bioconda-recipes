@@ -1,0 +1,54 @@
+{% set name = "magebin" %}
+{% set version = "0.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/m/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8c0d0a0f30f1edee0c0a5cb796bee494e28696926c6766a164ef61fb17e04da3
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10
+    - python-igraph >=0.11
+    - leidenalg >=0.10
+    - numpy >=1.26
+    - pandas >=2.0
+    - scikit-learn >=1.3
+    - scipy >=1.10
+    - pytorch >=2.1
+    - pytorch_geometric >=2.6
+
+test:
+  imports:
+    - magebin
+  commands:
+    - magebin --version
+    - magebin --help
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/RanaweeraHK/MAGE-Bin
+  summary: Masked adaptive graph-evidence binning for viral metagenomes
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - RanaweeraHK

@@ -1,0 +1,63 @@
+{% set name = "hlaont" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2a7defca2551963e0466f6a5582aa06fe9f8f711867c9c64a8a93070f16cbec0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - hlaont = hlaont.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.11
+    - pysam
+    - numpy
+    - pyyaml
+    - minimap2
+    - samtools
+
+test:
+  imports:
+    - hlaont
+    - hlaont.cli
+    - hlaont.stages.pipeline
+  commands:
+    - hlaont --help
+    - hlaont run --help
+    - minimap2 --version
+    - samtools --version
+
+about:
+  home: https://github.com/aleixcanalda/hlaont
+  summary: Confidence-aware full-field HLA typing from ONT R10 long reads
+  description: |
+    hlaont types HLA genes (classical, non-classical and pseudogenes), C4A/C4B
+    copy number and candidate novel alleles from Oxford Nanopore R10 long reads,
+    from FASTQ or aligned BAM/CRAM input.
+  license: MIT AND GPL-3.0-only
+  license_family: OTHER
+  license_file:
+    - LICENSE
+    - src/hlaont/resources/anchors/vendor/FUFIHLA_LICENSE
+    - src/hlaont/resources/models/vendor/BADREAD_LICENSE
+  dev_url: https://github.com/aleixcanalda/hlaont
+
+extra:
+  recipe-maintainers:
+    - aleixcanalda

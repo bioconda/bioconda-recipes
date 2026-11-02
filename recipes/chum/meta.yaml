@@ -1,0 +1,50 @@
+{% set name = "chum" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fg-labs/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 763c8f3c76afcca031f5e7e6e1eece79584e54288965ed76110ab068fb6fcdb9
+
+build:
+  number: 1
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - clangdev
+    - pkg-config
+    - make
+    - cmake
+  run:
+    - blast >=2.0
+    - viennarna >=2.0
+
+test:
+  commands:
+    - {{ name }} --help
+
+about:
+  home: "https://github.com/fg-labs/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Evaluate the effectiveness of baits in a hybrid selection panel."
+  dev_url: "https://github.com/fg-labs/{{ name }}"
+  doc_url: "https://github.com/fg-labs/{{ name }}/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - clintval

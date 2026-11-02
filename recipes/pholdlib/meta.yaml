@@ -1,0 +1,56 @@
+{% set name = "pholdlib" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8d34750868432165e967971ad80c741bd574583990c360302cf45c0cf2fcfbe1
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  run_exports:
+    - {{ pin_subpackage('pholdlib', max_pin='x.x') }}
+
+requirements:
+  host:
+    - python >=3.8,<4
+    - pip
+    - setuptools >=61.0
+    - wheel >=0.37.1
+  run:
+    - python >=3.8,<4
+    - loguru >=0.5.3
+    - requests >=2.25
+    - sentencepiece >=0.1.99
+    - protobuf >=3.20
+    - transformers >=4.34
+    - pytorch >=2.1.2
+    - numpy >=1.24
+    - h5py >=3.5
+    - tqdm >=4.35.0
+    - alive-progress >=3.0.1
+
+test:
+  imports:
+    - pholdlib
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/gbouras13/phold-lib
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Shared pLM inference library for phold and baktfold
+  dev_url: https://github.com/gbouras13/phold-lib
+
+extra:
+  recipe-maintainers:
+    - gbouras13

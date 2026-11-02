@@ -20,7 +20,6 @@ fi
 
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
-    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_COMPILER="${CXX}" \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
@@ -36,5 +35,5 @@ cmake -S . -B build -G Ninja \
     -Wno-dev -Wno-deprecated --no-warn-unused-cli \
     ${CONFIG_ARGS}
 
-cmake --build build --config Release --parallel "${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build

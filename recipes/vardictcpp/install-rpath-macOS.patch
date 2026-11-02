@@ -1,0 +1,23 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b9d261c..370ef6c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -63,8 +63,17 @@ target_compile_definitions(vardictcpp PRIVATE VARDICTCPP_VERSION="${PROJECT_VERS
+ 
+ # Keep the htslib runtime path so it runs without LD_LIBRARY_PATH gymnastics.
+ get_filename_component(HTS_LIBDIR ${HTS_LIBRARY} DIRECTORY)
++
++# Relocatable install rpath: find libhts next to the binary (bin/../lib), where
++# conda/Homebrew co-install it. Keep BUILD_RPATH absolute so the in-tree
++# ./build/vardictcpp runs without an install step.
++if(APPLE)
++  set(_vc_rpath "@loader_path/../lib")
++else()
++  set(_vc_rpath "$ORIGIN/../lib")
++endif()
+ set_target_properties(vardictcpp PROPERTIES
+-  BUILD_RPATH ${HTS_LIBDIR} INSTALL_RPATH ${HTS_LIBDIR})
++  BUILD_RPATH "${HTS_LIBDIR}" INSTALL_RPATH "${_vc_rpath}")
+ 
+ # Install target (used by `cmake --install`, e.g. the Bioconda build.sh).
+ include(GNUInstallDirs)

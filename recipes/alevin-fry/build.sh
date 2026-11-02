@@ -23,4 +23,7 @@ export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export CARGO_HOME="$(pwd)/.cargo"
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 cargo install --verbose --root $PREFIX --path .
+RUST_BACKTRACE=1 cargo install -vv \
+    --locked \
+    --root "$PREFIX" \
+    --path .

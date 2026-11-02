@@ -4,6 +4,8 @@
 # We set CARGO_HOME because we don't pass on HOME to conda-build, thus rendering the default "${HOME}/.cargo" defunct.
 export CARGO_NET_GIT_FETCH_WITH_CLI=true CARGO_HOME="${BUILD_PREFIX}/.cargo"
 
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
-cargo install --verbose --path . --no-track --root ${PREFIX}
+cargo install --verbose --locked --path . --no-track --root ${PREFIX}

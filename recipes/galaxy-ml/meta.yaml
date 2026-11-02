@@ -1,65 +1,67 @@
-{% set version = "0.10.0" %}
+{% set version = "0.11.0" %}
 
 package:
   name: galaxy-ml
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/G/Galaxy-ML/Galaxy-ML-{{ version }}.tar.gz
-  sha256: 921a7884bfab3a7b40021e33602b13a9a5a2c58a3205c87659423ebd892476f1
+  url: https://pypi.io/packages/source/G/Galaxy-ML/galaxy_ml-{{ version }}.tar.gz
+  sha256: 9155c5682413bd0aa47ce6112bee559bf49e2ae82ad30cb535401e049174b9d8
 
 build:
-  number: 3
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
-  skip: True  # [osx or py<39 or py>39]
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('galaxy-ml', max_pin="x.x") }}
+  script: |
+      cython -3 galaxy_ml/externals/selene_sdk/sequences/_sequence.pyx
+      cython -3 galaxy_ml/externals/selene_sdk/targets/_genomic_features.pyx
+      {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vvv
+  skip: True  # [osx]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - python
-    - cython
+    - python 3.12.*
+    - cython >=3.3,<4
     - pip
-    - setuptools
-    - numpy >=1.22, <1.23
+    - setuptools >=84
+    - wheel >=0.48
+    - numpy >=2.4,<2.5
   run:
-    - python
-    - pyfaidx
-    - pytabix
+    - python >=3.12,<3.13
+    - pyfaidx >=0.9,<0.10
+    - pytabix ==0.1
     - tabix
     - htslib
-    - numpy >=1.22, <1.23
-    - scipy >=1.3.1
-    - joblib >=1.0
-    - asteval >=0.9.14
-    - pandas >=1.0, <1.3
-    - scikit-learn >=1.1, <1.2
-    - xgboost >=1.6, <1.8
-    - mlxtend >=0.21, <0.22
-    - skrebate >=0.60, <0.70
-    - imbalanced-learn >=0.9, <0.10
-    - tensorflow >=2.10, <2.11
-    - keras >=2.10, <2.11
-    - scikit-optimize >=0.9
-    - plotly >=4.10.0, <5.0
-    - matplotlib-base >=3.1.1
-
-    # For training on GPU, install the following libraries manually
-    # - cudatoolkit==10.0.130
-    # - cudnn==7.6.0
-    - h5py >=3.6, <3.8
-    - six <=1.15.0
-    - bleach >=3.3.0
-    - pydot >=1.4
-    - graphviz >=2.40.1
+    - scipy >=1.18,<1.19
+    - numpy >=2.4,<2.5
+    - joblib >=1.6,<1.7
+    - asteval >=1.0,<1.1
+    - pandas >=3.0,<3.1
+    - scikit-learn >=1.9,<2
+    - xgboost >=3.4,<4
+    - mlxtend >=0.25,<0.26
+    - "skrebate >=1!0.8.4,<1!0.9"
+    - imbalanced-learn >=0.14,<0.15
+    - keras >=3.15,<3.16
+    - keras-preprocessing >=1.1,<1.2
+    - tensorflow >=2.21,<2.22
+    - plotly >=7.1,<8
+    - matplotlib-base >=3.10,<3.11
+    - scikit-optimize >=0.10,<0.11
+    - h5py >=3.14,<3.15
+    - six >=1.17,<2
+    - bleach >=6.4,<7
 
 
 test:
   imports:
     - galaxy_ml
     # tensorflow can't be tested in docker at the moment
-    #- galaxy_ml.keras_galaxy_models
+    - galaxy_ml.keras_galaxy_models
     - galaxy_ml.iraps_classifier
     - galaxy_ml.model_persist
     - galaxy_ml.model_validations
@@ -79,3 +81,7 @@ about:
 extra:
   recipe-maintainers:
     - qiagu
+    - qchiujunhao
+    - anuprulez
+    - IvoLeist
+    - bgruening

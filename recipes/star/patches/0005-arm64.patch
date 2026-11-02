@@ -1,18 +1,21 @@
 diff --git a/source/Parameters_openReadsFiles.cpp b/source/Parameters_openReadsFiles.cpp
-index 1f96363..dfb49d4 100644
+index 1f96363..1a467cb 100644
 --- a/source/Parameters_openReadsFiles.cpp
 +++ b/source/Parameters_openReadsFiles.cpp
-@@ -2,6 +2,9 @@
+@@ -2,6 +2,12 @@
  #include "ErrorWarning.h"
  #include <fstream>
  #include <sys/stat.h>
 +#include <spawn.h>    // Add this for posix_spawn
 +#include <errno.h>
++#include <string.h>
++
++extern char **environ;
 +
  void Parameters::openReadsFiles() 
  {
      if (readFilesCommandString=="") {//read from file
-@@ -79,25 +82,49 @@ void Parameters::openReadsFiles()
+@@ -79,25 +85,53 @@ void Parameters::openReadsFiles()
  
              readFilesCommandPID[imate]=0;
  
@@ -45,8 +48,12 @@ index 1f96363..dfb49d4 100644
 +                exitWithError(errOut.str(), std::cerr, inOut->logMain, EXIT_CODE_PARAMETER, *this);
 +            }
 +
-+            // Prepare arguments
++            // The commands file only has a #! line when --sysShell is set. execlp() fell back to
++            // /bin/sh for a file without one; posix_spawn() does not (ENOEXEC), so run it through
++            // the shell explicitly, and pass the parent's environment so PATH etc. are inherited.
++            string shell = (sysShell!="-") ? sysShell : "/bin/sh";
 +            char* argv[] = {
++                const_cast<char*>(shell.c_str()),
 +                const_cast<char*>(readsCommandFileName.at(imate).c_str()),
 +                nullptr
              };
@@ -55,11 +62,11 @@ index 1f96363..dfb49d4 100644
 +            pid_t PID;
 +            int status = posix_spawn(
 +                &PID,
-+                readsCommandFileName.at(imate).c_str(),
++                shell.c_str(),
 +                &actions,
 +                &attr,
 +                argv,
-+                nullptr  // Use current environment
++                environ
 +            );
 +
 +            // Clean up spawn attributes and actions
@@ -69,7 +76,7 @@ index 1f96363..dfb49d4 100644
 +            if (status != 0) {
 +                ostringstream errOut;
 +                errOut << "EXITING: because of fatal EXECUTION error: Failed spawning readFilesCommand\n";
-+                errOut << errno << ": " << strerror(errno) << "\n";
++                errOut << status << ": " << strerror(status) << "\n";
 +                exitWithError(errOut.str(), std::cerr, inOut->logMain, EXIT_CODE_PARAMETER, *this);
 +            }
 +
@@ -79,7 +86,7 @@ index 1f96363..dfb49d4 100644
              inOut->readIn[imate].open(readFilesInTmp.at(imate).c_str());
          };
  
-@@ -107,5 +134,5 @@ void Parameters::openReadsFiles()
+@@ -107,5 +141,5 @@ void Parameters::openReadsFiles()
      if (readFilesTypeN==10) {//SAM file - skip header lines
          readSAMheader(readFilesCommandString, readFilesNames.at(0));
      };

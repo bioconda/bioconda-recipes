@@ -1,0 +1,60 @@
+{% set version = "1.0.0" %}
+{% set name = "AWAggregator" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 670a92cfd73303d5c42f58d082f7cc5d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-awaggregator", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: AWAggregatorData, BiocStyle, ExperimentHub, knitr, rmarkdown, testthat (>= 3.0.0)
+requirements:
+  host:
+    - r-base
+    - r-dplyr
+    - r-peptides
+    - r-progress
+    - r-purrr
+    - r-ranger
+    - r-rlang
+    - r-stringr
+    - r-tidyr
+    - r-toordinal
+  run:
+    - r-base
+    - r-dplyr
+    - r-peptides
+    - r-progress
+    - r-purrr
+    - r-ranger
+    - r-rlang
+    - r-stringr
+    - r-tidyr
+    - r-toordinal
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: MIT + file LICENSE
+  summary: Attribute-Weighted Aggregation
+  description: This package implements an attribute-weighted aggregation algorithm which leverages peptide-spectrum match (PSM) attributes to provide a more accurate estimate of protein abundance compared to conventional aggregation methods. This algorithm employs pre-trained random forest models to predict the quantitative inaccuracy of PSMs based on their attributes. PSMs are then aggregated to the protein level using a weighted average, taking the predicted inaccuracy into account. Additionally, the package allows users to construct their own training sets that are more relevant to their specific experimental conditions if desired.
+  license_file: LICENSE
+

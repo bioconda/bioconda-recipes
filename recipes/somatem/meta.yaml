@@ -1,0 +1,49 @@
+{% set name = "somatem" %}
+{% set version = "0.8.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/treangenlab/somatem/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 18ee6a8d1a8108419f5214088438e35a82616fa143e7e9ee7b39fc93bd40fb4e
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  run:
+    - bash
+    - nextflow >=26.04.4
+    - micromamba
+    - coreutils
+
+test:
+  commands:
+    - somatem --help
+    - test -f "${PREFIX}/share/{{ name }}-{{ version }}/main.nf"
+    - test -f "${PREFIX}/share/{{ name }}-{{ version }}/nextflow.config"
+    - test -f "${PREFIX}/bin/{{ name }}"
+
+about:
+  home: https://github.com/treangenlab/somatem
+  summary: "Best practices pipeline for long-read metagenomics analysis."
+  license: GPL-3.0
+  license_file: LICENSE
+  dev_url: https://github.com/treangenlab/somatem
+  doc_url: https://github.com/treangenlab/somatem#readme
+
+extra:
+  notes: |
+    Somatem installs a wrapper command that launches bundled Nextflow workflows from
+    $PREFIX/share/{{ name }}-{{ version }}. Use `somatem --help` to see supported
+    workflow shortcuts and common arguments.
+  watch:
+    enable: true
+  skip-lints:
+    - missing_run_exports
+  recipe-maintainers:
+    - ppreshant
+    - microbemarsh

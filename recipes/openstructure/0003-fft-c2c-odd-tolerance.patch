@@ -1,0 +1,23 @@
+Single-precision mixed-radix C2C (N=63) can be a few ULPs off the
+analytical peak. |84| has ULP ~8e-6, so the 1e-6 check fails on
+linux-aarch64 (FMA). Relax to 1e-4 (same as Test_R2H_2D_explicit)
+and report actual vs expected on failure.
+
+--- a/modules/img/alg/tests/test_fft.cc
++++ b/modules/img/alg/tests/test_fft.cc
+@@ -88,8 +88,13 @@ void Test_C2C_1D_calc(int N)
+     Point peak(N/step,0);
+     Complex peak_value = out_state->Value(peak);
+     Complex calc_peak_value = Complex(sum,0.0);
+-    //std::cout << std::abs(peak_value-calc_peak_value);
+-    BOOST_REQUIRE(std::abs(peak_value-calc_peak_value)<1e-06);
++    // 1e-6 is below 1 ULP at |peak|~84 in single precision; mixed-radix
++    // C2C on aarch64 (FMA) exceeds that. 1e-4 matches Test_R2H_2D_explicit.
++    Real peak_delta = std::abs(peak_value-calc_peak_value);
++    BOOST_REQUIRE_MESSAGE(peak_delta<1e-4,
++                          "peak " << peak_value << " vs expected "
++                          << calc_peak_value << " (delta=" << peak_delta
++                          << ") at " << peak);
+ 
+   } catch (alg::FFTException& e) {
+     BOOST_ERROR("FFT Exception caught!");

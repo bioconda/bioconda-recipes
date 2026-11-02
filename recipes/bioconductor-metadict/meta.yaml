@@ -1,0 +1,63 @@
+{% set version = "1.0.0" %}
+{% set name = "MetaDICT" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 0ca058f956d9520fe4f92e85423225a6
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-metadict", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: BiocStyle, knitr, rmarkdown, DT, ggraph, tidyverse, testthat (>= 3.0.0)
+requirements:
+  host:
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - r-ape
+    - r-base
+    - r-cluster
+    - r-ecodist
+    - r-ggplot2
+    - r-ggpubr
+    - r-igraph
+    - r-matrixstats
+    - r-rann
+    - r-vegan
+    - r-viridis
+  run:
+    - bioconductor-edger >=4.8.0,<4.9.0
+    - r-ape
+    - r-base
+    - r-cluster
+    - r-ecodist
+    - r-ggplot2
+    - r-ggpubr
+    - r-igraph
+    - r-matrixstats
+    - r-rann
+    - r-vegan
+    - r-viridis
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Microbiome data integration method via shared dictionary learning
+  description: MetaDICT is a method for the integration of microbiome data. This method is designed to remove batch effects and preserve biological variation while integrating heterogeneous datasets. MetaDICT can better avoid overcorrection when unobserved confounding variables are present.
+

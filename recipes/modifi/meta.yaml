@@ -1,0 +1,71 @@
+{% set name = "modifi" %}
+{% set version = "0.0.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sachdevalab/MODIFI/archive/refs/tags/v{{ version }}.tar.gz
+  # Run: curl -sL <url> | sha256sum   to get this value after creating the release tag
+  sha256: 69f063e4590c7b8d0d156f50f650ed9dab6ed61d09051f5bc049ad93e1792b8e
+
+build:
+  number: 0
+  skip: True  # [py >= 314]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+  run:
+    - bash
+    - numpy
+    - scipy
+    - pandas
+    - matplotlib-base
+    - adjusttext
+    - seaborn
+    - statsmodels
+    - biopython
+    - h5py
+    - scikit-learn
+    - pyyaml
+    - pysam
+    - openjdk  # required for bundled MultiMotifMaker.jar (motif-finding fallback)
+    - tqdm
+    - joblib
+    - psutil
+    - regex
+    - samtools
+    # Linux only: bioconda pbmm2/pbtk are repackaged binaries and skip osx (see those recipes).
+    - pbmm2  # [linux and x86_64]
+    - pbtk  # [linux and x86_64]
+
+test:
+  commands:
+    - modifi --help
+
+about:
+  home: "https://github.com/sachdevalab/MODIFI"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DNA modification detection from PacBio SMRT metagenomic data."
+  description: |
+    MODIFI detects DNA base modifications and infers host-mobile genetic
+    element (MGE) linkages from PacBio metagenomic sequencing data. It supports
+    modification calling, motif discovery, and host-MGE association for both
+    subreads and HiFi read types. Native motif finding uses pbmotifmaker (from
+    pbtk) on Linux if installed; otherwise use the bundled MultiMotifMaker.jar
+    (OpenJDK). On macOS, install PacBio tools separately or rely on the JAR fallback.
+  dev_url: "https://github.com/sachdevalab/MODIFI"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - wshuai294

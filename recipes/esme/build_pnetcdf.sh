@@ -12,7 +12,7 @@ fi
 
 export LDFLAGS="${LDFLAGS} -lpthread"
 
-cd esme_pnetcdf
+cd "${SRC_DIR}/esme_pnetcdf"
 
 ./configure --prefix="${PREFIX}" \
 	    --with-mpi=${PREFIX} \
