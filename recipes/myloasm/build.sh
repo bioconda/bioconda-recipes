@@ -10,6 +10,9 @@ git checkout 8a6e44bd802a256e8e369afd697543bf9cf7f23d
 git submodule update --init --recursive
 cd ../../
 
+# abpoa-sys only adds a -L for zlib when ZLIB_DIR is set (expects a prefix, not lib/)
+export ZLIB_DIR="${PREFIX}"
+
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # build statically linked binary with Rust

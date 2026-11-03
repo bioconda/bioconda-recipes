@@ -1,4 +1,4 @@
-{% set version = "3.0.0" %}
+{% set version = "3.2.0" %}
 {% set name = "auspice" %}
 
 package:
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://registry.npmjs.org/{{ name }}/-/{{ name }}-{{ version }}.tgz
-  sha256: 086de996ebdb93f14ae92267653f71102e5ac65274f02222a11c8b20548c849f
+  sha256: 08510b6af9b7340040d400d3f5916b9dc90d73f70ca0f9646f8906327aeb25f8
 
 build:
   number: 0
@@ -21,7 +21,6 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - nodejs 20.*|22.*|24.*
     - python
     - pkg-config
     - yarn 1.*
@@ -29,6 +28,10 @@ requirements:
     # Restrict ICU to linux-aarch64 so other platforms avoid inheriting its run_exports pin.
     - icu  # [linux and aarch64]
   run:
+    # This list differs from Auspice's package.json because Auspice CLI source
+    # code is TypeScript, which only later versions of Node.js can run natively.
+    # The "source" file downloaded from NPM is transpiled JS which can be run by
+    # all versions in this list.
     - nodejs 20.*|22.*|24.*
 
 test:
