@@ -1,5 +1,7 @@
 #!/bin/bash 
 set -x
+sed -i '5s/2.8/3.5/' CMakeLists.txt
+sed -i '6s/-msse2//' external/klib/CMakeLists.txt
 mkdir -p build
 cd build
 export C_INCLUDE_PATH=${PREFIX}/include
