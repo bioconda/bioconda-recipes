@@ -1,0 +1,463 @@
+From a53cc4558bb07bc674232c472b26e1456b57146a Mon Sep 17 00:00:00 2001
+From: Travis Wrightsman <tw493@cornell.edu>
+Date: Thu, 25 Jan 2024 21:25:35 -0500
+Subject: [PATCH] Change build to produce shared libraries
+
+---
+ .gitignore                        |  2 ++
+ api/Makefile                      |  9 +++-----
+ api/hdf5_impl/hdf5Alignment.cpp   |  2 +-
+ api/inc/halColumnIterator.h       |  2 +-
+ api/mmap_impl/mmapAlignment.h     |  2 +-
+ blockViz/Makefile                 | 11 +++++-----
+ extract/Makefile                  |  2 +-
+ include.mk                        | 34 ++++++++++++++-----------------
+ liftover/Makefile                 |  5 +++--
+ lod/Makefile                      |  3 ++-
+ lod/impl/halLodExtract.cpp        |  2 +-
+ maf/Makefile                      |  5 +++--
+ maf/inc/halMafBlock.h             |  2 +-
+ modify/ancestorsML.cpp            |  2 +-
+ modify/ancestorsML.h              |  2 +-
+ modify/halUpdateBranchLengths.cpp |  2 +-
+ modify/renameFile.cpp             |  2 +-
+ mutations/Makefile                |  3 ++-
+ pyproject.toml                    | 11 ++++++++++
+ randgen/Makefile                  |  4 ++--
+ rules.mk                          | 10 ++++-----
+ stats/Makefile                    |  3 ++-
+ 22 files changed, 65 insertions(+), 55 deletions(-)
+ create mode 100644 pyproject.toml
+
+diff --git a/.gitignore b/.gitignore
+index 976677c4..dad9c110 100755
+--- a/.gitignore
++++ b/.gitignore
+@@ -11,3 +11,5 @@
+ TAGS
+ include.local.mk
+ output
++build/
++*.egg-info/
+\ No newline at end of file
+diff --git a/api/Makefile b/api/Makefile
+index 8648db68..0334d6b6 100644
+--- a/api/Makefile
++++ b/api/Makefile
+@@ -41,7 +41,6 @@ c_srcs = ${udc2Tests_srcs}
+ objs = ${srcs:%.cpp=${modObjDir}/%.o} ${c_srcs:%.c=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend} ${c_srcs:%.c=%.depend}
+ 
+-progs = ${halHdf5Tests_progs} ${halApiTest_progs}
+ inclSpec += -Ihdf5_impl -Immap_impl
+ ifdef ENABLE_UDC
+    # FIXME: standarize var names
+@@ -51,7 +50,7 @@ endif
+ 
+ 
+ all : libs progs
+-libs: ${libHal} ${halApiTestSupportLibs} 
++libs: ${libHal}
+ progs: ${progs}
+ 
+ # only udc2.c should include kent .h files, to preven conflicts with older versions of
+@@ -65,11 +64,9 @@ ${modObjDir}/impl/udc2.o: impl/udc2.c
+ clean : 
+ 	rm -f ${libHal} ${objs} ${progs} ${depends}
+ 
+-test: halHdf5Tests halApiTests
+-
+-halHdf5Tests: all
+-	${binDir}/halHdf5Tests
++test: halHdf5Tests halApiTests ${halApiTestSupportLibs} ${halHdf5Tests_progs} ${halApiTest_progs}
+ 
++halHdf5Tests: ${binDir}/halHdf5Tests
+ 
+ halApiTests: hdf5.halApiTestsStorage mmap.halApiTestsStorage
+ 
+diff --git a/api/hdf5_impl/hdf5Alignment.cpp b/api/hdf5_impl/hdf5Alignment.cpp
+index 05ccfb4e..d288ad0d 100644
+--- a/api/hdf5_impl/hdf5Alignment.cpp
++++ b/api/hdf5_impl/hdf5Alignment.cpp
+@@ -19,7 +19,7 @@
+ #include <fstream>
+ #include <iostream>
+ extern "C" {
+-#include "sonLibTree.h"
++#include "sonLib/sonLibTree.h"
+ }
+ 
+ using namespace hal;
+diff --git a/api/inc/halColumnIterator.h b/api/inc/halColumnIterator.h
+index 9c253c05..830137db 100644
+--- a/api/inc/halColumnIterator.h
++++ b/api/inc/halColumnIterator.h
+@@ -13,7 +13,7 @@
+ #include "halDnaIterator.h"
+ #include "halPositionCache.h"
+ #include "halSequence.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ #include <list>
+ #include <map>
+ #include <set>
+diff --git a/api/mmap_impl/mmapAlignment.h b/api/mmap_impl/mmapAlignment.h
+index 562000b2..7f884df7 100644
+--- a/api/mmap_impl/mmapAlignment.h
++++ b/api/mmap_impl/mmapAlignment.h
+@@ -3,7 +3,7 @@
+ #include "halAlignment.h"
+ #include "mmapFile.h"
+ #include "mmapPerfectHashTable.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ #include <deque>
+ #include <map>
+ 
+diff --git a/blockViz/Makefile b/blockViz/Makefile
+index c6953aa7..feca8549 100644
+--- a/blockViz/Makefile
++++ b/blockViz/Makefile
+@@ -15,14 +15,15 @@ srcs = ${libHalBlockViz_srcs} ${blockVizBed_srcs} \
+ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+ inclSpec += -I${rootDir}/liftover/inc -I${rootDir}/lod/inc -I${rootDir}/maf/inc -I${halApiTestIncl}
+-otherLibs += ${halApiTestSupportLibs} ${libHalBlockViz} ${libHalLiftover} ${libHalLod} ${libHalMaf}
+-progs =  ${binDir}/blockVizBed ${binDir}/blockVizMaf ${binDir}/blockVizTest
++otherLibs += -lHal -lHalLiftover -lHalLod -lHalMaf
++progs =  ${binDir}/blockVizBed ${binDir}/blockVizMaf
+ 
+ testTmpDir = output
+ testHdf5Hal = ${testTmpDir}/small.haf5.hal
+ testMmapHal = ${testTmpDir}/small.mmap.hal
+ 
+ all: libs progs
++${libHalBlockViz}: ${libHal} ${libHalLiftover} ${libHalLod} ${libHalMaf}
+ libs: ${libHalBlockViz}
+ progs: ${progs}
+ 
+@@ -47,14 +48,14 @@ clean:
+ 	rm -f ${libHalBlockViz} ${objs} ${progs} ${depends}
+ 	rm -rf ${testTmpDir}
+ 
+-test: blockVizHdf5Tests blockVizMmapTests
++test: ${binDir}/blockVizTest blockVizHdf5Tests blockVizMmapTests
+ 
+-blockVizHdf5Tests: ${testHdf5Hal} ${progs}
++blockVizHdf5Tests: ${testHdf5Hal} ${binDir}/blockVizTest
+ 	${binDir}/blockVizTest --verbose --doSeq ${testHdf5Hal} Genome_2 Genome_0 Genome_0_seq 0 3000 >${testTmpDir}/$@.out
+ 	diff tests/expected/$@.out ${testTmpDir}/$@.out
+ 
+ 
+-blockVizMmapTests: ${testMmapHal} ${progs}
++blockVizMmapTests: ${testMmapHal} ${binDir}/blockVizTest
+ 	${binDir}/blockVizTest --verbose --doSeq ${testMmapHal} Genome_2 Genome_0 Genome_0_seq 0 3000 >${testTmpDir}/$@.out
+ 	diff tests/expected/$@.out ${testTmpDir}/$@.out
+ 
+diff --git a/extract/Makefile b/extract/Makefile
+index 6855565a..cac6a09b 100644
+--- a/extract/Makefile
++++ b/extract/Makefile
+@@ -22,7 +22,7 @@ progs = ${binDir}/halStats ${binDir}/halCoverage
+ inclSpec += -I${rootDir}/liftover/inc -I${halApiTestIncl}
+ otherLibs += ${halApiTestSupportLibs} ${libHalLiftover}
+ progs = ${binDir}/halExtract ${binDir}/halAlignedExtract ${binDir}/halMaskExtract \
+-    ${binDir}/hal4dExtract ${binDir}/halSingleCopyRegionsExtract ${binDir}/hal4dExtractTest
++    ${binDir}/hal4dExtract ${binDir}/halSingleCopyRegionsExtract
+ 
+ testTmpDir = output
+ testHdf5Hal = ${testTmpDir}/small.haf5.hal
+diff --git a/include.mk b/include.mk
+index 8a399ce9..8ba10500 100644
+--- a/include.mk
++++ b/include.mk
+@@ -9,30 +9,30 @@ binDir =${rootDir}/bin
+ libDir = ${rootDir}/lib
+ objDir = ${rootDir}/objs
+ 
+-libHal = ${libDir}/libHal.a
+-libHalStats = ${libDir}/libHalStats.a
+-libHalBlockViz = ${libDir}/libHalBlockViz.a
+-libHalMutations = ${libDir}/libHalMutations.a
+-libHalLiftover = ${libDir}/libHalLiftover.a
+-libHalLod = ${libDir}/libHalLod.a
+-libHalMaf = ${libDir}/libHalMaf.a
++libHal = ${libDir}/libHal.so
++libHalStats = ${libDir}/libHalStats.so
++libHalBlockViz = ${libDir}/libHalBlockViz.so
++libHalMutations = ${libDir}/libHalMutations.so
++libHalLiftover = ${libDir}/libHalLiftover.so
++libHalLod = ${libDir}/libHalLod.so
++libHalMaf = ${libDir}/libHalMaf.so
+ 
+ inclSpec += -I${rootDir}/api/inc -Iimpl -Iinc -I${rootDir}/liftover/inc
+ 
+ #Modify this variable to set the location of sonLib
+ #(sonlib is used only for cuTest at this potin)
+-sonLibRootDir ?= ${rootDir}/../sonLib
+-sonLibDir = ${sonLibRootDir}/lib
++#sonLibRootDir ?= ${rootDir}/../sonLib
++#sonLibDir = ${sonLibRootDir}/lib
+ 
+ # update PYTHONPATH and PATH for tests, symlink 'hal' allows checkout directory to have
+ # any name
+-export PYTHONPATH := $(abspath ${sonLibRootDir}/src):$(abspath ${rootDir}):${PYTHONPATH}
++#export PYTHONPATH := $(abspath ${sonLibRootDir}/src):$(abspath ${rootDir}):${PYTHONPATH}
+ 
+-export PATH := $(abspath ${rootDir}/bin):${PATH}
++#export PATH := $(abspath ${rootDir}/bin):${PATH}
+ 
+ .SECONDARY: 
+ 
+-include  ${sonLibRootDir}/include.mk
++#include  ${sonLibRootDir}/include.mk
+ 
+ ##
+ # For GCC, the C++ 11 aplication binary interface must match the version
+@@ -52,16 +52,12 @@ ifeq (${CXX_ABI_DEF},)
+     CXX_ABI_DEF = -D_GLIBCXX_USE_CXX11_ABI=1
+ endif
+ 
+-CFLAGS += -I${sonLibDir}
+-CXXFLAGS += -I${sonLibDir} ${CXX_ABI_DEF} -std=c++11 -Wno-sign-compare
+-
+-LDLIBS += ${sonLibDir}/sonLib.a ${sonLibDir}/cuTest.a
+-LIBDEPENDS += ${sonLibDir}/sonLib.a ${sonLibDir}/cuTest.a
++CXXFLAGS += ${CXX_ABI_DEF} -std=c++11 -Wno-sign-compare
+ 
+ # hdf5 compilation is done through its wrappers.  See README.md for discussion of
+ # h5prefix
+-CXX = h5c++ ${h5prefix}
+-CC = h5cc ${h5prefix}
++#CXX = h5c++ ${h5prefix}
++#CC = h5cc ${h5prefix}
+ 
+ #
+ # phyloP support
+diff --git a/liftover/Makefile b/liftover/Makefile
+index 2bfe91d9..4b79ca48 100644
+--- a/liftover/Makefile
++++ b/liftover/Makefile
+@@ -15,14 +15,15 @@ halLiftoverTests_objs = ${halLiftoverTests_srcs:%.cpp=${modObjDir}/%.o}
+ srcs = ${libHalLiftover_srcs} ${halLiftover_srcs} ${halWiggleLiftover_srcs} ${halLiftover_srcs}
+ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+-progs = ${binDir}/halLiftover ${binDir}/halWiggleLiftover ${binDir}/halLiftoverTests
+-otherLibs += ${libHalLiftover} ${halApiTestSupportLibs}
++progs = ${binDir}/halLiftover ${binDir}/halWiggleLiftover
++otherLibs = -lHal
+ 
+ # tests use api/tests/halAlignmentTest
+ inclSpec += -I${rootDir}/api/tests
+ otherLibs += ${halApiTestSupportLib}
+ 
+ all : libs progs
++${libHalLiftover}: ${libHal}
+ libs: ${libHalLiftover}
+ progs: ${progs}
+ 
+diff --git a/lod/Makefile b/lod/Makefile
+index 4eefbad3..a84fccf3 100644
+--- a/lod/Makefile
++++ b/lod/Makefile
+@@ -12,9 +12,10 @@ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+ pyprogs = ${binDir}/halLodInterpolate.py
+ progs = ${binDir}/halLodExtract ${pyprogs}
+-otherLibs = ${libHalLod}
++otherLibs = -lHal
+ 
+ all : libs progs
++${libHalLod}: ${libHal}
+ libs: ${libHalLod}
+ progs: ${progs}
+ 
+diff --git a/lod/impl/halLodExtract.cpp b/lod/impl/halLodExtract.cpp
+index a907a4e1..958d4968 100644
+--- a/lod/impl/halLodExtract.cpp
++++ b/lod/impl/halLodExtract.cpp
+@@ -11,7 +11,7 @@
+ #include <deque>
+ #include <limits>
+ extern "C" {
+-#include "sonLibTree.h"
++#include "sonLib/sonLibTree.h"
+ }
+ 
+ using namespace std;
+diff --git a/maf/Makefile b/maf/Makefile
+index 6dbc2545..7807160c 100644
+--- a/maf/Makefile
++++ b/maf/Makefile
+@@ -16,11 +16,12 @@ srcs = ${libHalMaf_srcs} ${hal2maf_srcs} ${maf2hal_srcs} ${halMafTests_srcs}
+ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+ pyprogs = ${binDir}/hal2mafMP.py
+-progs = ${binDir}/hal2maf ${binDir}/maf2hal ${binDir}/halMafTests ${pyprogs}
+-otherLibs = ${libHalMaf} ${libHalLiftover} ${halApiTestSupportLibs}
++progs = ${binDir}/hal2maf ${binDir}/maf2hal ${pyprogs}
++otherLibs = -lHal -lHalLiftover
+ inclSpec += -I${rootDir}/liftover/inc -I${halApiTestIncl}
+ 
+ all: libs progs
++${libHalMaf}: ${libHal} ${libHalLiftover}
+ libs: ${libHalMaf}
+ progs: ${progs}
+ 
+diff --git a/maf/inc/halMafBlock.h b/maf/inc/halMafBlock.h
+index 9f12d8fa..0f548c7e 100644
+--- a/maf/inc/halMafBlock.h
++++ b/maf/inc/halMafBlock.h
+@@ -9,7 +9,7 @@
+ #define _HALMAFBLOCK_H
+ 
+ #include "hal.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ #include <cstdlib>
+ #include <deque>
+ #include <iostream>
+diff --git a/modify/ancestorsML.cpp b/modify/ancestorsML.cpp
+index fe0f0da8..5849a920 100644
+--- a/modify/ancestorsML.cpp
++++ b/modify/ancestorsML.cpp
+@@ -3,7 +3,7 @@
+ #include "ancestorsML.h"
+ #include "hal.h"
+ #include "halBedScanner.h"
+-#include "sonLibTree.h"
++#include "sonLib/sonLibTree.h"
+ #include "string.h"
+ extern "C" {
+ #include "markov_matrix.h"
+diff --git a/modify/ancestorsML.h b/modify/ancestorsML.h
+index c5df9b4f..6bfb8d7f 100644
+--- a/modify/ancestorsML.h
++++ b/modify/ancestorsML.h
+@@ -3,7 +3,7 @@
+ #include "halAlignment.h"
+ #include "halDefs.h"
+ #include "halGenome.h"
+-#include "sonLibTree.h"
++#include "sonLib/sonLibTree.h"
+ #include <map>
+ extern "C" {
+ #include "tree_model.h"
+diff --git a/modify/halUpdateBranchLengths.cpp b/modify/halUpdateBranchLengths.cpp
+index b23dd78a..5fd2bf50 100644
+--- a/modify/halUpdateBranchLengths.cpp
++++ b/modify/halUpdateBranchLengths.cpp
+@@ -1,6 +1,6 @@
+ #include "hal.h"
+ #include "halAlignmentInstance.h"
+-#include "sonLibTree.h"
++#include "sonLib/sonLibTree.h"
+ 
+ using namespace std;
+ using namespace hal;
+diff --git a/modify/renameFile.cpp b/modify/renameFile.cpp
+index ec37bc9b..bd7c52d6 100644
+--- a/modify/renameFile.cpp
++++ b/modify/renameFile.cpp
+@@ -1,6 +1,6 @@
+ #include "renameFile.h"
+ #include "hal.h"
+-#include "sonLib.h"
++#include "sonLib/sonLib.h"
+ #include <fstream>
+ #include <map>
+ #include <string>
+diff --git a/mutations/Makefile b/mutations/Makefile
+index 6d48f801..7fb1b5f8 100644
+--- a/mutations/Makefile
++++ b/mutations/Makefile
+@@ -16,9 +16,10 @@ srcs = ${libHalMutations_srcs} ${halIndels_srcs} ${halBranchMutations_srcs} ${ha
+ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+ progs = ${binDir}/halIndels ${binDir}/halBranchMutations ${binDir}/halSnps ${binDir}/halSummarizeMutations
+-otherLibs = ${libHalMutations}
++otherLibs = -lHal
+ 
+ all : libs progs
++${libHalMutations}: ${libHal}
+ libs: ${libHalMutations}
+ progs: ${progs}
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+new file mode 100644
+index 00000000..1cbd758b
+--- /dev/null
++++ b/pyproject.toml
+@@ -0,0 +1,11 @@
++[build-system]
++requires = ["setuptools >= 61.0"]
++build-backend = "setuptools.build_meta"
++
++[project]
++name = "hal"
++version = "2.3"
++requires-python = ">= 3.7"
++
++[tool.setuptools.package-dir]
++hal = ""
+diff --git a/randgen/Makefile b/randgen/Makefile
+index a056d1b3..900dc610 100644
+--- a/randgen/Makefile
++++ b/randgen/Makefile
+@@ -16,11 +16,11 @@ otherLibs += ${halApiTestSupportLibs}
+ 
+ all: progs
+ libs:
+-progs: ${progs}
++progs:
+ 
+ clean: 
+ 	rm -f ${objs} ${progs} ${depends}
+-test:
++test: ${progs}
+ 
+ include ${rootDir}/rules.mk
+ 
+diff --git a/rules.mk b/rules.mk
+index 99bd2f2f..08a88c07 100644
+--- a/rules.mk
++++ b/rules.mk
+@@ -27,15 +27,13 @@ ${modObjDir}/%.o: %.c
+ # ${prog_objs} - has object files specific for ${prog}
+ # otherLibs - other libraries to used
+ .SECONDEXPANSION:
+-${binDir}/% : $${$$*_objs} ${libHal} ${otherLibs} ${LIBDEPENDS}
++${binDir}/% : $${$$*_objs}
+ 	@mkdir -p $(dir $@)
+-	${CXX} ${CXXFLAGS} ${inclSpec} -I tests -o $@ ${${*}_objs} ${otherLibs} ${libHal} ${LDLIBS}
+-
++	${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} ${inclSpec} -o $@ ${${*}_objs} -L ../lib -lHal -lHalStats -lHalBlockViz -lHalLiftover -lHalLod -lHalMaf -lHalMutations -lsonLib -lz -lstdc++ -lhdf5 -lhdf5_cpp
+ 
+ # build a library
+ # $lib_objs has objects for $lib
+ .SECONDEXPANSION:
+-${libDir}/%.a: $${$$*_objs}
++${libDir}/%.so: $${$$*_objs}
+ 	@mkdir -p $(dir $@)
+-	${AR} rc $@ ${$*_objs}
+-	${RANLIB} $@
++	${CXX} ${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS} -shared -fPIC -o $@ ${$*_objs} -L ../lib -lhdf5 -lstdc++ -lz -lsonLib -lhdf5_cpp ${otherLibs}
+diff --git a/stats/Makefile b/stats/Makefile
+index 339266a5..989efd82 100644
+--- a/stats/Makefile
++++ b/stats/Makefile
+@@ -14,9 +14,10 @@ srcs = ${libHalStats_srcs} ${halStats_srcs} ${halCoverage_srcs} ${halPctId_srcs}
+ objs = ${srcs:%.cpp=${modObjDir}/%.o}
+ depends = ${srcs:%.cpp=%.depend}
+ progs = ${binDir}/halStats ${binDir}/halCoverage ${binDir}/halPctId
+-otherLibs = ${libHalStats}
++otherLibs = -lHal
+ 
+ all : libs progs
++${libHalStats}: ${libHal}
+ libs: ${libHalStats}
+ progs: ${progs}
+ 
+-- 
+2.39.2
+
