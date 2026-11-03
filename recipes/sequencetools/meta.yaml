@@ -5,19 +5,35 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-conda-linux # [linux]
-    md5: eb69dd3172c0ca800a2043ed23adf251 # [linux]
-  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-X64 # [osx and x86_64]
-    md5: 2eab8ff64a2ac624a2dc201ed139755f # [osx and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-conda-linux # [linux and x86_64]
+    sha256: b6314196adee0adb1e57b8b13c39124155c845fc8eeb6650b25750b68d6cae57 # [linux and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS-ARM64 # [osx and arm64]
+    sha256: d208484f09ee1d944cb12f332348548aadd97be51e4084acac5f047e72c822e3 # [osx and arm64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/genoStats-macOS-X64 # [osx and x86_64]
+    sha256: ed1bf27976a993d8a15717bd7cda106b0a1fbfe343664859f429a69d4bb0d6c6 # [osx and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-conda-linux # [linux and x86_64]
+    sha256: 65972e0e6a68650fba36f9dd96ff7d58a02f2587fad48bc73f1cbd41732f4b69 # [linux and x86_64]
   - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-ARM64 # [osx and arm64]
-    md5: d4d9617e35eabb1c71fe5a01d5c9f4d7 # [osx and arm64]
+    sha256: 2d775f54dc9390175d6de6eec1fd23219b09f65c9d922eed5b216f866715f5e9 # [osx and arm64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/pileupCaller-macOS-X64 # [osx and x86_64]
+    sha256: 9a3473c8084bde5b337907f4a163e79afead3bbc1fb95ab40d402f302199c429 # [osx and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-conda-linux # [linux and x86_64]
+    sha256: b3b0eb8e4eb27c3934657c0d9f89c2ed49ad31dced7dee403629b8b05e3f3254 # [linux and x86_64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS-ARM64 # [osx and arm64]
+    sha256: 7059ba36174e037c5b4d665cb2b2b47bc40edf663efb515c177affb6baf2fea2 # [osx and arm64]
+  - url: https://github.com/stschiff/sequenceTools/releases/download/v{{ version }}/vcf2eigenstrat-macOS-X64 # [osx and x86_64]
+    sha256: fddc989a8c9eadb1bfc6a50b8699fabf2cb92a4bec59424d0becc74c4a5639ea # [osx and x86_64]
   
 build:
-  number: 0
+  number: 1
   script:
     - "mkdir -p $PREFIX/bin"
     - "mv pileupCaller* $PREFIX/bin/pileupCaller"
     - "chmod u+x $PREFIX/bin/pileupCaller"
+    - "mv genoStats* $PREFIX/bin/genoStats"
+    - "chmod u+x $PREFIX/bin/genoStats"
+    - "mv vcf2eigenstrat* $PREFIX/bin/vcf2eigenstrat"
+    - "chmod u+x $PREFIX/bin/vcf2eigenstrat"
   run_exports:
     - {{ pin_subpackage("sequencetools", max_pin=None) }}
 
@@ -37,12 +53,17 @@ requirements:
 test:
   commands:
     - pileupCaller --version
+    - genoStats --version
+    - vcf2eigenstrat --version
 
 about:
   home: https://github.com/stschiff/sequenceTools
   license: MIT
-  summary: A tool (pileupCaller) for processing ancient DNA sequencing data
+  summary: CLI tools (pileupCaller, genoStats, vcf2eigenstrat) for processing ancient DNA sequencing data
 
 extra:
   additional-platforms:
     - osx-arm64
+    # Note that linux-aarch64 is not currently supported, because the Haskell compiler
+    # requires more recent version of GLIBC than what is available on the CentOS platform
+    # that bioconda runs on
