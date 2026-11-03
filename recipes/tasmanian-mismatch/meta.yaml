@@ -1,5 +1,6 @@
 {% set name = "tasmanian-mismatch" %}
-{% set version = "2.0.3" %}
+{% set version = "2.1.0" %}
+
 
 package:
   name: {{ name }}
@@ -7,7 +8,7 @@ package:
 
 source:
   url: https://github.com/nebiolabs/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: f5b1828f2015ef2b8bc39f24aa2a406ca98fb0c45308ca55a3f8b605ea3acebc
+  sha256: 9c411a3265d40fc570116d64eec38ed56f93c0dd85ac23ec7478ba63d6271bff
 
 build:
   number: 0
@@ -21,9 +22,13 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - llvmdev
+    # On macOS, llvmdev (also pulled in by clangdev) ships lib/libLLVM.dylib, which
+    # clobbers the one rustc links against -> "dyld: missing symbol called".
+    # bindgen (rust-htslib) only needs libclang there.
+    - llvmdev  # [linux]
+    - clangdev  # [linux]
+    - libclang  # [osx]
     - pkg-config
-    - clangdev
     - make
     - cmake
     - patchelf  # [linux]

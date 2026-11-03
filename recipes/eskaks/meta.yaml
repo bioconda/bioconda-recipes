@@ -1,0 +1,63 @@
+{% set name = "eskaks" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f55e58cd55a28cb31b10de8c1ff103f6e7edf189769f452efd6c7bbc84c97f63
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    # liblzma-sys (via needletail) links a system liblzma whenever pkg-config
+    # reports one >= 5.6.2, which would add an undeclared runtime dependency.
+    # Force its vendored static build so the binary stays self-contained.
+    - export LZMA_API_STATIC=1
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - eskaks --version | grep '{{ version }}'
+    - eskaks --help
+    - eskaks fasta --help
+    - eskaks vcf --help
+    - eskaks --demo
+
+about:
+  home: https://github.com/PathoGenOmics-Lab/eskaks
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast pairwise dN/dS and per-gene pN/pS for molecular evolution and selection analysis
+  description: |
+    eskaks computes pairwise dN/dS from codon-aligned FASTA sequences and per-gene
+    pN/pS, neutrality statistics and nucleotide diversity from a VCF together with a
+    reference FASTA and a GFF3 annotation. It is written in Rust and ships a
+    self-contained HTML report.
+  dev_url: https://github.com/PathoGenOmics-Lab/eskaks
+  doc_url: https://pathogenomics-lab.github.io/eskaks/
+
+extra:
+  recipe-maintainers:
+    - paururo
+    - PathoGenOmics-Lab
+  categories:
+    - Genomics
+    - Variant Analysis
+  identifiers:
+    - doi:10.5281/zenodo.21992154

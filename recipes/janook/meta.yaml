@@ -1,0 +1,46 @@
+{% set name = "janook" %}
+{% set version = "9.0.0" %}
+{% set sha256 = "4fa8a9bbcbe0bc2454e1c73a9c36356a4004e4be7314d63a5c7503368040de3b" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/janookgenomics/janook/releases/download/v{{ version }}/janook-{{ version }}-dist.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - openjdk >=25
+
+test:
+  commands:
+    - janook --version
+    - janook explain PS5
+    - 'printf "variant:\n  species: felis_catus\n  gene: TEST\n  transcript: T1\n  hgvs_c: c.1A>G\n  consequence: missense_variant\ncriteria:\n  PS1: {met: true}\n  PM1: {met: true}\n" > test-variant.yaml'
+    - janook classify test-variant.yaml --brief
+
+about:
+  home: https://github.com/janookgenomics/janook
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Classification of genetic variants in animals under the AVCG guidelines
+  description: |
+    janook implements the Animal Variant Classification Guidelines (AVCG,
+    Boeykens et al. 2024), the veterinary counterpart of the ACMG/AMP
+    guidelines. Given an evidence file recording which of the 23 criteria
+    were met for a variant, it applies the guideline's decision process
+    and reports the classification with the rule that produced it, the
+    criteria behind it, and full provenance.
+
+extra:
+  recipe-maintainers:
+    - itpragmatik

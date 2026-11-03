@@ -1,23 +1,24 @@
 {% set name = "pyskani" %}
-{% set version = "0.2.0" %}
+{% set version = "0.3.0" %}
 
 package:
-  name: "{{ name | lower }}"
-  version: "{{ version }}"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: "270bbc09fb1115208348f2456b859149f91b9d9867c1526c4d379aef232c9bc9"
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 663114278d04c586c2684ce8111699884be1122bcef7d2e892a64886938e8e17
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
-  skip: True  # [osx or py27 or py36]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv
+  skip: True  # [py27 or py36]
   run_exports:
-    - {{ pin_subpackage('pyskani', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('rust') }}
   host:
     - python
@@ -43,5 +44,6 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - althonos

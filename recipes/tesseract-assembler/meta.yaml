@@ -1,0 +1,76 @@
+{% set name = "tesseract-assembler" %}
+{% set version = "1.6.2" %}
+{% set sha256 = "f74a840cf9b31f8898d06436bb05f338393278cf7fee264967ead20fe6e87bc7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # A hashed release tarball rather than a git checkout: bioconda builds must be
+  # byte-reproducible from the recipe alone, and a tag can be moved after the fact.
+  url: https://github.com/iowa69/TesserACT/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - tesseract-1.4.0-macos.patch  # [osx]
+
+build:
+  number: 0
+  # Nothing here is architecture-independent: the k-mer packing and the threading compile
+  # down to the host. The build steps live in build.sh -- conda-build rejects a recipe that
+  # has both that file and a build/script section.
+  run_exports:
+    # Bioconda convention, and their linter expects it on a compiled package: 8,480 of the
+    # 11,080 recipes carry one, including every comparable assembler (spades, megahit,
+    # abyss, velvet, unicycler). Strictly it publishes a pin to packages that depend on this
+    # one, and nothing links against an assembler -- but declaring it costs nothing and
+    # means a future dependent gets a sane pin for free.
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    # Pins the C standard library the package is built against. Required alongside a
+    # compiler in current conda-build; bioconda's linter rejects the recipe without it
+    # (compiler_needs_stdlib_c). Older recipes in the tree predate the rule.
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+  # --map-polish shells out to one of these. They are not needed to assemble, so they
+  # constrain rather than depend: installing the package should not drag in an aligner.
+  run:
+    - python
+    - bowtie2
+    - bwa
+
+test:
+  commands:
+    # Since 1.6.1 the package's user command is `tesseract`; the engine and the model fetcher
+    # are its helpers in $PREFIX/libexec/tesseract (installed by `make install`).
+    - tesseract --version
+    - tesseract --help
+    - tesseract models --help
+
+about:
+  home: "https://github.com/iowa69/TesserACT"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "De novo assembler for bacterial isolates from paired-end Illumina reads, with optional organism models."
+  description: |
+    TesserACT assembles bacterial genomes from paired-end Illumina reads with one command,
+    `tesseract -1 R1.fq.gz -2 R2.fq.gz -o OUTDIR`. It checks the reads before assembling,
+    builds de Bruijn graphs over a ladder of k-mer sizes, resolves repeats with read pairs,
+    writes verified circular replicons, and checks every output, with a plain-language summary.
+    Optional organism models (`tesseract models download`, then `--organism NAME`) lay the
+    chromosome out from the conserved gene order of closed genomes of the same species.
+  doc_url: "https://github.com/iowa69/TesserACT/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/iowa69/TesserACT"
+
+extra:
+  recipe-maintainers:
+    - iowa69
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
