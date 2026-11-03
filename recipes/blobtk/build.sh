@@ -10,19 +10,27 @@ export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 
-curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
-export PATH="${HOME}/.cargo/bin:${PATH}"
+#curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --profile=minimal -y
+#export PATH="${HOME}/.cargo/bin:${PATH}"
+
+# blobtk's cargo config forces +crt-static (static-pie) on x86_64 Linux;
+# conda's glibc sysroot has no rcrt1.o/libc.a, and conda packages should link dynamically anyway
+sed -i.bak '/target-feature=+crt-static/d' rust/.cargo/config.toml && rm -f rust/.cargo/config.toml.bak
+
+cargo update --manifest-path rust/Cargo.toml -p hts-sys --precise 2.2.1
 
 # build statically linked binary with Rust
 RUST_BACKTRACE=1
 if [[ "$(uname -s)" == "Darwin" ]]; then
   export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"
-  RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+  RUSTFLAGS="-C link-args=-Wl,-undefined,dynamic_lookup -L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 else
-  RUSTFLAGS="-C target-feature=-crt-static -L ${PREFIX}/lib" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
+  RUSTFLAGS="-C target-feature=-crt-static" cargo install -v --no-track --locked --path rust/ --root "${PREFIX}"
 fi
 
 cd rust
+
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 OS=$(uname -s)
 ARCH=$(uname -m)
