@@ -1,0 +1,57 @@
+{% set version = "4.0" %}
+
+package:
+  name: gembs-rs
+  version: {{ version }}
+
+source:
+  url: https://github.com/heathsc/gemBS-rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: d2e4f844e4a381e5a9087c27ed67751ef2a3a2c2a97b02204ff6a483cad95cc9
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("gembs-rs", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - pkg-config
+    - cargo-bundle-licenses
+  host:
+    - fontconfig
+    - freetype
+    - htslib
+    - zlib
+  run:
+    - gem3-mapper
+    - pigz
+    - samtools
+    - bcftools
+  run_constrained:
+    # gembs-rs has different bs_call implementation => prevent co-installation.
+    - bs_call <0a0
+
+test:
+  commands:
+    - gemBS --version
+    - |
+      # FIXME/TODO: GEMBS_ROOT would need to be set in activation script or,
+      #             preferably, this needs a patch to give it a default value.
+      export GEMBS_ROOT="${CONDA_PREFIX}"
+      printf %s\\n 'barcode,dataset' > metadata.csv
+      printf %s\\n '[index]' 'reference = genome.fa' > config
+      printf '>seq\n%10000000s\n' | tr ' ' A > genome.fa
+      gemBS --loglevel trace prepare --config config --text-metadata metadata.csv
+      gemBS --loglevel trace call 2>&1 | { ! grep Error ; }
+
+about:
+  home: https://github.com/heathsc/gemBS-rs
+  license: BSD-3-Clause
+  summary: High throughput processing for DNA methylation data from Bisulfite Sequencing
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://pubmed.ncbi.nlm.nih.gov/30137223/
