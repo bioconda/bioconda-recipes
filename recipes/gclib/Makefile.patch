@@ -1,0 +1,43 @@
+diff --git a/Makefile b/Makefile
+index 43a9c91..d937ddd 100644
+--- Makefile
++++ Makefile
+@@ -38,7 +38,7 @@
+ EXE =
+ endif
+ 
+-CC      := g++
++CC      := ${CXX}
+ 
+ BASEFLAGS  := -Wall -Wextra ${SEARCHDIRS} $(MARCH) \
+  -D_REENTRANT -fno-exceptions -fno-rtti
+@@ -65,22 +65,27 @@
+   endif
+ endif
+ 
++CFLAGS += -fPIC
++
+ %.o : %.cpp
+ 	${CC} ${CFLAGS} -c $< -o $@
+ 
+ # C/C++ linker
+ 
+-LINKER  := g++
++LINKER  := ${CXX}
+ LIBS := 
+ OBJS := GBase.o GStr.o GArgs.o
++GCLIBS := GFastaIndex.o GFaSeqGet.o gff.o gdna.o codons.o GBase.o GStr.o GArgs.o
+ 
+ .PHONY : all
+-all:    gtest threads
++all:    gtest threads gffcomparelibs
+ 
+ version: ; @echo "GCC Version is: "$(GCC_MAJOR)":"$(GCC_MINOR)":"$(GCC_SUB)
+ 	@echo "> GCC Opt. string is: "$(GCC45OPTS)
+ debug:  gtest threads
+ nodebug:  gtest threads
++gffcomparelibs: ${GCLIBS}
++	${LINKER} ${LDFLAGS} $(GCC45OPTS) $(GCC45OPTMAIN) -shared -o libgffc.so ${GCLIBS}
+ gtest.o : GBase.h GArgs.h GVec.hh GList.hh GBitVec.h
+ GArgs.o : GArgs.h
+ gtest: $(OBJS) gtest.o
