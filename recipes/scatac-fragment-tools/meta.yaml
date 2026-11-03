@@ -1,18 +1,21 @@
 {% set name = "scatac-fragment-tools" %}
-{% set version = "0.1.4" %}
+{% set version = "0.1.5" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scatac_fragment_tools-{{ version }}.tar.gz
-  sha256: a3cc59d03118dabc2fd6b60fc7b54aa76a6a19b3581afeaf94c319f85418add6
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scatac_fragment_tools-{{ version }}.tar.gz
+  sha256: 60fdd64549e3f718c9588b51ada766dce56598ceb0140cdc908efb24d984e4dc
 
 build:
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
-  run_exports: {{ pin_compatible("scatac-fragment-tools", max_pin="x.x.x") }}
+  skip: True  # [py < 310]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - scatac_fragment_tools = scatac_fragment_tools.cli.main:main
+  run_exports: {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
@@ -23,13 +26,13 @@ requirements:
   host:
     - python
     - pip
-    - maturin >=1,<2
+    - maturin >=1.11,<2
   run:
-    - python >=3.8
-    - numpy <2
+    - python
+    - numpy
     - pybigwig
-    - pybigtools >=0.2.0
-    - polars >=1.0.0
+    - pybigtools >=0.2.4
+    - polars >=1.32.0
     - pyarrow
     - numba
     - rich-argparse
@@ -39,16 +42,22 @@ test:
   imports:
     - scatac_fragment_tools
   commands:
-    - pip check
-  requires:
-    - pip
+    - scatac_fragment_tools --help
 
 about:
-  home: https://github.com/aertslab/scatac_fragment_tools/
-  summary: 'Tools for working with scATAC-seq fragment files.'
+  home: "https://github.com/aertslab/scatac_fragment_tools"
+  summary: "Tools for working with scATAC-seq fragment files."
   license: MIT
-  doc_url: https://aertslab.github.io/scatac_fragment_tools/
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://aertslab.github.io/scatac_fragment_tools"
+  dev_url: "https://github.com/aertslab/scatac_fragment_tools"
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - nilchia
+  skip-lints:
+    - compiler_needs_stdlib_c
