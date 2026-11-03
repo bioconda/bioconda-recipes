@@ -1,0 +1,55 @@
+{% set name = "cellpheno-nis" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Chrisa142857/Lightsheet_microscopy_image_3D_nuclei_instance_segmentation/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 031a8bb96e3171abb277e7b5fb81f3f77691c30a55c83f3d1cacd8bdf1381a39
+
+build:
+  number: 0
+  # Linux/GPU only: the tool links CUDA-enabled LibTorch and has no macOS/Windows target.
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    # CUDA-enabled libtorch's CMake config (Caffe2) calls enable_language(CUDA) and
+    # needs nvcc even though NIS has no custom .cu kernels.
+    - {{ compiler('cuda') }}
+    - cmake >=3.18
+    - make
+  host:
+    # libtorch provides the C++ LibTorch libs + the Torch/Caffe2 CMake config that
+    # cpp/CMakeLists.txt resolves via CMAKE_PREFIX_PATH=$PREFIX. The CUDA version is
+    # taken from the CUDA-enabled libtorch variant + {{ compiler('cuda') }} pinning.
+    - libtorch
+    - libopencv
+    # libtorch_cuda.so references NCCL symbols (e.g. ncclAlltoAll) at link time.
+    - nccl
+  run:
+    - libtorch
+    - libopencv
+
+test:
+  commands:
+    # Installed as `cellpheno-nis` (upstream binary is generically named `main`,
+    # which must not go on the global PATH).
+    - cellpheno-nis --help
+
+about:
+  home: https://github.com/Chrisa142857/Lightsheet_microscopy_image_3D_nuclei_instance_segmentation
+  license: MIT
+  license_file: LICENSE
+  summary: Whole-brain 3D nuclei instance segmentation for light-sheet microscopy (C++/LibTorch/CUDA)
+  dev_url: https://github.com/Chrisa142857/Lightsheet_microscopy_image_3D_nuclei_instance_segmentation
+
+extra:
+  recipe-maintainers:
+    - Chrisa142857
