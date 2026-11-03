@@ -1,0 +1,50 @@
+
+{% set version = "1.3" %}
+{% set name = "CAMISIM" %}
+{% set sha256 = "92c9e234c99cd776c0d33612a3ac1e26fa5c4209be3af40f8f11918a9dc74706" %}
+{% set user = "CAMI-challenge" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - pin_subpackage(name|lower, max_pin="x")
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz 
+  sha256: {{ sha256 }}
+
+requirements:
+
+  host:
+    - python 3.9
+  run:
+    - python 3.9
+    - scikit-learn
+    - joblib
+    - numpy
+    - biopython
+    - matplotlib-base
+    - biom-format
+    - ete3
+    - samtools
+
+test:
+  commands:
+    - metagenome_from_profile.py --help
+
+about:
+  home: https://github.com/CAMI-challenge/CAMISIM
+  license: Apache License 2.0
+  license_file: LICENSE.txt
+  summary: "CAMISIM is a software to model abundance distributions of microbial communities and to simulate corresponding shotgun metagenome datasets"
+  dev_url: https://github.com/CAMI-challenge/CAMISIM
+  doc_url: https://github.com/CAMI-challenge/CAMISIM
+
+extra:
+  recipe-maintainers:
+    - paulzierep
