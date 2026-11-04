@@ -9,11 +9,17 @@ source:
   sha256: ea0eb2924281b94285a73a98892b1e959db6267970f7fae4726a80c0ee29f146
 
 build:
-  noarch: false
-  script: {{ PYTHON }} -m pip install . -vv
   number: 0
+  skip: true
+  run_exports:
+    - {{ pin_subpackage('rsbio-seq', max_pin="x.x") }}
 
 requirements:
+  build:
+    - {{ compiler("rust") }}
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - python >=3.9
   host:
     - python >=3.9
     - maturin >=1.9.3,<2.0
@@ -38,8 +44,9 @@ about:
     - LICENSE-GPL
 
 extra:
-  skip-lints:
-    - should_be_noarch_generic
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - Vini2
     - anuradhawick
