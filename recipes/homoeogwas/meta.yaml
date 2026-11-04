@@ -1,0 +1,70 @@
+{% set name = "homoeogwas" %}
+{% set version = "2.1.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 747f3fb15a8d86cba232750a55e3d8bdc7752fe760336e5c8c1e9446031ca04f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation
+  entry_points:
+    - homoeogwas = homoeogwas_launcher:main
+    - homoeogwas-mcp = homoeogwas.mcp_server:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - numpy >=1.24
+    - scipy >=1.10
+    - pandas >=2.0
+    - scikit-learn >=1.3
+    - matplotlib-base >=3.7
+    - bed-reader >=1.0
+    - pyyaml >=6.0
+    - pydantic >=2.5
+    - joblib >=1.3
+    - threadpoolctl >=3.1
+    - pysam >=0.22
+    - mcp >=1.0
+
+test:
+  imports:
+    - homoeogwas
+    - homoeogwas.interact
+    - homoeogwas.omnib_family
+    - homoeogwas.mcp_server
+  commands:
+    - homoeogwas --help
+    - homoeogwas interact --help
+    - python -c "import homoeogwas; assert homoeogwas.__version__ == '{{ version }}'"
+
+about:
+  home: https://github.com/Shipeng-Yang/HomoeoGWAS
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Subgenome-aware mixed-model GWAS and homoeolog interaction analysis for allopolyploids
+  description: |
+    HomoeoGWAS partitions additive genetic variance by subgenome with multi-kernel REML and
+    leave-one-chromosome-out association scans, and tests predefined homoeolog groups for
+    pairwise interaction with an encoding-robust omnibus statistic and experiment-wide
+    bootstrap minimum-P error control. It provides a command-line interface, a Python API and
+    a Model Context Protocol server for AI assistants.
+  doc_url: https://shipeng-yang.github.io/HomoeoGWAS
+  dev_url: https://github.com/Shipeng-Yang/HomoeoGWAS
+
+extra:
+  recipe-maintainers:
+    - Shipeng-Yang
