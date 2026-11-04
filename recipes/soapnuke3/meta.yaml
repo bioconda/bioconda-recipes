@@ -1,0 +1,56 @@
+{% set version = "3.0.0" %}
+
+package:
+  name: soapnuke3
+  version: {{ version }}
+
+source:
+  url: https://github.com/BGI-flexlab/SOAPnuke3/releases/download/v{{ version }}/SOAPnuke-{{ version }}-source.tar.gz
+  sha256: 775913da4cc70926d8336bbc07e481626f2744192fe0009416b406ce35c78abb
+
+build:
+  number: 0
+  skip: true  # [not linux]
+  run_exports:
+    - {{ pin_subpackage('soapnuke3', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - rust 1.99.1
+    - cmake
+    - make
+    - python >=3.10
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - SOAPnuke --version
+    - SOAPnuke process --help
+    - SOAPnuke demux --help
+    - SOAPnuke dedup --help
+    - SOAPnuke report --help
+    - SOAPnuke resources --help
+
+about:
+  home: https://github.com/BGI-flexlab/SOAPnuke3
+  dev_url: https://github.com/BGI-flexlab/SOAPnuke3
+  doc_url: https://bgi-flexlab.github.io/SOAPnuke3/
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - COPYING
+    - THIRD_PARTY_LICENSES.txt
+  summary: Fast FASTQ processing, demultiplexing, deduplication and quality reporting
+
+extra:
+  recipe-maintainers:
+    - youngchan919
+  additional-platforms:
+    - linux-aarch64
