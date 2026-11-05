@@ -26,6 +26,9 @@ requirements:
     - mafft ==7.526
     - epa-ng ==0.3.8
     - itsxrust ==0.3.0
+    # for `amfsplit validate`: the paper's hits were made with vsearch 2.27.0, which cannot be installed
+    # next to blast 2.17.0 (libzlib); 2.32.0 reproduces them byte for byte (the validate parity case)
+    - vsearch ==2.32.0
 
 test:
   commands:
@@ -33,6 +36,8 @@ test:
     - amfsplit name --help
     - test -d "${PREFIX}/share/amfsplit/naming/inputs/benchmark"
     - test -f "${PREFIX}/share/amfsplit/panels/amf_legacy_windows.tsv"
+    # validate runs vsearch: one window searched against itself
+    - printf '>w1\nACGTTGCATGCCTAGGCTAACGTTAGCCGATCGATTACGGCATCGATCGGATCGTAGCTAGCTAGGCTTACGATCGG\n' > w.fa && amfsplit validate -w w.fa -r w.fa -o smoke --threads 1 && test -s smoke.hits.tsv
 
 about:
   home: https://github.com/ayobi/amfsplit
