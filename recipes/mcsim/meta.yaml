@@ -34,6 +34,17 @@ build:
     installed headers sim/random.h and sim/mh.h include it unguarded and the
     makemcsim* scripts depend on it.  Do not delete it.
 
+    A worked example is installed under $PREFIX/share/mcsim/examples/perc/
+    (perc.model, perc.lsodes.in and upstream's reference perc.lsodes.out) so an
+    install can be checked without the source tarball:
+
+        makemcsim $PREFIX/share/mcsim/examples/perc/perc.model mcsim.perc
+        ./mcsim.perc $PREFIX/share/mcsim/examples/perc/perc.lsodes.in sim.out
+        diff sim.out $PREFIX/share/mcsim/examples/perc/perc.lsodes.out   # expect no differences; upstream allows last-digit rounding drift
+
+    Upstream installs no examples at all; the other 22 example directories are
+    not packaged.
+
     This build deliberately links only libc and libm -- no GSL, lapack, SUNDIALS
     CVODES, SBML or MPI.  Consequently config.h does NOT define HAVE_LIBGSL and
     the built-in RNG default seed (314159265.3589793) is used rather than GSL's
@@ -48,22 +59,51 @@ requirements:
     - {{ stdlib('c') }}
 
 test:
-  files:
-    - perc.model
-    - ref_model.c
+  # Deliberately no `files:` here.  bioconda_utils/pkg_test.py:get_tests() reads
+  # ONLY test/commands, test/imports and requirements/run out of the built
+  # package's recorded recipe metadata -- test: files are staged into test_tmp
+  # for the conda-build test and never reach the container, which is built from
+  # the package alone.  PR #71257 died on exactly that (*** Error: File not
+  # found "perc.model.").  Everything below is therefore installed by build.sh.
+  #
+  # ${PREFIX} is safe in both harnesses: conda-build exports it, and pkg_test.py
+  # rewrites the literal "$PREFIX"/"${PREFIX}" in the command string to
+  # /usr/local before running it.  Do NOT use $SRC_DIR -- pkg_test.py does not
+  # rewrite it and the shell has no `set -u`, so it would silently become
+  # "/some/path" -> "/path".  Commands run joined by " && " under bash from CWD
+  # /, so nothing may depend on the directory being writable or on state
+  # surviving between commands.
   commands:
     # mod is the only installed binary and needs no C compiler to run.
     - 'mod -h | grep -qi "Usage: mod"'
     # Step 1 of upstream's make check (examples/perc/Makefile) -- the only step
-    # that does not need a C compiler.  ALL THREE -I filters are required:
-    # model.c embeds the generation date, plus mod's own invocation path in TWO
-    # places (the "Created by" header and the szModelGenAndVersion string; see
-    # mod/modo.c:185 and :294).  Upstream generated ref_model.c as "../../mod/mod",
-    # so that path can never match a PATH-based invocation.
-    - mod perc.model model.c
-    - "diff -I '^   Date:' -I 'Created by' -I 'szModelGenAndVersion' model.c ref_model.c"
-    - "grep -q 'Model File:  perc.model' model.c"
-    - grep -q 'Created by:.*mod v{{ version }}' model.c
+    # that does not need a C compiler.
+    #
+    # Kept as ONE command: mulled concatenates the commands with && into a
+    # single shell and conda-build writes them into one run_test.sh, but neither
+    # promises shell state (a cwd, a variable, a temp dir) survives from one
+    # command to the next, so do not split this up.
+    #
+    # The example is copied into a scratch dir and run by RELATIVE name, not
+    # invoked through a ${PREFIX} path: mod stamps both of its argument paths
+    # verbatim into model.c -- the output name on line 1, the input on the
+    # "Model File:" header AND into szModelDescFilename[] (verified locally;
+    # it is what the first version of this test tripped over).  Absolute
+    # arguments would therefore need 3 more -I filters, quietly gutting the
+    # differential.  Copying also keeps the package dir pristine and lets the
+    # run reproduce upstream's own relative-path shape exactly.
+    #
+    # ALL THREE remaining -I filters are required: model.c embeds the generation
+    # date, plus mod's own invocation path in TWO places (the "Created by"
+    # header and the szModelGenAndVersion string; see mod/modo.c:185 and :294).
+    # Upstream generated ref_model.c as "../../mod/mod", so that path can never
+    # match a PATH-based invocation.
+    - 'D="$(mktemp -d)"; E="${PREFIX}/share/mcsim/examples/perc"; cp "$E/perc.model" "$E/ref_model.c" "$D"/ && cd "$D" && mod perc.model model.c && grep -q "Model File:  perc.model" model.c && grep -q "Created by:.*mod v{{ version }}" model.c && diff -I "^   Date:" -I "Created by" -I "szModelGenAndVersion" model.c ref_model.c'
+    # The installed example: what a user needs to reproduce published results,
+    # and what the differential above runs against.
+    - test -s "${PREFIX}/share/mcsim/examples/perc/perc.model"
+    - test -s "${PREFIX}/share/mcsim/examples/perc/perc.lsodes.in"
+    - test -s "${PREFIX}/share/mcsim/examples/perc/perc.lsodes.out"
     # Installed layout the makemcsim* scripts depend on.
     - test -f "${PREFIX}/include/config.h"
     - grep -q 'PACKAGE_VERSION "{{ version }}"' "${PREFIX}/include/config.h"

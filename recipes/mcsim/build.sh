@@ -93,6 +93,25 @@ cp -f config.h "${PREFIX}/include/config.h"
 # --disable-static already suppressed the archive; the rm is belt-and-braces.
 rm -f "${PREFIX}"/lib/libmcsim.la "${PREFIX}"/lib/libmcsim.a
 
+# Upstream ships 23 example model directories (2.7 MB) and installs none of
+# them, so a user cannot reproduce the documented perc example without
+# downloading the tarball.  Install the one example upstream uses for its own
+# check -- model source, control file, AND the reference outputs -- so the
+# installed package is self-checking.  40 KB, and $(pkgdatadir)/examples/ is a
+# namespace upstream leaves empty (install creates only share/mcsim/{sim,mod}).
+#
+# This is also what makes meta.yaml's test: section mulled-safe: conda stages
+# `test: files:` into test_tmp for the conda-build test only, and mulled builds
+# its image from the PACKAGE alone, so a recipe-local perc.model simply does
+# not exist inside the biocontainer (PR #71257: *** Error: File not found
+# "perc.model.").  Only installed files are visible there.
+mkdir -p "${PREFIX}/share/mcsim/examples/perc"
+install -m 644 examples/perc/perc.model \
+                examples/perc/perc.lsodes.in \
+                examples/perc/perc.lsodes.out \
+                examples/perc/ref_model.c \
+        "${PREFIX}/share/mcsim/examples/perc/"
+
 # Keep: $PREFIX/share/mcsim/sim/  (makemcsims/makemcsimd compile these at user
 #       time), $PREFIX/include/{config.h + 11 headers}, $PREFIX/share/info.
 
@@ -140,8 +159,32 @@ mkdir -p "${SRC_DIR}/smoke"
   ldd ./mcsim.perc | grep -F "${PREFIX}/lib/libmcsim.so.0"
   ./mcsim.perc perc.lsodes.in sim.out
   test -s sim.out
-  # Column headers as they appear in examples/perc/perc.lsodes.out.
-  grep -q 'C_exh_ug' sim.out
+  # Numerical gate against upstream's published reference output for this exact
+  # control file.  With the non-GSL SEED_DEFAULT pinned in section 1 the run is
+  # deterministic and reproduced perc.lsodes.out byte-for-byte in local testing.
+  # Compared field-by-field at 1e-4 relative instead of with diff, because
+  # upstream's own check note allows that "small rounding errors can be ignored"
+  # across compilers/ISAs -- but a different seed, solver or model translation
+  # moves these numbers by orders of magnitude, and must fail the build here.
+  # Tab-separated: blank fields (columns only populated at some time points)
+  # must stay blank on both sides.
+  awk -F'\t' '
+    NR==FNR { ref[FNR] = $0; n = FNR; next }
+    FNR > n { bad("extra line " FNR ": " $0) }
+    { m = split(ref[FNR], a, "\t"); k = split($0, b, "\t")
+      if (m != k) bad("line " FNR ": " m " reference fields vs " k " produced")
+      for (i = 1; i <= k; i++) {
+        if (a[i] == b[i]) continue
+        # Non-numeric text (headers, "Results of Simulation N") must match exactly.
+        if (a[i] !~ /[1-9]/ || b[i] !~ /[1-9]/) bad("line " FNR " col " i ": " a[i] " vs " b[i])
+        d = (b[i] + 0) - (a[i] + 0); if (d < 0) d = -d
+        r = (a[i] + 0); if (r < 0) r = -r
+        if (r > 1 ? d / r > 1e-4 : d > 1e-6) bad("line " FNR " col " i ": " a[i] " vs " b[i])
+      } }
+    END { if (FNR < n) bad("short output: " FNR " of " n " lines")
+          if (rc) { print "^^^ expected within 1e-4 relative of examples/perc/perc.lsodes.out"; exit rc } }
+    function bad(msg) { print "MISMATCH vs examples/perc/perc.lsodes.out: " msg; rc = 1 }
+  ' "${SRC_DIR}/examples/perc/perc.lsodes.out" sim.out
 )
 
 # makemcsimp must self-disable cleanly (built --with-mpi=no).
