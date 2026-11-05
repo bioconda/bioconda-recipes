@@ -1,0 +1,61 @@
+{% set name = "bath" %}
+{% set version = "2.0.0rc7" %}
+{% set tag = "v2.0.0-rc7" %}
+# Easel is a separate repository (branch BATH), not a submodule. This is the
+# BATH-branch head when the v2.0.0-rc7 release binaries were built
+# (2026-10-03T02:11Z), so the package matches the official release.
+{% set easel_commit = "74e45a88acaa6355eb330799a24e9d6edc798dc4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/TravisWheelerLab/BATH/archive/refs/tags/{{ tag }}.tar.gz
+    sha256: 884a62b97f863f5c780c20ace6f307fddc36db9ae8b04ea7209dd5f650a8921b
+  - url: https://github.com/TravisWheelerLab/easel/archive/{{ easel_commit }}.tar.gz
+    sha256: 5b5b7d286f1de5b2d01f090e2c33197aa30f54901e20b697f903850963c33ae9
+    folder: easel
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - autoconf
+    - gnuconfig
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - bathsearch -h | grep "BATH 2" > /dev/null
+    - bathconvert -h | grep -- "--fs" > /dev/null
+    - bathbuild -h > /dev/null
+    - bathalign -h > /dev/null
+    - bathfetch -h > /dev/null
+    - bathstat -h > /dev/null
+    - bathemit -h > /dev/null
+
+about:
+  home: https://github.com/TravisWheelerLab/BATH
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Frameshift-aware translated search of protein profile HMMs against DNA (Better Alignments with Translated HMMER)."
+  description: |
+    BATH aligns protein profile hidden Markov models directly to nucleotide
+    sequence, allowing frameshifts and stop codons, so protein-coding
+    regions disrupted by indels are found as single alignments. It is
+    derived from HMMER3.
+  dev_url: https://github.com/TravisWheelerLab/BATH
+
+extra:
+  recipe-maintainers:
+    - danielhmahecha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
