@@ -135,7 +135,9 @@ mkdir -p "${SRC_DIR}/smoke"
   PATH="${PREFIX}/bin:${PATH}" makemcsim perc.model mcsim.perc
   test -x ./mcsim.perc
   # Proves the -Wl,-rpath,@prefix@/lib mitigation, without LD_LIBRARY_PATH.
-  ldd ./mcsim.perc | grep -F "${PREFIX}/lib/libmcsim.so"
+  # Matched on the versioned name because that is the real SONAME libtool emits
+  # (libmcsim.so.0); matching "libmcsim.so" would pass only as a substring.
+  ldd ./mcsim.perc | grep -F "${PREFIX}/lib/libmcsim.so.0"
   ./mcsim.perc perc.lsodes.in sim.out
   test -s sim.out
   # Column headers as they appear in examples/perc/perc.lsodes.out.

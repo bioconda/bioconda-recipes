@@ -55,11 +55,13 @@ test:
     # mod is the only installed binary and needs no C compiler to run.
     - 'mod -h | grep -qi "Usage: mod"'
     # Step 1 of upstream's make check (examples/perc/Makefile) -- the only step
-    # that does not need a C compiler.  BOTH -I filters are required: model.c
-    # embeds the generation date AND mod's own invocation path (mod/modo.c:185),
-    # which upstream recorded in ref_model.c as the literal "../../mod/mod".
+    # that does not need a C compiler.  ALL THREE -I filters are required:
+    # model.c embeds the generation date, plus mod's own invocation path in TWO
+    # places (the "Created by" header and the szModelGenAndVersion string; see
+    # mod/modo.c:185 and :294).  Upstream generated ref_model.c as "../../mod/mod",
+    # so that path can never match a PATH-based invocation.
     - mod perc.model model.c
-    - diff -I '^   Date:' -I 'Created by' model.c ref_model.c
+    - "diff -I '^   Date:' -I 'Created by' -I 'szModelGenAndVersion' model.c ref_model.c"
     - "grep -q 'Model File:  perc.model' model.c"
     - grep -q 'Created by:.*mod v{{ version }}' model.c
     # Installed layout the makemcsim* scripts depend on.
@@ -71,6 +73,9 @@ test:
     - test -f "${PREFIX}/share/mcsim/sim/sim.c"
     - test -f "${PREFIX}/share/mcsim/sim/random.h"
     - test -f "${PREFIX}/lib/libmcsim.so"
+    # libtool emits SONAME libmcsim.so.0 (no -version-info -> 0.0.0); this is the
+    # name a user-built model executable actually resolves via the baked rpath.
+    - test -f "${PREFIX}/lib/libmcsim.so.0"
     - test ! -e "${PREFIX}/lib/libmcsim.la"
     - test ! -e "${PREFIX}/lib/libmcsim.a"
     - test -s "${PREFIX}/share/info/mcsim.info"
