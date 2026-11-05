@@ -1,5 +1,5 @@
 {% set name = "acinetoscope" %}
-{% set version = "1.3.3" %}
+{% set version = "1.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/bbeckley-hub/acinetoscope/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 24e54500b69461089b3af2b69b9c96872148b7cb4fc1ab8625aa34854de1f6ea
+  sha256: fe3a93de2247f57241e642e0053e9c0bf77a1df5c780b673ea966646a19e839e
 
 build:
   noarch: python
@@ -38,6 +38,9 @@ requirements:
     - plotly >=5.10.0
     - abricate >=1.2.0
     - fastani >=1.34
+    - mlstdb >=1.3.0
+    - diamond >=2.1.10
+    - prodigal >=2.6.3
     - perl
     - any2fasta
     - blast >=2.13.0
@@ -53,6 +56,7 @@ requirements:
 test:
   commands:
     - acinetoscope --help
+    - acinetoscope --help | grep -q -- '--pull-mge-db'
 
 about:
   home: https://github.com/bbeckley-hub/acinetoscope
@@ -60,30 +64,16 @@ about:
   license_file: LICENSE
   summary: 'AcinetoScope: Comprehensive A. baumannii genomic typing pipeline with parallel execution'
   description: |
-    AcinetoScope is a complete, automated genomic analysis pipeline for Acinetobacter baumannii,
-    featuring parallel execution for rapid processing of bacterial genomes. The pipeline integrates
-    multiple analysis modules into a unified workflow:
+    AcinetoScope is a complete, automated genomic analysis pipeline for Acinetobacter
+    baumannii, featuring parallel execution for rapid processing of bacterial genomes.
+    The pipeline integrates multiple analysis modules into a unified workflow: FASTA QC
+    with FASTANI species confirmation, dual MLST (Pasteur and Oxford), Kaptive K/O
+    locus typing, AMRFinderPlus resistance detection, ABRicate multi-database screening,
+    APT plasmid typing, mobileOG-db MGE profiling, and gene-centric plus sample-centric
+    interactive HTML reports.
 
-    • Quality Control (FASTA QC) - Comprehensive sequence validation with FASTANI species confirmation
-    • Multi-Locus Sequence Typing (MLST) - Oxford & Pasteur schemes with IC1-IC12 assignment
-    • K/OCL Locus Typing (Kaptive) - Capsule and lipooligosaccharide typing
-    • Antimicrobial Resistance (AMR) - Comprehensive resistance gene detection
-    • Virulence & Plasmid Profiling (ABRicate) - Multi-database screening
-    • Critical Genes Flagging - Priority markers for infection control
-    • Interactive HTML Reports - Gene-centric integrated analysis
-    • Cross-genome pattern discovery
-
-    Key Features:
-    🚀 Parallel Execution - All modules run simultaneously for maximum speed
-    📊 Interactive Reports - HTML summaries with visualization
-    🧬 Multi-Database Integration - CARD, ResFinder, VFDB, NCBI, MEGARes, BacMet
-    ⚡ Easy Deployment - Single command analysis with automatic dependency handling
-    🎯 Critical Gene Tracking - Carbapenemases, ESBLs, colistin/tigecycline resistance
-    🧪 Species Confirmation - FASTANI integration with curated reference genomes
-
-    Designed for clinical microbiology, outbreak investigation, and genomic surveillance,
-    AcinetoScope provides clinical labs and researchers with a complete solution for
-    A. baumannii genomic characterization from raw sequencing data to publication-ready reports.
+    The mobileOG-db payload (~1 GB) is fetched at runtime with `acinetoscope --pull-mge-db`.
+    Docker and Singularity images bundle the data and need neither step.
   doc_url: https://github.com/bbeckley-hub/acinetoscope
   dev_url: https://github.com/bbeckley-hub/acinetoscope
 
