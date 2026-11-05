@@ -12,6 +12,9 @@ source:
 build:
   number: 0
   skip: True  # [py < 311]
+  # conda-build's macOS rpath post-processing runs `llvm-otool -l` on the extension and
+  # intermittently SIGABRTs. It links only libSystem, so there is nothing to relocate.
+  binary_relocation: false  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
