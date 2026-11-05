@@ -1,0 +1,93 @@
+{% set name = "spatial-transcriptomics-analysis" %}
+{% set version = "1.0.1" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wandreopoulos/agentic_spatial_transcriptomics_analysis/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cf11fdfdd67daf2f786d268b5e8e2fb8521cb1cade1d257f0eed7cbdebbf972d
+
+build:
+  number: 0
+  noarch: python
+  # $PYTHON (shell var set by conda-build), not {{ PYTHON }}: this is a
+  # multi-line script and the jinja form renders empty in some passes.
+  script: |
+    $PYTHON -m pip install . -vv --no-deps --no-build-isolation
+    mkdir -p "$PREFIX/share/asta"
+    cp -r deploy "$PREFIX/share/asta/deploy"
+    cp AI_AGENT_DEPLOY.md README.md "$PREFIX/share/asta/"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=68
+  run:
+    - python >={{ python_min }}
+    - h5py >=3.14.0
+    - matplotlib-base >=3.9.4
+    - numpy >=2.0.2
+    - openai >=2.43.0,<4
+    - pandas >=2.3.3
+    - scikit-learn >=1.6.1
+    - scipy >=1.13.1
+    - seaborn >=0.13.2
+    - umap-learn >=0.5.12
+    # 7.x starts a persistent inotify thread; asta-watch --once hangs (fixed in 1.0.2).
+    - watchdog >=6.0.0,<7
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  imports:
+    - asta
+  commands:
+    - asta-baseline --help
+    - asta-ensemble --help
+    - asta-annotate --help
+    - asta-agent --help
+    - asta-run --help
+    - asta-watch --help
+    - asta-watch-launchd --help
+    # Not `asta-saw check`: it correctly exits 1 where SAW isn't installed.
+    - asta-saw --help
+    # asta-notify takes positional subject/body, so --help would be read as
+    # the subject and wait for the body on stdin. Just confirm it exists.
+    - command -v asta-notify
+    # An empty folder, so this no-ops and exits 0. `timeout` turns any hang
+    # into a failure after 2 minutes instead of blocking the build.
+    - timeout 120 asta-watch --once --path "$(mktemp -d)"
+    - test -f "$PREFIX/share/asta/README.md"
+    - test -d "$PREFIX/share/asta/deploy"
+    - pip check
+
+about:
+  home: https://github.com/wandreopoulos/agentic_spatial_transcriptomics_analysis
+  dev_url: https://github.com/wandreopoulos/agentic_spatial_transcriptomics_analysis
+  doc_url: https://github.com/wandreopoulos/agentic_spatial_transcriptomics_analysis/blob/v{{ version }}/README.md
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Autonomous spatial transcriptomics analysis pipeline for Stereo-seq data
+  description: |
+    ASTA runs an ensemble clustering, annotation and LLM-agent pipeline on
+    Stereo-seq cell-bin GEF files. It provides the asta-* commands
+    (asta-run, asta-watch, asta-saw, ...). The SAW FASTQ-to-GEF tool from
+    STOmics is not included; asta-saw finds and runs an existing install.
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.08.10.743848
+  recipe-maintainers:
+    - pratham-rajesh
+    - wandreopoulos
+    - TimsPotatoChips
+    - cpollett
+    - maggieeez111
