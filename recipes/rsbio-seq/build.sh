@@ -1,36 +1,32 @@
 #!/bin/bash
-
-set -exuo pipefail
+set -euxo pipefail
 
 export CARGO_NET_GIT_FETCH_WITH_CLI=true
 export CARGO_NET_RETRY=10
 export CARGO_HOME="${BUILD_PREFIX}/.cargo"
-export RUST_BACKTRACE=1
 
+# Download Rust dependencies
 cargo fetch --locked
 export CARGO_NET_OFFLINE=true
 
-cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+# Generate third-party license report
+cargo-bundle-licenses \
+    --format yaml \
+    --output THIRDPARTY.yml
 
-cargo install \
-    --verbose \
-    --locked \
-    --offline \
-    --no-track \
-    --path rsbio-seq \
-    --root "${PREFIX}"
-
+# Build Python extension
 maturin build \
-    --manifest-path ./conda/Cargo.toml \
-    --bindings pyo3 \
+    --manifest-path Cargo.toml \
     --interpreter "${PYTHON}" \
     --release \
     --strip \
     --locked \
-    --offline
+    --offline \
+    --out dist
 
+# Install generated wheel
 "${PYTHON}" -m pip install \
-    ./target/wheels/*.whl \
+    dist/*.whl \
     --no-deps \
     --no-build-isolation \
     --no-cache-dir \
