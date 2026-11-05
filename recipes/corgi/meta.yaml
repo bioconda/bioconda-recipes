@@ -1,26 +1,18 @@
 {% set name = "corgi" %}
 {% set version = "0.5.10" %}
-{% set pypiname = "bio-corgi" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  - url: https://pypi.io/packages/source/{{ pypiname[0] }}/{{ pypiname }}/bio_corgi-{{ version }}.tar.gz
-    sha256: 873ebbb4d2e48c871a03cf9929122c7d768bcb7b7c37e4e747f62682f27b682f
-  # The sdist on PyPI does not include the license file
-  - url: https://raw.githubusercontent.com/rbturnbull/corgi/v{{ version }}/LICENSE
-    sha256: bfe599db019eea60221221abc3efa3e5feab7ad50b9eaed68c24b77c021bdcc0
+  url: https://github.com/rbturnbull/corgi/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2e3fd17e286a9ea32709578c09aac93b164284a7cf03c54a8946366eb278ac0e
 
 build:
   number: 0
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  entry_points:
-    - corgi = corgi.apps:Corgi.main
-    - corgi-tools = corgi.apps:Corgi.tools
-    - seqtree = corgi.seqtree:app
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
