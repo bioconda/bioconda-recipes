@@ -1,0 +1,110 @@
+{% set name = "mcsim" %}
+{% set version = "6.2.0" %}
+{% set sha256 = "c6a3a685dfb9a6f0e99760f2628a91cf40798f6f05d4577e49fade9d80664f7e" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://ftp.gnu.org/gnu/mcsim/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makemcsim-scripts.patch
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  skip: true  # [osx]
+  notes: |
+    GNU MCSim installs no "mcsim" binary.  The compiled binary is "mod", the model
+    compiler; simulation executables are built per model.  To run a simulation,
+    compile an executable for your model, then invoke it with a .in control file:
+
+        makemcsim  my.model          # links $PREFIX/lib/libmcsim.so
+        makemcsims my.model          # standalone, recompiles the libmcsim sources
+        ./mcsim.my my.lsodes.in sim.out
+
+    makemcsimd builds with debug symbols; makemcsimp builds with MPI and is
+    DISABLED in this build (--with-mpi=no).  A C compiler must be available at
+    run time for the makemcsim* scripts to work.
+
+    $PREFIX/include/config.h is part of this package's public interface: the
+    installed headers sim/random.h and sim/mh.h include it unguarded and the
+    makemcsim* scripts depend on it.  Do not delete it.
+
+    This build deliberately links only libc and libm -- no GSL, lapack, SUNDIALS
+    CVODES, SBML or MPI.  Consequently config.h does NOT define HAVE_LIBGSL and
+    the built-in RNG default seed (314159265.3589793) is used rather than GSL's
+    SEED_DEFAULT of 0.  Optional libraries are pinned off through ac_cv_lib_*
+    autoconf cache vars in build.sh, so results do not depend on the contents of
+    the build container; enabling GSL changes the default seed.
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+test:
+  files:
+    - perc.model
+    - ref_model.c
+  commands:
+    # mod is the only installed binary and needs no C compiler to run.
+    - 'mod -h | grep -qi "Usage: mod"'
+    # Step 1 of upstream's make check (examples/perc/Makefile) -- the only step
+    # that does not need a C compiler.  BOTH -I filters are required: model.c
+    # embeds the generation date AND mod's own invocation path (mod/modo.c:185),
+    # which upstream recorded in ref_model.c as the literal "../../mod/mod".
+    - mod perc.model model.c
+    - diff -I '^   Date:' -I 'Created by' model.c ref_model.c
+    - "grep -q 'Model File:  perc.model' model.c"
+    - grep -q 'Created by:.*mod v{{ version }}' model.c
+    # Installed layout the makemcsim* scripts depend on.
+    - test -f "${PREFIX}/include/config.h"
+    - grep -q 'PACKAGE_VERSION "{{ version }}"' "${PREFIX}/include/config.h"
+    - grep -q '#define HAVE_LIBM 1' "${PREFIX}/include/config.h"
+    - "! grep -q '#define HAVE_LIBGSL 1' \"${PREFIX}/include/config.h\""
+    - test -f "${PREFIX}/include/sim.h"
+    - test -f "${PREFIX}/share/mcsim/sim/sim.c"
+    - test -f "${PREFIX}/share/mcsim/sim/random.h"
+    - test -f "${PREFIX}/lib/libmcsim.so"
+    - test ! -e "${PREFIX}/lib/libmcsim.la"
+    - test ! -e "${PREFIX}/lib/libmcsim.a"
+    - test -s "${PREFIX}/share/info/mcsim.info"
+    # The makemcsim* scripts are genuinely bash-only (shopt -s extglob, ?('el')).
+    - bash -n "${PREFIX}/bin/makemcsim"
+    - bash -n "${PREFIX}/bin/makemcsims"
+    - bash -n "${PREFIX}/bin/makemcsimd"
+    - bash -n "${PREFIX}/bin/makemcsimp"
+    # MPI is deliberately disabled, so makemcsimp must refuse cleanly.
+    - "! ${PREFIX}/bin/makemcsimp"
+
+about:
+  home: https://www.gnu.org/software/mcsim/
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING
+  summary: Monte Carlo simulation and Bayesian inference for ODE-specified models
+  description: |
+    GNU MCSim performs Monte Carlo simulation, maximum-likelihood estimation and
+    Markov-chain Monte Carlo (MCMC) Bayesian inference on models specified as
+    algebraic or ordinary differential equations, written in a compact model
+    language and compiled to C.  It is used for probabilistic risk assessment and
+    for physiologically based pharmacokinetic (PBPK) modelling.
+
+    The package provides "mod", which translates a .model file into C, plus the
+    makemcsim/makemcsims scripts that build a simulation executable against the
+    bundled libmcsim library.  Upstream has not released since 6.2.0 (2020) and
+    its homepage suggests Stan or Nimble for new projects; this recipe packages
+    the last release as-is.
+  doc_url: https://www.gnu.org/software/mcsim/
+  dev_url: https://savannah.gnu.org/projects/mcsim
+
+extra:
+  identifiers:
+    - biotools:gnu_mcsim
+  recipe-maintainers:
+    - hechth
