@@ -9,8 +9,8 @@ cp -r "${SRC}/predict_afdb.py" "${SRC}/model" "${SHARE}/"
 # predict_afdb.py loads every *.pt in <script dir>/weights
 cp merizo_weights/weights_part_*.pt "${SHARE}/weights/"
 
-cat > "${PREFIX}/bin/merizo" <<EOF
+cat > "${PREFIX}/bin/ted-merizo" <<EOF
 #!/usr/bin/env bash
 exec python "${SHARE}/predict_afdb.py" "\$@"
 EOF
-chmod +x "${PREFIX}/bin/merizo"
+chmod +x "${PREFIX}/bin/ted-merizo"

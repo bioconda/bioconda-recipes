@@ -14,6 +14,8 @@ source:
       - unidoc-scratch-dir.patch
       # pydantic 2 treats Optional fields without a default as required (pydantic 1 defaulted them to None)
       - chainsaw-pydantic2.patch
+      # show the installed command names (ted-chainsaw, ted-merizo, ted-unidoc, ted-consensus) in --help; applies after unidoc-scratch-dir.patch
+      - command-names.patch
   - url: https://github.com/psipred/Merizo/raw/{{ merizo_commit }}/weights/weights_part_0.pt
     sha256: 8b90ad1967c3e445aca7ed3d53135190ceaf8e100d68afd1543e5e8d28547151
     folder: merizo_weights
@@ -26,7 +28,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
+  skip: true # [win]
 
 outputs:
   - name: ted-chainsaw
@@ -51,8 +53,8 @@ outputs:
       source_files:
         - ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb
       commands:
-        - chainsaw --help
-        - chainsaw --structure_file ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb -o chainsaw.tsv
+        - ted-chainsaw --help
+        - ted-chainsaw --structure_file ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb -o chainsaw.tsv
         - test -s chainsaw.tsv
     about:
       home: https://github.com/sillitoe/ted-tools
@@ -83,8 +85,8 @@ outputs:
       source_files:
         - ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb
       commands:
-        - merizo --help
-        - merizo -d cpu -i ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb --out merizo.tsv
+        - ted-merizo --help
+        - ted-merizo -d cpu -i ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb --out merizo.tsv
         - test -s merizo.tsv
     about:
       home: https://github.com/sillitoe/ted-tools
@@ -112,8 +114,8 @@ outputs:
         - ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb
         - ted_consensus_1.0/example_output/chopping_merizo.txt
       commands:
-        - unidoc --help
-        - unidoc -i ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb --inherit_chopping ted_consensus_1.0/example_output/chopping_merizo.txt --out unidoc.tsv
+        - ted-unidoc --help
+        - ted-unidoc -i ted_consensus_1.0/example/AF-A0A6C0LIE9-F1-model_v4.pdb --inherit_chopping ted_consensus_1.0/example_output/chopping_merizo.txt --out unidoc.tsv
         # a failed UniDoc run is reported as NO_SS rather than a non-zero exit
         - grep -v NO_SS unidoc.tsv
     about:
@@ -166,3 +168,5 @@ extra:
     - osx-arm64
   identifiers:
     - doi:10.1101/2024.03.18.585509
+  recipe-maintainers:
+    - FernandoDuarteF

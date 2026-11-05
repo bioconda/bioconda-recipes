@@ -15,8 +15,8 @@ tar -xzf "${SRC}/stride/stride.tgz" -C "${STRIDE_BUILD}"
 make -C "${STRIDE_BUILD}" CC="${CC} ${CFLAGS}" FLAGS="${LDFLAGS} -lm -o" ARCH=
 install -m 755 "${STRIDE_BUILD}/stride" "${SHARE}/stride/stride"
 
-cat > "${PREFIX}/bin/chainsaw" <<EOF
+cat > "${PREFIX}/bin/ted-chainsaw" <<EOF
 #!/usr/bin/env bash
 exec python "${SHARE}/get_predictions.py" "\$@"
 EOF
-chmod +x "${PREFIX}/bin/chainsaw"
+chmod +x "${PREFIX}/bin/ted-chainsaw"

@@ -17,8 +17,8 @@ tar -xzf ted_consensus_1.0/programs/chainsaw/stride/stride.tgz -C "${STRIDE_BUIL
 make -C "${STRIDE_BUILD}" CC="${CC} ${CFLAGS}" FLAGS="${LDFLAGS} -lm -o" ARCH=
 install -m 755 "${STRIDE_BUILD}/stride" "${SHARE}/bin/stride"
 
-cat > "${PREFIX}/bin/unidoc" <<EOF
+cat > "${PREFIX}/bin/ted-unidoc" <<EOF
 #!/usr/bin/env bash
 exec python "${SHARE}/Run_UniDoc_from_scratch_structure_afdb.py" "\$@"
 EOF
-chmod +x "${PREFIX}/bin/unidoc"
+chmod +x "${PREFIX}/bin/ted-unidoc"
