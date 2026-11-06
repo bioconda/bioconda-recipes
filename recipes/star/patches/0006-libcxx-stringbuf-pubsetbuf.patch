@@ -1,0 +1,160 @@
+From 14b1f235927e75ff927be08134c1fb6a00c14d79 Mon Sep 17 00:00:00 2001
+From: Benjamin Demaille <benjamin.demaille@icloud.com>
+Date: Fri, 26 Jun 2026 14:24:59 +0200
+Subject: [PATCH] fix(macos): replace non-portable pubsetbuf idiom with
+ ExtBufStreambuf
+
+STAR read input reads and wrote SAM/BAM records zero-copy through
+pre-allocated char buffers via stringStream.rdbuf()->pubsetbuf(buf, size).
+basic_stringbuf::setbuf is implementation-defined: libstdc++ adopts the
+external buffer, but libc++ (clang/macOS) ignores it. The native macOS/arm64
+build therefore compiled and ran with exit 0 but read 0 input reads and
+produced empty SAM/BAM output.
+
+Add ExtBufStreambuf, a std::streambuf that explicitly adopts a caller-owned
+fixed buffer (setg/setp plus seekoff/seekpos), and back readInStream and
+chunkOutBAMstream with plain istream/ostream over it. Behavior is now
+identical on every standard library, zero-copy is preserved.
+
+Verified on native arm64: 5/5 synthetic reads map uniquely to the expected
+positions (previously 0).
+
+Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+---
+ source/ExtBufStreambuf.h  | 66 +++++++++++++++++++++++++++++++++++++++
+ source/ReadAlignChunk.cpp | 13 ++++----
+ source/ReadAlignChunk.h   |  7 +++--
+ 3 files changed, 78 insertions(+), 8 deletions(-)
+ create mode 100644 source/ExtBufStreambuf.h
+
+diff --git a/source/ExtBufStreambuf.h b/source/ExtBufStreambuf.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..2931170c89f0a425b5d643e6fcccbf290f44f2c1
+--- /dev/null
++++ b/source/ExtBufStreambuf.h
+@@ -0,0 +1,66 @@
++#ifndef CODE_ExtBufStreambuf
++#define CODE_ExtBufStreambuf
++
++#include <streambuf>
++#include <ios>
++
++// A std::streambuf backed by a caller-owned, fixed-size char buffer (zero-copy).
++//
++// This replaces the non-portable idiom
++//     someStringStream.rdbuf()->pubsetbuf(externalBuffer, size);
++// which STAR used to read/write reads and SAM/BAM records directly from/to a
++// pre-allocated char array without copying.
++//
++// std::basic_stringbuf::setbuf() (what pubsetbuf() calls on a string stream) has
++// implementation-defined behavior: libstdc++ (GCC/Linux) adopts the external
++// buffer, but libc++ (clang/macOS) ignores it entirely. With libc++ the streams
++// therefore stayed empty, which made STAR read 0 input reads and write empty
++// SAM/BAM output. This class implements the buffer adoption explicitly so the
++// behavior is identical on every standard library.
++class ExtBufStreambuf : public std::streambuf {
++public:
++    // Use the external buffer as the get (read) area: [base, base+n).
++    void setReadBuffer(char* base, std::streamsize n) {
++        setg(base, base, base + n);
++    }
++
++    // Use the external buffer as the put (write) area: [base, base+n).
++    void setWriteBuffer(char* base, std::streamsize n) {
++        setp(base, base + n);
++    }
++
++protected:
++    pos_type seekoff(off_type off, std::ios_base::seekdir dir,
++                     std::ios_base::openmode which) override {
++        if (which & std::ios_base::in) {
++            char* base = eback();
++            char* end  = egptr();
++            char* newp = (dir == std::ios_base::beg) ? base + off
++                       : (dir == std::ios_base::cur) ? gptr() + off
++                       :                               end  + off;
++            if (newp < base) newp = base;
++            if (newp > end)  newp = end;
++            setg(base, newp, end);
++            return pos_type(newp - base);
++        }
++        if (which & std::ios_base::out) {
++            char* base = pbase();
++            char* end  = epptr();
++            char* newp = (dir == std::ios_base::beg) ? base + off
++                       : (dir == std::ios_base::cur) ? pptr() + off
++                       :                               end  + off;
++            if (newp < base) newp = base;
++            if (newp > end)  newp = end;
++            setp(base, end);
++            pbump(static_cast<int>(newp - base));
++            return pos_type(newp - base);
++        }
++        return pos_type(off_type(-1));
++    }
++
++    pos_type seekpos(pos_type sp, std::ios_base::openmode which) override {
++        return seekoff(off_type(sp), std::ios_base::beg, which);
++    }
++};
++
++#endif
+diff --git a/source/ReadAlignChunk.cpp b/source/ReadAlignChunk.cpp
+index 8f7f180b6557099101b1841d35f54ebf49a4cdfb..5898e50aed268836a5feed61e73a4c8543da6a68 100644
+--- a/source/ReadAlignChunk.cpp
++++ b/source/ReadAlignChunk.cpp
+@@ -18,13 +18,14 @@ ReadAlignChunk::ReadAlignChunk(Parameters& Pin, Genome &genomeIn, Transcriptome
+     RA->iRead=0;
+ 
+     chunkIn=new char* [P.readNends];
+-    readInStream=new istringstream* [P.readNends];
+-    
++    readInStream=new istream* [P.readNends];
++    readInStreamBuf=new ExtBufStreambuf [P.readNends];
++
+     for (uint ii=0;ii<P.readNends;ii++) {
+        chunkIn[ii]=new char[P.chunkInSizeBytesArray];//reserve more space to finish loading one read
+        memset(chunkIn[ii],'\n',P.chunkInSizeBytesArray);
+-       readInStream[ii] = new istringstream;
+-       readInStream[ii]->rdbuf()->pubsetbuf(chunkIn[ii],P.chunkInSizeBytesArray);
++       readInStreamBuf[ii].setReadBuffer(chunkIn[ii],P.chunkInSizeBytesArray);
++       readInStream[ii] = new istream(&readInStreamBuf[ii]);
+        RA->readInStream[ii]=readInStream[ii];
+     };
+ 
+@@ -32,8 +33,8 @@ ReadAlignChunk::ReadAlignChunk(Parameters& Pin, Genome &genomeIn, Transcriptome
+     if (P.outSAMbool) {
+         chunkOutBAM=new char [P.chunkOutBAMsizeBytes];
+         RA->outBAMarray=chunkOutBAM;
+-        chunkOutBAMstream=new ostringstream;
+-        chunkOutBAMstream->rdbuf()->pubsetbuf(chunkOutBAM,P.chunkOutBAMsizeBytes);
++        chunkOutBAMstreamBuf.setWriteBuffer(chunkOutBAM,P.chunkOutBAMsizeBytes);
++        chunkOutBAMstream=new ostream(&chunkOutBAMstreamBuf);
+         RA->outSAMstream=chunkOutBAMstream;
+         RA->outSAMstream->seekp(0,ios::beg);
+         chunkOutBAMtotal=0;
+diff --git a/source/ReadAlignChunk.h b/source/ReadAlignChunk.h
+index 50bb3d8eba02358da8caa1e7a3e19824184526aa..8efff33287e36f049e674bf8e61dbf031615f224 100644
+--- a/source/ReadAlignChunk.h
++++ b/source/ReadAlignChunk.h
+@@ -8,6 +8,7 @@
+ #include "Transcriptome.h"
+ #include "BAMoutput.h"
+ #include "Quantifications.h"
++#include "ExtBufStreambuf.h"
+ 
+ class ReadAlignChunk {//chunk of reads and alignments
+ public:
+@@ -25,8 +26,10 @@ class ReadAlignChunk {//chunk of reads and alignments
+     BAMoutput *chunkOutBAMcoord, *chunkOutBAMunsorted, *chunkOutBAMquant;
+     Quantifications *chunkQuants;
+     
+-    istringstream** readInStream;
+-    ostringstream*  chunkOutBAMstream;
++    istream** readInStream;
++    ExtBufStreambuf* readInStreamBuf; //external-buffer streambufs backing readInStream (one per mate)
++    ostream*  chunkOutBAMstream;
++    ExtBufStreambuf chunkOutBAMstreamBuf; //external-buffer streambuf backing chunkOutBAMstream
+     ofstream chunkOutBAMfile;
+     string chunkOutBAMfileName;
+ 

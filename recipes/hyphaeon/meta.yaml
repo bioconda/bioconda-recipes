@@ -1,5 +1,5 @@
 {% set name = "hyphaeon" %}
-{% set version = "0.2.0" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,13 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 41b06b4b68c4d3043ace74734a0e0854d3588135e9ba1cb81f03a91aff66e855
+  sha256: 4e1a92bc050cac912c383da088138b0585b60003995d5b6206571165cb52e4a8
 
 build:
   number: 0
   noarch: python
   entry_points:
     - hyphaeon = hyphaeon.cli:main
-  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -25,14 +24,13 @@ requirements:
     - setuptools
   run:
     - python >=3.8
-    - hyphaeon-core >=0.1.0
+    - hyphaeon-core >=0.4.0
     - biopython >=1.80
     - numpy >=1.22.0
     - scipy >=1.9.0
     - pandas >=1.5.0
     - networkx >=3.0
     - matplotlib-base >=3.5
-    - tn93 >=1.0.16
 
 test:
   imports:
@@ -43,6 +41,10 @@ test:
     - hyphaeon meme --help
     - hyphaeon phenotype --help
     - hyphaeon epistasis --help
+    # Exercise the hf_xet download path inside the mulled container — small
+    # files bypass xet, so a real weight file is required. This catches the
+    # "Reqwest error: builder error" TLS failure fixed via build.sh.
+    - python -c "from huggingface_hub import hf_hub_download; hf_hub_download('datamonkey/hyphaeon', 'model.safetensors')"
 
 about:
   home: https://github.com/veg/HyphAeon

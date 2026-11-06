@@ -1,0 +1,134 @@
+--- a/default.main.config	2019-03-18 10:14:42.363446570 +0100
++++ b/default.main.config	2019-04-04 10:10:22.171485197 +0200
+@@ -1,20 +1,20 @@
+ [pplacer]
+-path=~/pplacer
++path=/opt/anaconda1anaconda2anaconda3/bin/pplacer
+ 
+ [hmmalign]
+-path=~/hmmalign
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmalign
+ 
+ [hmmsearch]
+-path=~/hmmsearch
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmsearch
+ piped=False
+ elim=10000
+ filters=True
+ 
+ [hmmbuild]
+-path=~/hmmbuild
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmbuild
+ 
+ [jsonmerger]
+-path=~/seppJsonMerger.jar
++path=/opt/anaconda1anaconda2anaconda3/share/sepp/sepp/seppJsonMerger.jar
+ 
+ [exhaustive]
+ strategy = centroid
+--- a/sepp-package/sepp/default.main.config	2019-03-18 10:14:42.363446570 +0100
++++ b/sepp-package/sepp/default.main.config	2019-04-04 10:10:22.171485197 +0200
+@@ -1,20 +1,20 @@
+ [pplacer]
+-path=~/pplacer
++path=/opt/anaconda1anaconda2anaconda3/bin/pplacer
+ 
+ [hmmalign]
+-path=~/hmmalign
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmalign
+ 
+ [hmmsearch]
+-path=~/hmmsearch
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmsearch
+ piped=False
+ elim=10000
+ filters=True
+ 
+ [hmmbuild]
+-path=~/hmmbuild
++path=/opt/anaconda1anaconda2anaconda3/bin/hmmbuild
+ 
+ [jsonmerger]
+-path=~/seppJsonMerger.jar
++path=/opt/anaconda1anaconda2anaconda3/share/sepp/sepp/seppJsonMerger.jar
+ 
+ [exhaustive]
+ strategy = centroid
+--- a/setup.py	2024-10-30 00:00:00.000000000 +0000
++++ b/setup.py	2024-10-30 00:00:00.000000000 +0000
+@@ -23,12 +23,9 @@
+ import sys
+ 
+ # from distutils.core import setup
+-from distribute_setup import use_setuptools
+ import shutil
+-from setuptools import find_packages
+-from distutils.core import setup, Command
++from setuptools import find_packages, setup, Command
+ 
+-use_setuptools(version="0.6.24")
+ version = "4.5.5"
+ 
+ 
+--- a/tools/merge/src/phylolab/taxonamic/PPlacerJSONMerger.java	2024-10-30 00:00:00.000000000 +0000
++++ b/tools/merge/src/phylolab/taxonamic/PPlacerJSONMerger.java	2024-10-30 00:00:00.000000000 +0000
+@@ -162,23 +162,40 @@
+ 		HashMap<String, String> labelMap = mapTrees(jsonTree, baseTree);
+ 
+ 		JSONArray placements = json.getJSONArray("placements");
++        // Iterate through "field descriptions" to learn which column is holding
++        // what type of information about placements.
++        HashMap<String, Integer> fieldPositions = new HashMap<String, Integer>();
+ 		JSONArray fields = json.getJSONArray("fields");
+-                int locEdgeNum=0;
+-                while (! fields.getString(locEdgeNum).equals("edge_num")) {
+-                        locEdgeNum++;
+-                }
++        for (int i = 0; i < fields.size(); i++) {
++                fieldPositions.put(fields.getString(i), i);
++        }
+ 		
++		if (!fieldPositions.containsKey("edge_num") || !fieldPositions.containsKey("distal_length")) {
++			return;
++		}
++		int edgePos = fieldPositions.get("edge_num");
++		int distalPos = fieldPositions.get("distal_length");
++		if (edgePos != 0) {
++			String tmpField = fields.getString(0);
++			fields.set(0, fields.getString(edgePos));
++			fields.set(edgePos, tmpField);
++		}
+ 		for (Iterator<JSONObject> iterator = placements.iterator(); iterator.hasNext();) {
+ 			JSONObject placement = iterator.next();
+ 			JSONArray p = placement.getJSONArray("p");
+ 			for (Iterator<JSONArray> itp = p.iterator(); itp.hasNext();) {
+ 				JSONArray pr = itp.next();
+-				String newLab = (String) labelMap.get(pr.getString(locEdgeNum));
+-				pr.set(locEdgeNum, new Integer(newLab));
+-
+-				if (pr.getDouble(3) > ((Double) mainEdgeLen.get(newLab))
++				String newLab = (String) labelMap.get(pr.getString(edgePos));
++				pr.set(edgePos, new Integer(newLab));
++
++				if (pr.getDouble(distalPos) > ((Double) mainEdgeLen.get(newLab))
+ 						.doubleValue())
+-					pr.set(3, Double.valueOf(((Double) mainEdgeLen.get(newLab))
++					pr.set(distalPos, Double.valueOf(((Double) mainEdgeLen.get(newLab))
+ 							.doubleValue() * 0.99D));
++				if (edgePos != 0) {
++					Object tmp = pr.get(0);
++					pr.set(0, pr.get(edgePos));
++					pr.set(edgePos, tmp);
++				}
+ 			}
+ 		}
+@@ -296,6 +313,8 @@
+ 	
+ 					// UPDATE the global merge file
+ 					resultsPlacements.addAll(json.getJSONArray("placements"));
+-					fields = json.getJSONArray("fields");
++					if (fields == null || json.getJSONArray("fields").size() > 0) {
++						fields = json.getJSONArray("fields");
++					}
+ 					
+ 					// Unnecessary IO

@@ -1,10 +1,10 @@
-{% set version = "3.30.0" %}
+{% set version = "3.33.0" %}
 {% set name = "CoGAPS" %}
-{% set bioc = "3.22" %}
+{% set bioc = "3.24" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,24 +12,26 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-  md5: 817a4f23456f4e780fd4bc4cf3003b9c
+  sha256: e3f8593c765e1e48c617f0f3e4820d5a6355d04991dc4c0c76dcfa105d138fb6
 
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-cogaps", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-cogaps', max_pin="x.x") }}
 
 # Suggests: testthat, knitr, rmarkdown, BiocStyle, SeuratObject, BiocFileCache, xml2
 requirements:
-
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - automake
+    - autoconf
+    - autoconf-archive
     - make
-
+    - pkg-config
   host:
     - bioconductor-biocparallel >=1.44.0,<1.45.0
     - bioconductor-fgsea >=1.36.0,<1.37.0
@@ -51,7 +53,6 @@ requirements:
     - liblapack
     - zlib
     - liblzma-devel
-
   run:
     - bioconductor-biocparallel >=1.44.0,<1.45.0
     - bioconductor-fgsea >=1.36.0,<1.37.0
@@ -73,11 +74,16 @@ requirements:
 test:
   commands:
     - $R -e "library('{{ name }}')"
+    - $R -e "stopifnot(CoGAPS::compiledWithOpenMPSupport())"  # [linux]
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: BSD_3_clause + file LICENSE
-  summary: Coordinated Gene Activity in Pattern Sets
-  description: Coordinated Gene Activity in Pattern Sets (CoGAPS) implements a Bayesian MCMC matrix factorization algorithm, GAPS, and links it to gene set statistic methods to infer biological process activity.  It can be used to perform sparse matrix factorization on any data, and when this data represents biomolecules, to do gene set analysis.
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "BSD-3-Clause"
+  summary: "Coordinated Gene Activity in Pattern Sets."
+  description: "Coordinated Gene Activity in Pattern Sets (CoGAPS) implements a Bayesian MCMC matrix factorization algorithm, GAPS, and links it to gene set statistic methods to infer biological process activity. It can be used to perform sparse matrix factorization on any data, and when this data represents biomolecules, to do gene set analysis."
   license_file: LICENSE
 
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
