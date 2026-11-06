@@ -7,37 +7,54 @@ package:
 source:
   url: https://github.com/TGenNorth/NASP/archive/v{{ version }}.tar.gz
   sha256: e089485a1ff11b4fa43fe5876251959fecd8cba42baa159675b7e573b25a9a30
+  patches:
+    - python-compat.patch
+    - current-bcftools.patch
+    - samtools13-sort.patch
 
 build:
-  # samtools 1.1 requires openssl 1.1.1; conda-forge python >=3.12 requires openssl 3
-  skip: True  # [not linux or py>=312]
-  number: 3
+  skip: True  # [py<311 or not linux64]
+  number: 4
   run_exports:
-    - {{ pin_subpackage('nasp', max_pin="x") }}
+    - {{ pin_subpackage("nasp", max_pin="x") }}
 
 requirements:
   build:
-    - {{ compiler('go-nocgo') }}
     - {{ stdlib('c') }}
+    - {{ compiler('go-nocgo') }}
   host:
     - python
     - pip
     - setuptools
+    - wheel
+    # Verify the versioned targets during the build.
+    - gatk 3.8 hdfd78af_12
+    - picard 2.27.5 hdfd78af_0
+    - varscan 2.4.6 hdfd78af_0
+    - trimmomatic 0.40 hdfd78af_0
+    - snap-aligner ==2.0.5
   run:
     - python
-    # 1.2 builds do not declare their libncurses.so.5 dependency and cannot load;
-    # >=1.3 rejects the 'samtools sort - <prefix>' form used by NASP 1.2.1
-    - samtools >=1.1,<1.2
-    - trimmomatic
+    - biopython
+    # The tested intermediate release includes the startup reference-cache fix.
+    - samtools ==1.3.1
+    - bcftools >=1.2,<2
+    - openjdk >=8,<9
+    - trimmomatic 0.40 hdfd78af_0
+    - gatk 3.8 hdfd78af_12
+    - picard 2.27.5 hdfd78af_0
+    - varscan 2.4.6 hdfd78af_0
+    - bwa ==0.7.19
+    - bowtie2 ==2.5.5
+    - snap-aligner ==2.0.5
     - mummer
-    # NASP 1.2.1 imports pkg_resources, which setuptools removed in 82.0.0
-    - setuptools <82
 
 test:
   commands:
     - nasp --help
     - nasp matrix --help
-    - samtools --version
+    - filter_matrix_by_genome.py --help
+    - filter_matrix_by_distance.py --help
 
 about:
   home: 'https://github.com/TGenNorth/nasp'
