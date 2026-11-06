@@ -1,0 +1,62 @@
+{% set name = "galn" %}
+{% set version = "0.2.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bilalbioinfo/galn/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 557d3a77eb2d774fde0efb7010da6852c53ec0225213d67475f6e137102edb4b
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.18
+    - make
+    - libgomp
+    - cuda-nvcc
+    - cuda-cudart-dev            # also brings the static CUDA runtime (libcudart_static.a, libcudadevrt.a) and CCCL
+    - cuda-version >=12.9,<13    # <13: CUDA 13 cannot build for sm_70 (V100); >=12.9: works with Bioconda's gcc 14
+
+test:
+  commands:
+    - galn --version | grep -F "G-ALN {{ version }}"
+    - galn 2>&1 | grep -F "Program: G-ALN"
+    - galn index 2>&1 | grep -F "Usage:   galn index"
+    - galn samse 2>&1 | grep -F "Usage:   galn samse"
+
+about:
+  home: https://github.com/bilalbioinfo/galn
+  dev_url: https://github.com/bilalbioinfo/galn
+  doc_url: https://github.com/bilalbioinfo/galn/blob/v{{ version }}/README.md
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - NOTICE.md
+    - third_party/libsais/LICENSE
+    - third_party/libcubwt/LICENSE
+    - third_party/zlib-ng/LICENSE.md
+  summary: "G-ALN: GPU-accelerated bwa aln/index/samse/sampe, with output byte-identical to BWA 0.7.19."
+  description: |
+    G-ALN runs `bwa aln` and `bwa index` on NVIDIA GPUs (compute capability 7.0 or newer) and
+    `bwa samse`/`sampe` on all CPU cores, writing files byte-identical to those of BWA 0.7.19.
+    It is made for ancient DNA and other short reads. A GPU is needed for the fast paths;
+    `galn aln --cpu-only` and `galn index -a cpu` run without one.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  recipe-maintainers:
+    - bilalbioinfo
+  identifiers:
+    - doi:10.64898/2026.10.18.759956
