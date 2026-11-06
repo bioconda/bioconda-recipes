@@ -1,3 +1,5 @@
+target_platform=${target_platform:-linux-64}
+
 (
     for nasp_spec in gatk3:GenomeAnalysisTK.jar picard:picard.jar varscan:VarScan.jar trimmomatic:trimmomatic.jar; do
         nasp_name=${nasp_spec#*:}
