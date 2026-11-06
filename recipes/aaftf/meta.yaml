@@ -1,0 +1,90 @@
+{% set name = "aaftf" %}
+{% set version = "0.8.0" %}
+{% set python_min = "3.10" %}  # requires-python in pyproject.toml; overrides the global (conda-forge) value
+{% set python_max = "3.15" %}  # exclusive upper bound, from requires-python (<3.15)
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b90cc50da6a27727f0651ab6d203fc0ae0f6c33a9fb294b0eeacbed5d0efd5cc
+
+build:
+  number: 0
+  noarch: python
+  # the sdist's PKG-INFO carries the version, so hatch-vcs needs no git metadata
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - AAFTF = aaftf.main:main
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+  # Since it's 0.x and API may change, we need to pin the subpackage version.
+  # Can switch to max_pin="x" once reach to 1.0.
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling
+    - hatch-vcs
+  run:
+    - python >={{ python_min }},<{{ python_max }}
+    # Python dependencies ([project] dependencies in pyproject.toml)
+    - biopython >=1.88
+    - matplotlib-base >=3.10.9
+    - psutil >=7.2.2
+    # tools of the default pipelines ([tool.pixi.dependencies] in pyproject.toml)
+    - bbmap >=39.80,<40
+    - spades
+    - blast
+    - bwa
+    - samtools >=1.24,<2
+    - minimap2
+    - bowtie2 >=2.5.5,<3
+    - flye
+    - racon
+    - polypolish >=0.7.1,<0.8
+    - pypolca >=0.5.0,<0.6
+    - freebayes
+    - mosdepth >=0.3.10
+    # taxpurge (run by the pipelines when -p/--phylum is given) and the bundled POLCA scripts
+    - pigz
+    - sourmash >=4.8
+    - sourmash_plugin_branchwater >=0.9.15
+    - perl
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - aaftf
+  commands:
+    - AAFTF --version
+    - AAFTF --help
+    - test -x ${PREFIX}/bin/aaftf_polca.sh
+    - test -x ${PREFIX}/bin/fix_consensus_from_vcf.pl
+
+about:
+  home: https://github.com/stajichlab/AAFTF
+  dev_url: https://github.com/stajichlab/AAFTF
+  doc_url: https://github.com/stajichlab/AAFTF
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Automatic Assembly For The Fungi
+  description: |
+    AAFTF automates draft fungal genome assembly from Illumina reads, optionally with
+    long reads: read trimming and contaminant filtering, SPAdes/Flye assembly, vector and
+    contaminant screening (BLAST, sourmash), duplicate removal, polishing, contig sorting
+    and renaming, coverage analysis and summary statistics including telomere detection.
+
+    Tools used only by optional steps or non-default methods are not installed with this
+    package; add the ones you need: fastp, trimmomatic, megahit, unicycler, nextpolish2,
+    yak, novoplasty, ncbi-fcs-gx. `AAFTF dependency` lists what is missing.
+
+extra:
+  recipe-maintainers:
+    - hyphaltip
+    - chtsai0105
