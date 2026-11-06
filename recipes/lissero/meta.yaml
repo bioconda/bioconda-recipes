@@ -1,13 +1,13 @@
 {% set name = "lissero" %}
-{% set version = "0.4.9" %}
+{% set version = "0.4.10" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 533f8863d8e5a063c5a11c4458342b44a33399366a53ef797f291485597cf94c
+  url: "https://github.com/MDU-PHL/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: f4cb32f986a137b92f5d276e58fb64aac442b3c12c0dfbd11b28ba74edf2bc7f
 
 build:
   noarch: python
@@ -15,13 +15,16 @@ build:
   entry_points:
     - lissero = lissero.run_lissero:run_lissero
   script: "{{ PYTHON }} -m pip install . -vv"
+  run_exports:
+    - {{ pin_subpackage('lissero', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.12
     - pip
+    - setuptools
   run:
-    - python >=3.6
+    - python >=3.12
     - click
     - loguru
     - biopython
@@ -31,7 +34,6 @@ requirements:
 test:
   imports:
     - lissero
-    - lissero.scripts
   commands:
     - lissero --help
 
@@ -46,5 +48,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - andersgs
-    - abcdtree
+    - kristyhoran

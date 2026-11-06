@@ -1,65 +1,84 @@
 {% set name = "haddock_biobb" %}
-{% set version = "2025.5" %}
+{% set version = "2025.11" %}
+{% set restraints_version = "0.10.0" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: "https://pypi.io/packages/source/h/haddock3/haddock3-{{ version }}.0.tar.gz"
-  sha256: 14f696e20a2ff5fcc2596abd57248100acd6ea695eeb1f03040de353b7ad2971
-  
+  - url: "https://pypi.org/packages/source/h/haddock3/haddock3-{{ version }}.0.tar.gz"
+    sha256: f03105bdd2d9e3dc8a1194aa786f338dd5b6f4a0c194b82fdac58e3f3053a2af
+  # setup.py downloads this binary at build time, build.sh installs it from here instead
+  - url: "https://github.com/haddocking/haddock-restraints/releases/download/v{{ restraints_version }}/haddock-restraints-v{{ restraints_version }}-x86_64-unknown-linux-musl.tar.gz"
+    sha256: 80a54a04e9bdcca2cd70ce361a528be24adc5ae39bc6d8955a83031fabed8586
+    folder: haddock-restraints
+
 build:
-  number: 3
+  number: 1
+  # The bundled macOS CNS binaries are arm64 only (x86_64-darwin.bin too) and
+  # link Homebrew's libquadmath, so CNS can not run in a conda env on macOS.
+  skip: true  # [osx]
+  # Only the binaries built here: patchelf breaks the static haddock-restraints (segfault)
+  binary_relocation:
+    - lib/python*/site-packages/haddock/bin/contact_fcc*
+    - lib/python*/site-packages/haddock/bin/fast*
   run_exports:
     - {{ pin_subpackage(name, max_pin='x') }}
-  script: |
-    ln -sf $CC $BUILD_PREFIX/bin/gcc
-    ln -sf $CXX $BUILD_PREFIX/bin/g++
-    {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - python
-    - pip
-    - setuptools
+    - {{ stdlib('c') }}
   host:
     - python
-    - setuptools
     - pip
+    - setuptools
+    - wheel
   run:
     - python
-    - pip
-    - biopython
-    - jsonpickle
-    - numpy
-    - pyyaml
-    - scipy
-    - toml
-    - tox
-    - pandas
-    - plotly
-    - kaleido-core
-    - freesasa
-    - pdb-tools
+    - biopython >=1,<2
+    - jsonpickle >=2.1.0
+    - numpy >=2,<3
+    - pyyaml >=6.0
+    - scipy >=1.10.0
+    - toml >=0.10.2
+    - pandas >=2,<3
+    - plotly >=6,<7
+    - freesasa >=2.2.1
+    - pdb-tools >=2.5.0
 
 test:
+  imports:
+    - haddock
   commands:
     - haddock3 -v
+    - haddock3-restraints -h
+    - haddock-restraints --help
+    # the bundled CNS runs, contact_fcc starts (prints its usage), fast-rmsdmatrix is installed
+    - echo stop | "$(python -c 'from haddock.core.defaults import cns_exec; print(cns_exec)')"
+    - '"$(python -c "from haddock.core.defaults import CONTACT_FCC_EXEC as e; print(e)")" 2>&1 | grep -q Usage'
+    - test -x "$(python -c 'from haddock.core.defaults import FAST_RMSDMATRIX_EXEC as e; print(e)')"
 
 about:
   home: https://github.com/haddocking/haddock3
+  doc_url: https://www.bonvinlab.org/haddock3
   license: Apache-2.0
   license_family: APACHE
+  license_file:
+    - LICENSE
+    - DISCLAIMER.md
   summary: HADDOCK3 is the next generation integrative modelling software in the long-lasting HADDOCK project.
-  description: "HADDOCK3 is the next generation integrative modelling software in the long-lasting HADDOCK project. It represents a complete rethinking and rewriting of the HADDOCK2.X series, implementing a new way to interact with HADDOCK and offering new features to users who can now define custom workflows."
+  description: |
+    HADDOCK3 is the next generation integrative modelling software in the long-lasting HADDOCK project.
+    It represents a complete rethinking and rewriting of the HADDOCK2.X series, implementing a new way to
+    interact with HADDOCK and offering new features to users who can now define custom workflows.
+    This package bundles the precompiled CNS binary shipped with haddock3: CNS is free for non-profit use,
+    commercial use requires a CNS license (see DISCLAIMER.md). It also bundles the haddock-restraints
+    binary (MIT). prodigy-prot and prodigy-lig, only used by the prodigy scoring modules, are not included.
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
-  recipe-maintainers: 
+  recipe-maintainers:
     - gbayarri
     - RubenChM

@@ -1,0 +1,67 @@
+{% set version = "1.0.0" %}
+{% set name = "Bioc.gff" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 295d94837d3a40ee372aefb3c3b94c81
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-bioc.gff", max_pin="x.x") }}'
+
+# Suggests: BiocFileCache, BiocStyle, GenomicFeatures, GenomeInfoDbData, knitr, httr2, rmarkdown, rvest, tinytest, txdbmaker, TxDb.Hsapiens.UCSC.hg19.knownGene
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - bioconductor-biocbaseutils >=1.12.0,<1.13.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocio >=1.20.0,<1.21.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-xvector >=0.50.0,<0.51.0
+    - r-base
+    - r-curl
+    - libblas
+    - liblapack
+    - zlib
+    - liblzma-devel
+  run:
+    - bioconductor-biocbaseutils >=1.12.0,<1.13.0
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-biocio >=1.20.0,<1.21.0
+    - bioconductor-genomicranges >=1.62.0,<1.63.0
+    - bioconductor-iranges >=2.44.0,<2.45.0
+    - bioconductor-rsamtools >=2.26.0,<2.27.0
+    - bioconductor-s4vectors >=0.48.0,<0.49.0
+    - bioconductor-seqinfo >=1.0.0,<1.1.0
+    - bioconductor-xvector >=0.50.0,<0.51.0
+    - r-base
+    - r-curl
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Read and write GFF and GTF files
+  description: Parse GFF and GTF files using C++ classes. The package also provides utilities to read and write GFF3 files. The GFF (General Feature Format) format is a tab-delimited file format for describing genes and other features of DNA, RNA, and protein sequences. GFF files are often used to describe the features of genomes.
+

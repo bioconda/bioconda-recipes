@@ -1,27 +1,40 @@
-{% set version='1.35.1.1316' %}
+{% set version='1.40.0.1613' %}
 
 package:
   name: canvas
   version: {{ version }}
 
 build:
-  number: 2
-  skip: True # [osx]
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("canvas", max_pin="x") }}
 
 source:
   url: https://github.com/Illumina/canvas/releases/download/{{ version }}%2Bmaster/Canvas-{{ version }}.master_x64.tar.gz
-  md5: 085a4851ff03a24e8637d00d3f05512b
+  md5: ae551426586c751b3db9d9b4d1225b83
 
 requirements:
   run:
-    # might need an external dotnet install to work
-    - mono
+    - dotnet =2
+    - icu =68.2
+    - openssl =1.1
+    # Pulling in ucsc-bedgraphtobigwig and tabix to make sure the included binaries run
+    - ucsc-bedgraphtobigwig
+    - tabix
+    # We need to pin some libs to make sure they are compatible with the included binaries and dotnet.
+    # (Partly because it is unclear which version of bedGraphToBigWig is included)
+    - glib =2.58
+    - zlib =1
+    - libpng =1.6
 
 test:
   commands:
-    # might need an external dotnet install
     - Canvas -h
-    - EvaluateCNV -h
+    # EvaluateCNV's argument parser is broken and expects 4 existing input files even with -h
+    # No validation is done on these, so we can just point it at /dev/null
+    # This relies on the noarch builds being run on Linux
+    - EvaluateCNV /dev/null /dev/null /dev/null /dev/null -h
 
 about:
   home: https://github.com/Illumina/canvas

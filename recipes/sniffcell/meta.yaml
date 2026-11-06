@@ -1,0 +1,66 @@
+{% set name = "sniffcell" %}
+{% set version = "0.9.7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/{{ name }}/sniffcell-{{ version }}.tar.gz
+  sha256: c22dde9e12c01261b159a75de174fadac0dbd1c6bd5b965cebc2b677f64ed8bd
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - sniffcell = sniffcell.main:main
+    - sniffcell-discover-sv = sniffcell.sv_discovery:main
+    - sniffcell-check-discover = sniffcell.discover.envcheck:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+    - wheel
+  run:
+    - python >=3.10
+    - pysam >=0.21.0
+    - numpy >=2.2.0
+    - pandas >=2.3.0
+    - scipy
+    - tqdm
+    - matplotlib-base
+    - scikit-learn
+  run_constrained:
+    # Both distributions install the same sniffcell Python namespace.
+    - sniffcell-lite <0a0
+
+test:
+  imports:
+    - sniffcell
+    - sniffcell.main
+  commands:
+    - sniffcell --help
+    - sniffcell find --help
+    - sniffcell anno --help
+    - sniffcell report --help
+    - sniffcell deconv --help
+    - sniffcell discover --help
+    - sniffcell-discover-sv --help
+    - sniffcell-check-discover --help
+
+about:
+  home: https://github.com/Fu-Yilei/SniffCell
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: SniffCell annotates structural variants using long-read methylation evidence and ctDMR signals.
+  dev_url: https://github.com/Fu-Yilei/SniffCell
+
+extra:
+  recipe-maintainers:
+    - Fu-Yilei

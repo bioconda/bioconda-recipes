@@ -1,6 +1,6 @@
 {% set name = "orthofinder" %}
-{% set version = "3.1.0" %}
-{% set sha256 = "3f1d0300694be07833e8597e1f34a70d615e3f3667f99e281446b4cc23d7f552" %}
+{% set version = "3.2" %}
+{% set sha256 = "554cc15b4cca86e496c680cccf8697f3b0953ff25403e2ff0d585bd015071adb" %}
 
 package:
   name: {{ name }}
@@ -11,29 +11,30 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   noarch: generic
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   run:
-    - python >=3.8,<3.12
+    - python >=3.11,<=3.14
     - numpy
     - scipy
     - scikit-learn
     - biopython
-    - six
-    - ete3
+    - ete4
     - rich
+    - pandas >=2.0
     - blast
-    # https://github.com/davidemms/OrthoFinder/issues/826 https://github.com/bbuchfink/diamond/issues/707
-    - diamond <2.1|>=2.1.7
+    # 2.1.7 or later: earlier versions cannot make databases of some Ensembl proteomes
+    # (https://github.com/bbuchfink/diamond/issues/707); OrthoFinder is tested with 2.2
+    - diamond >=2.1.7
     - mcl
     - fastme
     - mafft
     - fasttree
-    - muscle <5
+    - muscle
     - raxml
     - raxml-ng
     - iqtree
@@ -49,10 +50,19 @@ test:
   commands:
     - orthofinder -h
     - orthofinder -v
-
+    - orthofinder-utils
+    - primary_transcript -h
+    - make_ultrametric -h
+    - convert_orthofinder_tree_ids -h
+    - create_hog_fastas -h
+    - ncbi_primary_transcript -h
+    - orthogroup_gene_count -h
+    - split_ortholog_files -h
+    - species_tree_alignment -h
+    - mcl_orthogroup_sequences -h
 about:
   home: "https://github.com/OrthoFinder/OrthoFinder"
-  summary: "Accurate inference of orthogroups, orthologues, gene trees and rooted species tree made easy!"
+  summary: "Accurate inference of orthogroups, orthologs, gene trees and rooted species tree made easy!"
   license: "GPL-3.0-only"
   license_file: LICENSE
   license_family: GPL3

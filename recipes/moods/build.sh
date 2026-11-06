@@ -1,4 +1,5 @@
 #!/bin/bash
+
 cat > setup.py.patch << EOF
 --- a/setup.py
 +++ b/setup.py
@@ -14,4 +15,5 @@ cat > setup.py.patch << EOF
 EOF
 patch setup.py setup.py.patch
 rm setup.py.patch
+
 ${PYTHON} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir

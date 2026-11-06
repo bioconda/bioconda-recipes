@@ -1,8 +1,9 @@
-{% set version = "1.5.0" %}
-{% set sha256 = "6e7401571244d2866d51029e1a1e6b19ad3a378092dcc71c2f72cd82e23ff79d" %}
+{% set name = "tiny-count" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "85e8a18dd03b804149151826056b85b1fe493a9ba3465273b96881074e798628" %}
 
 package:
-  name: tiny-count
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -10,36 +11,50 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  skip: True  # [not unix]
-  number: 2
-  script: "{{ PYTHON }} -m pip install . -vv"
+  number: 0
+  skip: True  # [py > 312]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   script_env:
     - tiny_count_only=1
+  entry_points:
+    - tiny = tiny.entry:main
+    - tiny-config = tiny.rna.configuration:Configuration.main
+    - tiny-collapse = tiny.rna.collapser:main
+    - tiny-count = tiny.rna.counter.counter:main
+    - tiny-plot = tiny.rna.plotter:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
   host:
-    - python 3.9.*
-    - setuptools 63.1.*
-    - cython 0.29.*
-    - pysam 0.19.*
-    - pip 22.1.*
+    - python
+    - setuptools <82
+    - cython
+    - pip
+    - pysam
   run:
-    - python 3.9.*
-    - htseq =2.0.2
-    - numpy =1.23.1
-    - pandas =1.4.3
-    - ruamel.yaml =0.17.16
+    - python
+    - setuptools <82
+    - htseq
+    - ruamel.yaml
 
 test:
   commands:
     - tiny-count -h
 
 about:
-  home: https://github.com/MontgomeryLab/tinyRNA
-  license: GPLv3
-  summary: \
-    A precision counting tool for hierarchical classification 
-    and quantification of small RNA-seq reads. tiny-count is
-    part of the tinyRNA analysis pipeline.
+  home: "https://github.com/MontgomeryLab/tinyRNA"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: "LICENSE.md"
+  summary: "A precision counting tool for hierarchical classification and quantification of small RNA-seq reads. tiny-count is part of the tinyRNA analysis pipeline."
+  dev_url: "https://github.com/MontgomeryLab/tinyRNA"
+  doc_url: "https://github.com/MontgomeryLab/tinyRNA/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

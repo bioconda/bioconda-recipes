@@ -2,6 +2,9 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
+# dplyr no longer exports id; this package does not use it directly.
+sed -i '/importFrom(dplyr,id)/d' NAMESPACE
+
 echo -e "CC=$CC
 FC=$FC
 CXX=$CXX

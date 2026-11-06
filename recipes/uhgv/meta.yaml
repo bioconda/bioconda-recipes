@@ -1,0 +1,57 @@
+{% set name = "uhgv" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/uhgv-{{ version }}.tar.gz"
+  sha256: 361faf099a40fceaa54aaa3001017f584f1a691760c1bb6082196884ce038a81
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  entry_points:
+    - uhgv = uhgv.cli:cli
+  run_exports:
+    - {{ pin_subpackage("uhgv", max_pin="x.x") }}
+
+requirements:
+  host:
+    - pip
+    - python >=3.10
+    - uv-build >=0.11.17,<0.12.0
+  run:
+    - python >=3.10
+    - click >=8.4.1
+    - psutil >=7.2.2
+    - pyrodigal-gv >=0.3.1
+    - rich >=15.0.0
+    - rich-click >=1.9.8
+    - taxopy >=0.14.0
+    - blast >=2.16,<3
+    - diamond >=2.2,<3
+
+test:
+  imports:
+    - uhgv
+  commands:
+    - pip check
+    - uhgv --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: "https://uhgv.jgi.doe.gov/"
+  dev_url: "https://github.com/snayfach/UHGV-classify"
+  doc_url: "https://github.com/snayfach/UHGV-classify"
+  summary: "Taxonomic classifier for the Unified Human Gut Virome Catalog"
+  license: BSD-3-Clause-LBNL
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - apcamargo

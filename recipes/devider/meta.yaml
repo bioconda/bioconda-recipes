@@ -1,31 +1,34 @@
-{% set version="0.0.1" %}
+{% set version = "0.1.0" %}
+{% set name = "devider" %}
 
 package:
-  name: devider
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bluenote-1577/devider/archive/v{{ version }}.tar.gz
-  sha256: e2c5e4a2faa51dbfd0ad4cb867d0dc25ea4012e83ec8fea27c1624592fce7dce
+  url: https://github.com/bluenote-1577/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 665663ae09c90b57ce8801d154c396bbbd2bdc64717dd5d402cdeade457492b7
   patches:
-    - devider-aarch64.patch # [aarch64]
+    - devider-aarch64.patch  # [aarch64]
 
 build:
-  number: 2
+  number: 0
   run_exports:
-    - {{ pin_subpackage('devider', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler("cxx") }}
-    - {{ compiler('rust') }} 
+    - {{ compiler('rust') }}
     - cargo-bundle-licenses
     - make
     - cmake >=3.12
+    - pkg-config
   host:
-    - clangdev >=16,<17 # [linux and aarch64]
+    - clangdev >=16,<17  # [linux]
   run:
-    - python 
+    - python
     - samtools
     - minimap2
     - lofreq >=2.1.5
@@ -39,15 +42,19 @@ test:
     - haplotag_bam -h
 
 about:
-  home: https://github.com/bluenote-1577/devider
+  home: "https://github.com/bluenote-1577/devider"
   license: MIT
+  license_family: MIT
   license_file:
     - LICENSE
-    - THIRDPARTY.yml 
-  summary: Haplotyping small sequences from heterogeneous long-read sequencing samples with a SNP-encoded positional de Bruijn graphs.
+    - THIRDPARTY.yml
+  summary: "Haplotyping small sequences from heterogeneous long-read sequencing samples with a SNP-encoded positional de Bruijn graphs."
+  dev_url: "https://github.com/bluenote-1577/devider"
+  doc_url: "https://github.com/bluenote-1577/devider/wiki/Cookbook"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   recipe-maintainers:
     - bluenote-1577

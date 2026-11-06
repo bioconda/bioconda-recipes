@@ -1,0 +1,47 @@
+{% set name = "eutils" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/eutils-{{ version }}.tar.gz
+  sha256: 68d4e007996d4b08171a936413f6ec2cd4c045ac83acf7df9e9b7110df06c030
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 1
+  run_exports:
+    - {{ pin_subpackage('eutils', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=70.1
+    - setuptools-scm >=8.1,<9.dev0
+    - pip
+  run:
+    - python >=3.10
+    - lxml
+    - requests
+
+test:
+  imports:
+    - eutils
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Python interface to NCBI's eutilities API
+  doc_url: https://pythonhosted.org/eutils/
+  license: Apache-2.0
+  license_file: LICENSE.txt
+  home: https://github.com/biocommons/eutils
+
+extra:
+  recipe-maintainers:
+    - hechth

@@ -1,0 +1,53 @@
+{% set name = "promis-msi" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/vlachosg37/promis/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cba1970b24083d607ccc98ec36617397339204437377645e3748d748f7162a9b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.10,<3.13
+    - pandas >=1.5
+    - numpy >=1.23
+    - scikit-learn >=1.1
+    - pysam >=0.21
+    - pyyaml >=5.4
+    - rich >=13.0
+    - tqdm >=4.64
+    - numba >=0.57
+    - snakemake >=9.9,<10
+
+test:
+  commands:
+    - promis --help
+    - promis presets
+    - promis-find-ms-sites --help
+    - mkdir -p smoke && cd smoke && touch sample.bam sample.bam.bai && promis init --preset wes-wgs-hg38 --config config.yaml --alignment-files sample.bam && promis check config.yaml && promis run config.yaml --cores 1 --dry-run && cd .. && rm -rf smoke
+
+about:
+  home: https://github.com/vlachosg37/promis
+  license: MIT
+  license_file: LICENSE
+  summary: Tumor-only microsatellite instability scoring workflow
+  dev_url: https://github.com/vlachosg37/promis
+  doi: 10.34133/csbj.0219
+
+extra:
+  recipe-maintainers:
+    - vlachosg37

@@ -1,12 +1,18 @@
-{% set version = "1.2.0" %}
+{% set version = "1.6.0" %}
 {% set name = "scMitoMut" %}
-{% set bioc = "3.20" %}
+{% set bioc = "3.22" %}
 
-about:
-  description: This package is designed for calling lineage-informative mitochondrial mutations using single-cell sequencing data, such as scRNASeq and scATACSeq (preferably the latter due to RNA editing issues). It includes functions for mutation calling and visualization. Mutation calling is done using beta-binomial distribution.
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: Artistic-2.0
-  summary: Single-cell Mitochondrial Mutation Analysis Tool
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 85030b587fa894489f2de0aec90736fe
 
 build:
   number: 0
@@ -15,10 +21,6 @@ build:
     - lib/
   run_exports: '{{ pin_subpackage("bioconductor-scmitomut", max_pin="x.x") }}'
 
-package:
-  name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
-
 # Suggests: testthat (>= 3.0.0), BiocStyle, knitr, rmarkdown, VGAM, R.utils
 requirements:
   build:
@@ -26,8 +28,7 @@ requirements:
     - {{ compiler('cxx') }}
     - make
   host:
-    - bioconductor-rhdf5 >=2.50.0,<2.51.0
-    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
     - r-base
     - r-data.table
     - r-ggplot2
@@ -41,9 +42,10 @@ requirements:
     - r-stringr
     - libblas
     - liblapack
+    - zlib
+    - liblzma-devel
   run:
-    - bioconductor-rhdf5 >=2.50.0,<2.51.0
-    - bioconductor-zlibbioc >=1.52.0,<1.53.0
+    - bioconductor-rhdf5 >=2.54.0,<2.55.0
     - r-base
     - r-data.table
     - r-ggplot2
@@ -56,15 +58,13 @@ requirements:
     - r-readr
     - r-stringr
 
-source:
-  md5: 4add4309acee79623e5cdee0482242fc
-  url:
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
-    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
-
 test:
   commands:
     - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Single-cell Mitochondrial Mutation Analysis Tool
+  description: This package is designed for calling lineage-informative mitochondrial mutations using single-cell sequencing data, such as scRNASeq and scATACSeq (preferably the latter due to RNA editing issues). It includes functions for mutation calling and visualization. Mutation calling is done using beta-binomial distribution.
 

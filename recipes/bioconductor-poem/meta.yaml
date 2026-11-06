@@ -1,0 +1,78 @@
+{% set version = "1.2.0" %}
+{% set name = "poem" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
+  md5: 236ddc5b076e9f2aab99497b7dded6b9
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-poem", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: testthat (>= 3.0.0), BiocStyle, knitr, DT, dplyr, kableExtra, scico, cowplot, ggnetwork, ggplot2, tidyr, STexampleData
+requirements:
+  host:
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-bluster >=1.20.0,<1.21.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-aricode
+    - r-base
+    - r-clevr
+    - r-clue
+    - r-cluster
+    - r-elsa
+    - r-fclust
+    - r-igraph
+    - r-matrix
+    - r-matrixstats
+    - r-mclustcomp
+    - r-pdist
+    - r-sp
+    - r-spdep
+  run:
+    - bioconductor-biocneighbors >=2.4.0,<2.5.0
+    - bioconductor-biocparallel >=1.44.0,<1.45.0
+    - bioconductor-bluster >=1.20.0,<1.21.0
+    - bioconductor-spatialexperiment >=1.20.0,<1.21.0
+    - bioconductor-summarizedexperiment >=1.40.0,<1.41.0
+    - r-aricode
+    - r-base
+    - r-clevr
+    - r-clue
+    - r-cluster
+    - r-elsa
+    - r-fclust
+    - r-igraph
+    - r-matrix
+    - r-matrixstats
+    - r-mclustcomp
+    - r-pdist
+    - r-sp
+    - r-spdep
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
+  license: GPL (>= 3)
+  summary: POpulation-based Evaluation Metrics
+  description: This package provides a comprehensive set of external and internal evaluation metrics. It includes metrics for assessing partitions or fuzzy partitions derived from clustering results, as well as for evaluating subpopulation identification results within embeddings or graph representations. Additionally, it provides metrics for comparing spatial domain detection results against ground truth labels, and tools for visualizing spatial errors.
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

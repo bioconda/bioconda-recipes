@@ -1,0 +1,58 @@
+{% set name = "bifrost_bridge" %}
+{% set version = "0.9.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2bd9eb2b81acd1390fb4dbd25af6aef76c8476d3a7bae11b5ac5bd17f1b320e1
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11,<3.15
+    - pip
+    - hatchling
+  run:
+    - python >=3.11,<3.15
+    - pandas >=2.3.3,<4
+    - pyyaml >=6.0.3,<7
+
+test:
+  imports:
+    - bifrost_bridge
+  commands:
+    - bridge_mlst --help
+    - bridge_fastp --help
+    - bridge_quast --help
+    - bridge_plasmidfinder --help
+    - bridge_amrfinderplus --help
+    - bridge_bracken --help
+    - bridge_pmlst --help
+    - bridge_rmlst --help
+    - bridge_shovill --help
+    - bridge_ssiamb --help
+    - bridge_qc --help
+
+about:
+  home: https://github.com/ssi-dk/bifrost_bridge
+  summary: Normalize bioinformatics QC tool outputs into TSV summaries
+  description: |
+    bifrost_bridge converts outputs from multiple bioinformatics QC tools into
+    normalized TSV files and can combine them into a single QC table.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/ssi-dk/bifrost_bridge
+
+extra:
+  recipe-maintainers:
+    - PovilasMat

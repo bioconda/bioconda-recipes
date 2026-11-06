@@ -1,0 +1,27 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index d993aa3..e94dc90 100755
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,14 +1,17 @@
+ # find and use Boost
++set(Boost_NO_SYSTEM_PATHS ON)
++set(Boost_NO_WARN_NEW_VERSION ON)
+ set(Boost_NO_BOOST_CMAKE ON) # for backwards comptibility of cmake and boost >= 1.70
+ if(NOT APPLE)
+-    set(Boost_USE_STATIC_LIBS   ON)
++    set(Boost_USE_STATIC_LIBS   OFF)
+ else()
+-    set(Boost_USE_STATIC_LIBS   ON)
++    set(Boost_USE_STATIC_LIBS   OFF)
++    set(Boost_USE_MULTITHREADED TRUE)
++    find_package(Boost 1.71.0 COMPONENTS program_options filesystem system graph serialization iostreams REQUIRED)
+     # Fix linking on 10.14+. See https://stackoverflow.com/questions/54068035
+-    LINK_DIRECTORIES(/usr/local/lib)
++    include_directories( ${Boost_INCLUDE_DIRS} )
++    LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
+ endif()
+-find_package(Boost 1.55.0 COMPONENTS program_options filesystem system graph serialization iostreams REQUIRED)
+-include_directories( ${Boost_INCLUDE_DIRS} )
+ 
+ # find and use OpenMP
+ find_package(OpenMP)

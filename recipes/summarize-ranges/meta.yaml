@@ -1,0 +1,40 @@
+{% set name = "summarize-ranges" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/summarize-ranges/summarize_ranges-{{ version }}.tar.gz
+  sha256: 7ee9d5cfbc1dee2688e76bafb24b202d6c30201c2cba410370fda7506fc4edfc
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - summarize-ranges = summarize_ranges.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - hatchling
+    - pip
+  run:
+    - python >=3.8
+
+test:
+  imports:
+    - summarize_ranges
+  commands:
+    - summarize-ranges --help
+
+about:
+  home: "https://github.com/terrycojones/summarize-ranges"
+  summary: "Summarize contiguous ranges of integers found on standard input."
+  license: MIT
+  license_family: MIT
+  dev_url: "https://github.com/terrycojones/summarize-ranges"

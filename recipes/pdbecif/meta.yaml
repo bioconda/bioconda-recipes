@@ -1,0 +1,56 @@
+{% set name = "pdbecif" %}
+{% set version = "1.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pdbecif/PDBeCif-{{ version }}.tar.gz
+  sha256: b3925fa22095a8780ac3f9c93ca8c94d89434d93fd959dfa240fcefde0ecfeb1
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - pip
+    - pytest-runner
+    - python {{ python_min }}.*
+    - setuptools
+    - wheel
+  run:
+    - python >={{ python_min }}
+
+test:
+  imports:
+    - com
+    - mmCif
+    - pdbecif
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}.*
+
+about:
+  home: https://github.com/pdbeurope/pdbecif
+  summary: A lightweight pure python package for reading, writing and manipulating mmCIF files distributed by the wwPDB.
+  doc_url: https://pdbeurope.github.io/pdbecif
+  dev_url: https://github.com/pdbeurope/pdbecif
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  description: |
+    PDBeCIF is a package that is used to work with mmCIF formatted files.
+    The package ontains modules for accessing mmCIF data in different ways depending on the type of task required.
+
+extra:
+  identifiers:
+    - doi:10.1186/s12859-021-04271-9
+  recipe-maintainers:
+    - eunos-1128

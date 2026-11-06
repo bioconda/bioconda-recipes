@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "spatiallibd-1.18.0"
+installBiocDataPackage.sh "spatiallibd-1.22.0"

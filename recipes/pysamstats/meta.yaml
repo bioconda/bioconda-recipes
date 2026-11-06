@@ -1,30 +1,32 @@
 package:
   name: pysamstats
-  version: 1.1.2
+  version: 1.2.0
 
 source:
-  url: https://github.com/alimanfoo/pysamstats/archive/v1.1.2.tar.gz
-  md5: 050294fe9fe99aae3b07ea28f6cbe449
+  url: https://github.com/alimanfoo/pysamstats/archive/refs/tags/v1.2.0.tar.gz
+  sha256: 2913f0c18b35feb89196aaa50227290574fd4a8679d5e99e72eeadece91a8bcb
 
 build:
-  number: 15
+  number: 1
+  skip: True  # [py < 311]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   run_exports:
     - {{ pin_subpackage('pysamstats', max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - python
-    - cython
-    - pysam >=0.15
-    - setuptools
-    - zlib
+    - pip
+    - setuptools >=77
+    - cython >=3.1
+    - pysam >=0.24.1,<0.25
   run:
     - python
-    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
-    - zlib
-    - numpy
+    - {{ pin_compatible('pysam', max_pin='x.x') }}
+    - numpy >=2.0
     - pytables
 
 test:
@@ -37,6 +39,7 @@ test:
 about:
   home: https://github.com/alimanfoo/pysamstats
   license: MIT
+  license_file: LICENSE
   summary: Calculate read mapping stats from SAM/BAM/CRAM
   details: |
     A Python utility for calculating statistics against genome position based

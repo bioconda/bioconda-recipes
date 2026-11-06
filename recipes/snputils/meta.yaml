@@ -1,0 +1,89 @@
+{% set name = "snputils" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 61d308e005def189c11994c7fe8219d6c2ed88c3468b5b74a9fed3e1d5154335
+
+build:
+  number: 1
+  skip: True  # [py < 39]
+  script:
+    - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('snputils', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools >=64
+    - setuptools_scm >=8
+    - zlib
+  run:
+    - python >=3.9
+    - numpy <2  # [py < 310]
+    - numpy  # [py >= 310]
+    - pandas
+    - pandas-stubs
+    - scikit-learn
+    - pgenlib
+    - matplotlib-base
+    - joblib
+    - tqdm
+    - polars >=1.34
+    - plotly
+    - plotly_express
+    - nbformat
+    - adjusttext
+    - zstandard
+    - cairosvg
+
+test:
+  imports:
+    - snputils
+    - snputils.snp.io.read._bcf
+    - snputils.snp.io.write._bcf
+    - snputils.snp.io._bgen
+  requires:
+    - pip
+  commands:
+    - pip check
+    - snputils version
+    - python -c "import snputils; obj = snputils.build_synthetic_snp_dataset(n_samples=4, n_snps=8, seed=1); assert obj.n_samples == 4 and obj.n_snps == 8"
+
+about:
+  home: https://snputils.org
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Python toolkit for genetic variation and population genetics workflows"
+  description: |
+    snputils provides a unified Python interface for reading, processing,
+    analyzing, and visualizing genotype, ancestry, phenotype, and
+    identity-by-descent (IBD) data. It supports common genomic formats,
+    including VCF, BCF, BGEN, PLINK BED and PGEN, and local and global
+    ancestry formats. Analysis tools include genotype quality control,
+    allele frequencies, population genetic statistics, principal component
+    analysis (PCA), genome-wide association studies (GWAS), and admixture
+    mapping. Built-in visualizations include population structure plots,
+    chromosome paintings, admixture plots, and association plots.
+  doc_url: https://docs.snputils.org
+  dev_url: https://github.com/AI-sandbox/snputils
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.02.28.708618
+  recipe-maintainers:
+    - davidbonet
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

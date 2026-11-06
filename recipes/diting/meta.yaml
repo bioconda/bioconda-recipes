@@ -1,0 +1,57 @@
+{% set name = "DiTing" %}
+{% set version = "2.0.2" %}
+{% set sha256 = "297ce11141ef9fa6a63aa22259e5574d50fb70d4ffb9efe14413480b1dbc668f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SilentGene/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage('diting', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - pip
+    - hatchling
+
+  run:
+    - python
+    - snakemake >=9.0
+    - pandas
+    - matplotlib-base
+    - seaborn
+    - megahit
+    - spades >=4.0
+    - prodigal
+    - bwa
+    - bbmap
+    - hmmer >=3.3
+    - kofamscan
+    - opencv
+    - pillow
+
+test:
+  commands:
+    - {{ name|lower }} --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/SilentGene/DiTing
+  summary: "A Snakemake-based pipeline to infer and compare biogeochemical pathways in metagenomic data"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - SilentGene
+  identifiers:
+    - doi:10.3389/fmicb.2021.698286

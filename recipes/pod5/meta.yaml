@@ -1,13 +1,13 @@
 {% set name = "pod5" %}
-{% set version = "0.3.33" %}
+{% set version = "0.3.49" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ version }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 555e50901bbd9a80be4fd21001993711b7b8ba151bc65c5080e991967336ffd1
+  sha256: d399cdbbee27b26a4d5d2dab019ba6ac4ee57ff267ba3e732d18e50213ff76b9
 
 build:
   number: 0
@@ -15,26 +15,28 @@ build:
   entry_points:
     - pod5 = pod5.tools.main:main
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script_env:
+    - SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
   run_exports:
-    - {{ pin_subpackage('pod5', max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.9
     - pip
-    - setuptools
+    - setuptools-scm >=6.2
   run:
-    - python >=3.8
+    - python >=3.9
     - deprecated
     - lib-pod5 =={{ version }}
     - iso8601
     - more-itertools
     - numpy >=1.21.0
     - typing-extensions  # [py < 310]
-    - pyarrow >=18.0.0
+    - pyarrow <23.0.0
     - pytz
     - packaging
-    - polars >=1.20
+    - polars >=1.30
     - h5py >=3.11
     - vbz-h5py-plugin
     - tqdm

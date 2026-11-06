@@ -1,0 +1,73 @@
+{% set name = 'STRmie-HD' %}
+{% set version = '1.1.1' %}
+{% set sha256 = "120b3b3e522e0ca5694f449532e6a077f15922464deea17be78110ec384a486d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mazzalab/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.15
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.8,<3.15
+    - numpy
+    - pandas
+    - scikit-learn
+    - matplotlib-base
+    - h5py
+    - joblib
+    - jinja2
+    - biopython
+    - seaborn
+    - colorama
+    - openpyxl
+    - xlrd
+    - scipy
+    - pytest
+    - regex
+    - pysam
+    - pear
+    - samtools
+
+test:
+  imports:
+    - strmie
+  commands:
+    - strmie --help
+    - strmie-repeat --help
+  requires:
+    - pytest
+
+about:
+  home: "https://github.com/mazzalab/STRmie-HD"
+  dev_url: "https://github.com/mazzalab/STRmie-HD"
+  summary: "Automated Huntington Disease polyQ pattern scanner."
+  description: |
+    STRmie-HD (Short Tandem Repeat Mapping and Identification Engine - Huntington's Disease) is an interactive, 
+    Python-based tool designed to support the curation, visualization, and interpretation of short tandem repeat (STR) 
+    genotyping data obtained from Huntington's Disease (HD) patients. It enables the prediction, refinement and validation 
+    of CAG/CCG repeat expansion results in the context of HD, by highlighting cases of allelic instability or potential misclassification.
+  license: MIT
+  license_family: MIT
+  doc_url: "https://mazzalab.github.io/STRmie-HD/"
+
+extra:
+  recipe-maintainers:
+    - Alenap26
+    - tm4zza
+  skip-lints:
+    - should_be_noarch_generic

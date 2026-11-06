@@ -1,0 +1,44 @@
+{% set name = "tirvish-rs" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KGerhardt/tirvish_rs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 965b70bcb6c9e39e85ce4b9b5de6377a3597bbf834c9cf0b5b1b41e30358280d
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tirvish-rs', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - command -v tirvish
+    - command -v tirvish_rs
+
+about:
+  home: https://github.com/KGerhardt/tirvish_rs
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Fast, faithful Rust port of gt tirvish (GenomeTools 1.6.5) TIR detection, used by TIR-Learner."
+  description: |
+    tirvish_rs is a from-scratch Rust reimplementation of GenomeTools' `gt tirvish`
+    de-novo terminal-inverted-repeat (TIR) transposon detection, built to replace the
+    slow gt tirvish step in TIR-Learner on repeat-rich genomes. Output is bit-exact
+    with gt tirvish (all five stages validated against an instrumented 1.6.5
+    reference). It runs directly on a FASTA (no pre-built mirrored index) and accepts
+    the gt tirvish options. Installs the `tirvish` binary and a `tirvish_rs` alias.
+
+extra:
+  recipe-maintainers:
+    - KGerhardt

@@ -1,0 +1,51 @@
+{% set version = "1.0.0" %}
+{% set name = "CENTREprecomputed" %}
+{% set bioc = "3.22" %}
+
+package:
+  name: bioconductor-{{ name|lower }}
+  version: '{{ version }}'
+
+source:
+  url:
+    - https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+    - https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz
+  md5: 5a04e3e96c7d67365e3be804858fe41d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports: '{{ pin_subpackage("bioconductor-centreprecomputed", max_pin="x.x") }}'
+  noarch: generic
+
+# Suggests: knitr, rmarkdown, testthat, BiocStyle
+requirements:
+  host:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+  run:
+    - bioconductor-biocgenerics >=0.56.0,<0.57.0
+    - bioconductor-experimenthub >=3.0.0,<3.1.0
+    - r-base
+    - r-dbi
+    - r-rsqlite
+    - curl
+    - bioconductor-data-packages >=20260207
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html
+  license: Artistic-2.0
+  summary: Hub package for the precomputed data of CENTRE and example data
+  description: Interface and documentation for the Experiment Hub records needed by the CENTRE Bioconductor software package. The Experiment Hub records contains the precomputed fisher combined p-values, CRUP correlations. Additionally, the records hold ChIP-seq and RNA-seq data used for the example of the software package.
+

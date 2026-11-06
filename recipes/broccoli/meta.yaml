@@ -1,0 +1,50 @@
+{% set name = "broccoli" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rderelle/Broccoli/archive/v{{ version }}.tar.gz
+  sha256: 7e251f79181e95e7832ebf89bd845ac31d0253acd9b856aa22dc2240d094c053
+
+build:
+  number: 0
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - "RUST_BACKTRACE=1 cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    - diamond >=0.9.30
+    - fasttree >=2.1.11
+
+test:
+  commands:
+    - broccoli -help
+    - diamond version
+    - fasttree -expert
+
+about:
+  home: "https://github.com/rderelle/Broccoli"
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Orthology assignment combining phylogenetic and network analyses."
+  dev_url: "https://github.com/rderelle/Broccoli"
+  doc_url: "https://github.com/rderelle/Broccoli/blob/v{{ version }}/README.md"
+
+extra:
+  identifiers:
+    - doi:10.1093/molbev/msaa159
+  additional-platforms:
+    - osx-arm64

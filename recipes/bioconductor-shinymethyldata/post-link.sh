@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "shinymethyldata-1.26.0"
+installBiocDataPackage.sh "shinymethyldata-1.30.0"

@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "beadarrayusecases-1.43.0"
+installBiocDataPackage.sh "beadarrayusecases-1.47.0"

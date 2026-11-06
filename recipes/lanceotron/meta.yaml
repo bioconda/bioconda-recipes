@@ -1,0 +1,59 @@
+{% set name = "LanceOtron" %}
+{% set version = "1.2.7" %}
+{% set sha256 = "7729f870244f7b68eda0e30250b9b3957b7722e2fe035499a1fc2cb07852b507" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/1c/0c/ecd7ff238625e36a945193b3cff64fc31d0c2bd624e909f12326a019fd61/lanceotron-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - lanceotron = lanceotron.cli:cli
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('lanceotron', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.7
+    - pip
+    - setuptools
+  run:
+    - natsort
+    - numpy
+    - pandas
+    - pybigwig
+    - python >=3.7
+    - scikit-learn
+    - scipy
+    - tensorflow >2
+    - tqdm
+    - bedtools
+    - setuptools <82
+
+test:
+  commands:
+    - pip check
+    - lanceotron --help
+  imports:
+    - lanceotron
+    - lanceotron.static
+
+about:
+  home: "https://github.com/LHentges/LanceOtron"
+  license: "GPL-3.0-only"
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "LanceOtron is a machine learning, genomic data extraction and analysis tool trained for ATAC-seq, ChIP-seq, and DNase-seq peak calling."
+  dev_url: "https://github.com/LHentges/LanceOtron"
+  doc_url: "https://lanceotron.molbiol.ox.ac.uk"
+
+extra:
+  recipe-maintainers:
+    - Juke34

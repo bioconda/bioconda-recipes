@@ -1,0 +1,56 @@
+{% set name = "psaps" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/raufs/psaps/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 1c736774a6e1ab011551819bbb191a36647f8128d40757cc5b9c767591835896
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('psaps', max_pin='x') }}
+    
+requirements:
+  host:
+    - python >=3.10
+    - setuptools
+    - pip
+    - wget
+  run:
+    - python >=3.10
+    - biopython 
+    - setuptools
+    - pip
+    - scipy
+    - seaborn-base
+    - matplotlib-base
+    - pyrodigal
+    - ete3
+    - joblib
+    - numpy
+    - legacy-cgi
+
+test:
+  commands:
+    - psaps -h
+
+about:
+  home: https://github.com/raufs/psaps
+  license: BSD-3-Clause
+  license_file: LICENSE
+  license_family: BSD
+  summary: "Phylogenetically standardized assessment of pangenome fluidity / size"
+  dev_url: https://github.com/raufs/psaps
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - raufs

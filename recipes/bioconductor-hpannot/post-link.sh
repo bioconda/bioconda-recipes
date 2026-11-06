@@ -1,2 +1,2 @@
 #!/bin/bash
-installBiocDataPackage.sh "hpannot-1.1.0"
+installBiocDataPackage.sh "hpannot-1.1.1"
