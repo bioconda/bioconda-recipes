@@ -1,13 +1,21 @@
 {% set name = "dipgenie" %}
-{% set version = "1.0" %}
+{% set version = "2.0" %}
+{% set minimap2_commit = "3c28777e7e2dcc90f825de1b9f17a89cca7d4452" %}
+{% set htsbox_commit = "c901cb3a3324c119988f4bcd4412cbe48e1b5a38" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/gsc74/DipGenie/archive/v{{ version }}.tar.gz
-  sha256: 624de036528498de2f8ae88b1bbc5f7d571ca080a36904b4925552b01ff00a38
+  - url: https://github.com/gsc74/DipGenie/archive/v{{ version }}.tar.gz
+    sha256: 511bb2011b69bb6578784e5207ff78c5d3db1c1bca0fd7c4f03c5ff4e07c76de
+  - url: https://github.com/lh3/minimap2/archive/{{ minimap2_commit }}.tar.gz
+    sha256: 4ccc555359db80f0e1e285efae0be74c79230a2facc9cb480b74277627dd0c20
+    folder: third_party/minimap2
+  - url: https://github.com/lh3/htsbox/archive/{{ htsbox_commit }}.tar.gz
+    sha256: 085aecc9ad28434aaa7cc61f09b17c93a0ea5c643a688ddbbc1b9ed24c2850d9
+    folder: third_party/htsbox
 
 build:
   number: 0
@@ -17,11 +25,13 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - make
   host:
     - zlib
+    - libboost-headers
     - libgomp  # [linux]
   run:
     - zlib
@@ -32,15 +42,16 @@ test:
 
 about:
   home: https://github.com/gsc74/DipGenie
-  license: MIT AND Apache-2.0
-  license_family: MIT
+  license: LicenseRef-Public-Domain AND MIT AND BSD-2-Clause
+  license_family: OTHER
   license_file: LICENSE
-  summary: "Diploid genome inference using pangenome graphs"
+  summary: "Pangenome graph-based phased diploid genome inference"
   description: |
-    DipGenie is a tool designed to infer haplotypes using pangenome graphs.
-    It estimates full haplotype sequences from low-coverage short-read
-    sequencing data for both haploid and diploid genomes. Users may provide
-    a pangenome reference in GFA or VCF format.
+    DipGenie infers the two haplotypes of a diploid genome from a pangenome
+    graph and paired-end short reads, Hi-C reads, or both, scoring read
+    coverage and read-pair linkage jointly. It accepts a phased VCF or a GFA
+    graph (acyclic or cyclic) and outputs both haplotypes in FASTA format
+    and, optionally, phased variant calls in VCF format.
   dev_url: https://github.com/gsc74/DipGenie
   doc_url: https://github.com/gsc74/DipGenie
 
