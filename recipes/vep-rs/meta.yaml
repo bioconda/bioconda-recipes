@@ -1,0 +1,69 @@
+{% set name = "vep-rs" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "7eccedd3418ebb950c6133dd358f3fae6dbb8a7d3be794bb8ea382f941b6edd6" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/natera-open-source/vep-rs/releases/download/v{{ version }}/vep-rs-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - pkg-config
+  host:
+    - openssl  # [linux]
+  run:
+    - duckdb-cli >=1.2
+
+test:
+  source_files:
+    - tests/golden/115/GRCh37/variants.vcf
+    - tests/golden/115/GRCh37/json_cache
+  commands:
+    - vep --version | grep -x "vep {{ version }}"
+    - vep-cache-builder --help
+    - vep-cache-converter --help
+    - vep -i tests/golden/115/GRCh37/variants.vcf -o out.vcf --vcf --offline --json_cache tests/golden/115/GRCh37/json_cache --assembly GRCh37 --force --no_stats --quiet
+    - test "$(grep -vc '^#' out.vcf)" -eq 1008
+    - vep -i tests/golden/115/GRCh37/variants.vcf -o out.parquet --output_format parquet --offline --json_cache tests/golden/115/GRCh37/json_cache --assembly GRCh37 --force --no_stats --quiet
+    - test -d out.parquet
+
+about:
+  home: https://github.com/natera-open-source/vep-rs
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - NOTICE
+    - THIRDPARTY.yml
+  summary: A Rust implementation of the Ensembl Variant Effect Predictor, measured for concordance against Ensembl VEP.
+  description: |
+    vep-rs reads a JSON transcript cache and writes Ensembl VEP's default, VCF,
+    JSON and tab formats plus Parquet. The package installs vep,
+    vep-cache-builder and vep-cache-converter, compiled for the platform's
+    baseline CPU; the GitHub release binaries are compiled for a newer CPU floor
+    and are the builds the published timings measure.
+  dev_url: https://github.com/natera-open-source/vep-rs
+  doc_url: https://github.com/natera-open-source/vep-rs/blob/v{{ version }}/README.md
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.09.22.753614
+  recipe-maintainers:
+    - rborkowski-natera
+    - maporter-natera
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
