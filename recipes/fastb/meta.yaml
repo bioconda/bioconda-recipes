@@ -1,0 +1,52 @@
+{% set name = "fastb" %}
+{% set version = "3.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/iPsychonaut/FASTB/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: af99053aac98083247032c244b8b797055eda66b47500595b1175f38663fa521
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.8
+    - numpy >=1.24
+
+test:
+  imports:
+    - fastb
+  commands:
+    - fastb --help
+    - fastb --version
+
+about:
+  home: https://github.com/iPsychonaut/FASTB
+  dev_url: https://github.com/iPsychonaut/FASTB
+  doc_url: https://github.com/iPsychonaut/FASTB/blob/main/FASTB-SPEC.md
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "2-bit binary sequence format, a drop-in replacement for gzipped FASTA"
+  description: |
+    FASTB stores DNA and RNA at 2 bits per base with N runs, lowercase runs
+    and IUPAC ambiguity codes kept as run lists in a text header, plus a
+    per-record CRC32, an RNA flag, and a plain-text record index for random
+    access. The fastb command encodes and decodes FASTA, verifies its own
+    round trip, and can stream FASTA to stdout for pipes.
+
+extra:
+  recipe-maintainers:
+    - iPsychonaut
