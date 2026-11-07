@@ -69,12 +69,12 @@ jobs: # a basic unit of work in a run
 
             if command -V docker >/dev/null; then
               bioconda-utils build recipes config.yml \
-                  --lint --docker --mulled-test \
-                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
-                  --git-range origin/master HEAD
+                  --lint --docker --mulled-build-and-test \
+                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}" \
+                  --git-range origin/master...HEAD
             else
               bioconda-utils build recipes config.yml \
-                  --lint --git-range origin/master HEAD
+                  --lint --git-range origin/master...HEAD
             fi
 
       - run:
@@ -161,7 +161,7 @@ jobs: # a basic unit of work in a run
 
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
-              --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
+              --git-range ${CIRCLE_SHA1}~1...${CIRCLE_SHA1} \
               --fallback build \
               --artifact-source circleci
 
@@ -217,7 +217,7 @@ jobs: # a basic unit of work in a run
           name: Configure conda
           command: bash configure-conda.sh
 
-      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      # For now, do not upload ARM images to biocontainers: --container-upload-target biocontainers
       - run:
           name: Build and upload
           command: |
@@ -229,14 +229,14 @@ jobs: # a basic unit of work in a run
             echo '============'
             conda info --all
             conda config --show-sources
-            python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+            python -c 'import bioconda_utils.conda.conda_build_bridge as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+              --docker --mulled-build-and-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}" \
               --anaconda-upload \
               --record-build-failures \
-              --skiplist-leafs
+              --skiplist-leaves
             conda clean -y --all
 
   nightly_build:
@@ -271,7 +271,7 @@ jobs: # a basic unit of work in a run
           name: Configure conda
           command: bash configure-conda.sh
 
-      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      # For now, do not upload ARM images to biocontainers: --container-upload-target biocontainers
       - run:
           name: Build and push leftover packages
           command: |
@@ -282,9 +282,9 @@ jobs: # a basic unit of work in a run
 
             # build and push all leftover packages
             bioconda-utils build recipes config.yml \
-                --docker --mulled-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --docker --mulled-build-and-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7:${BIOCONDA_UTILS_TAG#v}" \
                 --anaconda-upload \
-                --prelint --exclude bioconda-repodata-patches
+                --lint --exclude bioconda-repodata-patches
 
 workflows:
   build and test (ARM):
