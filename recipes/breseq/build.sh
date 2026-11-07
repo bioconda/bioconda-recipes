@@ -1,16 +1,17 @@
 #!/bin/bash
-
 set -eux
 
 export INCLUDES="-I${PREFIX}/include"
 export LIBPATH="-L${PREFIX}/lib"
+export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
-export M4="${BUILD_PREFIX}/bin/m4"
 
-autoreconf -if
+#autoreconf -if
 ./configure --prefix="${PREFIX}" \
 	CXX="${CXX}" \
+	CPPFLAGS="${CPPFLAGS}" \
 	CXXFLAGS="${CXXFLAGS} -O3 -I${PREFIX}/include" \
 	LDFLAGS="${LDFLAGS}"
+
 make -j "${CPU_COUNT}"
 make install
