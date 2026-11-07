@@ -1,0 +1,67 @@
+{% set name = "nf-meta" %}
+{% set version = "0.6.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/n/nf_meta/nf_meta-{{ version }}.tar.gz
+  sha256: 04ce5ae3b00b408a665ebf89ab19bea1fac6f8f4531be6fccd410f1deee4c3d9
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - nf-meta = nf_meta.__main__:cli
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    # `license = "Apache-2.0"` (PEP 639) needs setuptools 77 or later
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.11
+    - click >=8.3.1
+    # conda-forge's `fastapi` is pip's `fastapi[standard]`, `fastapi-core` is plain `fastapi`
+    - fastapi-core >=0.128.0
+    - networkx >=3.6.1
+    - packaging >=26.0
+    - pydantic >=2.12.5
+    - pyyaml >=6.0.3
+    - questionary >=2.1
+    - requests >=2.32.5
+    - rich >=14.3.3
+    - uvicorn >=0.40.0
+
+test:
+  imports:
+    - nf_meta
+    - nf_meta.editor.backend
+  commands:
+    - nf-meta --help
+    - nf-meta --version
+    - nf-meta export-schema schema.json
+
+about:
+  home: https://github.com/bmds-tue/nf-meta
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Build, validate and run metapipelines of Nextflow pipelines and nf-core modules
+  description: |
+    nf-meta describes a metapipeline, a directed acyclic graph of Nextflow pipeline and module
+    steps, in a single YAML file, and comes with a browser-based editor and a command-line tool
+    to validate and run it.
+  doc_url: https://bmds-tue.github.io/nf-meta/
+  dev_url: https://github.com/bmds-tue/nf-meta
+
+extra:
+  recipe-maintainers:
+    - JulianFlesch
+
