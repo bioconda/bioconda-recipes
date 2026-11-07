@@ -1,0 +1,60 @@
+{% set name = "pHinder" %}
+{% set version = "7.0.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/isomlab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ffb613b84265840c19caa2596ea370327b8a8291f0d6cd80f340065748bcf517
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+  entry_points:
+    - phinder = pHinder.command_line:main
+    - phinder-gui = pHinder.gui.app:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.9
+    - numpy
+    - openpyxl
+
+test:
+  imports:
+    - pHinder
+  commands:
+    # Only the command-line entry point is exercised. phinder-gui opens a Tk
+    # window, and the build workers have no display.
+    - phinder --help
+
+about:
+  home: https://github.com/isomlab/pHinder
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Ionizable-residue network and surface analysis for protein structures.
+  description: |
+    pHinder locates and characterizes the titratable networks of a protein
+    structure. From a PDB or mmCIF file it computes a Delaunay triangulation of
+    the selected residue set, derives a molecular surface, classifies each
+    sidechain as core, margin, or surface, and identifies networks of
+    interacting ionizable residues. Interfaces between chains can be classified
+    separately, and results are written as coordinate files, network
+    triangulations, and spreadsheets. A graphical interface is included
+    alongside the command-line tool.
+  dev_url: https://github.com/isomlab/pHinder
+  doc_url: https://github.com/isomlab/pHinder/blob/main/docs/getting_started.md
+
+extra:
+  recipe-maintainers:
+    - dangerisom
