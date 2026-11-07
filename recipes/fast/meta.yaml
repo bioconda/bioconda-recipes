@@ -1,0 +1,50 @@
+{% set name = "fast" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/openbioseq/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 30c0f4e3bce4db9b338f2adbb0ae49704619b75c82be89ad9777dd3b57f4493c
+
+build:
+  number: 0
+  # The Rust binary only links system libraries. Skipping macOS relocation
+  # also avoids llvm-otool failing while inspecting the Mach-O executable.
+  binary_relocation: false  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - fast --version
+
+about:
+  home: https://github.com/openbioseq/{{ name }}
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast FASTA/FASTQ toolkit
+  description: |
+    fast is a fast FASTA/FASTQ toolkit with stats, fa2fq, fq2fa, merge,
+    head and sample subcommands. It uses block-wise streaming reads,
+    record-aligned parallelism, and multi-threaded gzip/BGZF decompression.
+  dev_url: https://github.com/openbioseq/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - dwpeng
+  skip-lints:
+    - compiler_needs_stdlib_c
