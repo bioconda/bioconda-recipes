@@ -1,0 +1,44 @@
+{% set name = "split-dist" %}
+{% set version = "1.1.7" %}
+{% set sha256 = "61d3c7fd92b3cd25f0706e32ff0b7131f2e1e88aaa5c338efd6e7790e2f34f2f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/peterjc/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+    
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin='x') }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - autoconf
+    - popt
+    - bison
+
+test:
+  commands:
+    - sdist -h
+    - sdist --version | grep '{{ version }}'
+
+about:
+  home: https://github.com/marbl/{{ name }}
+  license: GPL-2
+  license_file: COPYING
+  summary: "Thomas Mailund's sdist calculates split-distance between binary trees."
+  dev_url: https://github.com/peterjc/{{ name }}
+  doc_url: https://github.com/mailund/{{ name }}
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+
