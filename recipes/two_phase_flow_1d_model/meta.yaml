@@ -1,0 +1,55 @@
+{% set name = "two_phase_flow_1d_model" %}
+{% set version = "1.0.2" %}
+{% set sha256 = "ec8a89c7fe72eed23aa5b8dd40deaefdbbe7b9da110f36748f00f1cba92a4fa9" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/codes_tim/1d_model_bubble_column/-/archive/v{{ version }}/1d_model_bubble_column-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vv
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - poetry-core >=1.2.0
+    - wheel
+  run:
+    - python >=3.10
+    - cobra >=0.29.0,<0.30
+    - defusedxml >=0.7.1,<0.8
+    - h5py >=3.10.0,<4
+    - lxml >=5.1.0,<6
+    - matplotlib-base >=3.9.0,<3.10
+    - numpy 1.26.4
+    - openpyxl >=3.1.3,<3.2
+    - scipy 1.13.1
+
+test:
+  commands:
+    - python3 -m two_phase_flow_1d_model -h
+
+about:
+  home: https://gitlab.com/codes_tim/1d_model_bubble_column/
+  license: MIT
+  license_file: LICENSE
+  summary: "This tool is designed to efficiently simulate gas-liquid flow behavior within a bioreactor."
+  description: >
+    A module designed for simulating two-phase flow phenomena in systems
+    involving biological reactions in bioreactors. It provides computational
+    tools and algorithms for modeling and analysis of fluid dynamics and mass
+    transfer processes in one-dimensional domains.
+
+extra:
+  recipe-maintainers:
+    - Anthony96pi
+    - Benncs
