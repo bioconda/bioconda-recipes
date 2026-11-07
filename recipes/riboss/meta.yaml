@@ -1,0 +1,73 @@
+{% set name = "riboss" %}
+{% set version = "0.46" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SiYangming/riboss/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 31e8291f33bc0d4d6f964ea05f7bcfde4cfbcdb36f5b344be0ee80fdc1269c02
+
+build:
+  number: 0
+  skip: True  # [not linux]
+  binary_relocation: False
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: |
+    set -e
+    cp "$SRC_DIR/bin/riboprof" "$PREFIX/bin/riboprof"
+    chmod +x "$PREFIX/bin/riboprof"
+    {{ PYTHON }} -m pip install . -vv --no-deps
+
+requirements:
+  host:
+    - python >=3.8,<3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.8,<3.11
+    - biopython
+    - numpy
+    - pandas
+    - scipy
+    - pysam
+    - pyfaidx
+    - bedtools
+    - bowtie2
+    - samtools
+    - salmon
+    - star
+    - fastp
+    - rseqc
+    - matplotlib-base
+    - seaborn
+    - pyyaml
+    - pyranges
+    - tqdm
+
+test:
+  imports:
+    - riboss
+    - riboss.orfs
+  commands:
+    - riboprof --help || true
+    - python3 -c "from riboss.orfs import translate; assert translate('ATGGTCTGA') == 'MV'"
+
+about:
+  home: https://github.com/lcscs12345/riboss
+  license: MIT
+  license_file: LICENSE
+  summary: "Integrating RNA-seq and ribosome profiling to identify novel translational events"
+  description: |
+    RIBOSS integrates long- and short-read RNA sequencing data with ribosome 
+    profiling to identify novel translational events beyond annotated regions, 
+    supporting both prokaryotic and eukaryotic species.
+  dev_url: https://github.com/lcscs12345/riboss
+  doc_url: https://github.com/lcscs12345/riboss/blob/master/README.md
+
+extra:
+  skip-lints:
+    # repackaged binary: riboprof is a pre-compiled Linux ELF binary
+    - should_be_noarch_generic
