@@ -15,4 +15,5 @@ cmake -S . -B build ${CMAKE_ARGS} -G Ninja \
     -DRFFTW2_LIBRARY="${PREFIX}/fftw2/lib/librfftw${SHLIB_EXT}" \
     -Wno-dev -Wno-deprecated --no-warn-unused-cli
 cmake --build build --parallel ${CPU_COUNT}
+ctest --test-dir build --output-on-failure --parallel ${CPU_COUNT}
 cmake --install build
