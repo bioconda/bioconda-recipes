@@ -1,0 +1,49 @@
+{% set name = 'testnh' %}
+{% set version = '3.0.0' %}
+{% set sha256 = 'c5172d2810d831b856f2970713453e7002cbe9725271642061214d33b570224b' %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - cmake
+    - pkg-config
+  host:
+    - bpp-phyl
+    - eigen
+  run:
+    - bpp-phyl
+
+test:
+  commands:
+    - test -x ${PREFIX}/bin/testnh
+    - test -x ${PREFIX}/bin/mapnh
+    - test -x ${PREFIX}/bin/partnh
+    - test -x ${PREFIX}/bin/clustnh
+
+about:
+  home: "https://github.com/BioPP/testnh"
+  license: "CECILL-2.1"
+  license_file: "COPYING"
+  summary: "TestNH: programs for testing and fitting non-homogeneous (non-stationary) models of sequence evolution."
+  dev_url: "https://github.com/BioPP/testnh"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    - compiler_needs_stdlib_c
