@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: stubbyfowl <sidaksmann@gmail.com>
+Date: Thu, 29 Oct 2026 11:34:06 -0700
+Subject: [PATCH] fix: retire the SAMtools/BCFtools SNP caller
+
+The SAMtools caller runs
+
+    samtools mpileup -uD ... | bcftools view -ceg ...
+
+which is samtools/bcftools 0.1.x syntax. Every bcftools on bioconda
+(1.2-1.24) rejects `view -ceg` ("Could not parse --min-ac eg"), and the
+0.1.19 bcftools bundled with old samtools reads a different file format
+than samtools 1.x writes, so it silently produces no calls. The option
+could only ever yield empty VCFs.
+
+Retire it the same way the SolSNP caller was retired:
+- the interactive prompt is commented out and the intro now lists the
+  callers that work (GATK and VarScan);
+- a config file that still names a SAMtools caller is skipped with a
+  clear message instead of launching a job that produces nothing.
+
+_run_samtools is left in place for whoever ports it to `bcftools call`.
+GATK and VarScan are unaffected.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ nasp/dispatcher.py | 10 ++++------
+ nasp/nasp.py       | 19 ++++++++++---------
+ 2 files changed, 14 insertions(+), 15 deletions(-)
+
+diff --git a/nasp/dispatcher.py b/nasp/dispatcher.py
+index a0fa900..1b0a8d8 100755
+--- a/nasp/dispatcher.py
++++ b/nasp/dispatcher.py
+@@ -573,12 +573,10 @@ def _call_snps(aligner_output, configuration, reference):
+                     if job_id:
+                         snpcaller_output.append((vcf_nickname, job_id, final_file, aligner_name, name))
+                 elif re.search('samtools', name, re.IGNORECASE):
+-                    (vcf_nickname, job_id, final_file) = _run_samtools(nickname, bam_file, snpcaller,
+-                                                                       configuration["samtools"],
+-                                                                       configuration["job_submitter"], aligner_job_id,
+-                                                                       reference, configuration["output_folder"])
+-                    if job_id:
+-                        snpcaller_output.append((vcf_nickname, job_id, final_file, aligner_name, name))
++                    # Retired: _run_samtools uses samtools/bcftools 0.1.x syntax (mpileup -uD | bcftools view -ceg)
++                    # that no packaged bcftools accepts, so it can only produce empty calls.
++                    print("The SAMtools/BCFtools SNP caller is no longer supported (use GATK or VarScan). Skipping...")
++                    logging.warning("SNP caller '%s' skipped: the SAMtools/BCFtools caller is no longer supported" % name)
+                 else:
+                     print("Unknown SNP caller \'%s\' found, don't know what to do. Skipping..." % name)
+     return snpcaller_output
+diff --git a/nasp/nasp.py b/nasp/nasp.py
+index bbd1a00..435b59c 100755
+--- a/nasp/nasp.py
++++ b/nasp/nasp.py
+@@ -299,7 +299,7 @@ def _get_snpcallers(queue, args):
+     snpcaller_list = []
+     using_gatk = False
+     print(
+-        "\nThis pipeline currently supports four SNP callers: GATK, SolSNP, VarScan, and SAMtools, and you can provide VCF files.\nYou can choose as many options as you want.")
++        "\nThis pipeline currently supports two SNP callers: GATK and VarScan, and you can provide VCF files.\nYou can choose as many options as you want.")
+     response = input("\nWould you like to run GATK [Y]? ")
+     if not re.match('^[Nn]', response):
+         gatk_path = _get_java_path("GenomeAnalysisTK.jar")
+@@ -328,14 +328,15 @@ def _get_snpcallers(queue, args):
+                                                    'queue': queue, 'args': args})
+         snpcaller_list.append(varscan_settings)
+         logging.info(varscan_settings)
+-    response = input("\nWould you like to run SAMtools(BCFtools) [N]? ")
+-    if re.match('^[Yy]', response):
+-        samtools_path = _get_application_path("bcftools")
+-        samtools_settings = _get_advanced_settings("SAMtools", samtools_path, "",
+-                                                   {'num_cpus': '4', 'mem_requested': '10', 'walltime': '36',
+-                                                    'queue': queue, 'args': args})
+-        snpcaller_list.append(samtools_settings)
+-        logging.info(samtools_settings)
++    # Retired: the SAMtools(BCFtools) caller uses bcftools 0.1.x syntax that no packaged bcftools accepts.
++    #response = input("\nWould you like to run SAMtools(BCFtools) [N]? ")
++    #if re.match('^[Yy]', response):
++    #    samtools_path = _get_application_path("bcftools")
++    #    samtools_settings = _get_advanced_settings("SAMtools", samtools_path, "",
++    #                                               {'num_cpus': '4', 'mem_requested': '10', 'walltime': '36',
++    #                                                'queue': queue, 'args': args})
++    #    snpcaller_list.append(samtools_settings)
++    #    logging.info(samtools_settings)
+     return snpcaller_list, using_gatk
+ 
+ 
