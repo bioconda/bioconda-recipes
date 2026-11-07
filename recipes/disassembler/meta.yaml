@@ -25,15 +25,21 @@ requirements:
     - setuptools >=68
   run:
     - python >=3.11
+    # The only modules the package imports: biopython in cmd/msa.py, requests in
+    # cmd/harvest.py. zstandard, numpy and pandas were listed here through 0.1.0 and are
+    # imported nowhere; numpy and pandas belong to the repo's benchmark scripts, which are
+    # not shipped.
     - biopython
     - requests
-    - zstandard
-    - numpy
-    - pandas
-    # Binaries the subcommands shell out to.
-    - logan-walker >=0.1.0,<0.2
+    # Binaries the subcommands shell out to. The walker floor is 0.1.1 because the fixes
+    # that version makes to the walk (the prune coverage rule's tolerance, the rewritten
+    # under-determined guard) are what the 0.1.1 pipeline is validated against. The sieve is
+    # still 0.1.0: only its build changed.
+    - logan-walker >=0.1.1,<0.2
     - kmer-diversity-sieve >=0.1.0,<0.2
-    - mafft
+    # cmd/msa.py runs `mafft --keeplength --addfragments`; 7.526 is the pinned version in
+    # the repo's environment.yml and the one every published result was produced with.
+    - mafft >=7.526
     - fasttree
 
 test:
