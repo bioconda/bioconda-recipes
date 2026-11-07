@@ -1,0 +1,52 @@
+{% set name = "hapiq" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/btraven00/hapiq/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2fc2f752ec3db1413a626811e2c9ab7c2bb9f8536670d7b8e1d3ae9a3d103a64
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('go-nocgo') }}
+    - go-licenses
+
+test:
+  commands:
+    - hapiq --help
+    - hapiq download --help
+    - hapiq version | grep -F "{{ version }}"
+
+about:
+  home: https://github.com/btraven00/hapiq
+  summary: Download scientific datasets with provenance tracking
+  description: |
+    hapiq downloads datasets from scientific repositories (GEO, SRA, Ensembl,
+    Human Cell Atlas, BioStudies, ExperimentHub, figshare, Zenodo and plain
+    URLs) and records provenance for each download: metadata, per-file SHA-256
+    checksums and the hapiq version, in a hapiq.json witness file. It can
+    share a content-addressed download cache between machines on a LAN.
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - library_licenses/
+  dev_url: https://github.com/btraven00/hapiq
+  doc_url: https://github.com/btraven00/hapiq#readme
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - btraven00
