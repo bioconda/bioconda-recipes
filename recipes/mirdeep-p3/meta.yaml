@@ -1,0 +1,116 @@
+# bioconda recipe for mirdeep-p3
+# Source recipe: conda.recipe/ in the mirdeep-p3 repo
+package:
+  name: mirdeep-p3
+  version: "3.1.6c"
+
+source:
+  # Upstream source tree.
+  - url: https://github.com/YangXZ-lab/mirdeep-p3/archive/refs/tags/v3.1.6c.tar.gz
+    sha256: bcac254ca85883a1bffd91ec1843d42db19d59f0b1a4430f968e475bc882bfaf
+
+  # Pre-built bowtie/BLAST search databases (~592 MB unpacked).
+  # mirdeep-p3 resolves these as <project_root>/data/index/{rfam_index,mature_index}
+  # with no CLI flag or environment variable to relocate them, so they have to
+  # ship inside the package -- without them `identification` stops at the ncRNA
+  # alignment step.  data/index is .gitignore'd upstream and therefore absent from
+  # the source tarball above, which is why it is a separate source.
+  # Pinned to the release recorded in the upstream data-index.env; the Docker
+  # image and the "full" conda build use this exact same asset.
+  - url: https://github.com/YangXZ-lab/mirdeep-p3/releases/download/mirdeep-p3-v3.1.4c-full/data-index.tar.gz
+    sha256: 21747be2bbe55ceffdc895c046589759c797ee161329b00fc2f095a86eb6bf8d
+    folder: data-index
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage("mirdeep-p3", max_pin="x") }}
+
+requirements:
+  run:
+    # Python core
+    - python >=3.9
+    - biopython >=1.81
+    - numpy >=1.26
+    - pyyaml >=6.0
+    - openpyxl >=3.0
+    - xlsxwriter >=3.0
+
+    # alignment / mapping
+    - bowtie 1.3.1
+    - bowtie2 >=2.5
+    - samtools >=1.17
+    - bedtools >=2.30
+    - seqkit >=2.4
+    - viennarna >=2.7,<2.8
+    - trim-galore >=0.6.7
+
+    # annotation / homology
+    - blast >=2.13
+    - hmmer >=3.3
+    - fasta3 >=36.3.8
+    - mmseqs2 >=14
+    - diamond >=2.0
+    - eggnog-mapper >=2.1
+    - meme >=5.4
+    - prodigal >=2.6
+    - gffread >=0.12
+
+    # R plotting
+    - r-base >=4.2
+    - r-ggplot2 >=3.4
+    - r-dplyr >=1.0
+    - r-tidyr >=1.2
+    - r-stringr >=1.4
+    - r-scales >=1.2
+    - r-optparse >=1.7
+    - r-patchwork >=1.1
+    - r-gridextra >=2.3
+    - r-viridis >=0.6
+    - r-circlize >=0.4.14
+    - r-svglite >=2.1
+    - r-ggrepel >=0.9
+    - r-ggraph >=2.1
+    - r-igraph >=1.5
+    - r-data.table >=1.14
+    - r-openxlsx >=4.2
+    - r-jsonlite >=1.8
+    - r-ape >=5.7
+
+    # Bioconductor
+    - bioconductor-clusterprofiler >=4.10
+    - bioconductor-complexheatmap >=2.18
+    - bioconductor-deseq2 >=1.42
+    - bioconductor-apeglm >=1.24
+    - bioconductor-enrichplot >=1.22
+    - bioconductor-gosemsim >=2.28
+    - bioconductor-dose >=3.28
+    - bioconductor-annotationforge >=1.44
+    - bioconductor-ggtree >=3.10
+    - bioconductor-biostrings >=2.70
+    - bioconductor-genomicranges >=1.54
+    - bioconductor-iranges >=2.36
+    - bioconductor-go.db >=3.18
+    - bioconductor-keggrest >=1.42
+
+test:
+  commands:
+    - mirdeep-p3 --version
+    - mirdeep-p3 -h
+    - mirdeep-p3 identification -h
+    # The bundled databases are what make the package usable; assert they exist
+    # instead of only smoke-testing the CLI.
+    - test -s "$PREFIX/share/mirdeep-p3/data/index/rfam_index.1.ebwt"
+    - test -s "$PREFIX/share/mirdeep-p3/data/index/mature_index.1.ebwt"
+
+about:
+  home: https://github.com/YangXZ-lab/mirdeep-p3
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "Plant miRNA discovery and functional annotation pipeline"
+
+extra:
+  recipe-maintainers:
+    - mercedes-cykt
