@@ -1,0 +1,66 @@
+# The bundled model (three 5.5 MB weights-only checkpoints) is inside the package, so the recipe
+# needs no separate download.
+{% set name = "prophound" %}
+{% set version = "0.1.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/SyrinxInformatics/prophound/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9e490993e8f22061d7ce721afa8b12184c0cc3e91594047aa886315188b9948c
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - prophound = prophound.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling
+  run:
+    - python >={{ python_min }}
+    - pytorch >=2.4,<3
+    - numpy >=1.26
+    - pandas >=2.2,<3
+    - pyfaidx >=0.8,<1
+    - tqdm >=4.66,<5
+    - pyyaml >=6,<7
+    - biopython >=1.86,<2
+
+test:
+  imports:
+    - prophound
+  commands:
+    - prophound --version
+    - prophound predict --help
+    # the bundled model is present and matches its SHA-256 manifest
+    - python -c "from prophound.models.prophage.src.predict_genome import verify_bundled_model; verify_bundled_model()"
+
+about:
+  home: https://github.com/SyrinxInformatics/prophound
+  dev_url: https://github.com/SyrinxInformatics/prophound
+  doc_url: https://github.com/SyrinxInformatics/prophound/blob/main/README.md
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - NOTICE
+  summary: Recall-first, database-free prophage screen for prokaryotic genomes
+  description: |
+    prophound localizes candidate integrated prophages directly from nucleotide
+    sequence, with no gene calling or reference database at run time. An ensemble
+    of three reverse-complement-symmetric CNNs scores sliding windows, and three
+    modes trade recall against calls per genome.
+
+extra:
+  recipe-maintainers:
+    - Syrinx55
