@@ -1,0 +1,59 @@
+schema_version: 1
+
+context:
+  version: "0.4.5"
+
+package:
+  name: linkml-term-validator
+  version: ${{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/l/linkml-term-validator/linkml_term_validator-${{ version }}.tar.gz
+  sha256: 4b16e465d35ec138a997ba833636236e5e9d8ce75609abc2680f5bdf8fa32509
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - linkml-term-validator = linkml_term_validator.cli:main
+
+requirements:
+  host:
+    - python >=3.10,<4.0
+    - hatchling
+    - uv-dynamic-versioning
+    - pip
+  run:
+    - python >=3.10,<4.0
+    - typer >=0.9.0
+    - filelock >=3.16.1
+    - linkml-runtime >=1.9.4
+    - linkml >=1.9.3
+    - oaklib >=0.7.4
+    - pydantic >=2.0.0
+    - requests >=2.0.0
+    - ruamel_yaml >=0.18.15
+
+tests:
+  - python:
+      imports:
+        - linkml_term_validator
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - python
+    script:
+      - linkml-term-validator --help
+
+about:
+  summary: Validating external terms
+  license: Apache-2.0
+  license_file: LICENSE
+  homepage: https://pypi.org/project/linkml-term-validator/
+
+extra:
+  recipe-maintainers:
+    - hechth
