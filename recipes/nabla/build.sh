@@ -17,12 +17,10 @@ fi
 
 mkdir -p "${PREFIX}/bin"
 
-# Default 32-bit positional variant.  The conda-forge compiler activation
-# exports BUILD (the build-platform triplet, e.g. x86_64-conda-linux-gnu),
-# which collides with the Makefile's BUILD output directory, so pin it here.
-make -C cli BUILD=build -j "${CPU_COUNT}"
+# Default 32-bit positional variant (BUILD_DIR defaults to build/).
+make -C cli -j "${CPU_COUNT}"
 cp cli/build/nabla "${PREFIX}/bin/nabla"
 
 # 64-bit positional variant for inputs beyond 2^32 positions.
-make -C cli LENGTH_SIZE=64 BUILD=build64 -j "${CPU_COUNT}"
+make -C cli LENGTH_SIZE=64 BUILD_DIR=build64 -j "${CPU_COUNT}"
 cp cli/build64/nabla64 "${PREFIX}/bin/nabla64"
