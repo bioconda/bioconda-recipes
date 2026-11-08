@@ -3,7 +3,7 @@
 # bioconda-recipes/recipes/brucellaid and open a pull request. For a new release: tag it,
 # bump `version`, recompute the sha256 and reset `number` to 0.
 {% set name = "brucellaid" %}
-{% set version = "1.2.1" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name }}
@@ -11,7 +11,7 @@ package:
 
 source:
   url: https://github.com/duceppemo/BrucellaID/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: a0ccc7eb3d27cc0af97fbbda8f16c95324335e3437ad51a236bdf266c4eeeb0c
+  sha256: 5ed92e0b4d94de036cf0991dcae6d2ac9e3656248978c3baf7b06b455eab2cba
 
 build:
   number: 0
@@ -46,7 +46,8 @@ test:
     - seal.sh --version
     # The reference data has to be in the package, not only in the repository
     # (no ": " anywhere in these lines, YAML would read a plain scalar containing one as a mapping)
-    - python -c "from brucellaid.references import load_references; assert len(load_references()) == 16"
+    - python -c "from brucellaid.references import load_references; assert len(load_references()) == 432"
+    - python -c "from brucellaid.references import VSNP_REFERENCES_FILE, data_path, load_references; assert len(load_references(data_path(VSNP_REFERENCES_FILE))) == 16"
     - python -c "from brucellaid.mlst import load_profiles; assert len(load_profiles()[1]) == 122"
     # Two copies of one read that matches nothing, to run MASH, Seal and the reports end to end. Two,
     # because the derived k-mer copy threshold floors at 2, and one copy of each k-mer would leave
@@ -70,8 +71,9 @@ about:
   license_file: LICENSE
   summary: Identify the Brucella species of a read set with MASH, and type it with MLST
   description: |
-    BrucellaID reads a fastq sample, compares it with MASH to 16 Brucella reference genomes to name the
-    species and the closest reference, and calls the nine alleles of the Whatmore MLST scheme with Seal from
+    BrucellaID reads a fastq sample, compares it with MASH to 432 curated Brucella reference genomes
+    covering all 30 named species of the clade to name the species and the closest reference, and calls the
+    nine alleles of the Whatmore MLST scheme with Seal from
     BBTools to give the sequence type. It takes single-end or paired-end reads, or a folder of samples, and
     writes a table per sample, a table per locus, every MASH distance, a JSON report, a MultiQC file and a
     self-contained HTML quality assurance report holding the evidence behind every call. Where two species
