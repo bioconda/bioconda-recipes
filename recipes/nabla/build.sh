@@ -9,8 +9,10 @@ export CXXFLAGS="${CXXFLAGS} -std=c++20"
 
 mkdir -p "${PREFIX}/bin"
 
-# Default 32-bit positional variant.
-make -C cli -j "${CPU_COUNT}"
+# Default 32-bit positional variant.  The conda-forge compiler activation
+# exports BUILD (the build-platform triplet, e.g. x86_64-conda-linux-gnu),
+# which collides with the Makefile's BUILD output directory, so pin it here.
+make -C cli BUILD=build -j "${CPU_COUNT}"
 cp cli/build/nabla "${PREFIX}/bin/nabla"
 
 # 64-bit positional variant for inputs beyond 2^32 positions.
