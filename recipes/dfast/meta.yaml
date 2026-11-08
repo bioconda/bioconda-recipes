@@ -1,4 +1,4 @@
-{% set version = "1.5.3" %}
+{% set version = "1.6.0" %}
 
 package:
   name: dfast
@@ -6,26 +6,21 @@ package:
 
 source:
   url: https://github.com/nigyta/dfast_core/archive/{{ version }}.tar.gz
-  sha256: 8f958565c7ba375738549a6dd75e1842946df190a3a5ed8cd7bd60bd4a4ef49e
+  sha256: b8e1f07421ffd7943116a73c6316da6bc872347f1c76209e0e20e94c8a1e903b
 
 build:
   number: 0
-  binary_relocation: False  # [osx]
+  # DFAST 1.6 bundles no executables (MGA and CRT were removed), so the package is noarch.
+  noarch: generic
   run_exports:
     - {{ pin_subpackage("dfast", max_pin="x.x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - python >=3.10
-    - biopython >=1.67
-  host:
-    - zlib
   run:
     - python >=3.10
     - biopython
-    - openjdk  # CRT
+    - diced >=0.1.4  # CRISPR prediction
+    - prodigal  # CDS prediction (default)
     - aragorn
     - blast >=2.13
     - rpsbproc >=0.5
@@ -33,13 +28,19 @@ requirements:
     - diamond  # --aligner diamond
     - hmmer >=3.1b2  # hmmscan, nhmmer and hmmbuild (rRNA prediction)
     - last >=1180  # lastal -G <genetic code>
-    - metagene_annotator >=1.0  # [x86_64]
-    - prodigal  # --use_prodigal (default CDS prediction from DFAST 1.6)
+    - defense-finder  # --modules defense (the models are downloaded by dfast_file_downloader.py --modules defense)
+  # Not dependencies (optional, see README): metagene_annotator (--use_mga; linux-64 only),
+  # integron_finder >=2.0.6 (--modules integron; requires hmmer <=3.3.2, which is not available for
+  # linux-aarch64 and osx-arm64), PlasmidFinder 3.x (PyPI) and MobileElementFinder
+  # (installed by dfast_file_downloader.py --modules mge).
 
 test:
+  imports:
+    - diced
   commands:
     - dfast --version
     - dfast_file_downloader.py -h
+    - prodigal -v
 
 about:
   home: "https://dfast.nig.ac.jp"
@@ -51,13 +52,6 @@ about:
   doc_url: "https://github.com/nigyta/dfast_core/blob/{{ version }}/README.md"
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   identifiers:
     - biotools:dfast
     - doi:10.1093/bioinformatics/btx713
-  skip-lints:
-    # MGA (mga_4) and CRT are still bundled; they will be replaced in DFAST 1.6
-    - should_be_noarch_generic
-    - compiler_needs_stdlib_c
