@@ -8,5 +8,11 @@ export CPPFLAGS="${CPPFLAGS} -I${PWD}/lib"
 export CXXFLAGS="${CXXFLAGS} -std=c++20"
 
 mkdir -p "${PREFIX}/bin"
+
+# Default 32-bit positional variant.
 make -C cli -j "${CPU_COUNT}"
 cp cli/build/nabla "${PREFIX}/bin/nabla"
+
+# 64-bit positional variant for inputs beyond 2^32 positions.
+make -C cli LENGTH_SIZE=64 BUILD=build64 -j "${CPU_COUNT}"
+cp cli/build64/nabla64 "${PREFIX}/bin/nabla64"
