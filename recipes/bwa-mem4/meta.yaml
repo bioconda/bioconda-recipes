@@ -24,7 +24,11 @@ requirements:
     - make
     - cmake
     - pkg-config
-    - clangdev
+    # bindgen only needs libclang. On osx, clangdev's llvmdev puts an unversioned libLLVM.dylib
+    # (LLVM 19) in BUILD_PREFIX/lib, where conda-forge rust >= 1.99 resolves its own
+    # @rpath/libLLVM.dylib (LLVM 23) and aborts with an LLVM version mismatch.
+    - clangdev  # [not osx]
+    - libclang  # [osx]
   host:
     - zlib
     - bzip2
