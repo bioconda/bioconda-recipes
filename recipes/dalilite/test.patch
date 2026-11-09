@@ -1,0 +1,81 @@
+--- test.csh	2019-06-25 03:07:35.000000000 +1000
++++ test_fixed.csh	2025-03-24 10:41:18.719897107 +1100
+@@ -8,8 +8,8 @@
+ rm -f *
+ # import PDB entries
+ echo "> > > Importing PDB structures ..."
+-echo "cd ./test; ../bin/import.pl --pdbfile ../toy_PDB/pdb1ppt.ent.gz --pdbid 1ppt --dat ./"
+-../bin/import.pl --pdbfile ../toy_PDB/pdb1ppt.ent.gz --pdbid 1ppt --dat ./ > import.stdout 2> import.stderr
++echo "cd ./test; import.pl --pdbfile ../toy_PDB/pdb1ppt.ent.gz --pdbid 1ppt --dat ./"
++import.pl --pdbfile ../toy_PDB/pdb1ppt.ent.gz --pdbid 1ppt --dat ./ > import.stdout 2> import.stderr
+ echo
+ echo "* * * Result of data import: ./test/1pptA.dat * * *"
+ echo
+@@ -19,10 +19,10 @@
+ # create BLAST database of structures imported to DAT/
+ # (We use here a small mock database containing only a few structures.)
+ echo "> > > Creating Blast database ..."
+-echo "cd ./test; ls ../DAT | perl -pe 's/\.dat//' > pdb.list; ../bin/dat2fasta.pl ../DAT < pdb.list  | awk -v RS=\">\" -v FS=\"\n\" -v ORS=\"\" ' { if (\$2) print \">\"\$0 } ' > pdb.fasta"
++echo "cd ./test; ls ../DAT | perl -pe 's/\.dat//' > pdb.list; dat2fasta.pl ../DAT < pdb.list  | awk -v RS=\">\" -v FS=\"\n\" -v ORS=\"\" ' { if (\$2) print \">\"\$0 } ' > pdb.fasta"
+ echo "makeblastdb  -in pdb.fasta -out pdb.blast -dbtype prot"
+ ls ../DAT | perl -pe 's/\.dat//' > pdb.list
+-../bin/dat2fasta.pl ../DAT < pdb.list  | awk -v RS=">" -v FS="\n" -v ORS="" ' { if ($2) print ">"$0 } ' > pdb.fasta
++dat2fasta.pl ../DAT < pdb.list  | awk -v RS=">" -v FS="\n" -v ORS="" ' { if ($2) print ">"$0 } ' > pdb.fasta
+ # assuming blastp and makeblastp are in your PATH
+ # (Install the BLAST executables blastp and makeblastdb from ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/).
+ # create BLAST database
+@@ -31,26 +31,26 @@
+ echo
+ # pairwise comparison
+ echo "> > > Starting pairwise comparison ..."
+-echo "cd ./test; ../bin/dali.pl --pdbfile1 ../toy_PDB/pdb1ppt.ent.gz --pdbfile2 ../toy_PDB/pdb1bba.ent.gz --dat1 ./ --dat2 ./ --outfmt summary,alignments" 
+-../bin/dali.pl --np $NP --MPIRUN_EXE $MPI --pdbfile1 ../toy_PDB/pdb1ppt.ent.gz --pdbfile2 ../toy_PDB/pdb1bba.ent.gz --dat1 ./ --dat2 ./ --outfmt "summary,alignments" > pairwise.stdout 2> pairwise.stderr
++echo "cd ./test; dali.pl --pdbfile1 ../toy_PDB/pdb1ppt.ent.gz --pdbfile2 ../toy_PDB/pdb1bba.ent.gz --dat1 ./ --dat2 ./ --outfmt summary,alignments" 
++dali.pl --np $NP --MPIRUN_EXE $MPI --pdbfile1 ../toy_PDB/pdb1ppt.ent.gz --pdbfile2 ../toy_PDB/pdb1bba.ent.gz --dat1 ./ --dat2 ./ --outfmt "summary,alignments" > pairwise.stdout 2> pairwise.stderr
+ echo
+ echo "* * * Result file of pairwise comparison: ./test/mol1A.txt * * *"
+ echo
+ cat mol1A.txt
+ 
+ echo "> > > Starting systematic search ..."
+-echo "cd ./test; ../bin/dali.pl --cd1 2nrmA --db pdb.list --TITLE systematic --dat1 ../DAT --dat2 ../DAT"
++echo "cd ./test; dali.pl --cd1 2nrmA --db pdb.list --TITLE systematic --dat1 ../DAT --dat2 ../DAT"
+ # pairwise comparison - result is 2nrmA.txt
+-../bin/dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 2nrmA --db pdb.list --TITLE systematic --dat1 ../DAT --dat2 ../DAT > systematic.stdout 2> systematic.stderr
++dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 2nrmA --db pdb.list --TITLE systematic --dat1 ../DAT --dat2 ../DAT > systematic.stdout 2> systematic.stderr
+ echo
+ echo "* * * Result file of systematic search: ./test/2nrmA.txt * * *"
+ echo
+ cat 2nrmA.txt
+ 
+ echo "> > > Starting hierarchical search ..."
+-echo "cd ./test; ../bin/dali.pl --cd1 5oheA --db pdb.list --TITLE hierarchical --hierarchical -repset ../matrix_example.list --dat1 ../DAT --dat2 ../DAT"
++echo "cd ./test; dali.pl --cd1 5oheA --db pdb.list --TITLE hierarchical --hierarchical -repset ../matrix_example.list --dat1 ../DAT --dat2 ../DAT"
+ # pairwise comparison - result is 2nrmA.txt
+-../bin/dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 5oheA --db pdb.list --TITLE hierarchical --hierarchical -repset ../matrix_example.list --dat1 ../DAT --dat2 ../DAT > hierarchical.stdout 2> hierarchical.stderr
++dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 5oheA --db pdb.list --TITLE hierarchical --hierarchical -repset ../matrix_example.list --dat1 ../DAT --dat2 ../DAT > hierarchical.stdout 2> hierarchical.stderr
+ echo
+ echo "* * * Result file of hierarchical search: ./test/5oheA.txt * * *"
+ echo
+@@ -59,8 +59,8 @@
+ 
+ # knowledge-based search of our small database - result is 5cnbA.txt
+ echo "> > > Starting knowledge-based search ..."
+-echo "cd ./test; ../bin/dali.pl --cd1 5cnbA --db pdb.list --walk --repset pdb.list --BLAST_DB pdb.blast --TITLE walk --dat1 ../DAT --dat2 ../DAT"
+-../bin/dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 5cnbA --db pdb.list --walk --repset pdb.list --BLAST_DB pdb.blast --TITLE walk --dat1 ../DAT --dat2 ../DAT > walk.stdout 2> walk.stderr
++echo "cd ./test; dali.pl --cd1 5cnbA --db pdb.list --walk --repset pdb.list --BLAST_DB pdb.blast --TITLE walk --dat1 ../DAT --dat2 ../DAT"
++dali.pl --np $NP --MPIRUN_EXE $MPI --cd1 5cnbA --db pdb.list --walk --repset pdb.list --BLAST_DB pdb.blast --TITLE walk --dat1 ../DAT --dat2 ../DAT > walk.stdout 2> walk.stderr
+ echo
+ echo "* * * Result file of knowledge-based search: ./test/5cnbA.txt * * *"
+ echo
+@@ -68,8 +68,8 @@
+ 
+ # all-aainst-all comparison -- results include newick and ordered
+ echo "> > > Starting all-against-all comparison ..."
+-echo "cd ./test; ../bin/dali.pl --query ../matrix_example.list --matrix --dat1 ../DAT --dat2 ../DAT --TITLE matrix"
+-../bin/dali.pl --np $NP --MPIRUN_EXE $MPI --query ../matrix_example.list --matrix --dat1 ../DAT --dat2 ../DAT --TITLE matrix > matrix.stdout 2> matrix.stderr
++echo "cd ./test; dali.pl --query ../matrix_example.list --matrix --dat1 ../DAT --dat2 ../DAT --TITLE matrix"
++dali.pl --np $NP --MPIRUN_EXE $MPI --query ../matrix_example.list --matrix --dat1 ../DAT --dat2 ../DAT --TITLE matrix > matrix.stdout 2> matrix.stderr
+ echo
+ echo "* * * Result files of all-against-all comparison: ./test/ordered ./test/newick ./test/newick_unrooted ./test/101mA.txt ./test/1a00A.txt ./test/1a07A.txt ./test/1allA.txt ./test/1binA.txt * * *"
+ echo
