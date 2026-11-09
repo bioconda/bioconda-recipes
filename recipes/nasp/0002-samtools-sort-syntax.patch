@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: stubbyfowl <sidaksmann@gmail.com>
+Date: Thu, 8 Oct 2026 21:23:22 -0700
+Subject: [PATCH 2/3] fix: update samtools sort syntax for >= 1.3 compatibility
+
+Every aligner path (_run_bwa, _run_bowtie2, _run_novoalign, _run_snap)
+pipes its SAM output through
+
+    samtools view -S -b -h - | samtools sort - <prefix>
+
+The positional output-prefix form was removed in samtools 1.3, which
+exits with "[bam_sort] Use -T PREFIX / -o FILE to specify temporary and
+final output files". This one line, repeated at four call sites, is what
+holds the bioconda recipe on samtools < 1.3.
+
+The new form is
+
+    samtools sort -T <prefix> -o <prefix>.bam -
+
+which produces the same <prefix>.bam that the following
+"samtools index <prefix>.bam" step and the SNP callers already expect.
+
+-T is deliberate, not decoration. The shorter "sort -o <prefix>.bam -"
+works on samtools >= 1.3 but silently fails on samtools 1.1 (the version
+the bioconda recipe is being pinned to): 1.1 requires -T or -O for the
+new-style interface, writes no BAM, and the pipeline still exits 0.
+With -T the same command works on samtools 1.1, 1.9 and 1.24. Verified
+by running the exact command string dispatcher.py builds against all
+three versions (output coordinate-sorted, indexed, no stray temp files).
+
+This unblocks moving the recipe to a current samtools once a release
+containing it exists. It does not touch the separate SAMtools SNP-caller
+path (mpileup -uD | bcftools view -ceg), which needs its own rewrite.
+
+Refs: NASP bioconda diagnosis (FINDINGS.md), Attempt 18, Category 3
+item 2.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ nasp/dispatcher.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/nasp/dispatcher.py b/nasp/dispatcher.py
+index a2a6ac9..6cfdebf 100755
+--- a/nasp/dispatcher.py
++++ b/nasp/dispatcher.py
+@@ -247,7 +247,7 @@ def _run_bwa(read_tuple, aligner, samtools, job_submitter, index_job_id, referen
+         aligner_command = "\n".join(command_parts)
+     bam_nickname = "%s-%s" % (name, aligner_name)
+     samview_command = "%s view -S -b -h -" % sampath
+-    samsort_command = "%s sort - %s" % (sampath, bam_nickname)
++    samsort_command = "%s sort -T %s -o %s.bam -" % (sampath, bam_nickname, bam_nickname)
+     samindex_command = "%s index %s.bam" % (sampath, bam_nickname)
+     command = "%s | %s | %s \n %s" % (aligner_command, samview_command, samsort_command, samindex_command)
+     work_dir = os.path.join(output_folder, aligner_name)
+@@ -288,7 +288,7 @@ def _run_bowtie2(read_tuple, aligner, samtools, job_submitter, index_job_id, ref
+     aligner_command = "%s %s -p %s %s -x %s %s" % (path, args, ncpus, bam_string, ref_string, read_string)
+     bam_nickname = "%s-%s" % (name, aligner_name)
+     samview_command = "%s view -S -b -h -" % sampath
+-    samsort_command = "%s sort - %s" % (sampath, bam_nickname)
++    samsort_command = "%s sort -T %s -o %s.bam -" % (sampath, bam_nickname, bam_nickname)
+     samindex_command = "%s index %s.bam" % (sampath, bam_nickname)
+     command = "%s | %s | %s \n %s" % (aligner_command, samview_command, samsort_command, samindex_command)
+     work_dir = os.path.join(output_folder, aligner_name)
+@@ -316,7 +316,7 @@ def _run_novoalign(read_tuple, aligner, samtools, job_submitter, index_job_id, r
+         path, read1, read2, paired_string, ncpus, bam_string, reference, args)
+     bam_nickname = "%s-%s" % (name, aligner_name)
+     samview_command = "%s view -S -b -h -" % sampath
+-    samsort_command = "%s sort - %s" % (sampath, bam_nickname)
++    samsort_command = "%s sort -T %s -o %s.bam -" % (sampath, bam_nickname, bam_nickname)
+     samindex_command = "%s index %s.bam" % (sampath, bam_nickname)
+     command = "%s | %s | %s \n %s" % (aligner_command, samview_command, samsort_command, samindex_command)
+     work_dir = os.path.join(output_folder, aligner_name)
+@@ -347,7 +347,7 @@ def _run_snap(read_tuple, aligner, samtools, job_submitter, index_job_id, refere
+     aligner_command = "%s %s %s %s -t %s -b %s -o -sam -" % (
+         path, paired_string, ref_dir, read_string, ncpus, args)
+     samview_command = "%s view -S -b -h -" % (sampath)
+-    samsort_command = "%s sort - %s" % (sampath, bam_nickname)
++    samsort_command = "%s sort -T %s -o %s.bam -" % (sampath, bam_nickname, bam_nickname)
+     samindex_command = "%s index %s.bam" % (sampath, bam_nickname)
+     command = "%s | %s | %s \n %s" % (aligner_command, samview_command, samsort_command, samindex_command)
+     work_dir = os.path.join(output_folder, aligner_name)

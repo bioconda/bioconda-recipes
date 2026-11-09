@@ -1,0 +1,116 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: stubbyfowl <sidaksmann@gmail.com>
+Date: Thu, 8 Oct 2026 21:23:36 -0700
+Subject: [PATCH 3/3] fix: use raw strings for regex literals
+
+Eight regular expressions were written as plain string literals
+containing backslash sequences that are not valid string escapes
+(\. \d \D \s \/). Python has kept the backslash for these since forever,
+but 3.12 started emitting SyntaxWarning for them at compile time
+("invalid escape sequence") and the language plans to make them a
+SyntaxError in a future release.
+
+Prefixing each with r makes the intent explicit. None of the eight
+contains a sequence that is a valid string escape (\n, \t, \b, ...), so
+every pattern is byte-for-byte identical before and after; this was
+checked by evaluating each old and new literal and comparing them.
+python -W error::SyntaxWarning -m compileall nasp/ scripts/ now passes.
+
+  nasp/configuration_parser.py:73, 116
+  nasp/dispatcher.py:50, 75, 103, 228
+  nasp/nasp.py:71, 102
+
+Refs: NASP bioconda diagnosis (FINDINGS.md), Attempt 07, Category 3
+item 6.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ nasp/configuration_parser.py | 4 ++--
+ nasp/dispatcher.py           | 8 ++++----
+ nasp/nasp.py                 | 4 ++--
+ 3 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/nasp/configuration_parser.py b/nasp/configuration_parser.py
+index 166962c..e7fe308 100755
+--- a/nasp/configuration_parser.py
++++ b/nasp/configuration_parser.py
+@@ -70,7 +70,7 @@ def _find_reads(folder, filepath):
+ 
+     num_reads = 0
+     for file in os.listdir(filepath):
+-        is_read = re.search('(.*)(\.fastq(?:\.gz)?)$', file, re.IGNORECASE)
++        is_read = re.search(r'(.*)(\.fastq(?:\.gz)?)$', file, re.IGNORECASE)
+         if is_read:
+             sample_name = is_read.group(1)
+             is_paired = re.search('^(.*)(_[R]?)([12])(.*)$', sample_name, re.IGNORECASE)
+@@ -113,7 +113,7 @@ def _find_files(folder, filepath, filetype, extension):
+ 
+     num_files = 0
+     for file in os.listdir(filepath):
+-        is_type = re.search('(.*)(\.%s)$' % extension, file, re.IGNORECASE)
++        is_type = re.search(r'(.*)(\.%s)$' % extension, file, re.IGNORECASE)
+         if is_type:
+             sample_name = is_type.group(1)
+             file_node = ElementTree.SubElement(folder, filetype, {'sample': sample_name})
+diff --git a/nasp/dispatcher.py b/nasp/dispatcher.py
+index 6cfdebf..a0fa900 100755
+--- a/nasp/dispatcher.py
++++ b/nasp/dispatcher.py
+@@ -47,7 +47,7 @@ def _submit_job(job_submitter, command, job_parms, waitfor_id=None, hold=False,
+         logging.debug("submit_command = %s", submit_command)
+         output = subprocess.getoutput("echo \"%s\" | %s - " % (command, submit_command))
+         logging.debug("output = %s" % output)
+-        job_match = re.search('^(\d+)\..*$', output)
++        job_match = re.search(r'^(\d+)\..*$', output)
+         if job_match:
+             jobid = job_match.group(1)
+         else:
+@@ -72,7 +72,7 @@ def _submit_job(job_submitter, command, job_parms, waitfor_id=None, hold=False,
+         logging.debug("submit_command = %s" % submit_command)
+         output = subprocess.getoutput("%s --wrap=\"%s\"" % (submit_command, command))
+         logging.debug("output = %s" % output)
+-        job_match = re.search('^Submitted batch job (\d+)$', output)
++        job_match = re.search(r'^Submitted batch job (\d+)$', output)
+         if job_match:
+             jobid = job_match.group(1)
+         else:
+@@ -100,7 +100,7 @@ def _submit_job(job_submitter, command, job_parms, waitfor_id=None, hold=False,
+         #output = subprocess.getoutput("echo \"%s\" | %s" % (command, submit_command))
+         output = subprocess.getoutput("%s \"%s\"" % (submit_command, command))
+         logging.debug("output = %s" % output)
+-        job_match = re.search('^\D*(\d+)\s.*$', output)
++        job_match = re.search(r'^\D*(\d+)\s.*$', output)
+         if job_match:
+             jobid = job_match.group(1)
+         else:
+@@ -225,7 +225,7 @@ def _run_bwa(read_tuple, aligner, samtools, job_submitter, index_job_id, referen
+     else:
+         aligner_name = "bwa"
+         # Parse read file basename
+-        old_format_string = "-I" if re.search('(?:.*\/)?[^\/]+?_[12]_sequence\.txt(?:\.gz)?$', read1,
++        old_format_string = "-I" if re.search(r'(?:.*\/)?[^\/]+?_[12]_sequence\.txt(?:\.gz)?$', read1,
+                                               re.IGNORECASE) else ""
+         work_dir = os.path.join(output_folder, aligner_name)
+         command_parts = []
+diff --git a/nasp/nasp.py b/nasp/nasp.py
+index 991fdf5..bbd1a00 100755
+--- a/nasp/nasp.py
++++ b/nasp/nasp.py
+@@ -68,7 +68,7 @@ def _create_file_tuple(path):
+ def _find_files(path, extension):
+     file_list = []
+     for file in os.listdir(path):
+-        is_type = re.search('(.*)(\.%s)$' % extension, file, re.IGNORECASE)
++        is_type = re.search(r'(.*)(\.%s)$' % extension, file, re.IGNORECASE)
+         if is_type:
+             sample_name = is_type.group(1)
+             file_list.append((sample_name, os.path.join(path, file)))
+@@ -99,7 +99,7 @@ def _find_executable(application):  # This method is not OS-independent. Should
+ def _find_reads(path):
+     read_list = []
+     for file in os.listdir(path):
+-        is_read = re.search('(.*)(\.f(ast)?q(?:\.gz)?)$', file, re.IGNORECASE)
++        is_read = re.search(r'(.*)(\.f(ast)?q(?:\.gz)?)$', file, re.IGNORECASE)
+         if is_read:
+             sample_name = is_read.group(1)
+             is_paired = re.search('^(.*)(_[R]?)([12])(.*)$', sample_name, re.IGNORECASE)
