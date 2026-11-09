@@ -1,0 +1,135 @@
+# DRAFT: multi-output recipe for HyPhy 3.
+#
+# Outputs (CEP 0014: the top-level `hyphy3` package is itself built, so
+# it is a metapackage pulling both outputs; no output may reuse the
+# package name):
+#   hyphy3-cli     — CLI binaries only (no Python dep)
+#   python-hyphy3  — nanobind `_hyphy3` module + `hyphy3` python wrapper
+#
+# NOTE: the first upstream tag is `v0.0.1` while CMake declares
+#   project(hyphy3 VERSION 3.0.0). The conda package version tracks the
+#   release tag, not the CMake project version.
+
+{% set name = "hyphy3" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "98f294eb9eb1991dd830e472f96dbf832442675a70462257e70478c94773360f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/veg/hyphy-3/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  # Eigen is pulled by CMake FetchContent; declare it here instead so the
+  # build needs no network. build.sh points FETCHCONTENT_SOURCE_DIR_EIGEN3
+  # at this tree.
+  - url: https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+    sha256: 8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+    folder: eigen-src
+
+build:
+  number: 0
+  run_exports:
+    # 0.x upstream: minor bumps may break compat, so pin to x.x
+    - {{ pin_subpackage("hyphy3-cli", max_pin="x.x") }}
+
+requirements:
+  build:
+    - ninja
+    - cmake
+    - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    # Python + nanobind only enable the _hyphy3 module; the CLI binaries do
+    # not depend on them at runtime. conda-build treats `python` as an
+    # unused variant for the CLI output below, so it builds once.
+    - python
+    - nanobind
+  run:
+    # metapackage: `conda install hyphy3` yields the CLIs + python API.
+    # Literal specs, not pin_subpackage: output pins can't resolve at the
+    # top level (they render before the outputs are known).
+    - hyphy3-cli ={{ version }}
+    - python-hyphy3 ={{ version }}
+
+test:
+  commands:
+    - hyphy3  # no args prints usage and exits 0
+
+outputs:
+  - name: hyphy3-cli
+    files:
+      - bin/hyphy3
+      - bin/hyphy3-*
+    requirements:
+      run:
+        - llvm-openmp  # [osx]
+        - libgomp      # [linux]
+    test:
+      commands:
+        - hyphy3  # no args prints usage and exits 0
+        - test -x ${PREFIX}/bin/hyphy3-fel
+        - test -x ${PREFIX}/bin/hyphy3-meme
+        - test -x ${PREFIX}/bin/hyphy3-busted
+        - test -x ${PREFIX}/bin/hyphy3-absrel
+        - test -x ${PREFIX}/bin/hyphy3-relax
+        - test -x ${PREFIX}/bin/hyphy3-fubar
+        - test -x ${PREFIX}/bin/hyphy3-prime
+        - test -x ${PREFIX}/bin/hyphy3-gard
+        - test -x ${PREFIX}/bin/hyphy3-slac
+        - test -x ${PREFIX}/bin/hyphy3-dfel
+        - test -x ${PREFIX}/bin/hyphy3-contrast-fel
+        - test -x ${PREFIX}/bin/hyphy3-mss
+        - test -x ${PREFIX}/bin/hyphy3-ohmic
+        - test -x ${PREFIX}/bin/hyphy3-tree
+        - test -x ${PREFIX}/bin/hyphy3-joint-align
+        - test -x ${PREFIX}/bin/hyphy3-characterize
+        - test -x ${PREFIX}/bin/hyphy3-walrus
+        - test -x ${PREFIX}/bin/hyphy3-expcm
+
+  - name: python-hyphy3
+    files:
+      # _hyphy3*.so is moved into site-packages by build.sh, alongside the
+      # pure-python hyphy3/ wrapper package.
+      - lib/python*/site-packages/_hyphy3*.so
+      - lib/python*/site-packages/hyphy3/*
+    requirements:
+      host:
+        # needed for pin_compatible below; outputs don't inherit the
+        # top-level host requirements
+        - python
+      run:
+        - {{ pin_subpackage("hyphy3-cli", exact=True) }}
+        - {{ pin_compatible("python") }}
+        # nanobind/eigen conversions return numpy arrays at runtime
+        - numpy
+        - llvm-openmp  # [osx]
+        - libgomp      # [linux]
+    test:
+      imports:
+        - hyphy3
+
+about:
+  home: "https://hyphy.org"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Next-generation high-performance comparative sequence analysis and phylogenetics."
+  description: |
+    HyPhy 3 is a ground-up C++ rewrite of HyPhy providing site- and
+    branch-level selection analyses (FEL, MEME, BUSTED, aBSREL, RELAX, FUBAR,
+    PRIME, SLAC, dFEL, Contrast-FEL), recombination screening (GARD),
+    co-selection networks (OHMiC), joint alignment, and a unified `hyphy3`
+    dispatcher. The `hyphy3` output contains the command-line binaries;
+    `python-hyphy3` provides the `hyphy3` Python API (nanobind bindings,
+    including the differentiable-likelihood/autograd interface).
+  dev_url: "https://github.com/veg/hyphy-3"
+  doc_url: "https://hyphy.org"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
