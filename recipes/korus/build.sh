@@ -14,5 +14,5 @@ cp korusMatrix.py ${PREFIX}/bin/
 cp korusAggregateMatrices.py ${PREFIX}/bin/
 
 echo "#!/bin/bash" > ${PREFIX}/bin/korus
-echo "${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/korus $@" >> ${PREFIX}/bin/korus
+echo "exec \"${PREFIX}/bin/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/korus\" \"\$@\"" >> ${PREFIX}/bin/korus
 chmod +x ${PREFIX}/bin/korus
