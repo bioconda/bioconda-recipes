@@ -1,0 +1,57 @@
+{% set version = "1.0.0" %}
+{% set python_min = "3.12" %}
+
+package:
+  name: dynamic
+  version: {{ version }}
+
+source:
+  url: https://github.com/BirolLab/DynaMIC/releases/download/v1.0.0/dynamic-1.0.0.tar.gz
+  sha256: e775e1041f89fe37b6866e6b6b650f6666213b59cba65076ff1c89d3e759250f
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('dynamic', max_pin="x") }}
+  entry_points:
+    - dynamic = dynamic.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling
+  run:
+    - python >={{ python_min }}
+    - __unix
+    - numpy >=1.26
+    - pandas >=2.2
+    - scipy >=1.15
+    - matplotlib-base >=3.9
+    - tqdm >=4.66
+
+test:
+  imports:
+    - dynamic.cli
+    - dynamic.normalization
+    - dynamic.calibration
+    - dynamic.classification
+    - dynamic.modelling
+    - dynamic.report
+  requires:
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/BirolLab/DynaMIC
+  dev_url: https://github.com/BirolLab/DynaMIC
+  license: GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - dynamic/assets/licenses.txt
+  summary: Calibrated detection and modelling of antimicrobial dose responses
+
+extra:
+  recipe-maintainers:
+    - i-salehi
