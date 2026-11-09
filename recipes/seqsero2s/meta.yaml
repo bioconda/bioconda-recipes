@@ -1,7 +1,6 @@
 {% set name = "SeqSero2S" %}
-{% set version = "1.1.4" %}
-{% set release = "89f1f5aca7a8819ee96239592fedd2e737036ada" %}
-{% set sha256 = "995f1815cc6cee7b8e37604b068bbec673e2ee8880e41adf6df0350966fe4c65" %}
+{% set version = "1.2.1" %}
+{% set sha256 = "01f8e9640e035a2645896a19bbc486dc2302bb14705a7ac55e3753e6556324b8" %}
 
 package:
   name: {{ name|lower }}
@@ -10,26 +9,24 @@ package:
 source:
   url: https://github.com/LSTUGA/SeqSero2S/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - biopython-minimum.patch
 
 build:
-  number: 2
+  number: 0
   noarch: python
-  script:
-    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
-    # patch stringMLST.py log path: replace dbPrefix reference with cwd to avoid
-    # patches ALL occurrences (at line 1464 and predict section at line 1478).
-    - bash $RECIPE_DIR/patch_stringmlst.sh
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.8
     - pip
     - setuptools
-    - stringmlst >=0.6
   run:
-    - python >=3
+    - python >=3.8
+    - biopython >=1.75
     - blast >=2.2
     - zstd         # libzstd.so.1 required by blastn binary
     - samtools
@@ -40,13 +37,17 @@ requirements:
     - bwa >=0.7
     - seqtk >=1.3
     - stringmlst >=0.6
-    - mlst >=2.32.2
+    - mlst >=2.35.0
 
 test:
   commands:
+    - SeqSero2S.py --version
+    - SeqSero2S.py --check
+    - python -c "from Bio import SeqIO, SearchIO"
     - SeqSero2S.py -h
     - blastn -help
     - SalmID.py -h
+    - mlst --check
     - mlst -h
 
 about:
