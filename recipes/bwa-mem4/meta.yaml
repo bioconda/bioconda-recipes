@@ -1,4 +1,4 @@
-{% set version = "4.3.3" %}
+{% set version = "4.4.0" %}
 
 package:
   name: bwa-mem4
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/IPNP-BIPN/bwa-mem4/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3325d9f84cc14a75d4e7e03de003c70946c6378dc8199397851d5907443bb38a
+  sha256: d6b8584191bed498f943242c09d105bb1b8516de58e886e2129d2f5cda5bbd0c
 
 build:
   number: 0
@@ -24,7 +24,10 @@ requirements:
     - make
     - cmake
     - pkg-config
-    - clangdev
+    # clangdev pulls llvmdev, whose lib/libLLVM.dylib overwrites the one rust ships; on macOS
+    # rustc then loads the wrong LLVM. bindgen only needs libclang.
+    - clangdev  # [linux]
+    - libclang  # [osx]
   host:
     - zlib
     - bzip2
