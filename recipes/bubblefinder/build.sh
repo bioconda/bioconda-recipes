@@ -36,6 +36,8 @@ cd build
 
 extra_cmake_args=""
 if [[ "${target_platform:-}" == osx-* ]]; then
+  export CXXFLAGS="${CXXFLAGS:-} -D_LIBCPP_DISABLE_AVAILABILITY"
+
   cat > ranlib-wrapper.sh <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
