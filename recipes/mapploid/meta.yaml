@@ -1,0 +1,59 @@
+{% set name = "mapploid" %}
+{% set version = "0.10.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BioByteLab/MapPloid/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5ff9d0a9cbd01dcd5e2767ea1d64d65d21aff7ee8ac36cba93fb32f904481315
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - mapploid = mapploid.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    - numpy >=1.26
+    - pysam >=0.22
+    - scipy >=1.11
+    - matplotlib-base >=3.8
+    - samtools =1.24
+    - genmap =1.3.0
+
+test:
+  source_files:
+    - examples/quickstart/run.py
+  imports:
+    - mapploid
+    - mapploid.cli
+  commands:
+    - mapploid --version
+    - mapploid --help
+    - mapploid prepare --help
+    - mapploid call --help
+    - python examples/quickstart/run.py --out quickstart-output
+
+about:
+  home: https://github.com/BioByteLab/MapPloid
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Mapping-aware allele counts for sample ploidy inference
+  dev_url: https://github.com/BioByteLab/MapPloid
+  doc_url: https://github.com/BioByteLab/MapPloid/blob/v{{ version }}/README.md
+
+extra:
+  recipe-maintainers:
+    - BioByteLab
