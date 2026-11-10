@@ -1,0 +1,74 @@
+{% set name = "panagram" %}
+{% set version = "1.1.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kjenike/panagram/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 0cc6d34d50ed2a90294887f935b44cf124f3c14fdfe8a497ece326ee307e3204
+  patches:
+    # Use bioconda's py-kmc-api, whose CountVec has no buffer protocol (kjenike/panagram#23).
+    - 0001-system-py-kmc-api.patch
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - kmc >=3.2.4
+    - py-kmc-api >=3.2.4
+    - mash >=2.3
+    - htslib
+    - samtools
+    - numpy
+    - simple-parsing
+    - plotly
+    - dash
+    - pysam
+    - pandas
+    - biopython
+    - scipy
+    - pyyaml
+    - toml
+    - py-bgzip
+    - matplotlib-base
+    - pillow
+    - seaborn
+    - umap-learn
+    - snakemake-minimal >=9
+    - scikit-learn
+    - python-kaleido
+    - reportlab
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - panagram
+    - panagram.index
+  commands:
+    - panagram --help
+    - bgzip --version
+    - samtools --version
+    - python -c "import panagram.index as i; g = i.Genome.__new__(i.Genome); g._load_kmc([]); assert g.kmc.__name__ == 'py_kmc_api'"
+    - python -c "import os, panagram.index as i; os.execv(os.path.join(i.EXTRA_DIR, 'kmc'), ['kmc'])" 2>&1 | grep -q 'K-Mer Counter'
+
+about:
+  home: https://github.com/kjenike/panagram
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Alignment-free pan-genome browser.
+  dev_url: https://github.com/kjenike/panagram
+  doc_url: https://github.com/kjenike/panagram/blob/main/README.md
