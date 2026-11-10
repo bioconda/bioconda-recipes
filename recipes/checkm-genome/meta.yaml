@@ -19,21 +19,22 @@ build:
 
 requirements:
   host:
-    - python >=3.6,<3.12
+    - python >=3.11
     - pip
+    - setuptools
   run:
-    - python >=3.6,<3.12
+    - python >=3.11        # gtdb-gplace pulls this up to >=3.12
     - numpy >=1.21.3
     - scipy >=1.7.3
     - matplotlib-base >=3.5.1
     # older pysam versions have wrong openssl pinning
     - pysam >=0.19.0
     - dendropy >=4.5.2
+    - tqdm >=4.62
+    - xopen >=2.0
     - hmmer
     - prodigal
-    #- pplacer ==1.1.alpha20  # [not (osx and x86_64)]
-    # https://github.com/bioconda/bioconda-recipes/issues/69369
-    - pplacer ==1.1.alpha19
+    - gtdb-gplace >=0.1.0
     - wget
 
 test:
@@ -42,6 +43,9 @@ test:
     - checkm.plot
     - checkm.test
     - checkm.util
+  commands:
+    - CHECKM_DATA_PATH=$PREFIX checkm -h   # imports checkm.main, so catches missing run deps
+    - gplace -h
 
 about:
   home: "https://github.com/Ecogenomics/CheckM"
