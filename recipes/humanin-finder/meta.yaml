@@ -32,26 +32,16 @@ requirements:
     - pyhmmer >=0.12.0,<0.13
 
 test:
-  # Not just --help: a functional run on the bundled rCRS, checking that the package finds the
-  # seven loci it must find. `setup` now fails when any bundled data file is missing, so a partial
-  # install is caught here instead of producing wrong results later.
-  requires:
-    - pytest
-  source_files:
-    - tests
-    - examples
+  # Bioconda also runs these commands inside the mulled BioContainer, where test source_files and
+  # test requirements are not available, so only checks that need nothing but the installed
+  # package go here. `setup` fails when any bundled data file (HMM profiles, locus profiles, SHLP
+  # references) is missing or unreadable, so a partial install is still caught.
   imports:
     - humanin_finder
   commands:
     - humanin-finder --help
     - humanin-finder --version
     - humanin-finder setup
-    - humanin-finder lint examples/rcrs_nc_012920_1.fasta
-    - humanin-finder predict -i examples/rcrs_nc_012920_1.fasta -o rcrs -g 2
-    # Humanin plus SHLP1-6, all at the vertebrate-like locus, on the reference genome
-    - test $(grep -c "^NC_012920.1" rcrs_results.csv) -eq 7
-    - grep -q "Humanin,Complete,MAPRGFSCLLLLTSEIDLPVK" rcrs_results.csv
-    - pytest tests -q -x
 
 about:
   home: https://github.com/LaBiOmicS/humaninfinder
