@@ -12,6 +12,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+SHARE_DIR=$DIR/..
 JAR_DIR=$SHARE_DIR/jars
 PLUGINS_DIR=$SHARE_DIR/plugins
 
