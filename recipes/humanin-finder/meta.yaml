@@ -1,0 +1,67 @@
+{% set name = "humanin-finder" %}
+{% set version = "1.0.0b1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LaBiOmicS/humaninfinder/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 03439e6f05fd65517e5c10b3e90e04d14aa04923a869764ceebac51d1913dac6
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - humanin-finder = humanin_finder.cli:main
+    - humaninfinder = humanin_finder.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    # Same bounds as pyproject.toml
+    - biopython >=1.83,<2
+    - click >=8.1.0,<9
+    - pyhmmer >=0.12.0,<0.13
+
+test:
+  # Not just --help: a functional run on the bundled rCRS, checking that the package finds the
+  # seven loci it must find. `setup` now fails when any bundled data file is missing, so a partial
+  # install is caught here instead of producing wrong results later.
+  requires:
+    - pytest
+  source_files:
+    - tests
+    - examples
+  imports:
+    - humanin_finder
+  commands:
+    - humanin-finder --help
+    - humanin-finder --version
+    - humanin-finder setup
+    - humanin-finder lint examples/rcrs_nc_012920_1.fasta
+    - humanin-finder predict -i examples/rcrs_nc_012920_1.fasta -o rcrs -g 2
+    # Humanin plus SHLP1-6, all at the vertebrate-like locus, on the reference genome
+    - test $(grep -c "^NC_012920.1" rcrs_results.csv) -eq 7
+    - grep -q "Humanin,Complete,MAPRGFSCLLLLTSEIDLPVK" rcrs_results.csv
+    - pytest tests -q -x
+
+about:
+  home: https://github.com/LaBiOmicS/humaninfinder
+  dev_url: https://github.com/LaBiOmicS/humaninfinder
+  doc_url: https://github.com/LaBiOmicS/humaninfinder#readme
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Homology-based location and annotation of Humanin and SHLP1-6 mitochondrial-derived peptides
+
+extra:
+  recipe-maintainers:
+    - LaBiOmicS
