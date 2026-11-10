@@ -8,9 +8,6 @@ export CXXFLAGS="${CFLAGS} -O3"
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-sed -i.bak 's|0.39.5|0.47.1|' Cargo.toml
-rm -rf *.bak
-
 # build statically linked binary with Rust
-RUST_BACKTRACE=1
+export RUST_BACKTRACE=1
 cargo install --verbose --no-track --path . --root "${PREFIX}"
