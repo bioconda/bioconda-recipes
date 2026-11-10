@@ -28,11 +28,10 @@ source:
     sha256: 8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
     folder: eigen-src
 
+# NOTE: no run_exports here — with multiple outputs, run_exports belong
+# in each output's own build: section (bioconda lint).
 build:
   number: 0
-  run_exports:
-    # 0.x upstream: minor bumps may break compat, so pin to x.x
-    - {{ pin_subpackage("hyphy3-cli", max_pin="x.x") }}
 
 requirements:
   build:
@@ -65,6 +64,13 @@ outputs:
       - bin/hyphy3
       - bin/hyphy3-*
     requirements:
+      build:
+        # files: output repackages artifacts from the top-level build, so
+        # nothing is compiled here — but the compiler deps mark this output
+        # arch-specific (otherwise lint insists on noarch) and ensure the
+        # toolchain's run deps apply to the DSO checks.
+        - {{ compiler("cxx") }}
+        - {{ stdlib("c") }}
       run:
         - llvm-openmp  # [osx]
         - libgomp      # [linux]
@@ -89,6 +95,10 @@ outputs:
         - test -x ${PREFIX}/bin/hyphy3-characterize
         - test -x ${PREFIX}/bin/hyphy3-walrus
         - test -x ${PREFIX}/bin/hyphy3-expcm
+    build:
+      run_exports:
+        # 0.x upstream: minor bumps may break compat, so pin to x.x
+        - {{ pin_subpackage("hyphy3-cli", max_pin="x.x") }}
 
   - name: python-hyphy3
     files:
@@ -97,6 +107,10 @@ outputs:
       - lib/python*/site-packages/_hyphy3*.so
       - lib/python*/site-packages/hyphy3/*
     requirements:
+      build:
+        # arch-specific output (compiled _hyphy3 module); see hyphy3-cli above
+        - {{ compiler("cxx") }}
+        - {{ stdlib("c") }}
       host:
         # needed for pin_compatible below; outputs don't inherit the
         # top-level host requirements
@@ -111,6 +125,9 @@ outputs:
     test:
       imports:
         - hyphy3
+    build:
+      run_exports:
+        - {{ pin_subpackage("python-hyphy3", max_pin="x.x") }}
 
 about:
   home: "https://hyphy.org"
