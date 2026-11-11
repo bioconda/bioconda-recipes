@@ -25,7 +25,6 @@ exec java \${JAVA_OPTS:-} \\
     -jar "\${DIR}/biopax-validator.jar" "\$@"
 EOF
 
-# Online client, validates through the remote service. No agent required.
 cat > "${PREFIX}/bin/biopax-validator-client" <<EOF
 #!/bin/bash
 DIR="\$(cd "\$(dirname "\$(readlink -f "\$0")")/.." && pwd)/share/${PKG_NAME}-${PKG_VERSION}"
