@@ -1,0 +1,94 @@
+{% set name = "binferno" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+# Immutable post-CORGI-removal source, including the fixes merged in PR #7.
+source:
+  url: https://github.com/Andyargueasae/binferno/archive/b6207a7eaea2f192ca2cde9f2c50cc2c9a0d202c.tar.gz
+  sha256: 6873d7ee42c8a886e0e5d86fd0fed5cf20588a9d92e465427c37b8644f222c4f
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - poetry-core >=2.0.0,<3.0.0
+  run:
+    - python >=3.10,<3.13
+    - atomicwrites >=1.4.1,<2.0.0
+    - checkm-genome >=1.1.3,<=1.2.4
+    - pyfastx ==2.3.0
+    # CheckM requires pkg_resources at runtime.
+    - setuptools >=79.0.0,<81.0
+    - pysam >=0.20,<=0.23
+    - biopython >=1.80
+    - matplotlib-base >=3.10.7,<4.0.0
+    - matplotlib-inline >=0.2.1,<0.3.0
+    - numpy >=1.6.0,<3.0.0
+    - python-dateutil >=2.9.0.post0,<3.0.0
+    - scipy >=1.15.0,<2.0.0
+    - tensorboard >=2.20.0,<3.0.0
+    - click >=8.3.1,<9.0.0
+    - hnswlib >=0.8.0,<0.9.0
+    - python-igraph >=1.0.0,<2.0.0
+    - leidenalg >=0.11.0,<0.12.0
+    - networkx ==3.4.0
+    - numba >=0.62.1,<0.63.0
+    - pandas >=2.3.3,<3.0.0
+    # cluster_utils uses private sklearn helpers validated with the 1.7 series.
+    - scikit-learn >=1.7.2,<1.8
+    - seaborn >=0.13.2,<0.14.0
+    - pytorch >=2.5.1,<=2.6.0
+    - tyro >=1.0.13,<2.0.0
+    - pydantic >=2.13.3,<3.0.0
+    - pyrodigal >=3.6.3,<=3.7.1
+    - pyhmmer >=0.10.15,<=0.12.0
+    - loguru >=0.7.3,<0.8.0
+    - rich ==13.9.4
+    - tqdm ==4.66.5
+    # Direct typing_extensions imports are also declared explicitly.
+    - typing_extensions
+    # Executables are not supplied by Python package metadata.
+    - fraggenescan >=1.32
+    - hmmer >=3.4,<4
+
+# These tests run in the installed conda environment, outside the source tree.
+test:
+  requires:
+    - pytest >=9.0.1
+  source_files:
+    - tests
+    - pyproject.toml
+  imports:
+    - binferno.main
+    - binferno.features
+    - binferno.training
+    - binferno.clustering
+    - binferno.postprocessing
+  commands:
+    - binferno --help
+    - python -c "from importlib.resources import files; root = files('binferno'); assert all(root.joinpath('auxiliary', f).is_file() for f in ('marker.hmm', 'bacar_marker.hmm', 'pltd_marker.hmm')); assert all(root.joinpath('postprocessing', 'scripts', 'checkm_ms', f).is_file() for f in ('archaea.ms', 'bacteria.ms', 'plastid.ms'))"
+    - command -v run_FragGeneScan.pl
+    - hmmsearch -h
+    - python -c "from importlib.metadata import version; assert version('{{ name }}') == '{{ version }}'"
+
+about:
+  home: https://github.com/Andyargueasae/binferno
+  doc_url: https://andyargueasae.github.io/binferno/
+  dev_url: https://github.com/Andyargueasae/binferno
+  license: GPL-3.0-only
+  license_file: LICENSE.txt
+  summary: Metagenomic binning with SimCLR, Barlow Twins and taxonomic embeddings
+
+extra:
+  recipe-maintainers:
+    - Andyargueasae
