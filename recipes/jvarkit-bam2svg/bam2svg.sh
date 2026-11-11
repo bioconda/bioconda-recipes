@@ -25,40 +25,36 @@ fi
 
 # extract memory and system property Java arguments from the list of provided arguments
 # http://java.dzone.com/articles/better-java-shell-script
-default_jvm_mem_opts=(-Xms512m -Xmx1g)
-jvm_mem_opts=()
-jvm_prop_opts=()
-pass_args=()
+default_jvm_mem_opts="-Xms512m -Xmx1g"
+jvm_mem_opts=""
+jvm_prop_opts=""
+pass_args=""
 for arg in "$@"; do
     case $arg in
         '-D'*)
-            jvm_prop_opts+=("$arg")
+            jvm_prop_opts="$jvm_prop_opts $arg"
             ;;
         '-XX'*)
-            jvm_prop_opts+=("$arg")
+            jvm_prop_opts="$jvm_prop_opts $arg"
             ;;
          '-Xm'*)
-            jvm_mem_opts+=("$arg")
+            jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
          *)
-            pass_args+=("$arg")
+            pass_args="$pass_args $arg"
             ;;
     esac
 done
 
-if [ ${#jvm_mem_opts[@]} -eq 0 ]; then
-    jvm_mem_opts=("${default_jvm_mem_opts[@]}")
+if [ "$jvm_mem_opts" == "" ]; then
+    jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-if [[ ${pass_args[0]:-} == org* ]]
+pass_arr=($pass_args)
+if [[ ${pass_arr[0]} == org* ]]
 then
-    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
-        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
-        -cp "$JAR_DIR/bam2svg.jar" ${pass_args[@]+"${pass_args[@]}"}
-
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/bam2svg.jar" $pass_args
 else
-    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
-        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
-        -jar "$JAR_DIR/bam2svg.jar" ${pass_args[@]+"${pass_args[@]}"}
-
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/bam2svg.jar" $pass_args
 fi
+exit
