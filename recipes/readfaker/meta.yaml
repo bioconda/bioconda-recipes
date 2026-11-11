@@ -1,0 +1,48 @@
+{% set name = "readfaker" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "e3bc73d048e81510102f23cef29b50addb7504bdf89204a80865af243392bbc4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/dialvarezs/{{ name }}/archive/v{{ version }}.tar.gz"
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  script:
+    - "cargo-bundle-licenses --format yaml --output THIRDPARTY.yml"
+    - "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - pin_subpackage(name, max_pin="x.x")
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}  # libdeflate-sys
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - readfaker --version
+    - readfaker --help
+
+about:
+  home: "https://github.com/dialvarezs/readfaker"
+  license: "GPL-3.0-or-later"
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  license_family: GPL3
+  summary: "Simulate Oxford Nanopore reads with realistic length and quality profiles learned from real data."
+  dev_url: "https://github.com/dialvarezs/readfaker"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - dialvarezs
