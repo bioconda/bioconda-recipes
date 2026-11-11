@@ -1,0 +1,60 @@
+{% set name = "comebin-llmopt" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/paulzierep/COMEBin-LLMopt/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f242a49e47b36165a01a5b2c493093d743fb6e704ad901381b67a9025155caad
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3.11,<3.14
+    - bedtools >=2.31,<3
+    - biolib >=0.1.9,<0.2
+    - biopython >=1.85,<2
+    - checkm-genome >=1.2,<2
+    - click >=8,<9
+    - fraggenescan >=1.31,<2
+    - hmmer >=3.4,<4
+    - hnswlib >=0.8,<1
+    - leidenalg >=0.12,<0.13
+    - numpy >=2,<3
+    - perl
+    - pplacer 1.1.alpha19
+    - prodigal >=2.6,<3
+    - python-igraph >=1,<2
+    - pytorch >=2.13,<2.14
+    - pyyaml >=6,<7
+    - samtools >=1.20,<2
+    - scikit-learn >=1.5,<1.10
+    - scipy >=1.13,<2
+    - setuptools <82
+    - tqdm >=4.66,<5
+
+test:
+  commands:
+    - comebin-llmopt -h
+    - comebin-llmopt -V | grep -q "{{ version }}"
+    - python -c "import Bio, hnswlib, igraph, leidenalg, numpy, scipy, sklearn, torch, tqdm, yaml"
+    - python -c "from biolib.common import make_sure_path_exists; from checkm.defaultValues import DefaultValues"
+
+about:
+  home: https://github.com/paulzierep/COMEBin-LLMopt
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE.txt
+  summary: "Faster COMEBin: contrastive multi-view binning of metagenomic contigs (modified COMEBin v1.1.0)"
+  dev_url: https://github.com/paulzierep/COMEBin-LLMopt
+
+extra:
+  recipe-maintainers:
+    - paulzierep
