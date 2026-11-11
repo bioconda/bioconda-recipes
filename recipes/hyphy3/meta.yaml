@@ -53,10 +53,13 @@ requirements:
     - nanobind
   run:
     # metapackage: `conda install hyphy3` yields the CLIs + python API.
-    # Literal specs, not pin_subpackage: output pins can't resolve at the
-    # top level (they render before the outputs are known).
-    - hyphy3-cli ={{ version }}
-    - python-hyphy3 ={{ version }}
+    # exact pins so each variant pulls the sibling build rendered for the
+    # same variant. Loose `=version` specs let conda-build's test-env
+    # pre-solve pick a foreign-python python-hyphy3 build left over in
+    # conda-bld from an earlier variant, which then conflicts with this
+    # variant's python_abi run_export injected by host `python`.
+    - {{ pin_subpackage("hyphy3-cli", exact=True) }}
+    - {{ pin_subpackage("python-hyphy3", exact=True) }}
 
 test:
   commands:
