@@ -1,0 +1,50 @@
+diff --git a/Makefile b/Makefile
+index 5544c3f..fba000c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,12 @@
+ CXX=g++
+ DEBUG?=0
+-CXXFLAGS?=-c
++CXXFLAGS?=-std=c++14
+ LDFLAGS=-pthread
+ LDLIBS=-lrt
+ ifneq ($(OS), Windows_NT)
+ 	UNAME_S := $(shell uname -s)
+ 	ifeq ($(UNAME_S), Darwin)
+-		LDFLAGS=-lpthread
++		LDFLAGS=-pthread
+ 		LDLIBS=
+ 	endif
+ endif
+@@ -18,7 +18,7 @@ EXECUTABLE=skewer
+ ifeq ($(DEBUG), 1)
+ 	CXXFLAGS += -O0 -g -Wall -D_DEBUG
+ else
+-	CXXFLAGS += -O2
++	CXXFLAGS += -O3
+ endif
+ 
+ .PHONY: all debug clean
+@@ -32,7 +32,7 @@ $(EXECUTABLE):$(OBJECTS)
+ 	$(CXX) $(LDFLAGS) $(OBJECTS) -o $@ $(LDLIBS)
+ 
+ .cpp.o:
+-	$(CXX) $(CXXFLAGS) $< -o $@
++	$(CXX) $(CXXFLAGS) -c $< -o $@
+ 
+ $(SRC)/main.o: $(SRC)/parameter.h $(SRC)/matrix.h $(SRC)/fastq.h $(SRC)/common.h
+ $(SRC)/parameter.o: $(SRC)/parameter.h $(SRC)/fastq.h $(SRC)/common.h
+diff --git a/src/matrix.h b/src/matrix.h
+index bdff0b7..5c451eb 100644
+--- a/src/matrix.h
++++ b/src/matrix.h
+@@ -49,7 +49,7 @@ typedef struct{
+ class ElementComparator
+ {
+ public:
+-	bool operator()(const ELEMENT &elem1, const ELEMENT &elem2){
++	bool operator()(const ELEMENT &elem1, const ELEMENT &elem2) const {
+ 		return elem1.idx.pos < elem2.idx.pos;
+ 	}
+ };

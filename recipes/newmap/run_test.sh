@@ -6,5 +6,5 @@ newmap search --help
 newmap track --help
 
 pushd tests
-./run_all.sh
+./test_end_to_end.sh
 popd
