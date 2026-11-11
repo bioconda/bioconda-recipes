@@ -1,0 +1,210 @@
+diff --git a/README.md b/README.md
+index 1d034e8..abf618b 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,8 @@
+ ![Build Status](https://www.travis-ci.org/cchd0001/SOAPdenovo2.svg?branch=master)
+ 
++Contact: Ruibang Luo  
++Email: rbluo@cs.hku.hk  
++
+ # Manual of SOAPdenovo2
+ 
+ ## About MEGAHIT
+diff --git a/fusion/inc/def.h b/fusion/inc/def.h
+index 9ed70e4..813df4c 100644
+--- a/fusion/inc/def.h
++++ b/fusion/inc/def.h
+@@ -18,7 +18,7 @@
+ #define int2compbase(seq)       "TGAC"[seq]
+ #define int_comp(seq)   (char)(seq^0x02) //(char)((0x4E>>((seq)<<1))&0x03)
+ 
+-int b_ban;
++extern int b_ban;
+ 
+ typedef unsigned long long Kmer;
+ 
+diff --git a/sparsePregraph/build_preArc.cpp b/sparsePregraph/build_preArc.cpp
+index d0daa7c..fe4c9bf 100644
+--- a/sparsePregraph/build_preArc.cpp
++++ b/sparsePregraph/build_preArc.cpp
+@@ -47,6 +47,8 @@
+ 
+ #include "sparse_kmer.h"
+ 
++#include <pthread.h>
++
+ //programming guide:
+ 
+ //step1:read edge & build  vertex hash
+@@ -94,12 +96,12 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
+   size_t line_len, edge_len_left;
+   int edge_len;
+   int cvg;
+-  int bal_ed;//回文为0
++  int bal_ed;//禄脴脦脛脦陋0
+   const int BUFF_LEN = 1024;
+   char line[BUFF_LEN];
+   //char str[32];
+   char to_buff[BUFF_LEN];//buffer 2k edge seq  BUFF_LEN>4*K_size
+-  int processed = 0; //0表示未处理 1表示 处理完毕 2 表示已经处理了from_vertex ,to_vertex 还没有处理
++  int processed = 0; //0卤铆脢戮脦麓麓娄脌铆 1卤铆脢戮 麓娄脌铆脥锚卤脧 2 卤铆脢戮脪脩戮颅麓娄脌铆脕脣from_vertex ,to_vertex 禄鹿脙禄脫脨麓娄脌铆
+   size_t edge_id = 0;
+   fp = fopen ( edge_file, "r" );
+ 
+@@ -121,7 +123,7 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
+         {
+           if ( processed == 1 && bal_ed )
+             {
+-              edge_id++;//如果不是回文
++              edge_id++;//脠莽鹿没虏禄脢脟禄脴脦脛
+             }
+ 
+ #ifdef _63MER_
+@@ -242,7 +244,7 @@ void build_vertexes ( vertex_hash2 *v_ht, int K_size, char *edge_file )
+             {
+               if ( line[0] == '\n' )
+                 {
+-                  continue;    //当len = 1023时
++                  continue;    //碌卤len = 1023脢卤
+                 }
+ 
+               fprintf ( stderr, "ERROR: in cal the status_processed !! %d \n", processed );
+@@ -1073,7 +1075,7 @@ void build_preArc_threaded ( preArc_array *arc_arr, vertex_hash2 *v_ht, int K_si
+   //init as unlock stat ..
+   for ( size_t i = 0; i < arc_arr->array_sz; ++i )
+     {
+-      locks[i] = 1;
++      pthread_spin_init(&(locks[i]), 0);
+     }
+ 
+   for ( int k = 0; k < thrd_num_s; k++ )
+@@ -1296,7 +1298,14 @@ int put_path_2_buffer ( struct edge_path_buffer *buffer, unsigned int *path )
+   if ( debug )
+     {
+       static size_t times = 0;
+-      static pthread_spinlock_t lock = 1;
++
++      static pthread_spinlock_t lock;
++      static int lock_initialized = 0;
++      if (!lock_initialized) {
++          pthread_spin_init(&lock, 0);
++          lock_initialized = 1;
++      }
++
+       pthread_spin_lock ( &lock );
+       fprintf ( stderr, "call put_path_2_buffer %lu\n", times++ );
+       pthread_spin_unlock ( &lock );
+diff --git a/sparsePregraph/pregraph_sparse.cpp b/sparsePregraph/pregraph_sparse.cpp
+index 3b24592..99e0302 100644
+--- a/sparsePregraph/pregraph_sparse.cpp
++++ b/sparsePregraph/pregraph_sparse.cpp
+@@ -34,6 +34,7 @@
+ #include "seq_util.h"
+ #include "convert_soapdenovo.h"
+ 
++#include <pthread.h>
+ 
+ static int LOAD_GRAPH = 0, BUILD_DBG = 1, BUILD_EDGES = 1, BUILD_PREARCS = 1;
+ //static    int run_mode=0;
+@@ -142,7 +143,7 @@ extern "C" int call_pregraph_sparse ( int argc, char **argv )
+               //initialize the locks  unlock
+               for ( size_t i = 0; i < ht2.ht_sz; ++i )
+                 {
+-                  locks[i] = 1;
++                  pthread_spin_init(&(locks[i]), 0);
+                 }
+ 
+               //create threads
+@@ -256,7 +257,7 @@ extern "C" int call_pregraph_sparse ( int argc, char **argv )
+               //initialize locks unlock
+               for ( size_t i = 0; i < ht2.ht_sz; ++i )
+                 {
+-                  locks[i] = 1;
++                  pthread_spin_init(&(locks[i]), 0);
+                 }
+ 
+               //create threads
+@@ -434,7 +435,7 @@ extern "C" int call_pregraph_sparse ( int argc, char **argv )
+ 
+           for ( size_t i = 0; i < e_sz + 1; i++ )
+             {
+-              s_locks[i] = 1;
++              pthread_spin_init(&(s_locks[i]), 0);
+             }
+ 
+           /*buffers for seperate threads*/
+diff --git a/standardPregraph/contig.c b/standardPregraph/contig.c
+index 7fd39d5..0144e72 100644
+--- a/standardPregraph/contig.c
++++ b/standardPregraph/contig.c
+@@ -27,7 +27,7 @@
+ #include "extvab.h"
+ static void initenv ( int argc, char **argv );
+ static void display_contig_usage ();
+-char shortrdsfile[256], graphfile[256];
++static char shortrdsfile[256], graphfile[256];
+ static boolean repeatSolve;     //whether solve repeat or not
+ //static boolean keepReadFile = 0;  //whether keep tmp selected reads file or not
+ static boolean iter = 0;                //whether use multikmer or not
+diff --git a/standardPregraph/hashFunction.c b/standardPregraph/hashFunction.c
+index 84cf8f9..e2e671a 100644
+--- a/standardPregraph/hashFunction.c
++++ b/standardPregraph/hashFunction.c
+@@ -90,6 +90,10 @@ static uint32_t cpuid ( uint32_t functionInput )
+   uint32_t ebx;
+   uint32_t ecx;
+   uint32_t edx;
++
++#ifdef __aarch64__
++  ecx = 0x0;
++#else
+ #ifdef __PIC__
+   asm ( "pushl %%ebx\n\t" /* save %ebx */
+         "cpuid\n\t"
+@@ -98,6 +102,7 @@ static uint32_t cpuid ( uint32_t functionInput )
+         : "cc" );
+ #else
+   asm ( "cpuid" : "=a" ( eax ), "=b" ( ebx ), "=c" ( ecx ), "=d" ( edx ) : "a" ( functionInput ) );
++#endif
+ #endif
+   return ecx;
+ }
+diff --git a/standardPregraph/inc/def.h b/standardPregraph/inc/def.h
+index f5819f0..c714ddc 100644
+--- a/standardPregraph/inc/def.h
++++ b/standardPregraph/inc/def.h
+@@ -41,7 +41,7 @@
+ #define int2compbase(seq)       "TGAC"[seq]         //int 0123 => base TGAC complement of ACTG
+ #define int_comp(seq)   (char)(seq^0x02)         //(char)((0x4E>>((seq)<<1))&0x03)
+ 
+-int b_ban;
++extern int b_ban;
+ 
+ #ifdef MER127
+ typedef struct kmer
+diff --git a/standardPregraph/prlHashReads.c b/standardPregraph/prlHashReads.c
+index 463a3b0..5451b89 100644
+--- a/standardPregraph/prlHashReads.c
++++ b/standardPregraph/prlHashReads.c
+@@ -604,6 +604,7 @@ boolean prlRead2HashTable ( char *libfile, char *outfile )
+           else
+             {
+               fprintf(stderr, "Error: aio_read error.\n");
++               exit(-1);
+             }
+         }
+       //read single fasta, single fastq and PE fasta in one file
+diff --git a/standardPregraph/read2edge.c b/standardPregraph/read2edge.c
+index 373eeb4..caeebcc 100644
+--- a/standardPregraph/read2edge.c
++++ b/standardPregraph/read2edge.c
+@@ -110,7 +110,7 @@ struct preArc_array_t
+ //arc array
+ 
+ struct preArc_array_t arc_arr;
+-pthread_mutex_t *locks;
++static pthread_mutex_t *locks;
+ 
+ /*************************************************
+ Function:

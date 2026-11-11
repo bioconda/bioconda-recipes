@@ -1,4 +1,4 @@
-{% set version = "1.4.2" %}
+{% set version = "1.6.1" %}
 
 package:
   name: dfast
@@ -6,37 +6,41 @@ package:
 
 source:
   url: https://github.com/nigyta/dfast_core/archive/{{ version }}.tar.gz
-  sha256: a4417dd5c757ea682d8b20ec3b8c4f37322a4d4168133e9f4296f0c89c6fad60 
+  sha256: fc6d03c872186cb36ce58fd55f405fda783de397eb9fb4a8d4814510eb96e687
 
 build:
   number: 0
-  binary_relocation: False  # [osx]
+  # DFAST 1.6 bundles no executables (MGA and CRT were removed), so the package is noarch.
+  noarch: generic
   run_exports:
     - {{ pin_subpackage("dfast", max_pin="x.x") }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - python >=3.7
-    - biopython >=1.67
-  host:
-    - zlib
   run:
-    - python >=3.7
+    - python >=3.10
     - biopython
-    - openjdk
+    - diced >=0.1.4  # CRISPR prediction
+    - prodigal  # CDS prediction (default)
     - aragorn
-    - barrnap
-    - blast >=2.6.0
+    - blast >=2.13
+    - rpsbproc >=0.5
     - ghostx
-    - hmmer >=3.1b2
-    - metagene_annotator >=1.0  # [x86_64]
-    - plasmidfinder >=2.1.6
+    - diamond  # --aligner diamond
+    - hmmer >=3.1b2  # hmmscan, nhmmer and hmmbuild (rRNA prediction)
+    - last >=1180  # lastal -G <genetic code>
+    - defense-finder  # --modules defense (the models are downloaded by dfast_file_downloader.py --modules defense)
+  # Not dependencies (optional, see README): metagene_annotator (--use_mga; linux-64 only),
+  # integron_finder >=2.0.6 (--modules integron; requires hmmer <=3.3.2, which is not available for
+  # linux-aarch64 and osx-arm64), PlasmidFinder 3.x (PyPI) and MobileElementFinder
+  # (installed by dfast_file_downloader.py --modules mge).
 
 test:
+  imports:
+    - diced
   commands:
     - dfast --version
+    - dfast_file_downloader.py -h
+    - prodigal -v
 
 about:
   home: "https://dfast.nig.ac.jp"
@@ -48,13 +52,6 @@ about:
   doc_url: "https://github.com/nigyta/dfast_core/blob/{{ version }}/README.md"
 
 extra:
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
   identifiers:
     - biotools:dfast
     - doi:10.1093/bioinformatics/btx713
-  skip-lints:
-    #We ship some custom last binaries
-    - should_be_noarch_generic
-    - compiler_needs_stdlib_c

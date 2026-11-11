@@ -1,0 +1,74 @@
+{% set name = "BranchManager" %}
+{% set version = "0.1.6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/branchmanager-{{ version }}.tar.gz
+  sha256: 55d17a7fb1c926dd217cc78b179f7e454e82db41c4595af7aff028434e641f99
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('branchmanager', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.10
+    - biopython >=1.80
+    - fasttree
+    - iqtree
+    - mafft
+    - matplotlib-base >=3.10.8
+    - openpyxl >=3.1
+    - pandas
+    - pillow
+    - vsearch
+
+test:
+  imports:
+    - branchmanager
+    - Bio
+    - matplotlib
+    - openpyxl
+    - pandas
+    - PIL
+  commands:
+    - pip check
+    - branchmanager --help
+    - BranchManager --help
+    - vsearch --version
+    - mafft --version
+    - fasttree -help
+    - FastTree -help
+    - iqtree --version
+  requires:
+    - pip
+
+about:
+  home: https://github.com/NickJD/BranchManager
+  dev_url: https://github.com/NickJD/BranchManager
+  doc_url: https://github.com/NickJD/BranchManager/blob/main/README.md
+  summary: Microbial isolate tracking, marker-gene QC, and WGS prioritisation
+  description: >-
+    BranchManager is a decision-support toolkit for microbial isolate collections.
+    It validates partner submissions, processes Sanger AB1 chromatograms, assembles
+    marker-gene sequences, compares taxonomy against reference databases, measures
+    novelty relative to cultured and sequence-reference baselines, and helps
+    prioritise isolates for whole-genome sequencing. Reference databases and 
+    biological baselines are supplied and maintained separately by the user.
+  license: GPL-3.0-only
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - NickJD
