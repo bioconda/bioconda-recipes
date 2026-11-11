@@ -1,6 +1,6 @@
 {% set name = "afwdist" %}
-{% set version = "1.0.0" %}
-{% set sha256 = "6ec8646f7117171b01b922500449da7e62ef05b2eb9b46eafdaf558c0b73df15" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "1806f6938ffc9fe7d7137d3b2e4866cf1de4deedb5acfa996d8dac71a58e27cc" %}
 
 package:
   name: {{ name }}
@@ -12,13 +12,17 @@ source:
 
 build:
   number: 0
-  script: "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
+  script:
+    - "cargo-bundle-licenses --format yaml --output THIRDPARTY.yml"
+    - "cargo install --no-track --locked --verbose --root \"${PREFIX}\" --path ."
   run_exports:
     - pin_subpackage(name, max_pin="x.x")
 
 requirements:
   build:
     - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
 
 test:
   commands:
@@ -27,6 +31,8 @@ test:
 about:
   home: "https://github.com/PathoGenOmics-Lab/afwdist"
   license: "GPL-3.0-only"
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
   license_family: GPL3
   summary: "A lightweight tool to calculate a pairwise distance metric based on fixed and non-fixed allele frequencies."
