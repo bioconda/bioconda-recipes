@@ -47,7 +47,9 @@ else
         && echo "All MCL libraries built successfully!"
 
     cd ..
-    # Build pplacer
+    # Build pplacer. The tarball has no .git, so without this --version
+    # prints "dev" (pplacer's common_src/dune reads it at build time).
+    export PPLACER_VERSION="v${PKG_VERSION}"
     eval $(opam env) \
         && dune build
 
