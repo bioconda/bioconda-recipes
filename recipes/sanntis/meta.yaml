@@ -1,52 +1,73 @@
 {% set name = "sanntis" %}
-{% set version = "0.9.5.0" %}
-{% set sha256 = "aa0dd65faca58e198d5ecc73ac252332a4cdce0e8a8d6a55a59767e967ca5806" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "28d5d932442d1c0a0cc55dfb40fb9e5289a751195f6492b259d7d166a52fc441" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: "https://github.com/Finn-Lab/SanntiS/archive/refs/tags/v{{ version }}.tar.gz"
+  url: https://github.com/Finn-Lab/SanntiS/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
   noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
   entry_points:
-    - sanntis = sanntis._cli:main
-  script: "{{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir"
+    - sanntis = sanntis.cli:main
   run_exports:
-    - {{ pin_subpackage('sanntis', max_pin='x.x') }}
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   host:
-    - python >=3.9
+    - python >=3.11
     - pip
-    - setuptools
+    - hatchling >=1.25
   run:
-    - python >=3.9
-    - scipy >=1.7.3,<1.8.0 
-    - perl >=5
-    - biopython
-    - numpy >=1.16,<1.20
-    - openjdk >=11.0
-    - tensorflow =2.4
-    - hmmer
-    - joblib >=1.0.1
-    - scikit-learn =0.24
-    - prodigal
+    - python >=3.11
+    - numpy >=2,<3
+    - pandas >=2.2,<3
+    - pyarrow >=17
+    - scikit-learn >=1.9,<1.10
+    - scipy >=1.13
+    - skops >=0.11
+    - pytorch >=2.4
+    - safetensors >=0.4
+    - huggingface_hub >=0.30
+    - biopython >=1.84
+    - pyrodigal >=3.5,<4
+    - click >=8.1,<9
+    - pydantic >=2.7,<3
+    - pyyaml >=6
+    - matplotlib-base >=3.8      # training report ([train] extra)
+    - rdkit >=2024.03            # NPC labels from compounds ([train] extra)
+    - nextflow >=26.04           # runs InterProScan 6 (container engine supplied by the user)
+    - openjdk >=17
 
 test:
   imports:
     - sanntis
+    - sanntis.model.bundle
   commands:
-    - sanntis --help > /dev/null
+    - sanntis --help
+    - sanntis predict --help
 
 about:
-  home: "https://github.com/Finn-Lab/SanntiS"
-  summary: "SMBGC Annotation using Neural Networks Trained on Interpro Signatures."
+  home: https://github.com/Finn-Lab/SanntiS
   license: Apache-2.0
-  license_family: Apache
+  license_family: APACHE
   license_file: LICENSE
-  dev_url: "https://github.com/Finn-Lab/SanntiS"
+  summary: SMBGC Annotation using Neural Networks Trained on Interpro Signatures
+  description: |
+    Tool for identifying biosynthetic gene clusters (BGCs) in genomic and metagenomic data from InterProScan
+    domain annotations. Takes a nucleotide FASTA, a GenBank file or a protein FASTA with its GFF3, each optionally
+    with a precomputed InterProScan TSV; writes GFF3, antiSMASH sideloader JSON and tables.
+  doc_url: https://github.com/Finn-Lab/SanntiS/tree/master/docs
+  dev_url: https://github.com/Finn-Lab/SanntiS
+
+extra:
+  recipe-maintainers:
+    - SantiagoSanchezF
+  identifiers:
+    - doi:10.1101/2023.05.23.540769
