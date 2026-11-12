@@ -11,7 +11,12 @@
 # length, so a MAFFT that mishandles --addfragments (the 7.525 bug that the `mafft >=7.526`
 # run requirement guards against) fails this script rather than passing CI.
 
-set -euxo pipefail
+# Deliberately NOT `set -o pipefail`: conda-build runs this script and the `test: commands:`
+# list in the same shell (conda_test_runner.sh), so any shell option set here leaks into those
+# commands. With pipefail, `l1_pipeline_serial 2>&1 | grep -q -- "--input required"` fails,
+# because the binary exits 1 while printing that usage error and the test relies on the
+# pipeline returning grep's status. `set -ex` matches what conda-build sets for the commands.
+set -ex
 
 disassembler msa \
     --ref tests/fixture_query.fasta \
