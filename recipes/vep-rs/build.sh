@@ -28,9 +28,13 @@ cargo build --release --locked \
   --bin vep-cache-builder \
   --bin vep-cache-converter
 
+# conda-forge's rust activation exports CARGO_BUILD_TARGET, which puts the
+# binaries under target/<triple>/release instead of target/release.
+release_dir="target/${CARGO_BUILD_TARGET:+${CARGO_BUILD_TARGET}/}release"
+
 install -d "${PREFIX}/bin"
 install -m 0755 \
-  target/release/vep \
-  target/release/vep-cache-builder \
-  target/release/vep-cache-converter \
+  "${release_dir}/vep" \
+  "${release_dir}/vep-cache-builder" \
+  "${release_dir}/vep-cache-converter" \
   "${PREFIX}/bin/"
