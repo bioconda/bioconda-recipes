@@ -1,5 +1,5 @@
 {% set name = "txnova" %}
-{% set version = "0.1.12" %}
+{% set version = "0.1.13" %}
 
 package:
   name: {{ name }}
@@ -7,11 +7,15 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: "af7c6d68d0e5fb248180741adb136607b6f4b789afa21a0e0ab42804b91c1cc9"
+  sha256: "eefc738688caba4766b1d3b49d59ce096351a94aa63e5015b22c2eb39cec1e92"
 
 build:
   number: 0
   skip: true  # [win]
+  ignore_run_exports_from: # see https://github.com/bioconda/bioconda-recipes/pull/71542
+    - clangdev
+    - libclang
+    - llvmdev
   script:
     - export LIBCLANG_PATH="${PREFIX}/lib"
     - "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
@@ -24,17 +28,20 @@ requirements:
     - {{ compiler('rust') }}
     - {{ stdlib('c') }}
   host:
-    - python >=3.10
+    - python >=3.10,<3.15
     - pip
     - maturin >=1.7,<2
-    - clangdev
-    - libclang
-    - llvmdev
+    - clangdev {{ c_compiler_version }}.*  # [osx]
+    - libclang {{ c_compiler_version }}.*  # [osx]
+    - llvmdev {{ c_compiler_version }}.*   # [osx]
+    - clangdev                             # [linux]
+    - libclang                             # [linux]
+    - llvmdev                              # [linux]
     - zlib
     - bzip2
     - xz
   run:
-    - python >=3.10
+    - python >=3.10,<3.15
     - typer >=0.12
     - pydantic >=2.5,<3
     - pyyaml >=6.0
