@@ -1,12 +1,19 @@
 #!/bin/bash
 set -eu -o pipefail
 
-# Export required paths for Boost and other libraries
 export BOOST_ROOT="${PREFIX}"
 
-# Configure and build with Meson + Ninja
-mkdir -p build
-meson setup build --prefix="${PREFIX}"
-cd build
-ninja install
+if [[ "${target_platform}" == osx-* ]]; then
+    export MACOSX_DEPLOYMENT_TARGET="11.3"
+    export CXXFLAGS="${CXXFLAGS:-} -D_LIBCPP_DISABLE_AVAILABILITY -mmacosx-version-min=11.3"
+    export LDFLAGS="${LDFLAGS:-} -mmacosx-version-min=11.3"
+fi
 
+mkdir -p build
+meson setup build \
+    --prefix="${PREFIX}" \
+    --libdir="lib" \
+    -Dwerror=false \
+    -Dwarning_level=1
+
+ninja -C build install

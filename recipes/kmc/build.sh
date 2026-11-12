@@ -14,9 +14,6 @@ case $(uname -m) in
     arm64)
 	export CXXFLAGS="${CXXFLAGS} -march=armv8.4-a"
 	;;
-    x86_64)
-	export CXXFLAGS="${CXXFLAGS} -march=x86-64-v3"
-	;;
 esac
 
 case $(uname -m) in
@@ -51,6 +48,7 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
 	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
 	-DCMAKE_C_COMPILER="${CC}" \
 	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DKMC_BUILD_PYTHON_API=OFF \
 	-Wno-dev -Wno-deprecated --no-warn-unused-cli \
 	"${CONFIG_ARGS}"
 

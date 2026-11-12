@@ -1,5 +1,5 @@
 {% set name = "GOTTCHA2" %}
-{% set version = "2.4.3" %}
+{% set version = "2.5.3" %}
 
 package:
   name: {{ name|lower }}
@@ -8,32 +8,30 @@ package:
 build:
   noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir .
-  entry_points:
-    - gottcha2 = gottcha.gottcha2:cli
+  script: sed -i 's/^__version__.*$/__version__ = "{{ version }}"/' gottcha/gottcha2.py && {{ PYTHON }} -m pip install -vvv --no-deps --no-build-isolation --no-cache-dir .
   run_exports:
     - {{ pin_subpackage('gottcha2', max_pin='x') }}
 
 source:
   url: https://github.com/poeli-lanl/GOTTCHA2/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 7dc8ca116f572a0d30eb752e6b4093c954c8271fb6f6e25201aa27f26a60b244
+  sha256: cf2e491383f233e9eb72f56874bca478ec9ab1839d7ba881c60e9ae7a162fa4f
 
 requirements:
   host:
     - python >=3.9
     - pip
     - setuptools
-    - pandas
+    - pandas >=1.2.0
   run:
     - python >=3.9
-    - minimap2 >=2.17
+    - minimap2 >=2.27
     - biom-format >=2.1.7
-    - numpy
-    - pandas
-    - requests
+    - numpy >=1.19.0
+    - pandas >=1.2.0
+    - requests >=2.25.0
     - tqdm
     - pysam >=0.22.0
-    - samtools
+    - samtools >=1.2
     - sylph
 
 test:

@@ -1,6 +1,6 @@
 {% set name = 'STRmie-HD' %}
-{% set version = '1.0.0' %}
-{% set sha256 = "82b105119d071ea399b87cb9aa433eab22bdf1982031fbf90df064873d42df2e" %}
+{% set version = '1.1.1' %}
+{% set sha256 = "120b3b3e522e0ca5694f449532e6a077f15922464deea17be78110ec384a486d" %}
 
 package:
   name: {{ name|lower }}
@@ -12,19 +12,18 @@ source:
 
 build:
   number: 0
-  noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
 
 requirements:
-  build:
-    - python >=3.8
+  host:
+    - python >=3.8,<3.15
     - pip
     - setuptools
     - wheel
   run:
-    - python >=3.8
+    - python >=3.8,<3.15
     - numpy
     - pandas
     - scikit-learn
@@ -40,12 +39,16 @@ requirements:
     - scipy
     - pytest
     - regex
+    - pysam
+    - pear
+    - samtools
 
 test:
   imports:
     - strmie
   commands:
     - strmie --help
+    - strmie-repeat --help
   requires:
     - pytest
 
@@ -66,3 +69,5 @@ extra:
   recipe-maintainers:
     - Alenap26
     - tm4zza
+  skip-lints:
+    - should_be_noarch_generic

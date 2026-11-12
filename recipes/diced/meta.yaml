@@ -1,0 +1,56 @@
+{% set name = "diced" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: "{{ name | lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "1995329af578e67be450f60936f1b3e725159d3841677af850764498e0c264f8"
+  patches:
+    # PyPI sdist ships a diced-py/Cargo.toml missing the [lib] table present
+    # in the upstream git tag, so maturin/cargo can't locate diced/lib.rs.
+    # https://github.com/althonos/diced/issues (upstream sdist packaging bug)
+    - fix-cargo-toml-lib-section.patch
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir --use-pep517 -vvv"
+  run_exports:
+    - {{ pin_subpackage('diced', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}  # the linker used by rustc (osx-64 failed to link build scripts without it)
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - maturin
+  run:
+    - python
+
+test:
+  requires:
+    - biopython
+  imports:
+    - diced
+  commands:
+    - python -m unittest -vv diced.tests
+
+about:
+  home: "https://github.com/althonos/diced"
+  license: "GPL-3.0-or-later"
+  license_family: "GPL3"
+  license_file: "COPYING"
+  summary: "Rust re-implementation of the MinCED algorithm to Detect Instances of CRISPRs in Environmental Data."
+  doc_url: "https://diced.readthedocs.io"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - pentamorfico

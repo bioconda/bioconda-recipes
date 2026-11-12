@@ -1,5 +1,5 @@
 {% set name = "vardictcpp" %}
-{% set version = "2" %}
+{% set version = "3" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,9 @@ package:
 
 source:
   url: https://github.com/MHH-Bioinformatics-Hematology/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: c07aac3dc39a9f1a4e86ac28152189c3c49f7cba079e40282c4b630ea2aa5cfc
+  sha256: 0384b63da2a6d307b3111cfddae86c704229b1a3a7c556c0293f3b0746464bff
+  patches:
+    - install-rpath-macOS.patch  # [osx]
 
 build:
   number: 0
@@ -20,7 +22,10 @@ requirements:
     - {{ stdlib('c') }}
     - cmake >=3.15
     - make
+    - pkg-config
   host:
+    - htslib
+  run:
     - htslib
 
 test:
@@ -30,11 +35,11 @@ test:
     - vardictcpp --version
 
 about:
-  home: https://github.com/MHH-Bioinformatics-Hematology/vardictcpp
+  home: "https://github.com/MHH-Bioinformatics-Hematology/vardictcpp"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "Memory-lean C++ reimplementation of the VarDict variant caller, byte-identical to VarDictJava"
+  summary: "Memory-lean C++ reimplementation of the VarDict variant caller, byte-identical to VarDictJava."
   description: |
     vardictcpp is a from-scratch C++17 reimplementation of VarDict
     (AstraZeneca-NGS VarDictJava 1.8.3) built on htslib. It reproduces VarDict's
@@ -44,7 +49,8 @@ about:
     magnitude less memory. It accepts VarDict's command-line option syntax and
     emits VarDict's TSV column order, and can also write VCF natively (--vcf),
     so it is a drop-in replacement in existing pipelines.
-  dev_url: https://github.com/MHH-Bioinformatics-Hematology/vardictcpp
+  dev_url: "https://github.com/MHH-Bioinformatics-Hematology/vardictcpp"
+  doc_url: "https://vardictcpp.readthedocs.io/en/latest"
 
 extra:
   additional-platforms:

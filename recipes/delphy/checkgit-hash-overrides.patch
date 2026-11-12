@@ -1,0 +1,34 @@
+--- a/CheckGit.cmake	2026-09-22 15:00:08.995635643 +0000
++++ b/CheckGit.cmake	2026-09-22 15:00:09.026124473 +0000
+@@ -33,6 +33,11 @@
+ endfunction()
+ 
+ function(CheckGitVersion)
++    if (DEFINED DELPHY_GIT_HASH AND DEFINED DELPHY_PREV_GIT_HASH)
++        CheckGitApply(${DELPHY_GIT_HASH} ${DELPHY_PREV_GIT_HASH} false)
++        return()
++    endif ()
++
+     # Check for uncommitted changes
+     execute_process(
+         COMMAND git status --porcelain
+@@ -75,6 +80,10 @@
+         endif ()
+     endif ()
+ 
++    CheckGitApply(${GIT_HASH} ${PREV_GIT_HASH} ${GIT_UNCOMMITED_CHANGES})
++endfunction()
++
++function(CheckGitApply GIT_HASH PREV_GIT_HASH GIT_UNCOMMITED_CHANGES)
+     CheckGitRead(GIT_HASH_CACHE PREV_GIT_HASH_CACHE GIT_UNCOMMITED_CHANGES_CACHE)
+     if (NOT EXISTS ${post_configure_dir})
+         file(MAKE_DIRECTORY ${post_configure_dir})
+@@ -121,6 +130,8 @@
+         -DCMAKE_PROJECT_VERSION=${CMAKE_PROJECT_VERSION}
+         -DBUILD_NUMBER=${BUILD_NUMBER}
+         -DBUILD_PREV_GIT_HASH=${BUILD_PREV_GIT_HASH}
++        -DDELPHY_GIT_HASH=${DELPHY_GIT_HASH}
++        -DDELPHY_PREV_GIT_HASH=${DELPHY_PREV_GIT_HASH}
+         -P ${CURRENT_LIST_DIR}/CheckGit.cmake
+         BYPRODUCTS ${post_configure_file}
+         )
