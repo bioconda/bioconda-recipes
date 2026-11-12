@@ -3,6 +3,10 @@ set -ex
 
 # Eigen 3.4.0 is vendored as a second source entry (eigen-src/) so the build
 # needs no network: FetchContent picks it up via FETCHCONTENT_SOURCE_DIR_*.
+# ccache refuses to cache TUs compiled against a PCH unless these sloppiness
+# flags are set (documented requirement for -include pch headers).
+export CCACHE_SLOPPINESS="pch_defines,time_macros"
+
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_BUILD_TYPE=Release \
