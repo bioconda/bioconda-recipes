@@ -1,0 +1,55 @@
+{% set name = "amfsplit" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ayobi/amfsplit/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e7c54d69231e1c2af4c171ba582e61c35c0a33c4fb825edf50ac13779dc92c68
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    # the versions the paper's calls were made and verified with
+    - blast ==2.17.0
+    - mafft ==7.526
+    - epa-ng ==0.3.8
+    - itsxrust ==0.3.0
+    # for `amfsplit validate`: the paper's hits were made with vsearch 2.27.0, which cannot be installed
+    # next to blast 2.17.0 (libzlib); 2.32.0 reproduces them byte for byte (the validate parity case)
+    - vsearch ==2.32.0
+
+test:
+  commands:
+    - amfsplit --version
+    - amfsplit name --help
+    - test -d "${PREFIX}/share/amfsplit/naming/inputs/benchmark"
+    - test -f "${PREFIX}/share/amfsplit/panels/amf_legacy_windows.tsv"
+    # validate runs vsearch: one window searched against itself
+    - printf '>w1\nACGTTGCATGCCTAGGCTAACGTTAGCCGATCGATTACGGCATCGATCGGATCGTAGCTAGCTAGGCTTACGATCGG\n' > w.fa && amfsplit validate -w w.fa -r w.fa -o smoke --threads 1 && test -s smoke.hits.tsv
+
+about:
+  home: https://github.com/ayobi/amfsplit
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+    - crates/amfsplit-edlib/vendor/edlib/LICENSE
+  summary: Name long-read AMF rDNA sequences across MaarjAM VT, UNITE SH and LSU species clades, with measured novelty
+  dev_url: https://github.com/ayobi/amfsplit
+
+extra:
+  recipe-maintainers:
+    - ayobi
