@@ -9,6 +9,26 @@ echo 'typedef unsigned long ulong;' > "${SRC_DIR}/ulong_compat.h"
 sed -i.bak "s#-include cstdint#-include cstdint -include ${SRC_DIR}/ulong_compat.h#" src/irfinder/Release/src/*/subdir.mk src/irfinder/Release/src/subdir.mk
 find src/irfinder -name '*.bak' -delete
 
+# macOS has no <endian.h> (crc32.cpp expects the glibc one): provide a shim.
+if [[ "$(uname)" == "Darwin" ]]; then
+    mkdir -p "${SRC_DIR}/compat"
+    cat > "${SRC_DIR}/compat/endian.h" <<'SHIM'
+#pragma once
+#include <machine/endian.h>
+#ifndef __BYTE_ORDER
+#define __BYTE_ORDER BYTE_ORDER
+#endif
+#ifndef __BIG_ENDIAN
+#define __BIG_ENDIAN BIG_ENDIAN
+#endif
+#ifndef __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN LITTLE_ENDIAN
+#endif
+SHIM
+    sed -i.bak "s#-include cstdint#-I${SRC_DIR}/compat -include cstdint#" src/irfinder/Release/src/*/subdir.mk src/irfinder/Release/src/subdir.mk
+    find src/irfinder -name '*.bak' -delete
+fi
+
 # Remove the prebuilt binaries / unused model shipped in the repository
 rm -f bin/util/irfinder bin/util/irfinder_cnn bin/util/trim bin/util/winflat
 rm -f bin/util/model/best_model.h5
