@@ -8,4 +8,4 @@ export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CXXFLAGS="${CXXFLAGS} -O3"
 
 make CXX="${CXX}" INCLUDE="-I${PREFIX}/include -Ihtslib" RELEASEFLAGS="${CPPFLAGS} ${CXXFLAGS} ${LDFLAGS}" -j"${CPU_COUNT}"
-install -v -m 0755 viral_consensus "${PREFIX}/bin"
+install -v -m 0755 scripts/build_vcf.py viral_consensus "${PREFIX}/bin"

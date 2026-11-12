@@ -1,5 +1,5 @@
 {% set name = "polars-bio" %}
-{% set version = "0.36.2" %}
+{% set version = "0.37.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/polars_bio-{{ version }}.tar.gz
-  sha256: e16f9886c8a98fe494674d3ab5bb9d8e3db3d1db3b9c18c99622cb82171b98b3
+  sha256: 693b5cfc4e8620d7edd8ce193624a1404dcd4467d492f8a96d11412f0b9326d6
 
 build:
   number: 0
@@ -38,14 +38,14 @@ requirements:
     - maturin >=1.0,<2.0
   run:
     - python
-    # polars 2.0 changed headerless CSV column naming and breaks
-    # scan_table/read_table; support is planned for polars-bio 0.37.0.
-    # polars < 1.40 returns wrong counts for cool/mcool scans.
-    - polars >=1.40.0,<2
+    # polars-bio 0.37.0 supports polars 1.x and 2.0/2.1 (tested on 1.40,
+    # 1.44 and 2.x). polars < 1.40 returns wrong counts for cool/mcool scans.
+    - polars >=1.40.0,<2.2
     - pyarrow >=23.0.1,<25
     - datafusion >=53.0.0,<54
     - tqdm >=4.67.0,<5
-    - polars-config-meta >=0.3.2,<1
+    # polars-config-meta is no longer a dependency: since 0.37.0 polars-bio
+    # ships its own frame-metadata implementation (MIT notice retained below).
 
 test:
   imports:
@@ -77,6 +77,7 @@ about:
   license_file:
     - LICENSE
     - THIRDPARTY.yml
+    - polars_bio/licenses/polars-config-meta/LICENSE
   summary: 'Blazing fast genomic operations on large Python dataframes'
   description: |
     polars-bio is a Python library for genomics built on top of Polars,
