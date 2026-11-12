@@ -1,0 +1,111 @@
+{% set name = "ms-pred" %}
+{% set version = "1.1.0" %}
+{% set commit = "708148c2a8eb0c32120644436fefd2fe90cd2214" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/coleygroup/ms-pred/archive/{{ commit }}.tar.gz
+  sha256: 9051b3296186fba56c76b977e2d63ba4bb4d049c3cc7e6cdd98c8e7417645a1e
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - pytorch
+    - dgl
+    - pytorch_scatter
+    - pytorch_sparse
+    - pytorch_geometric
+    - scikit-learn
+    - pathos
+    - cairosvg
+    - ipdb
+    - pubchempy
+    - omegaconf
+    - h5py
+    - matplotlib-base
+    - rdkit 2025.03.*
+    - ipykernel
+    - einops
+    - pytorch-lightning
+    - pygmtools
+    - ray-core
+    - ray-tune
+    - seaborn
+    - platformdirs
+    - torchdata <0.10
+    - numpy
+    - linsatnet
+    - msbuddy
+    - lightgbm
+    - joblib
+    - multiprocess
+    - packaging
+    - pandas
+    - pyyaml
+    - requests
+    - scipy
+    - torchmetrics
+    - tqdm
+
+test:
+  imports:
+    - ms_pred
+    - ms_pred.model_registry
+    - ms_pred.common
+    - ms_pred.nn_utils
+    - ms_pred.iceberg.gen_model
+    - ms_pred.iceberg.inten_model
+    - ms_pred.glacier.joint_model
+    - ms_pred.marason.gen_model
+    - ms_pred.scarf_pred.scarf_model
+    - ms_pred.ffn_pred.ffn_data
+    - ms_pred.gnn_pred.gnn_data
+    - ms_pred.massformer_pred
+    - ms_pred.magma.fragmentation
+    - ms_pred.retrieval.retrieval_benchmark
+    - ms_pred.autoregr_gen.autoregr_data
+    - ms_pred.graff_ms.graff_ms_data
+    - ms_pred.molnetms.molnetms_data
+  commands:
+    - python -m ms_pred --version | grep -qx "ms_pred {{ version }}"
+
+about:
+  home: https://github.com/coleygroup/ms-pred
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Mass spectrum predictors - GLACIER, ICEBERG, MARASON, SCARF and baselines for tandem MS simulation
+  description: |
+    ms-pred implements models that predict tandem mass spectra (MS/MS) from
+    molecular structures: GLACIER, ICEBERG, MARASON and SCARF, plus baseline
+    models (NEIMS FFN/GNN, MassFormer, 3DMolMS, GrAFF-MS) trained under
+    equivalent settings.
+
+    The package version is separate from the model versions; run
+    `python -m ms_pred --version` to list both.
+
+    Model weights are not included. Training and launcher scripts, configs
+    and notebooks live in the source repository and are not installed.
+  dev_url: https://github.com/coleygroup/ms-pred
+
+extra:
+  recipe-maintainers:
+    - RJMW
+    - neil-butcher
+  identifiers:
+    - doi:10.1021/acs.analchem.3c04654
+    - doi:10.1101/2025.05.28.656653

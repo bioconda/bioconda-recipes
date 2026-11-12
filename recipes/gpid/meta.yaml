@@ -1,5 +1,5 @@
 {% set name = "gpid" %}
-{% set version = "1.1.2" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,8 @@ package:
 
 source:
   url: https://github.com/BenKuhnhaeuser/GPID/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 534cd0a7bd135eee34db1cd91282eabffda53e596186e8f05e4917dbfe66429f
+  sha256: f054c8fd6ae83c2d7bd0301b685e337deb4e7187b7f5e7488c5719b4322c6bf6
+
 build:
   number: 0
   noarch: generic
@@ -15,31 +16,57 @@ build:
     - {{ pin_subpackage("gpid", max_pin="x.x") }}
 
 requirements:
-  host:
-    - bash
+  build:
+    - bash >=4.3
+    - coreutils
   run:
-    - bash >=4
-    - blast
+    - bash >=4.3
+    - blast >=2.16.0
     - coreutils
     - gawk
     - grep
     - sed
-    - r-base
-    - r-dplyr
-    - r-ggplot2
+    - r-base >=4.3
+    - r-dplyr >=1.1.0
+    - r-ggplot2 >=3.4.0
     - r-ggpubr
     - r-ggtext
     - r-stringr
     - r-svglite
-    - r-tidyr
+    - r-tidyr >=1.0.0
     - r-withr
 
 test:
   commands:
     - gpid help
     - gpid reference -h
+    - gpid identify -h
+    - gpid calibrate -h
+    - gpid calibrate prepare -h
+    - gpid calibrate alignments -h
+    - gpid calibrate genes -h
+    - gpid calibrate parliament -h
+    - gpid calibrate combine -h
+    - gpid confidence -h
+    - gpid confidence prepare -h
+    - gpid confidence estimate -h
+    - gpid confidence bins -h
     - test -f "${PREFIX}/share/gpid/VERSION"
+    - test "$(cat "${PREFIX}/share/gpid/VERSION")" = "{{ version }}"
+    - 'gpid help | grep -F "GPID version: {{ version }}"'
+    - test -f "${PREFIX}/share/gpid/CHANGELOG.md"
+    - test -f "${PREFIX}/share/gpid/scripts/confidence.sh"
     - test -f "${PREFIX}/share/gpid/scripts/parliament.R"
+    - test -f "${PREFIX}/share/gpid/scripts/gene_performance.awk"
+    - test -f "${PREFIX}/share/gpid/scripts/filtering_thresholds.awk"
+    - test -f "${PREFIX}/share/gpid/scripts/gene_performance.R"
+    - test -f "${PREFIX}/share/gpid/scripts/species_groups.R"
+    - test -f "${PREFIX}/share/gpid/scripts/calibration_parameters.R"
+    - test -f "${PREFIX}/share/gpid/scripts/calibration_plots.R"
+    - test -f "${PREFIX}/share/gpid/scripts/calibration_combine.R"
+    - test -f "${PREFIX}/share/gpid/scripts/confidence_helpers.R"
+    - blastn -version
+    - makeblastdb -version
     - Rscript -e "packages <- c('dplyr', 'tidyr', 'ggplot2', 'ggpubr', 'ggtext', 'stringr', 'svglite', 'withr'); missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]; stopifnot(length(missing) == 0)"
 
 about:
@@ -49,9 +76,12 @@ about:
   summary: GeneParliamentID pipeline for multi-gene species identification 
   description: |
     GPID prepares BLAST reference databases, calibrates alignment and gene
-    performance thresholds, validates confidence support, and identifies
-    samples from multiple single-sequence-per-gene FASTA files.
+    performance thresholds, estimates confidence of identification, and 
+    identifies samples from multiple single-sequence-per-gene FASTA files.
 
 extra:
+  notes: |
+    The gpid launcher runs the workflows installed under share/gpid.
+    The runtime VERSION file is generated from the recipe's package version.
   recipe-maintainers:
     - BenKuhnhaeuser

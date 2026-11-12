@@ -1,44 +1,48 @@
 {% set name = "NRPyS" %}
-{% set version = "0.1.1" %}
-{% set sha256 = "77d2104ab276bf92fae59b64827047353a71f1a79b09f7d0fdc7370eb088bb7f" %}
+{% set version = "0.1.2" %}
+{% set sha256 = "9da893e7f727824f88ffd6b4e20bc5f2df31e6ed3e2b202935a42b297362814d" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  number: 5
-  run_exports:
-    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
-
 source:
   url: https://github.com/kblin/nrpys/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - cargo.patch
-    - pyproject.patch
+
+build:
+  number: 0
+  skip: True  # [py < 311]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
+    - cargo-bundle-licenses
   host:
-    - python <3.12
+    - python
     - pip
     - maturin
     - zlib
   run:
-    - python <3.12
+    - python
+
 test:
   imports:
     - nrpys
 
 about:
   home: "https://github.com/kblin/nrpys"
-  license: AGPL-3.0-or-later
-  license_file: LICENSE.txt
+  license: "AGPL-3.0-or-later"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
   summary: "Python language bindings for nrps-rs substrate specificity predictor."
+  dev_url: "https://github.com/kblin/nrpys"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
