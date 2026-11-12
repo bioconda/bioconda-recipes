@@ -1,14 +1,41 @@
-#!/bin/sh
+#!/bin/bash
+set -xe
 
-set -xe 
+# The upstream makefiles hardcode g++ and miss <cstdint> (fails on modern GCC).
+grep -rl 'g++' src/irfinder/Release | xargs sed -i.bak "s#g++#${CXX} ${CXXFLAGS} -include cstdint ${LDFLAGS}#g"
+find src/irfinder -name '*.bak' -delete
 
-cd $SRC_DIR/src/irfinder && make -j ${CPU_COUNT} && mv irfinder $SRC_DIR/bin/util
-cd $SRC_DIR/src/trim && make -j ${CPU_COUNT} && mv trim $SRC_DIR/bin/util
-cd $SRC_DIR/src/winflat && make -j ${CPU_COUNT} && mv winflat $SRC_DIR/bin/util
+# Remove the prebuilt binaries / unused model shipped in the repository
+rm -f bin/util/irfinder bin/util/irfinder_cnn bin/util/trim bin/util/winflat
+rm -f bin/util/model/best_model.h5
 
-irfinder_home=$PREFIX/opt/irfinder-$PKG_VERSION
-mkdir -p $irfinder_home
-cp -r $SRC_DIR/* $irfinder_home
+(cd src/irfinder/Release && make -j"${CPU_COUNT}" && cp irfinder "${SRC_DIR}/bin/util/")
+(cd src/trim && make -j"${CPU_COUNT}" trim CC="${CXX}" LDFLAGS="${LDFLAGS}" && cp trim "${SRC_DIR}/bin/util/")
+(cd src/winflat && make winflat CC="${CC}" && cp winflat "${SRC_DIR}/bin/util/")
 
-mkdir -p $PREFIX/bin
-ln -s $irfinder_home/bin/IRFinder $PREFIX/bin/IRFinder
+# CNN validator: upstream ships a prebuilt binary; install the python sources instead.
+# tflite_runtime is not packaged on conda-forge, so fall back to tensorflow.lite.
+CNN_SRC=src/cnnfilter/testCNN
+sed -i.bak 's/^import tflite_runtime.interpreter as tflite$/try:\n    import tflite_runtime.interpreter as tflite\nexcept ImportError:\n    from tensorflow import lite as tflite/' ${CNN_SRC}/actions/models.py
+rm -f ${CNN_SRC}/actions/models.py.bak
+grep -q "from tensorflow import lite" ${CNN_SRC}/actions/models.py
+
+irfinder_home="${PREFIX}/opt/irfinder-${PKG_VERSION}"
+mkdir -p "${irfinder_home}/bin" "${PREFIX}/bin"
+cp -r bin/. "${irfinder_home}/bin/"
+cp -r REF "${irfinder_home}/"
+mkdir -p "${irfinder_home}/bin/util/cnn"
+cp -r ${CNN_SRC}/. "${irfinder_home}/bin/util/cnn/"
+rm -rf "${irfinder_home}/bin/util/cnn/model"
+
+# irfinder_cnn is called by IRFinderBAM as ${LIBEXEC}/irfinder_cnn
+cat > "${irfinder_home}/bin/util/irfinder_cnn" <<'WRAP'
+#!/bin/bash
+DIR=$(dirname "$(readlink -nf "${BASH_SOURCE[0]}")")/cnn
+exec python "${DIR}/irfinder_cnn.py" "$@"
+WRAP
+chmod -R a+rx "${irfinder_home}/bin"
+
+# Expose the entry points
+ln -s "${irfinder_home}/bin/IRFinder" "${PREFIX}/bin/IRFinder"
+ln -s "${irfinder_home}/bin/util/cnn/irfinder_cnn.py" "${PREFIX}/bin/irfinder_cnn.py"
