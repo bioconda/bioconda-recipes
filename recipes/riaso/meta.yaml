@@ -1,0 +1,73 @@
+{% set name = "riaso" %}
+{% set version = "0.1.0" %}
+{% set repository = "OpenGene/riaso" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ repository }}/archive/refs/tags/v{{ version }}.zip
+  sha256: eab778d277722e4f9e445661fc77eb31308658b08cd7ce00e840c800d801a5b9
+
+build:
+  run_exports:
+    - {{ pin_subpackage('riaso', max_pin="x.x") }}
+  script_env:
+    - http_proxy
+    - https_proxy
+    - CARGO_HTTP_PROXY
+    - CARGO_HOME
+  number: 0
+  skip: true  # [not linux or not x86_64]
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - sysroot_linux-64 =2.17
+    - {{ compiler('rust') }}
+    - pkg-config
+    - binutils
+    - python >=3.11
+  host:
+    - hdf5 =1.14.6
+    - libcurl =8.13.0
+    - arpack
+    - fontconfig
+    - freetype
+    - expat
+    - font-ttf-dejavu
+    - patchelf
+
+test:
+  commands:
+    - riaso --version | grep -F "{{ version }}"
+    - riaso --HELP > help.txt
+    - grep -F -- "--input" help.txt
+    - test -x "${PREFIX}/share/riaso/bin/riaso"
+    - test -f "${PREFIX}/share/riaso/etc/fonts/fonts.conf"
+    - test -n "$(find "${PREFIX}/share/riaso/fonts" -name '*.ttf' -print -quit)"
+    - env -i "${PREFIX}/bin/riaso" --version
+
+about:
+  home: https://github.com/{{ repository }}
+  dev_url: https://github.com/{{ repository }}
+  license: MIT
+  license_file: LICENSE
+  summary: Rapid and intelligent analysis of spatial omics data
+  description: |
+    RIASO is a Rust command-line pipeline for spatial transcriptomics data
+    in GEF, GEM and h5ad formats, with preprocessing, clustering, annotation,
+    enrichment analysis and HTML reports. This recipe builds only RIASO/riaso
+    from source and installs its complete self-contained distribution,
+    including shared libraries, fonts and fontconfig configuration.
+
+extra:
+  notes: |
+    bin/riaso invokes the upstream launcher under share/riaso. The launcher
+    sets FONTCONFIG_FILE to the bundled configuration so plots use the
+    bundled fonts without requiring an activated environment.

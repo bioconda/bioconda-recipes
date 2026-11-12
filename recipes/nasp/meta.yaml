@@ -7,27 +7,55 @@ package:
 source:
   url: https://github.com/TGenNorth/NASP/archive/v{{ version }}.tar.gz
   sha256: e089485a1ff11b4fa43fe5876251959fecd8cba42baa159675b7e573b25a9a30
+  patches:
+    - python-compat.patch
+    - current-bcftools.patch
+    - samtools13-sort.patch
+    - vcf-export.patch
 
 build:
-  skip: True  # [py<30 or not linux]
-  number: 2
+  skip: True  # [py<311 or not linux64]
+  number: 4
+  run_exports:
+    - {{ pin_subpackage("nasp", max_pin="x") }}
+  ignore_run_exports_from:
+    - picard
+    - varscan
+    - trimmomatic
 
 requirements:
   build:
-    - {{ compiler('go') }}
+    - {{ compiler('go-nocgo') }}
+    - {{ stdlib('c') }}
   host:
     - python
     - pip
+    - setuptools
+    - wheel
+    - gatk 3.8 hdfd78af_12
+    - picard <3
+    - varscan
+    - trimmomatic
   run:
     - python
-    - samtools <1.3
+    - biopython
+    - samtools ==1.3.1
+    - bcftools
+    - openjdk >=8,<9
     - trimmomatic
+    - gatk 3.8 hdfd78af_12
+    - picard <3
+    - varscan
+    - bwa
+    - bowtie2
+    - snap-aligner
     - mummer
 
 test:
   commands:
     - nasp --help
     - nasp matrix --help
+    - samtools --version
 
 about:
   home: 'https://github.com/TGenNorth/nasp'

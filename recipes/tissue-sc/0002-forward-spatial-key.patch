@@ -1,0 +1,50 @@
+--- a/tissue/main.py	2026-10-28 14:18:29.825634930 +0100
++++ b/tissue/main.py	2026-10-28 14:18:39.635008034 +0100
+@@ -185,12 +185,12 @@
+     '''
+     # delaunay graph
+     if method == "delaunay": # triangulation only
+-        sq.gr.spatial_neighbors(adata, delaunay=True, coord_type="generic", set_diag=set_diag)
++        sq.gr.spatial_neighbors(adata, delaunay=True, spatial_key=spatial, coord_type="generic", set_diag=set_diag)
+     
+     # neighborhoods determined by fixed radius
+     elif method == "radius":
+         if radius is None: # compute 90th percentile of delaunay triangulation as default radius
+-            sq.gr.spatial_neighbors(adata, delaunay=True, coord_type="generic")
++            sq.gr.spatial_neighbors(adata, delaunay=True, spatial_key=spatial, coord_type="generic")
+             if isinstance(adata.obsp["spatial_distances"],np.ndarray): # numpy array
+                 dists = adata.obsp['spatial_distances'][np.nonzero(adata.obsp['spatial_distances'])] # get nonzero array
+             else: # sparse matrix
+@@ -198,12 +198,12 @@
+                 dists = adata.obsp['spatial_distances'].data # get non-zero values in sparse matrix
+             radius = np.percentile(dists, 75) + 1.5*(np.percentile(dists, 75) - np.percentile(dists, 25))
+         # build graph
+-        sq.gr.spatial_neighbors(adata, radius=radius, coord_type="generic", set_diag=set_diag)
++        sq.gr.spatial_neighbors(adata, radius=radius, spatial_key=spatial, coord_type="generic", set_diag=set_diag)
+     
+     # delaunay graph with removal of outlier edges with distance > radius
+     elif method == "delaunay_radius":
+         # build initial graph
+-        sq.gr.spatial_neighbors(adata, delaunay=True, coord_type="generic", set_diag=set_diag)
++        sq.gr.spatial_neighbors(adata, delaunay=True, spatial_key=spatial, coord_type="generic", set_diag=set_diag)
+         if radius is None: # compute default radius as 75th percentile + 1.5*IQR
+             if isinstance(adata.obsp["spatial_distances"],np.ndarray): # numpy array
+                 dists = adata.obsp['spatial_distances'][np.nonzero(adata.obsp['spatial_distances'])] # get nonzero array
+@@ -218,7 +218,7 @@
+     # fixed neighborhood size with removal of outlier edges with distance > radius
+     elif method == "fixed_radius":
+         # build initial graph
+-        sq.gr.spatial_neighbors(adata, n_neighs=n_neighbors, coord_type="generic", set_diag=set_diag)
++        sq.gr.spatial_neighbors(adata, n_neighs=n_neighbors, spatial_key=spatial, coord_type="generic", set_diag=set_diag)
+         if radius is None: # compute default radius as 75th percentile + 1.5*IQR
+             if isinstance(adata.obsp["spatial_distances"],np.ndarray): # numpy array
+                 dists = adata.obsp['spatial_distances'][np.nonzero(adata.obsp['spatial_distances'])] # get nonzero array
+@@ -232,7 +232,7 @@
+             
+     # fixed neighborhood size
+     elif method == "fixed":
+-        sq.gr.spatial_neighbors(adata, n_neighs=n_neighbors, coord_type="generic", set_diag=set_diag)
++        sq.gr.spatial_neighbors(adata, n_neighs=n_neighbors, spatial_key=spatial, coord_type="generic", set_diag=set_diag)
+             
+     else:
+         raise Exception ("method not recognized")

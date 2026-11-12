@@ -1,19 +1,19 @@
 #!/bin/bash
 set -ex
 
-mkdir -p $PREFIX/bin
+mkdir -p "$PREFIX/bin"
 
 export CXXFLAGS="${CXXFLAGS} -O3 -Wno-macro-redefined"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 
-if [[ $(uname) == "Linux" ]]; then
+if [[ $(uname -s) == "Linux" ]]; then
   export CONFIG_ARGS="-DFEATURE_egl=ON -DFEATURE_eglfs=ON"
 else
   export CONFIG_ARGS="-DCMAKE_FIND_FRAMEWORK=NEVER -DCMAKE_FIND_APPBUNDLE=NEVER"
 fi
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+cmake -S . -B build ${CMAKE_ARGS} -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_PREFIX_PATH="${PREFIX}" -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
   -DCMAKE_CXX_FLAGS="${CXXFLAGS} -D__STDC_FORMAT_MACROS" \
   -DEGL_INCLUDE_DIR:PATH="${BUILD_PREFIX}/${HOST}/sysroot/usr/include" \
@@ -26,6 +26,6 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   "${CONFIG_ARGS}"
 cmake --build build --target install -j "${CPU_COUNT}"
 
-if [[ $(uname) == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
   ln -sf $PREFIX/bin/BandageNG.app/Contents/MacOS/BandageNG $PREFIX/bin/BandageNG
 fi
