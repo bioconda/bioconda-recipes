@@ -43,10 +43,13 @@ requirements:
     - cmake
     # Upstream CMake auto-detects ccache as a compiler launcher. The C++ TUs
     # are identical across the 4 python variant builds, so variants 2-4 are
-    # served ~entirely from cache. On macOS, ccache's xcodebuild SDK probe
-    # needs DEVELOPER_DIR — build.sh exports it (revert to `[linux]` if the
-    # "not an absolute path: UNKNOWN" error returns).
-    - ccache
+    # served ~entirely from cache. macOS is excluded: ccache aborts there at
+    # the first TU with `not an absolute path: "UNKNOWN"` — the bad value
+    # reaches ccache's path-verified config through some conf/env source on
+    # the bioconda image that could not be identified or reproduced
+    # (ccache 4.x does not probe xcodebuild/xcrun). The compile is only
+    # ~10min/variant, so mac just builds uncached.
+    - ccache  # [linux]
     - {{ compiler("cxx") }}
     - {{ stdlib("c") }}
   host:
