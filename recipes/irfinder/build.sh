@@ -4,6 +4,10 @@ set -xe
 # The upstream makefiles hardcode g++ and miss <cstdint> (fails on modern GCC).
 grep -rl 'g++' src/irfinder/Release | xargs sed -i.bak "s#g++#${CXX} ${CXXFLAGS} -include cstdint ${LDFLAGS}#g"
 find src/irfinder -name '*.bak' -delete
+# 'ulong' is a glibc-only typedef (missing on macOS): provide it via a force-included header.
+echo 'typedef unsigned long ulong;' > "${SRC_DIR}/ulong_compat.h"
+sed -i.bak "s#-include cstdint#-include cstdint -include ${SRC_DIR}/ulong_compat.h#" src/irfinder/Release/src/*/subdir.mk src/irfinder/Release/src/subdir.mk
+find src/irfinder -name '*.bak' -delete
 
 # Remove the prebuilt binaries / unused model shipped in the repository
 rm -f bin/util/irfinder bin/util/irfinder_cnn bin/util/trim bin/util/winflat
