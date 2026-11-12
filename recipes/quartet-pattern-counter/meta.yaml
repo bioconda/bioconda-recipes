@@ -1,0 +1,68 @@
+{% set name = "quartet-pattern-counter" %}
+{% set version = "1.8.0" %}
+{% set sha256 = "070662e3ab0d32e3ed03df69c3cdb777f3057f6ceb1e2ee5a2fd3588a2913e30" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cmayer/QuartetPatternCounter/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+    - pybind11
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - QuartetPatternCounterModule
+  requires:
+    - pip
+  commands:
+    - pip check
+    - python -c "import QuartetPatternCounterModule as Q; assert Q.__version__ == '{{ version }}', Q.__version__; assert Q.AA_PATTERN_ORDER == 'ACDEFGHIKLMNPQRSTVWY'; assert Q.DNA_PATTERN_ORDER == 'ACGT'"
+    # Sites of the quartet: AAAA, CCCC, GGGG, TTTT, AAGG; each has the frequency 1/5.
+    - printf '>s1\nACGTA\n>s2\nACGTA\n>s3\nACGTG\n>s4\nACGTG\n' > test.fas
+    - python -c "import numpy as np, QuartetPatternCounterModule as Q; c = Q.QuartetPatternCounter('test.fas', 'D', 2, 0); f = np.empty((4, 256), np.float32); l = np.empty(4, np.uint32); n = c.next_quartet_pattern_frequencies_with_lengths(f, l); assert n == 1 and l[0] == 5, (n, l[0]); assert np.allclose(f[0, [0, 85, 170, 255, 10]], 0.2) and np.isclose(f[0].sum(), 1.0)"
+
+about:
+  home: https://github.com/cmayer/QuartetPatternCounter
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: License.txt
+  summary: Site pattern frequencies of all quartets of sequences in a multiple sequence alignment.
+  description: |
+    The Quartet Pattern Counter (QPC) computes the site pattern frequencies of
+    quartets of sequences in a multiple sequence alignment: for every combination
+    of four sequences, the relative frequencies of all 256 (DNA) or 160000 (protein)
+    site patterns. It is a C++17 library with Python bindings (import name
+    QuartetPatternCounterModule). Results are computed in batches into numpy arrays,
+    with multithreaded counting, optional effective lengths, four cluster quartet
+    combinations and random skipping of quartet combinations.
+  dev_url: https://github.com/cmayer/QuartetPatternCounter
+  doc_url: https://github.com/cmayer/QuartetPatternCounter#readme
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - gkanogiannis
+    - KulyaNikita
+    - cmayer
