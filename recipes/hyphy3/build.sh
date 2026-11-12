@@ -11,7 +11,13 @@ cmake -S . -B build -G Ninja \
     -DFETCHCONTENT_SOURCE_DIR_EIGEN3="${SRC_DIR}/eigen-src" \
     -DPython3_EXECUTABLE="${PYTHON}"
 
-ninja -C build -j"${CPU_COUNT}"
+# Several TUs (emitters, Eigen-heavy analyses, the PCH) peak at ~3G each.
+# Bioconda's Linux CI hosts report only ~8.5G free and the build container has
+# no memory cap, so -j4 (~11.4G peak, measured on Kaggle) gets OOM-killed and
+# the job just "stops responding". Keep -j2 to stay under ~6G; the compile is
+# only ~10min/variant so this costs little.
+JOBS=$(( CPU_COUNT < 2 ? CPU_COUNT : 2 ))
+ninja -C build -j"${JOBS}"
 
 # Upstream install() puts all CLI binaries in bin/ and the _hyphy3 module
 # in lib/ (SKBUILD branch puts it at the wheel root instead; not our case).
