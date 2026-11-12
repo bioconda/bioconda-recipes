@@ -7,6 +7,16 @@ set -ex
 # flags are set (documented requirement for -include pch headers).
 export CCACHE_SLOPPINESS="pch_defines,time_macros"
 
+# On macOS ccache canonicalizes -isysroot by asking xcodebuild for the SDK
+# path (`xcodebuild -version -sdk <name> Path`). Inside the conda-build
+# environment the active developer dir doesn't contain the SDK, so the lookup
+# prints "UNKNOWN" and ccache aborts with "not an absolute path". Point
+# xcodebuild at the Xcode that actually holds CONDA_BUILD_SYSROOT:
+# .../Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/<sdk>.sdk
+if [[ "${target_platform}" == osx-* && "${CONDA_BUILD_SYSROOT:-}" == */Platforms/* ]]; then
+    export DEVELOPER_DIR="${CONDA_BUILD_SYSROOT%%/Platforms/*}"
+fi
+
 cmake -S . -B build -G Ninja \
     ${CMAKE_ARGS} \
     -DCMAKE_BUILD_TYPE=Release \
