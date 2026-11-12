@@ -1,0 +1,79 @@
+{% set name = "gtdb-gplace" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/gtdb_gplace-{{ version }}.tar.gz
+    sha256: 4273054e112ffeb65732c5096d66b15ff21d3375c0e1bb6bacbe8021cf1beeb9
+  # GSL 1.16 is compiled into the engine by gPlace's setup.py, with the flags its bit-identity with
+  # pplacer depends on. setup.py takes the original tarball (GPLACE_GSL_TARBALL, SHA-256 checked),
+  # so it is kept packed: conda-build does not unpack a file whose name does not end in .tar.gz.
+  - url:
+      - https://ftp.gnu.org/gnu/gsl/gsl-1.16.tar.gz
+      - https://mirrors.kernel.org/gnu/gsl/gsl-1.16.tar.gz
+    sha256: 73bc2f51b90d2a780e6d266d43e487b3dbd78945dd0b04b14ca5980fe28d2f53
+    fn: gsl-1.16.tar.gz.packed
+    folder: gsl
+
+build:
+  number: 0
+  skip: True  # [py < 312]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - python
+    - pip
+    - setuptools >=61
+    - wheel
+  run:
+    - python
+    - numpy >=1.26
+    - tqdm >=4.67,<5
+
+test:
+  imports:
+    - gplace
+  requires:
+    - pip
+  commands:
+    - pip check
+    - gplace -h
+    # the compiled engine reproduces pplacer v1.1.alpha19's arithmetic bit for bit
+    - gplace check_install
+    # places the 20 bundled genomes and compares every value with pplacer's
+    - gplace test --cpus 2
+
+about:
+  home: https://github.com/cmc-aau/gPlace
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - gplace/engine/csrc/core-math/LICENSE
+  summary: "Exact, memory-bounded replacement for pplacer: the same phylogenetic placements with a fraction of the memory and time."
+  description: |
+    gPlace places aligned sequences on a fixed reference tree and gives exactly pplacer's results
+    (v1.1.alpha19), bit for bit, using a fraction of its memory and time. It takes pplacer's command
+    line: replace `pplacer` with `gplace place`.
+  doc_url: https://cmc-aau.github.io/gPlace/
+  dev_url: https://github.com/cmc-aau/gPlace
+
+extra:
+  recipe-maintainers:
+    - pchaumeil
+    - donovan-h-parks
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    # the GSL tarball must stay packed (see source above)
+    - should_not_use_fn

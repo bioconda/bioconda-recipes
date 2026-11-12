@@ -1,0 +1,71 @@
+{% set name = "profit" %}
+{% set version = "2.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ShiheZhang/ProFIT/releases/download/v{{ version }}/profit-{{ version }}.tar.gz
+  sha256: 6743ff18292f0d66a3bacbfcfe910ad6d79e11108e663708548dbd423770a167
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - pandas
+    - numpy
+    - biopython
+    - pyarrow
+    - requests
+    - tqdm
+    - genomad
+    - checkv
+    - skani
+    - curl
+
+test:
+  imports:
+    - profit
+    - profit.cli
+    - profit.database
+    - profit.modules.prophage_prediction
+    - profit.modules.votu_determination
+    - profit.modules.similarity_report
+  commands:
+    - profit --version
+    - profit list-species
+    - profit run --help
+    - profit download-database --help
+    - profit validate-database --help
+    - profit type --help
+
+about:
+  home: https://github.com/ShiheZhang/ProFIT
+  summary: "Prophage fingerprint-based bacterial identification and sequence typing"
+  description: |
+    ProFIT identifies and types bacterial isolates using prophage fingerprints.
+    It detects prophages with geNomad and CheckV, maps detected sequences to
+    species-specific vOTUs with skani, and assigns sequence types using Jaccard
+    nearest-neighbor matching. Version 2.0.0 supports five species, with
+    reference databases hosted separately on Zenodo.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://github.com/ShiheZhang/ProFIT#readme
+  dev_url: https://github.com/ShiheZhang/ProFIT
+
+extra:
+  recipe-maintainers:
+    - ShiheZhang
