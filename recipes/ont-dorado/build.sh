@@ -6,6 +6,17 @@ TORCH_LIB=$(echo "${SRC_DIR}"/download/torch-*/libtorch/lib)
 
 if [[ "${target_platform}" == osx-* ]]; then
     TORCH_LIBS="libtorch.dylib libtorch_cpu.dylib libtorch_global_deps.dylib libc10.dylib"
+
+    # Bioconda's CI sysroot is the MacOSX 11.3 SDK, but dorado needs the
+    # macOS 14 SDK (Metal/MPS, and IOKit headers that use
+    # __kernel_ptr_semantics from the newer sys/cdefs.h). find_library() also
+    # picks Xcode's frameworks, so mixing the two SDKs breaks the build. Use
+    # Xcode's SDK for everything; `xcrun metal` needs Xcode anyway.
+    XCODE_SDK=$(env -u SDKROOT xcrun --sdk macosx --show-sdk-path)
+    echo "Using macOS SDK: ${XCODE_SDK}"
+    export CONDA_BUILD_SYSROOT="${XCODE_SDK}"
+    export SDKROOT="${XCODE_SDK}"
+    CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_OSX_SYSROOT=${XCODE_SDK}"
 else
     TORCH_LIBS="libtorch.so libtorch_cpu.so libtorch_cuda.so libtorch_global_deps.so
                 libc10.so libc10_cuda.so libcaffe2_nvrtc.so"
