@@ -10,7 +10,12 @@ source:
   sha256: 8be464163a939c1a01e9d0399e72af63c0b583397945596b6d6b1c332d61c3a0
 
 build:
-  number: 0
+  # 1: version 0.1.1 build 0 was published from the autobump bot's version-only recipe
+  # (bioconda-recipes#71066), which kept 0.1.0's run dependencies, the unpinned mafft and the
+  # `logan-walker >=0.1.0` floor. Build 1 carries those fixes, and the rebuild is also what
+  # replaces the `0.1.1--pyhdfd78af_0` image, which bundles logan-walker 0.1.0 because the
+  # build-time solve ran 27 seconds after walker 0.1.1 was uploaded and saw a stale repodata.
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
@@ -25,18 +30,31 @@ requirements:
     - setuptools >=68
   run:
     - python >=3.11
+    # The only modules the package imports: biopython in cmd/msa.py, requests in
+    # cmd/harvest.py. zstandard, numpy and pandas were listed here through 0.1.0 and are
+    # imported nowhere; numpy and pandas belong to the repo's benchmark scripts, which are
+    # not shipped.
     - biopython
     - requests
-    - zstandard
-    - numpy
-    - pandas
-    # Binaries the subcommands shell out to.
-    - logan-walker >=0.1.0,<0.2
+    # Binaries the subcommands shell out to. The walker floor is 0.1.1 because the fixes
+    # that version makes to the walk (the prune coverage rule's tolerance, the rewritten
+    # under-determined guard) are what the 0.1.1 pipeline is validated against. The sieve is
+    # still 0.1.0: only its build changed.
+    - logan-walker >=0.1.1,<0.2
     - kmer-diversity-sieve >=0.1.0,<0.2
-    - mafft
+    # cmd/msa.py runs `mafft --keeplength --addfragments`; 7.526 is the pinned version in
+    # the repo's environment.yml and the one every published result was produced with.
+    - mafft >=7.526
     - fasttree
 
 test:
+  # Staged into the ephemeral test directory only, not installed into the package. Both files
+  # are in the v{{ version }} tag tarball this recipe builds from, and are used by run_test.sh.
+  # They cannot be used from `commands` below: that list is reused verbatim for the mulled
+  # container test, where no source tree exists.
+  source_files:
+    - tests/fixture_query.fasta
+    - tests/fixture_reconstructed.fasta
   imports:
     - disassembler
     - disassembler.cli
@@ -46,6 +64,8 @@ test:
     # The walker and sieve subcommands resolve their binaries from PATH.
     - disassembler walker --version | grep -q "logan-walker"
     - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
+    # The MAFFT smoke test is in run_test.sh, not here: these commands also run inside the
+    # mulled container, which has no source tree to read the fixtures from.
 
 about:
   home: https://github.com/nekrut/disassembler
@@ -65,5 +85,9 @@ about:
   dev_url: https://github.com/nekrut/disassembler
 
 extra:
+  # The bot's version-only PR merged ahead of the maintainer PR for 0.1.1 and published a
+  # recipe without any of the fixes above. Version bumps here are done by hand.
+  autobump:
+    enable: False
   recipe-maintainers:
     - as042

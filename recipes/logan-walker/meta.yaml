@@ -11,9 +11,16 @@ source:
   sha256: 8774df0d6e010715958775ea2b89ae0327be2ce34e6ec5e3ea5b72c1762ccf21
 
 build:
-  number: 0
-  # macOS is skipped until bioconda/bioconda-recipes#70401 is fixed: CI currently builds
-  # against the 10.9 SDK, and Rust's standard library needs macOS 10.12+ symbols.
+  # 1: version 0.1.1 build 0 was published from the autobump bot's version-only recipe
+  # (bioconda-recipes#71067). The source is unchanged; this build exists to carry the
+  # corrected platform comment below and to turn the bot off.
+  number: 1
+  # linux-64 only, and not for the CI reason the 0.1.0 recipe gave. GraphAligner 1.0.17b has
+  # no osx-arm64 build at all, and both of its osx-64 builds (h66d0458_0, h8d12793_2) require
+  # protobuf 3.14.0, which conda-forge ships for osx-64 only up to Python 3.9 while
+  # disassembler needs >= 3.11. An osx-64 logan-walker would pass its own CI (it pulls 3.9 on
+  # its own) and leave `disassembler` unsatisfiable on macOS. Linux solves only because of the
+  # protobuf-free build hdcf5f25_1. macOS returns when an equivalent osx-64 build exists.
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -51,5 +58,9 @@ about:
   dev_url: https://github.com/nekrut/disassembler
 
 extra:
+  # See the disassembler recipe: the bot's version-only PR for 0.1.1 merged ahead of the
+  # maintainer PR. Version bumps here are done by hand.
+  autobump:
+    enable: False
   recipe-maintainers:
     - as042
