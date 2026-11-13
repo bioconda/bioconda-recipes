@@ -1,5 +1,8 @@
-# ONT's prebuilt libtorch requires GLIBC_2.27 (objdump -T libtorch_cpu.so),
-# which the default 2.17 sysroot cannot link against. 2.28 is the next
-# sysroot_linux-64 available on conda-forge.
+# ONT's prebuilt libtorch requires GLIBC_2.27 on x86_64 and GLIBC_2.35 on
+# aarch64 (objdump -T libtorch_cpu.so). The default 2.17 sysroot cannot link
+# against either. conda-forge has no 2.35 sysroot, so aarch64 uses 2.34 and
+# build.sh lets the linker skip the two 2.35 symbols (hypot, hypotf); meta.yaml
+# adds the matching __glibc >=2.35 run requirement.
 c_stdlib_version:  # [linux]
-  - "2.28"         # [linux]
+  - "2.28"         # [linux64]
+  - "2.34"         # [aarch64]

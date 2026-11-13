@@ -1,9 +1,24 @@
 {% set name = "ont-dorado" %}
 {% set version = "2.1.2" %}
-{% set torch = "torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi" %}
-{% set koi = "libkoi-0.7.5-Linux-x86_64-cuda-12.8" %}
 {% set pod5 = "0.3.39" %}
 {% set fa = "flashattention-fa4-v4.0.0.beta10-1-cu12.8-Linux-x86_64" %}
+{% if aarch64 %}
+# ONT only ships CUDA 12.6 builds of libtorch and koi for aarch64; dorado's
+# CMake picks them when building with any CUDA 12.x toolkit.
+{% set torch = "torch-2.9.0.0-ont-CUDA-12.6-linux-aarch64" %}
+{% set torch_sha256 = "431804fc5993b9fef0f2f8b8b1f97c70775409252186c50704a691257d80987f" %}
+{% set koi = "libkoi-0.7.5-Linux-aarch64-cuda-12.6" %}
+{% set koi_sha256 = "bc3ddab1b0f76f43c357666538f8348209dbd4cf67d9dd9912b1e0a7002d0bf8" %}
+{% set pod5_arch = "linux-arm64" %}
+{% set pod5_sha256 = "04902f353a9a8d642ba6d58b1c063e002dfd481c35f47e7f189035bb9ecc9baa" %}
+{% else %}
+{% set torch = "torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi" %}
+{% set torch_sha256 = "ed09249f48bc3e20130307e86a729e8bc8a97aed794c149b60efcae172654a9d" %}
+{% set koi = "libkoi-0.7.5-Linux-x86_64-cuda-12.8" %}
+{% set koi_sha256 = "bfb3bea6f1bb7f7e6e602d4899db14f422a46519ce69e2d1b645050eba307aad" %}
+{% set pod5_arch = "linux-x64" %}
+{% set pod5_sha256 = "7fcf1d9f1da6f1bd13167782e900462fbadb0db57c666911bdba9bbdfd4e7e06" %}
+{% endif %}
 
 package:
   name: {{ name }}
@@ -22,21 +37,22 @@ source:
   # looks for them so the build runs offline. Hashes match those pinned in
   # dorado's cmake/*.cmake at v{{ version }}.
   - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ torch }}.zip
-    sha256: ed09249f48bc3e20130307e86a729e8bc8a97aed794c149b60efcae172654a9d
+    sha256: {{ torch_sha256 }}
     folder: download/{{ torch }}/libtorch
   - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ koi }}.tar.gz
-    sha256: bfb3bea6f1bb7f7e6e602d4899db14f422a46519ce69e2d1b645050eba307aad
+    sha256: {{ koi_sha256 }}
     folder: download/{{ koi }}/{{ koi }}
-  - url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ pod5 }}/lib_pod5-{{ pod5 }}-linux-x64.tar.gz
-    sha256: 7fcf1d9f1da6f1bd13167782e900462fbadb0db57c666911bdba9bbdfd4e7e06
+  - url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ pod5 }}/lib_pod5-{{ pod5 }}-{{ pod5_arch }}.tar.gz
+    sha256: {{ pod5_sha256 }}
     folder: download/pod5-{{ pod5 }}-Linux
-  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ fa }}.zip
-    sha256: 92f36783e1cf6f968ea7d1201237566844d4a1da650f697e24b2aab4813c95e6
-    folder: download/{{ fa }}
+  # FlashAttention has no CUDA 12 aarch64 build; dorado builds without it.
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ fa }}.zip  # [x86_64]
+    sha256: 92f36783e1cf6f968ea7d1201237566844d4a1da650f697e24b2aab4813c95e6  # [x86_64]
+    folder: download/{{ fa }}  # [x86_64]
 
 build:
   number: 0
-  skip: true  # [not linux64]
+  skip: true  # [not linux]
   # ONT's libtorch is large; skip conda-build's binary prefix scan of it.
   binary_relocation:
     - bin/dorado
@@ -71,7 +87,7 @@ requirements:
     - openssl
     - zlib
   run:
-    # ONT's libtorch is built for CUDA 12.8; any 12.x runtime >= 12.8 works.
+    # dorado is built with CUDA 12.8; any 12.x runtime >= 12.8 works.
     - cuda-version >=12.8,<13
     - cuda-cudart
     - cuda-nvrtc
@@ -79,9 +95,16 @@ requirements:
     - libcufft
     - libcusolver
     - libcusparse
-    # Linked by ONT's libtorch_cuda.so, which ships cuDNN 9.8 and cuSPARSELt 0.7.
-    - cudnn >=9.8,<10
-    - cusparselt >=0.7.1,<0.8
+    # Linked by ONT's libtorch_cuda.so, which ships cuDNN 9.8 and cuSPARSELt 0.7
+    # on x86_64, and cuDNN 9.14 (no cuSPARSELt) on aarch64.
+    - cudnn >=9.8,<10  # [x86_64]
+    - cusparselt >=0.7.1,<0.8  # [x86_64]
+    - cudnn >=9.14,<10  # [aarch64]
+    # ONT's aarch64 libtorch_cpu.so links libgomp instead of libiomp5.
+    - libgomp  # [aarch64]
+    # ONT's aarch64 libtorch uses hypot@GLIBC_2.35, newer than the 2.34
+    # sysroot it is linked against (see conda_build_config.yaml).
+    - __glibc >=2.35  # [aarch64]
 
 test:
   commands:
@@ -104,6 +127,8 @@ about:
   doc_url: https://software-docs.nanoporetech.com/dorado/latest/
 
 extra:
+  additional-platforms:
+    - linux-aarch64
   skip-lints:
     # Release archives omit required submodules.
     - uses_vcs_url

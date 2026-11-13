@@ -1,7 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
-TORCH_LIB="${SRC_DIR}/download/torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi/libtorch/lib"
+# The torch archive name differs per architecture (see meta.yaml).
+TORCH_LIB=$(echo "${SRC_DIR}"/download/torch-*/libtorch/lib)
+
+TORCH_LIBS="libtorch.so libtorch_cpu.so libtorch_cuda.so libtorch_global_deps.so
+            libc10.so libc10_cuda.so libcaffe2_nvrtc.so"
+if [[ "${target_platform}" == "linux-aarch64" ]]; then
+    # ONT's aarch64 libtorch references hypot/hypotf@GLIBC_2.35, which the
+    # 2.34 sysroot lacks. They resolve at runtime (meta.yaml requires
+    # __glibc >=2.35), so don't fail the link on them. libgomp comes from
+    # conda-forge rather than the copy in the archive.
+    export LDFLAGS="${LDFLAGS} -Wl,--allow-shlib-undefined"
+else
+    TORCH_LIBS="${TORCH_LIBS} libiomp5.so"
+fi
 
 cmake -S . -B build \
     ${CMAKE_ARGS} \
@@ -25,8 +38,7 @@ install -Dm755 build/bin/dorado "${PREFIX}/bin/dorado"
 # conda-forge's libtorch. cuDNN and cuSPARSELt come from conda-forge instead
 # of the copies bundled in the archive.
 mkdir -p "${PREFIX}/lib/dorado"
-for lib in libtorch.so libtorch_cpu.so libtorch_cuda.so libtorch_global_deps.so \
-           libc10.so libc10_cuda.so libcaffe2_nvrtc.so libiomp5.so; do
+for lib in ${TORCH_LIBS}; do
     install -m755 "${TORCH_LIB}/${lib}" "${PREFIX}/lib/dorado/${lib}"
     patchelf --set-rpath '$ORIGIN:$ORIGIN/..' "${PREFIX}/lib/dorado/${lib}"
 done
