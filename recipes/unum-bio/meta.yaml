@@ -12,7 +12,7 @@ source:
   sha256: 79bd283d5b9686adf046cd165426daca8e8d8ed9ae52340450d0079cac7aecaf
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -30,7 +30,11 @@ requirements:
     - cmake
     # libclang for the bindgen step in hts-sys (rust-htslib). Pinned <22
     # because hts-sys's bundled bindgen (0.69) does not support clang 22 yet.
-    - clangdev <22
+    # bindgen only needs libclang. On osx, clangdev's llvmdev puts an unversioned libLLVM.dylib
+    # (LLVM 19) in BUILD_PREFIX/lib, where conda-forge rust >= 1.99 resolves its own
+    # @rpath/libLLVM.dylib (LLVM 23) and aborts with an LLVM version mismatch.
+    - clangdev <22  # [not osx]
+    - libclang <22  # [osx]
   host:
     # hts-sys builds a bundled htslib from source, which links these.
     - zlib

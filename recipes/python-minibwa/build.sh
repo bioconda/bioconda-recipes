@@ -8,7 +8,7 @@ set -euxo pipefail
 cd minibwa-py
 
 # minibwa-sys generates its FFI via bindgen, whose clang-sys backend needs to
-# locate libclang.so at build time. The conda `clangdev` build dep installs it
+# locate libclang.so at build time. The conda `clangdev`/`libclang` build dep installs it
 # under ${BUILD_PREFIX}/lib; point bindgen at it explicitly.
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 
