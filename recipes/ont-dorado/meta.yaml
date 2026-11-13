@@ -2,7 +2,14 @@
 {% set version = "2.1.2" %}
 {% set pod5 = "0.3.39" %}
 {% set fa = "flashattention-fa4-v4.0.0.beta10-1-cu12.8-Linux-x86_64" %}
-{% if aarch64 %}
+{% if osx %}
+# Apple Silicon only: dorado runs on Metal there, without CUDA, koi or
+# FlashAttention, and refuses to build for x86_64 macOS.
+{% set torch = "torch-2.9.0.2-ont-macos-m1" %}
+{% set torch_sha256 = "84113189187bc3d3f4d3948a15b5c4ee13f05ffc4df1449e733e3dcf286e1c80" %}
+{% set pod5_arch = "osx-14.0-arm64" %}
+{% set pod5_sha256 = "710db33a00ca041094588b7c7b5355ad45611e6160e2e3ec8763e8be34f4ac91" %}
+{% elif aarch64 %}
 # ONT only ships CUDA 12.6 builds of libtorch and koi for aarch64; dorado's
 # CMake picks them when building with any CUDA 12.x toolkit.
 {% set torch = "torch-2.9.0.0-ont-CUDA-12.6-linux-aarch64" %}
@@ -32,6 +39,7 @@ source:
       - openssl-shared.patch
       - htslib-conda-flags.patch
       - no-werror.patch
+      - metallib-path.patch
 
   # Prebuilt inputs dorado's CMake would otherwise download, placed where it
   # looks for them so the build runs offline. Hashes match those pinned in
@@ -39,12 +47,15 @@ source:
   - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ torch }}.zip
     sha256: {{ torch_sha256 }}
     folder: download/{{ torch }}/libtorch
-  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ koi }}.tar.gz
-    sha256: {{ koi_sha256 }}
-    folder: download/{{ koi }}/{{ koi }}
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ koi }}.tar.gz  # [linux]
+    sha256: {{ koi_sha256 }}  # [linux]
+    folder: download/{{ koi }}/{{ koi }}  # [linux]
   - url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ pod5 }}/lib_pod5-{{ pod5 }}-{{ pod5_arch }}.tar.gz
     sha256: {{ pod5_sha256 }}
-    folder: download/pod5-{{ pod5 }}-Linux
+    folder: download/pod5-{{ pod5 }}-{{ "Darwin" if osx else "Linux" }}
+  - url: https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip  # [osx]
+    sha256: 4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4  # [osx]
+    folder: download/metal-cpp_26/metal-cpp  # [osx]
   # FlashAttention has no CUDA 12 aarch64 build; dorado builds without it.
   - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ fa }}.zip  # [x86_64]
     sha256: 92f36783e1cf6f968ea7d1201237566844d4a1da650f697e24b2aab4813c95e6  # [x86_64]
@@ -52,7 +63,7 @@ source:
 
 build:
   number: 0
-  skip: true  # [not linux]
+  skip: true  # [not (linux or (osx and arm64))]
   # ONT's libtorch is large; skip conda-build's binary prefix scan of it.
   binary_relocation:
     - bin/dorado
@@ -72,29 +83,31 @@ requirements:
     - libtool
     - pkg-config
     - python
-    - patchelf
-    - cuda-version 12.8.*
-    - cuda-nvcc
-    - cuda-nvrtc-dev
-    - cuda-cudart-dev
-    - cuda-nvml-dev
-    - libcublas-dev
-    - libcublas-static
-    - libcufft-dev
-    - libcusolver-dev
-    - libcusparse-dev
+    # On macOS the Metal kernels are compiled with Xcode's `xcrun metal`,
+    # which conda cannot provide; Bioconda's CI image has Xcode installed.
+    - patchelf  # [linux]
+    - cuda-version 12.8.*  # [linux]
+    - cuda-nvcc  # [linux]
+    - cuda-nvrtc-dev  # [linux]
+    - cuda-cudart-dev  # [linux]
+    - cuda-nvml-dev  # [linux]
+    - libcublas-dev  # [linux]
+    - libcublas-static  # [linux]
+    - libcufft-dev  # [linux]
+    - libcusolver-dev  # [linux]
+    - libcusparse-dev  # [linux]
   host:
     - openssl
     - zlib
   run:
     # dorado is built with CUDA 12.8; any 12.x runtime >= 12.8 works.
-    - cuda-version >=12.8,<13
-    - cuda-cudart
-    - cuda-nvrtc
-    - libcublas
-    - libcufft
-    - libcusolver
-    - libcusparse
+    - cuda-version >=12.8,<13  # [linux]
+    - cuda-cudart  # [linux]
+    - cuda-nvrtc  # [linux]
+    - libcublas  # [linux]
+    - libcufft  # [linux]
+    - libcusolver  # [linux]
+    - libcusparse  # [linux]
     # Linked by ONT's libtorch_cuda.so, which ships cuDNN 9.8 and cuSPARSELt 0.7
     # on x86_64, and cuDNN 9.14 (no cuSPARSELt) on aarch64.
     - cudnn >=9.8,<10  # [x86_64]
@@ -122,13 +135,15 @@ about:
     Dorado is a high-performance, easy-to-use analysis engine for Oxford
     Nanopore reads. It supports simplex and duplex basecalling, modified-base
     calling, alignment, demultiplexing, polishing, and read correction.
-    Basecalling requires an NVIDIA GPU with driver >=525.105.
+    On Linux, basecalling requires an NVIDIA GPU with driver >=525.105; on
+    macOS it requires Apple Silicon and macOS >=14.0.
   dev_url: https://github.com/nanoporetech/dorado
   doc_url: https://software-docs.nanoporetech.com/dorado/latest/
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   skip-lints:
     # Release archives omit required submodules.
     - uses_vcs_url
