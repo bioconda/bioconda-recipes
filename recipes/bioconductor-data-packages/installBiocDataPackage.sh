@@ -47,7 +47,7 @@ GALAXY_DEPOT_URL=`echo $GALAXY_DEPOT_URL | sed -e 's#/$##'`
 SUCCESS=0
 for URL in ${URLS[@]}; do
   URL=`echo $URL | tr -d \"`  # Trim any flanking quotes
-  URL=`echo $URL | sed -e "s#^BIOCONDUCTOR#$BIOCONDUCTOR_URL# ; s#^GALAXY_BIOARCHIVE#$GALAXY_BIOARCHIVE_URL# ; s#^GALAXY_DEPOT#$GALAXY_DEPOT#"`
+  URL=`echo $URL | sed -e "s#^BIOCONDUCTOR#$BIOCONDUCTOR_URL# ; s#^GALAXY_BIOARCHIVE#$GALAXY_BIOARCHIVE_URL# ; s#^GALAXY_DEPOT#$GALAXY_DEPOT_URL#"`
   MD5=`echo $MD5 | tr -d \"`  # Trim any flanking quotes
   curl -L $URL > $TARBALL
   [[ $? == 0 ]] || continue
