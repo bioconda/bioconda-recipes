@@ -1,0 +1,66 @@
+{% set name = "barcodemapper" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # GitHub tag archive: exists as soon as tag v{{ version }} is pushed (barcodemapper is not on PyPI).
+  url: https://github.com/alberdilab/barcodemapper/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 97e2178c960c2d70d864f8c3e70a8445f856aaa748cd166c6a7d1409c48d55b0
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - barcodemapper = barcodemapper.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.12
+    - snakemake 9.27.0
+    - snakemake-executor-plugin-slurm 2.8.0
+    - fastp 1.4.0
+    - samtools 1.24
+    - bowtie2 2.5.5
+    - numpy 2.5.4
+    - pandas 2.3.3
+    - plotly 7.1.0
+    - biopython 1.88
+    - pysam 0.24.1
+    - pyyaml 6.0.3
+
+test:
+  imports:
+    - barcodemapper
+  commands:
+    - barcodemapper --version
+    - barcodemapper --help
+    - snakemake --version
+    - fastp --version
+    - bowtie2 --version
+    - bowtie2-build --version
+    - samtools --version
+    - python -c "from importlib.resources import files; assert (files('barcodemapper') / 'workflow' / 'Snakefile').is_file()"
+
+about:
+  home: https://github.com/alberdilab/barcodemapper
+  dev_url: https://github.com/alberdilab/barcodemapper
+  doc_url: https://barcodemapper.readthedocs.io
+  summary: Map paired shotgun reads to COI and ITS reference sequences
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - anttonalberdi
