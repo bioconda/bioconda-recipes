@@ -1,0 +1,159 @@
+{% set name = "instanovo-fm" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/instanovo_fm-{{ version }}.tar.gz
+  sha256: d932a3359be9068793002f73357cf59110dcf1e193fee8a0e05cea3bf21cc57f
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - instanovo-fm = instanovo_fm.cli:cli
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    # Upstream supports >=3.10,<3.14. The floor is 3.11 rather than 3.10 because
+    # instanovo requires matchms, which requires sparsestack, and conda-forge's
+    # sparsestack is built for `python >=3.11,<3.15` - it raised its own floor
+    # when it took a scipy >=1.15.3 dependency, for which conda-forge has no
+    # py310 build.
+    - python >=3.11,<3.14
+    - hatchling
+    - pip
+  run:
+    - python >=3.11,<3.14
+    # Pinned exactly upstream: the foundation-model code uses instanovo's
+    # constants, utils.residues and SpectrumDataFrame internals, which are not
+    # API-stable across releases.
+    - instanovo ==1.2.2
+    - captum >=0.7.0
+    - click >=8.1.7
+    - faiss-cpu >=1.9.0
+    - fastexcel >=0.12.0
+    - h5py >=3.12.0
+    - lxml >=4.9.4
+    - mlflow >=2.17.0
+    - numba >=0.60.0
+    # numpy and pyarrow are pinned exactly upstream, to the versions the
+    # manuscript's results were produced with. That is a reproducibility pin
+    # rather than a compatibility one, and exact reproduction comes from
+    # upstream's lockfile, not from a conda environment that re-resolves
+    # everything else anyway. Relaxed to floors here so the package stays
+    # co-installable; verified working against numpy 2.5.3.
+    - numpy >=2.2.6
+    - openpyxl >=3.1.5
+    - pandas >=2.2.3
+    - polars >=1.12.0
+    # pyarrow's floor is 21 rather than upstream's 22. Requiring >=22 makes the
+    # test environment unsolvable under the strict channel priority bioconda
+    # builds with, while resolving fine under flexible priority; a >=21 floor
+    # resolves and still selects pyarrow 22, so this only gives the solver room
+    # rather than actually downgrading anything.
+    - pyarrow >=21.0.0
+    - pyopenms >=3.4.0
+    - pyteomics >=4.7.5
+    - pytorch >=2.5,<2.9  # [linux]
+    - pytorch >=2.5,<2.8  # [osx]
+    - pyyaml >=6.0.2
+    # rustyms is listed upstream but only powers the optional "annotator"
+    # fragment-annotation engine, which is imported lazily and guarded; the
+    # default engine is pyopenms. It has no conda-forge package, so it is
+    # omitted here and that engine is unavailable in this build.
+    - scikit-learn >=1.5.2
+    - tqdm >=4.67.0
+    # typer 0.27 is the first release that passes `ctx` to
+    # Parameter.make_metavar(), which click >=8.2 requires; older typer raises
+    # TypeError when rendering --help.
+    - typer >=0.27.2
+    - umap-learn >=0.5.7
+    - xlsxwriter >=3.2.0
+
+test:
+  imports:
+    - instanovo_fm
+    - instanovo_fm.cli
+    # One module per compiled or otherwise heavyweight dependency, so a broken
+    # or missing build of any of them fails here rather than at first use.
+    - instanovo_fm.utils.lsh                                 # numba
+    - instanovo_fm.utils.theoretical_spectra                 # pyopenms
+    - instanovo_fm.eval.embedding_io                         # faiss-cpu, h5py
+    - instanovo_fm.eval.embed_evaluation                     # mlflow
+    - instanovo_fm.eval.embed_eval_tasks.ig_attribution      # captum
+    - instanovo_fm.eval.embed_eval_tasks.umap_visualisation  # umap-learn
+  commands:
+    # No `pip check`: the installed metadata lists rustyms, which is omitted
+    # from the run requirements above for the reason given there.
+    - instanovo-fm --help
+    # Rendering an options panel is what broke with typer <0.27 and click >=8.2,
+    # so exercise each subcommand rather than the top-level help alone.
+    - instanovo-fm train --help
+    - instanovo-fm evaluate --help
+    - instanovo-fm denovo --help
+    # Compose both Hydra configs. `denovo` in particular inherits configs that
+    # live in the installed instanovo package and are reached over a resolver
+    # registered at import time, so this fails if either package's configs/
+    # directory is not installed.
+    - >-
+      python -c "from instanovo_fm.utils.hydra_config import compose_fm_config;
+      [print(name, 'composed', len(compose_fm_config(name)), 'keys')
+      for name in ('foundational', 'denovo')]"
+    # Real sample spectra from instanovo, which is a hard dependency here, so
+    # the file is guaranteed to stay in step with the decoder this package uses.
+    # Pinned to a commit so the test cannot change under us.
+    - >-
+      python -c "from urllib.request import urlretrieve;
+      urlretrieve('https://raw.githubusercontent.com/instadeepai/InstaNovo/55a9a3ff7c18e2748c0ef7fc6ba3213002ad6a0f/sample_data/spectra.mgf',
+      'spectra.mgf')"
+    # Load a published checkpoint and embed the spectra: the only test that runs
+    # torch and the model code end to end. mcfm-90k is the smallest published
+    # checkpoint at ~150 MB (the default foundation model is ~340 MB and the
+    # de novo ones ~660 MB). `from_pretrained` caches under
+    # `Path.home()/.cache/instanovo-fm`, so HOME is pointed at a scratch
+    # directory: outside the working directory, and defined even where the
+    # container leaves HOME unset.
+    - >-
+      HOME="$(mktemp -d)" python -c "import torch;
+      from instanovo_fm.data import FoundationalDataProcessor;
+      from instanovo_fm.model.encoder import FoundationModel;
+      from instanovo_fm.utils.spectrum_dataframe import SpectrumDataFrame;
+      torch.set_grad_enabled(False);
+      sdf = SpectrumDataFrame.load('spectra.mgf', is_annotated=True, shuffle=False);
+      model, cfg = FoundationModel.from_pretrained('instanovo-fm-mcfm-90k-v0.1.0');
+      proc = FoundationalDataProcessor(use_spectrum_utils=False, masking_strategy='none');
+      batch = proc.collate_fn(list(proc.process_dataset(sdf.to_dataset(in_memory=True))));
+      emb = model.eval().encode_mean_pooled(batch['spectra']);
+      assert emb.shape == (len(sdf), model.dim_model), emb.shape;
+      assert torch.isfinite(emb).all();
+      print('embedded', tuple(emb.shape))"
+    # The mulled-build container runs as root with its working directory
+    # bind-mounted from a host temporary directory, so anything left here would
+    # make bioconda-utils' own cleanup of that directory fail with EACCES.
+    - rm -f spectra.mgf
+  requires:
+    - python
+
+about:
+  home: https://github.com/instadeepai/InstaNovo-FM
+  summary: A self-supervised foundation model for tandem mass spectra
+  description: |
+    InstaNovo-FM is an encoder-only transformer trained to reconstruct masked
+    regions of MS/MS spectra without peptide-sequence labels. Its frozen
+    embeddings transfer across datasets, instruments and acquisition methods.
+  license: Apache-2.0
+  license_file: LICENSE.md
+  doc_url: https://instadeepai.github.io/InstaNovo-FM
+  dev_url: https://github.com/instadeepai/InstaNovo-FM
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.09.03.747733
+  recipe-maintainers:
+    - BioGeek
