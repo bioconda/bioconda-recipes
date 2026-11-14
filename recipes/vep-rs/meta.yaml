@@ -1,0 +1,51 @@
+{% set name = "vep-rs" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # git archive from the release workflow. GitHub's tag archive is not byte-stable.
+  url: https://github.com/natera-open-source/vep-rs/releases/download/v{{ version }}/vep-rs-{{ version }}.tar.gz
+  sha256: 3ac0ab1e9af04691fa0ed1c19b6a1512180755fc383f4e2fcbfd800b6530926b
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('vep-rs', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - pkg-config  # [linux]
+  host:
+    - openssl  # [linux]
+
+test:
+  commands:
+    - vep --version
+    - vep-cache-builder --help > /dev/null
+    - vep-cache-converter --help > /dev/null
+
+about:
+  home: https://github.com/natera-open-source/vep-rs
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast Rust reimplementation of Ensembl VEP.
+  dev_url: https://github.com/natera-open-source/vep-rs
+  doc_url: https://natera-open-source.github.io/vep-rs/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - maporter-natera
+    - rborkowski-natera
