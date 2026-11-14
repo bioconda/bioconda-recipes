@@ -1,0 +1,80 @@
+schema_version: 1
+
+context:
+  version: "1.2.0"
+
+package:
+  name: ontogpt
+  version: ${{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/o/ontogpt/ontogpt-${{ version }}.tar.gz
+  sha256: de1274b6bc46618ec1bb79bc80681fdfee2536695097fc5327a81d9f23f9c2ce
+
+build:
+  number: 0
+  skip: match(python, ">=3.15") or match(python, ">=2,<3")
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - ontogpt = ontogpt.cli:main
+      - web-ontogpt = ontogpt.webapp.main:start
+
+requirements:
+  host:
+    - python >=3.10,<3.15
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.10,<3.15
+    - ruamel_yaml >=0.17.31
+    - aiohttp >=3.8.4
+    - beautifulsoup4 >=4.11.1
+    - bioc >=2.0
+    - cachier >=2.1.0
+    - click >=8.1.3
+    - inflect >=6.0.2
+    - inflection >=0.5.1
+    - linkml >=1.9.3-rc1
+    - linkml-owl <1.0.0,>=0.5.0
+    - oaklib >=0.5.28
+    - pydantic >=2.4.0
+    - requests <3.0.0,>=2.31.0
+    - requests-cache >=1.2.0
+    - tiktoken >=0.7.0
+    - wikipedia >=1.4.0
+    - wikipedia-api >=0.5.8
+    - dpath <3.0.0,>=2.1.6
+    - toml >=0.10.2
+    - if: match(python, "<3.11")
+      then: litellm >=1.95.0,<1.98
+    - if: match(python, ">=3.11")
+      then: litellm >=1.95.0
+    - diskcache <6.0.0,>=5.6.3
+    - pymupdf <2.0.0,>=1.24.9
+    - scipy <2.0.0,>=1.14.1
+    - numpy >=2.0.0
+    - linkml-term-validator >=0.4.5
+
+tests:
+  - python:
+      imports:
+        - ontogpt
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - python
+    script:
+      - ontogpt --help
+      - web-ontogpt --help
+
+about:
+  summary: OntoGPT is a Python package for extracting structured information from text with large language models (LLMs), instruction prompts, and ontology-based grounding.
+  license: BSD-3-Clause
+  license_file: LICENSE
+  homepage: https://pypi.org/project/ontogpt/
+
+extra:
+  recipe-maintainers:
+    - hechth
