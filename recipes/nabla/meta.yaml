@@ -1,0 +1,46 @@
+{% set name = "nabla" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CNHume/nabla/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3fc34fe21b46d2e849d224058b636e50a2a4b8313d7ac7f1196a5f982efdecbc
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nabla', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - nabla -V
+    - nabla64 -V
+
+about:
+  home: https://github.com/CNHume/nabla
+  license: LGPL-3.0-or-later
+  license_file:
+    - cli/LICENSES/COPYING_LESSER.txt
+    - cli/LICENSES/COPYING.txt
+  summary: "Longest common subsequence of two sequences or files, supporting FASTA input and CIGAR output."
+  description: |
+    nabla finds the longest common subsequence (LCS) of two files or
+    records, selecting the Myers, Hunt-Szymanski, RickSpace, or RickTime
+    algorithm automatically.  It reads FASTA (-F) and emits SAM CIGAR
+    alignments (-G).
+
+    Installs both nabla (32-bit) and nabla64 (64-bit).  Use nabla64 when
+    either input contains more than 4,294,967,296 positions.
+
+extra:
+  recipe-maintainers:
+    - CNHume
