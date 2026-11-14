@@ -1,0 +1,88 @@
+{% set name = "fithichip" %}
+{% set version = "11.0" %}
+{% set kent_tag = "v502_base" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ay-lab/FitHiChIP/archive/refs/tags/{{ version }}.tar.gz
+    sha256: 0ab11a130ad6b070f82ce7dff330f877c4b0156f9fe90b6e582e462339380e6c
+    folder: fithichip
+  # UCSC autoSql definition of the interact track (kent src/hg/lib, MIT licensed);
+  # FitHiChIP downloads it at run time when it is not next to its code.
+  - url: https://raw.githubusercontent.com/ucscGenomeBrowser/kent/{{ kent_tag }}/src/hg/lib/interact.as
+    sha256: 32a1a53db52bb05b3679f71e590e9e50ca5d810682bd408e7da0de63e665bef1
+    folder: ucsc
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    # python scripts (src/*.py)
+    - python >=3.4
+    - numpy
+    - networkx
+    - hic-straw
+    - cooler
+    # R scripts (src/*.r, Analysis/*.r, Imp_Scripts/*.r)
+    - r-base >=3.3
+    - r-optparse
+    - r-ggplot2
+    - r-data.table
+    - r-fdrtool
+    - r-plyr
+    - r-dplyr
+    - r-rcolorbrewer
+    - bioconductor-genomicranges
+    - bioconductor-edger
+    # command line tools called by FitHiChIP_HiCPro.sh
+    - bedtools >=2.26
+    - samtools >=1.6
+    - htslib
+    - ucsc-bedtobigbed
+    - macs2
+    - iced
+    - bc
+    - gawk
+    - gzip
+    # GNU cat/sort/wc/... in place of the BusyBox applets of the container base image: BusyBox cat
+    # returns nothing for a file rewritten in place on GPFS, and CoverageBin.r then drops chromosomes
+    - coreutils
+
+test:
+  commands:
+    - FitHiChIP_HiCPro.sh -h 2>&1 | grep -q ConfigFile
+    - test -f ${PREFIX}/share/{{ name }}-{{ version }}/interact.as
+    - test -f ${PREFIX}/share/{{ name }}-{{ version }}/src/FitHiC_SigInt.r
+    - ice --help
+    - macs2 --version
+    - python -c "import hicstraw, networkx, numpy"
+    - Rscript -e "suppressMessages({library(optparse); library(ggplot2); library(data.table); library(fdrtool); library(plyr); library(dplyr); library(RColorBrewer); library(GenomicRanges); library(edgeR)})"
+
+about:
+  home: https://github.com/ay-lab/FitHiChIP
+  license: MIT
+  license_family: MIT
+  license_file: fithichip/LICENSE
+  summary: Identification of significant chromatin contacts from HiChIP and PLAC-seq data.
+  description: |
+    FitHiChIP calls statistically significant cis interactions (loops) from HiChIP and PLAC-seq data,
+    modelling the distance decay and the coverage (or ICE) bias of the bins. Run it with
+    `FitHiChIP_HiCPro.sh -C configfile`. The wrapper runs a private copy of the FitHiChIP code
+    (installed in share/fithichip-<version>), because FitHiChIP runs its scripts from its own directory
+    and writes there. Input contacts can be a HiC-Pro bin and matrix pair, a .cool/.mcool, a .hic or a BED
+    interaction file. HiC-Pro is not included; it is needed only to build the matrix from a validPairs file.
+  doc_url: https://ay-lab.github.io/FitHiChIP/
+  dev_url: https://github.com/ay-lab/FitHiChIP
+
+extra:
+  identifiers:
+    - doi:10.1038/s41467-019-11950-y
+  recipe-maintainers:
+    - birkiy
