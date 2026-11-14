@@ -1,0 +1,87 @@
+{% set name = "alphabin" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # GitHub release tarball of the tag v{{ version }} (see PUBLISHING.md, step 3).
+  url: https://github.com/omar-hajjaji/alphabin/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7211a8d30d330ab7b95a1eb8191a822d63aa29162c60e0f83abefbf2cd28ce40
+
+build:
+  number: 0
+  skip: true  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib("c") }}
+    - make
+  host:
+    - python
+    - pip
+    - setuptools >=61
+    - r-base
+    - r-rcpp
+    - r-rcppparallel
+    - r-matrix
+    - r-igraph >=1.3
+    - r-data.table
+    - r-fnn
+    - r-jsonlite
+  run:
+    - python
+    - numpy
+    - pynndescent
+    - pyhmmer >=0.10
+    - pyyaml
+    - prodigal
+    - bowtie2
+    - samtools
+    - metabat2
+    - r-base
+    - r-rcpp
+    - r-rcppparallel
+    - r-matrix
+    - r-igraph >=1.3
+    - r-data.table
+    - r-fnn
+    - r-jsonlite
+
+test:
+  commands:
+    - alphabin --version
+    - alphabin --help
+    - alphabin run --help
+    - alphabin config
+    - prodigal -v
+    - bowtie2 --version
+    - samtools --version
+    - command -v jgi_summarize_bam_contig_depths
+    - alphabin depth --help
+    - Rscript -e "library(alphabin); stopifnot(is.function(alphabin::run_alphabin))"
+
+about:
+  home: https://github.com/omar-hajjaji/alphabin
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Graph-based binning of metagenomic contigs with single-copy marker genes
+  description: |
+    Alphabin bins metagenomic contigs into genomes. Composition (trinucleotide ICO
+    and tetranucleotide profiles) and coverage are fused into a kNN graph, Leiden is
+    run over a grid of graphs and resolutions with single-copy-marker constraints,
+    and the candidate bins are selected, rescued, refined, recruited and purged using
+    co-located marker genes. Coverage is computed from paired-end or single-end reads
+    (Bowtie 2 + jgi_summarize_bam_contig_depths), from BAM files, or read from a depth
+    table. Contigs adjacent in the SPAdes assembly graph can be used as must-links.
+  dev_url: https://github.com/omar-hajjaji/alphabin
+  doc_url: https://github.com/omar-hajjaji/alphabin/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - omar-hajjaji
