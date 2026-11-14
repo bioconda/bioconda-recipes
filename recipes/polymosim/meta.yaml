@@ -1,0 +1,68 @@
+{% set name = "polymosim" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "ce5c50105496ed244b3083ef8e8d1f6646a15737d9e2038b8593517926685e57" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/cmayer/PolyMoSim/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - make
+
+test:
+  commands:
+    - >-
+      PolyMoSim --version 2>&1 | grep -F "version: {{ version }}"
+    - PolyMoSim --help
+    # Nucleotides: 4 sequences of 200 sites under HKY with gamma rate heterogeneity.
+    - >-
+      printf 'begin model\nname: M\nmodeltype: HKY\ntstv: 3\nbasefreq: 0.2 0.3 0.2 0.3\nshape: 0.5\nend model\n' > dna-model.txt
+    - printf '1.0 200 M ((A:0.1,B:0.2):0.05,(C:0.1,D:0.2):0.05);\n' > dna-tree.txt
+    - PolyMoSim -s 1 -n 1 -f fasta -m dna-model.txt -t dna-tree.txt -l log.txt > dna.fas
+    # PolyMoSim ends each sequence line with a space, which is removed before the check.
+    - >-
+      awk '/^>/ { n++; next } { sub(/[ \t]+$/, "") } length($0) != 200 || /[^ACGT]/ { bad = 1 } END { exit (bad || n != 4) ? 1 : 0 }' dna.fas
+    # Amino acids under LG: the frequencies of all 20^4 = 160000 site patterns of the quartet sum to 1.
+    - >-
+      printf 'begin aa-model\nname: M\nmodeltype: LG\nend model\n' > aa-model.txt
+    - printf '1.0 200 M ((A:0.1,B:0.3):0.05,(C:0.1,D:0.3):0.05);\n' > aa-tree.txt
+    - PolyMoSim -s 1 -n 1 -f site_pattern_freq_relative_fill -m aa-model.txt -t aa-tree.txt -l log.txt > aa.txt
+    - >-
+      awk '{ n++; s += $2 } END { exit (n == 160000 && s > 0.99 && s < 1.01) ? 0 : 1 }' aa.txt
+
+about:
+  home: https://github.com/cmayer/PolyMoSim
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Simulation of nucleotide and amino acid sequence alignments along phylogenetic trees.
+  description: |
+    PolyMoSim simulates the evolution of nucleotide or amino acid sequences for
+    given evolutionary models, model parameters and phylogenetic trees. It supports
+    many substitution models, rate heterogeneity (gamma, invariant sites), different
+    models on different branches, mixture models and partitions. Besides alignments
+    it can write site pattern frequencies, e.g. for training machine learning models
+    for phylogenetic reconstruction.
+  dev_url: https://github.com/cmayer/PolyMoSim
+  doc_url: https://github.com/cmayer/PolyMoSim#readme
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - gkanogiannis
+    - cmayer
+    - KulyaNikita
