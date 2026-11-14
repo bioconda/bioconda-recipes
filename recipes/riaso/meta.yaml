@@ -19,7 +19,7 @@ build:
     - CARGO_HTTP_PROXY
     - CARGO_HOME
   number: 0
-  skip: true  # [not linux or not x86_64]
+  skip: true  # [win or (linux and not x86_64)]
   binary_relocation: false
   detect_binary_files_with_prefix: false
 
@@ -28,20 +28,25 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - sysroot_linux-64 =2.17
+    - sysroot_linux-64 =2.17  # [linux]
     - {{ compiler('rust') }}
     - pkg-config
-    - binutils
+    - binutils  # [linux]
     - python >=3.11
+    - delocate >=0.13  # [osx]
   host:
     - hdf5 =1.14.6
-    - libcurl =8.13.0
+    - libcurl =8.13.0  # [linux]
+    - libblas * *_openblas
+    - libcblas * *_openblas
+    - liblapack * *_openblas
+    - libopenblas * pthreads*
     - arpack
     - fontconfig
     - freetype
     - expat
     - font-ttf-dejavu
-    - patchelf
+    - patchelf  # [linux]
 
 test:
   commands:
@@ -67,6 +72,8 @@ about:
     including shared libraries, fonts and fontconfig configuration.
 
 extra:
+  additional-platforms:
+    - osx-arm64
   notes: |
     bin/riaso invokes the upstream launcher under share/riaso. The launcher
     sets FONTCONFIG_FILE to the bundled configuration so plots use the
