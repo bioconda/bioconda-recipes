@@ -1,0 +1,59 @@
+{% set version = "2.8.4" %}
+
+package:
+  name: phasis
+  version: {{ version }}
+
+source:
+  url: https://github.com/blakemeyerslab/Phasis/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 3a5b5f54af566a304174151238512e60fec78c8d022c5e0e4b3bb3dfe581dd62
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage('phasis', max_pin='x') }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - phasis = phasis.cli:main
+    - phasis-compare = phasis.result_comparison:main
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - setuptools >=77.0.3
+    - wheel
+  run:
+    - python >=3.10,<3.13
+    - numpy ==1.26.4
+    - pandas
+    - scipy
+    - scikit-learn ==1.3.2
+    - matplotlib-base
+    - seaborn
+    - tqdm
+    - hisat2
+    - samtools >=1.10
+
+test:
+  imports:
+    - phasis
+    - phasis.stages.classify
+    - phasis.plot_style
+  commands:
+    - phasis -version
+    - phasis -h
+    - phasis-compare --help
+    - hisat2 --version
+    - samtools --version
+    - python -c "from phasis import __version__; assert __version__ == '2.8.4'"
+    - python -c "from phasis.deps_check import require_dependencies; require_dependencies()"
+
+about:
+  home: https://github.com/blakemeyerslab/Phasis
+  license: Artistic-2.0
+  license_file: LICENSE.txt
+  summary: Detection and register-resolved interpretation of phased small-RNA loci
+  doc_url: https://github.com/blakemeyerslab/Phasis/blob/main/README.md
+  dev_url: https://github.com/blakemeyerslab/Phasis
