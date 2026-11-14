@@ -13,42 +13,62 @@ build:
   number: 0
   noarch: generic
   script:
-    - echo "Dependency-only package for MameShiba."
     - mkdir -p ${PREFIX}/bin
     - mkdir -p ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-    - cp -rf ${SRC_DIR}/* ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/
+    - cp -R src scripts example shiba.py VERSION LICENSE environment.yml ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/
     - chmod 0755 ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py
     - ln -sf ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}/shiba.py ${PREFIX}/bin/shiba.py
   run_exports:
     - {{ pin_subpackage("mameshiba", max_pin="x.x") }}
 
 requirements:
+  host:
+    - python 3.12.*
   run:
-    - python >=3.11.0,<3.13.0
-    - pandas >=1.5.3,<3.0.0
-    - statsmodels >=0.13.5,<1.0.0
-    - numexpr >=2.8.4,<3.0.0
-    - pysam >=0.23.0,<1.0.0
-    - scanpy >=1.9.5,<2.0.0
-    - numpy >=1.26.4,<2.0.0
-    - pyyaml >=6.0.2,<7.0.0
-    - regtools >=1.0.0,<2.0.0
-    - subread >=2.0.8,<3.0.0
-    - stringtie >=3.0.0,<4.0.0
-
+    - python 3.12.*
+    - numpy 2.2.*
+    - pandas 2.3.*
+    - scipy 1.15.*
+    - statsmodels 0.14.*
+    - pyyaml 6.0.*
+    - openpyxl 3.1.*
+    - pysam 0.23.*
+    - snakemake-minimal 9.13.*
+    - tosa 1.0.0
+    - stringtie 3.0.*
+    - samtools 1.22.*
+    - r-base 4.5.*
+    - r-glmmtmb 1.1.13
+    - r-tmb 1.9.19
+    - r-jsonlite 2.0.*
 test:
+  imports:
+    - numpy
+    - pandas
+    - scipy
+    - statsmodels
+    - yaml
+    - pysam
+    - openpyxl
   commands:
-    - shiba.py -h > /dev/null
+    - shiba.py --help | grep "v1.0.0"
+    - shiba.py --help | grep -- "--mame"
+    - tosa --version | grep "1.0.0"
+    - samtools --version
+    - snakemake --version
+    - test -s "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/src/beta_binomial_glm.R"
+    - Rscript --vanilla -e 'options(warn=2); for (p in c("glmmTMB", "TMB", "jsonlite")) stopifnot(requireNamespace(p, quietly=TRUE))'
 
 about:
   home: "https://github.com/Sika-Zheng-Lab/Shiba"
   license: MIT
   license_family: MIT
   license_file: LICENSE
-  summary: "mameshiba installs only the dependencies needed to run MameShiba."
+  summary: "Splicing-only Shiba pipeline with Tosa counting and optional beta-binomial regression."
   description: |
-    mameshiba is a minimal conda meta-package that installs all dependencies required
-    for running MameShiba (https://github.com/Sika-Zheng-Lab/Shiba).
+    MameShiba runs Shiba splicing analysis with shiba.py --mame, including
+    optional R/glmmTMB beta-binomial regression. Expression analysis and
+    plotting dependencies are omitted.
   dev_url: "https://github.com/Sika-Zheng-Lab/Shiba"
   doc_url: "https://sika-zheng-lab.github.io/Shiba"
 
