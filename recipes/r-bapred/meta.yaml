@@ -1,0 +1,61 @@
+{% set version = "1.1" %}
+
+package:
+  name: r-bapred
+  version: {{ version }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/bapred_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/bapred/bapred_{{ version }}.tar.gz
+  sha256: 77d3730a69a1adf7adc291c1a04d5a56fab69efebd2bcdf7db97301069c0d0de
+
+build:
+  number: 0
+  noarch: generic
+  script: R CMD INSTALL --build .
+  run_exports:
+    - {{ pin_subpackage('r-bapred', max_pin="x") }}
+
+requirements:
+  host:
+    - r-base
+    - r-fnn
+    - r-fuzzyranktests
+    - r-glmnet
+    - r-lme4
+    - r-mass
+    - r-mnormt
+    - bioconductor-affy
+    - bioconductor-affyplm
+    - bioconductor-biobase
+    - bioconductor-sva
+  run:
+    - r-base
+    - r-fnn
+    - r-fuzzyranktests
+    - r-glmnet
+    - r-lme4
+    - r-mass
+    - r-mnormt
+    - bioconductor-affy
+    - bioconductor-affyplm
+    - bioconductor-biobase
+    - bioconductor-sva
+
+test:
+  commands:
+    - Rscript --vanilla run_test.R
+  files:
+    - run_test.R
+
+about:
+  home: https://cran.r-project.org/package=bapred
+  summary: Batch effect removal and addon normalization for gene expression data
+  license: GPL-2.0-only
+  license_family: GPL2
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - whatever60
