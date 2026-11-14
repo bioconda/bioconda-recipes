@@ -4,7 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
+export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
 export BINARY_HOME="${PREFIX}/bin"
 
 case $(uname -m) in
