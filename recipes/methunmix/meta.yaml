@@ -1,0 +1,49 @@
+{% set name = "methunmix" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # PEP 517 sdist release asset; URL must be anonymously exact before PR.
+  url: https://github.com/Zhangmochen-zmc/MethUnmix/releases/download/v{{ version }}/methunmix-{{ version }}.tar.gz
+  sha256: 6f45ec20d6059ab0fa59525bc0f0a8e27bfa1591e7ec27681aac19cb9e96c065
+
+build:
+  noarch: python
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10,<3.14
+
+test:
+  imports:
+    - demethflow_core
+    - methunmix_assets
+  commands:
+    - methunmix --version
+    - methunmix --help
+    - methunmix adapter validate --json
+
+about:
+  home: https://github.com/Zhangmochen-zmc/MethUnmix
+  dev_url: https://github.com/Zhangmochen-zmc/MethUnmix
+  license: MIT
+  license_file:
+    - LICENSE
+    - NOTICE
+  summary: Lightweight orchestration core for DNA methylation deconvolution
+
+extra:
+  recipe-maintainers:
+    - Zhangmochen-zmc
