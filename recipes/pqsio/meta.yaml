@@ -1,0 +1,65 @@
+{% set name = "pqsio" %}
+{% set version = "0.2.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wangyibin/pqsio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f7493c025b03040cedaafd4004549c9baa406de8df672473d4565d6e7c48e2e1
+  patches:
+    - conda-library-discovery.patch
+
+build:
+  number: 0
+  skip: true  # [not linux]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - clangdev
+    - cmake >=4
+    - make
+    - pkg-config
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.9
+
+test:
+  imports:
+    - pqsio
+  commands:
+    - pqsio --version | grep -F {{ version }}
+    - pqsio --help
+    - pqsio paf2concat --help
+    - pqsio concat2pairs --help
+    - pqsio pairs2cool --help
+
+about:
+  home: https://github.com/wangyibin/pqsio
+  dev_url: https://github.com/wangyibin/pqsio
+  doc_url: https://wangyibin.github.io/pqsio/
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Rust CLI and Python bindings for genomic contact storage
+  description: |
+    pqsio stores Hi-C pairs and multi-fragment Pore-C reads in Parquet-based
+    PQS datasets. It provides a native CLI and Python bindings for selective
+    reads, filtering, complete-read extraction and deferred pair expansion.
+
+extra:
+  recipe-maintainers:
+    - wangyibin
