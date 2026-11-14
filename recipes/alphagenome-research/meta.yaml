@@ -1,0 +1,81 @@
+{% set name = "alphagenome-research" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/google-deepmind/alphagenome_research/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c4257611f27abab2a2ad753ada03dff3f2ab0cbabee72911b437dedd280a19c3
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling
+    # The build hook compiles the calibration proto against alphagenome's protos.
+    - alphagenome >=0.7.0
+    - grpcio-tools
+    # Same as alphagenome: generated protos need a runtime at least as new as
+    # the protoc used, and TensorFlow pins protobuf 6.
+    - protobuf 6.*
+  run:
+    - python >=3.11
+    - absl-py
+    - aiohttp
+    - alphagenome >=0.7.0
+    - anndata
+    - chex
+    - dm-haiku
+    - einshape
+    - etils
+    - huggingface_hub
+    - jax
+    - jaxtyping
+    - kagglehub
+    - numpy
+    - optax
+    - orbax-checkpoint
+    # Upstream pins this because pandas 3 breaks pyranges.
+    - pandas <3
+    - {{ pin_compatible('protobuf', max_pin=None) }}
+    - pybigwig
+    - pyarrow
+    - pyfaidx
+    - pyranges
+    - tensorflow
+
+test:
+  imports:
+    # grpcio initializes absl logging on import and aborts if jaxlib already
+    # has, so load it first, as the alphagenome client does in practice.
+    - grpc
+    - alphagenome_research
+    - alphagenome_research.model.dna_model
+    - alphagenome_research.protos.calibration_scores_pb2
+
+about:
+  home: https://github.com/google-deepmind/alphagenome_research
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Local inference and fine-tuning code for the AlphaGenome model
+  description: |
+    AlphaGenome is a unified DNA sequence model from Google DeepMind for
+    regulatory variant-effect prediction. This package runs the model locally
+    with JAX, using weights downloaded separately under the AlphaGenome model
+    terms; it does not include the weights.
+  doc_url: https://www.alphagenomedocs.com/
+  dev_url: https://github.com/google-deepmind/alphagenome_research
+
+extra:
+  recipe-maintainers:
+    - dannon
