@@ -17,6 +17,13 @@ if [[ "${target_platform}" == osx-* ]]; then
     export CONDA_BUILD_SYSROOT="${XCODE_SDK}"
     export SDKROOT="${XCODE_SDK}"
     CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_OSX_SYSROOT=${XCODE_SDK}"
+
+    # ONT's libtorch is built with Apple clang. clang >=19 mangles dependent
+    # non-type template parameters differently ("Tn..."), so e.g.
+    # at::TensorBase::const_data_ptr<T>() would not resolve against
+    # libtorch_cpu.dylib. Keep the pre-19 mangling.
+    export CXXFLAGS="${CXXFLAGS} -fclang-abi-compat=18"
+    export OBJCXXFLAGS="${OBJCXXFLAGS:-} -fclang-abi-compat=18"
 else
     TORCH_LIBS="libtorch.so libtorch_cpu.so libtorch_cuda.so libtorch_global_deps.so
                 libc10.so libc10_cuda.so libcaffe2_nvrtc.so"
