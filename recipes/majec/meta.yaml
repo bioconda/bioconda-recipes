@@ -1,5 +1,5 @@
 {% set name = "majec" %}
-{% set version = "0.1.5" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4ef5fc85b61f28adcc73bc91270f643be868984b1803bd33327f2f8b6ea92eda
+  # sha256: <UPDATE_AFTER_PYPI_UPLOAD>
 
 build:
   number: 0
@@ -36,12 +36,17 @@ requirements:
     - numpy >=2.3
     - pandas >=2.3
     - scipy >=1.16
-    - intervaltree >=3.1
+    - pysam >=0.22
     - polars >=1.33
     # --- External bioinformatics tools ---
-    - subread >=2.0
+    # Only the optional helper tools use these (majec_calc_frag_len: samtools;
+    # majec_calc_thresholds: featureCounts; majec_build_db: sqlite3). majec_run_pipeline reads BAMs itself.
     - samtools >=1.20
-    - bedtools >=2.31
+    - subread >=2.0.2
+    - sqlite        # majec_build_db loads tables with the sqlite3 command-line tool
+    # This noarch package uses the pure-Python EqC builder. The compiled
+    # builder (majec-core, Rust) ships as prebuilt wheels on PyPI:
+    #   pip install majec-core
     # --- Optional: visualization & analysis ---
     # Uncomment if you want these installed by default:
     # - plotly >=6.3
