@@ -1,0 +1,57 @@
+{% set name = "humanin-finder" %}
+{% set version = "1.0.0b4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/LaBiOmicS/humaninfinder/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c4d0c74dded4ca2d878a104a4004653e4fccf12e0f605a2ee6d3466cceb56bed
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - humanin-finder = humanin_finder.cli:main
+    - humaninfinder = humanin_finder.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+  run:
+    - python >=3.10
+    # Same bounds as pyproject.toml
+    - biopython >=1.83,<2
+    - click >=8.1.0,<9
+    - pyhmmer >=0.12.0,<0.13
+
+test:
+  # Bioconda also runs these commands inside the mulled BioContainer, where test source_files and
+  # test requirements are not available, so only checks that need nothing but the installed
+  # package go here. `setup` fails when any bundled data file (HMM profiles, locus profiles, SHLP
+  # references) is missing or unreadable, so a partial install is still caught.
+  imports:
+    - humanin_finder
+  commands:
+    - humanin-finder --help
+    - humanin-finder --version
+    - humanin-finder setup
+
+about:
+  home: https://github.com/LaBiOmicS/humaninfinder
+  dev_url: https://github.com/LaBiOmicS/humaninfinder
+  doc_url: https://github.com/LaBiOmicS/humaninfinder#readme
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Homology-based location and annotation of Humanin and SHLP1-6 mitochondrial-derived peptides
+
+extra:
+  recipe-maintainers:
+    - LaBiOmicS
