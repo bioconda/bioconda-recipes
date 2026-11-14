@@ -10,16 +10,26 @@ source:
   sha256: 843c5dea523473fca966b6c5fa01f6188244c298a1b098dc91b63e717621cc39
 
 build:
-  number: 0
+  number: 1
   noarch: python
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
+  # The Cas HMM profiles, the repeat model and the scoring tables are shipped in
+  # cctyper/data, so pip install provides a complete database and no post-link
+  # download of the (outdated) 1.8.0 data is needed. cctyper 1.9.0 resolves its
+  # database itself (--db, then $CCTYPER_DB, then the packaged data), therefore no
+  # CCTYPER_DB is exported on activation either. Since 1.9.0 a database directory
+  # must contain cctyper_profiles.hmm or cctyper_profiles.hmm.zst, neither of which
+  # the old post-link data had. build.sh uncompresses the profiles so that cctyper
+  # never has to write into site-packages at runtime, and drops the unused 1.8.0
+  # Profiles.tar.gz archive of the individual profiles.
 
 requirements:
   host:
     - python >=3.10
     - pip
     - setuptools <82
+    - zstd
   run:
     - python >=3.10
     - setuptools <82
@@ -53,6 +63,13 @@ requirements:
 test:
   commands:
     - cctyper --help
+    # the database must be found without any CCTYPER_DB being set and it must contain the
+    # uncompressed Cas HMM profiles that cctyper 1.9.0 reads, but neither the compressed
+    # copy that would make cctyper decompress into site-packages on the first run nor the
+    # unused cctyper 1.8.0 profile archive
+    - python -c "import os; from cctyper.resources import resolve_database_path; db = resolve_database_path(); assert os.path.isfile(os.path.join(db, 'cctyper_profiles.hmm')), db; assert not os.path.exists(os.path.join(db, 'cctyper_profiles.hmm.zst')), db; assert not os.path.exists(os.path.join(db, 'Profiles.tar.gz')), db"
+    # the profiles must be complete and parseable, i.e. pyhmmer can read all of them
+    - python -c "import os, pyhmmer; from cctyper.resources import resolve_database_path; p = os.path.join(resolve_database_path(), 'cctyper_profiles.hmm'); n = sum(1 for _ in pyhmmer.plan7.HMMFile(p)); assert n >= 704, (p, n)"
 
 about:
   home: "https://github.com/Russel88/CRISPRCasTyper"

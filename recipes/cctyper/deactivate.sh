@@ -1,1 +1,0 @@
-unset CCTYPER_DB
