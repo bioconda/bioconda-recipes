@@ -1,0 +1,69 @@
+# Bioconda recipe. The sha256 is that of the GitHub tarball for tag v{{ version }}
+# (curl -sL <url> | sha256sum). To publish, copy this folder to
+# bioconda-recipes/recipes/seqcounter and open a pull request. For a new release: tag it,
+# bump `version`, recompute the sha256 and reset `number` to 0.
+{% set name = "seqcounter" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/seqcounter/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 8d98e4dcd32516443baf3fc485805877652ef7abebe3ea9714da9032458b6907
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - seqcounter = seqcounter.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.10
+    - bbmap >=38.0
+
+test:
+  imports:
+    - seqcounter
+  commands:
+    - seqcounter --version
+    - seqcounter --help
+    - seal.sh --version
+    # Counting the reference sequences in the reference file itself: every one is found once. Checks Seal and Java
+    - printf '>ref1\nTTCGAACGCTGACGTCAGCATCGATTGCAGCTAGCTTAGCGATCGGATCGA\n' > refs.fasta
+    - seqcounter -ref refs.fasta -r1 refs.fasta -o test_out
+    - test -s test_out/refseqcounts.json
+    # No ": " anywhere in this line: YAML would read a plain scalar containing one as a mapping, and conda-build
+    # then tries to write a dict into the test script ("write() argument must be str, not dict")
+    - python -c "import json; c = json.load(open('test_out/refseqcounts.json'))['samples'][0]['counts']; assert c['ref1'] == 1, c"
+    # Bioconda also runs the tests as root in a container: leave no root-owned folder behind
+    - rm -rf test_out refs.fasta
+
+about:
+  home: https://github.com/duceppemo/seqcounter
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Count the occurrences of reference sequences in sequencing reads or genome assemblies
+  description: |
+    seqcounter counts how many sequencing reads (fastq) or contigs (fasta) contain each sequence of a reference
+    fasta file, using Seal from BBTools. Reverse complements and mismatches are counted, single-end and
+    paired-end reads and assemblies are supported, and a folder of samples gives one table of counts per
+    reference sequence and per sample, with a per-sample summary and a JSON report.
+  dev_url: https://github.com/duceppemo/seqcounter
+  doc_url: https://github.com/duceppemo/seqcounter/wiki
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.23826933
+  recipe-maintainers:
+    - duceppemo
