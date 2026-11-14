@@ -1,0 +1,81 @@
+{% set name = "adamixture" %}
+{% set version = "1.9.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: cf7bacac18b81f11ef4eef2b3d5d969d45fca5fe3cbde64e3edad4ce0715decc
+
+build:
+  number: 0
+  skip: True  # [py < 310]
+  script:
+    - export SETUPTOOLS_SCM_PRETEND_VERSION={{ version }}
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('adamixture', max_pin="x.x") }}
+  entry_points:
+    - adamixture = adamixture.entry:main
+    - adamixture-plot = adamixture.plot_entry:main
+    - adamixture-project = adamixture.project_entry:main
+    - adamixture-supervised = adamixture.supervised_entry:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - python
+    - pip
+    - setuptools >=61.0
+    - setuptools_scm >=6.2
+    - cython >=3.0.0
+    - numpy >=2.0.0
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - python >=3.10
+    - numpy >=2.0.0
+    - matplotlib-base >=3.8.0
+    - configargparse >=1.7.0
+    - zstandard >=0.25.0
+
+test:
+  imports:
+    - adamixture
+    - adamixture.src.utils_c.cython.br_qn
+    - adamixture.src.utils_c.cython.sqp
+    - adamixture.src.utils_c.cython.tools
+  requires:
+    - pip
+  commands:
+    - adamixture --help
+    - adamixture-plot --help
+    - adamixture-project --help
+    - adamixture-supervised --help
+
+about:
+  home: https://github.com/AI-sandbox/ADAMIXTURE
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "ADAMIXTURE: Adaptive First-Order Optimization for Biobank-Scale Ancestry Inference"
+  description: |
+    ADAMIXTURE is an ultra-fast ancestry estimation and genetic clustering tool
+    designed to scale model-based admixture analysis to biobank-scale datasets
+    (hundreds of thousands of individuals and SNPs). It combines fast randomized SVD,
+    alternating least squares (ALS) initialization, and adaptive first-order/quasi-Newton
+    optimization (SQP + ZAL QN / Adam-accelerated EM).
+  doc_url: https://github.com/AI-sandbox/ADAMIXTURE
+  dev_url: https://github.com/AI-sandbox/ADAMIXTURE
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btag236
+  recipe-maintainers:
+    - joansaurina
