@@ -1,0 +1,64 @@
+{% set name = "its-fun-2-map" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/its_fun_2_map-{{ version }}.tar.gz
+  sha256: ec3cddc4714963673dfafe85912194cbeb1d5dace4f269e9906b7a8fc0b2c626
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - pip
+    - setuptools        # replace with the build-backend from pyproject.toml
+  run:
+    - python >=3.12
+    - pandas
+    - numpy
+    - scipy
+    - biopython
+    - openpyxl
+    - pgzip
+    - rpy2
+    - seqpy-tools >=0.1.2
+    - r-base >=4.5
+    - r-jsonlite
+    - fastp
+    - seqkit
+    - bwa
+    - samtools
+    - bbmap
+    - spades
+    - blast
+
+test:
+  imports:
+    - its_fun_2_map
+  commands:
+    - itsfun-qc --help
+    - itsfun-refs --help
+    - itsfun-map --help
+    - itsfun-summary --help
+
+about:
+  home: https://github.com/museomics/its-fun-2-map
+  dev_url: https://github.com/museomics/its-fun-2-map
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Extraction and validation of fungal ITS barcodes from museum specimen genome skims
+
+extra:
+  recipe-maintainers:
+    - rvosa
+    - SchistoDan
