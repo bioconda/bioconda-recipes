@@ -23,12 +23,6 @@ if [[ $(uname) == "Darwin" ]]; then
     ln -sf "$CXX" "$BUILD_PREFIX/bin/g++"
     export PATH="$BUILD_PREFIX/bin:$PATH"
 
-    # Use the conda-provided Clang compilers
-    echo "Using CC: $CC"
-    echo "Using CXX: $CXX"
-    $CC --version || true
-    $CXX --version || true
-
     # Find the C++ standard library location
     LIBCXX_DIR="$BUILD_PREFIX/lib"
     if [[ ! -f "$LIBCXX_DIR/libc++.dylib" ]] && [[ ! -f "$LIBCXX_DIR/libc++.a" ]]; then
@@ -83,35 +77,13 @@ fi
 # Do not use -march=native, the package must run on any host
 export PORTABLE=1
 
-# Debug: Print final compiler information
-echo "Final CC: $CC"
-echo "Final CXX: $CXX"
-echo "Final CXXFLAGS: $CXXFLAGS"
-echo "Final LDFLAGS: $LDFLAGS"
-echo "Final RUSTFLAGS: ${RUSTFLAGS:-}"
-echo "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS:-}"
-echo "Final LIBRARY_PATH: ${LIBRARY_PATH:-}"
-echo "Final DYLD_FALLBACK_LIBRARY_PATH: ${DYLD_FALLBACK_LIBRARY_PATH:-}"
-$CC --version || true
-$CXX --version || true
-
-# FastGA and wfmash are built with GCC on Linux
-if [[ $(uname) != "Darwin" ]]; then
-    # Verify we have real GCC (check for either "GNU" or "gcc" in the output)
-    if ! $CC --version 2>&1 | grep -qE "(GNU|gcc)"; then
-        echo "ERROR: CC is not GNU GCC!"
-        exit 1
-    fi
-fi
-
-# Run cargo-bundle-licenses
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # cargo install alone uses a temp target dir and deletes the companion binaries.
 export CARGO_TARGET_DIR="${SRC_DIR}/target"
 
 export RUST_BACKTRACE=1
-cargo install -v --no-track --path . --root "${PREFIX}"
+cargo install -v --locked --no-track --path . --root "${PREFIX}"
 
 # sweepga finds these in ../libexec/sweepga, never through PATH.
 LIBEXEC="${PREFIX}/libexec/sweepga"
