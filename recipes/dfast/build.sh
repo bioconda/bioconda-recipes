@@ -2,24 +2,7 @@
 
 APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 
-rm bin/*/aragorn
-rm bin/*/barrnap
-rm -r bin/Darwin/barrnap-0.8
-rm -r bin/Darwin/lib
-rm bin/*/blastdbcmd
-rm bin/*/blastp
-rm bin/*/ghost*
-rm bin/*/hmm*
-rm bin/*/makeblastdb
-rm bin/*/mga
-rm bin/*/rpsblast
-if [ "$(uname)" == "Darwin" ]; then
-    rm -rf bin/Linux
-else
-    rm -rf bin/Darwin
-fi
-
-
+# Since DFAST 1.6, no executables are bundled; all external programs are dependencies.
 mkdir -p $APPROOT
 mkdir -p ${PREFIX}/bin
 
@@ -28,5 +11,5 @@ cp -r ./* $APPROOT
 ln -s ${APPROOT}/dfast ${PREFIX}/bin/dfast
 ln -s ${APPROOT}/scripts/dfast_file_downloader.py ${PREFIX}/bin/dfast_file_downloader.py
 ln -s ${APPROOT}/scripts/file_downloader.py ${PREFIX}/bin/file_downloader.py
-
-# python ${APPROOT}/scripts/file_downloader.py --protein dfast --cdd Cog --hmm TIGR --no_indexing
+ln -s ${APPROOT}/scripts/reference_util.py ${PREFIX}/bin/reference_util.py
+ln -s ${APPROOT}/scripts/reference_util_for_nucl.py ${PREFIX}/bin/reference_util_for_nucl.py

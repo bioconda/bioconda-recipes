@@ -1,0 +1,49 @@
+{% set version = "0.34.1" %}
+
+package:
+  name: orfdata
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/o/orfdata/orfdata-{{ version }}.tar.gz
+  sha256: 22d19b3320103355572e8632451309d8238c7ce175d0765bb79d8ed77b17586b
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - orfdata = orfdata.cli:run
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('orfdata', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=77
+    - pip
+  run:
+    - python >=3.9
+
+test:
+  imports:
+    - orfdata
+  commands:
+    - orfdata --help
+
+about:
+  home: "https://pypi.org/project/orfdata"
+  summary: "Reference open reading frames and experimental translation evidence on annotated transcripts."
+  license: "Apache-2.0"
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - tests/data/pfizer_rna/NOTICE.md
+    - tests/data/wang/NOTICE.md
+    - tests/data/copy/NOTICE.md
+    - tests/data/ingolia/NOTICE.md
+    - tests/data/search_reference/NOTICE.md
+    - tests/data/regions/NOTICE.md
+    - tests/data/pfizer/NOTICE.md
+    - orfdata/data/orf-evidence/NOTICE.txt
+    - orfdata/data/uorf-evidence/NOTICE.txt

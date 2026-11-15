@@ -1,0 +1,59 @@
+{% set version = "1.1.479" %}
+
+package:
+  name: voronotalt
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/v/voronotalt/voronotalt-{{ version }}.tar.gz
+  sha256: 6e4a3a38be09d433bb4b0c6b61127021135fa3990bb14dbc6dc6b8376451d980
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('voronotalt', max_pin='x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - voronotalt
+    - voronotalt.pandas_interface
+    - voronotalt.biotite_interface  # [py >= 311]
+    - voronotalt.gemmi_interface
+    - voronotalt.biopython_interface
+  requires:
+    - pandas
+    - biotite  # [py >= 311]
+    - gemmi
+    - biopython
+    - packaging >=24
+    - pip
+  commands:
+    - python -m pip check
+    - python -c "import voronotalt; b = voronotalt.Ball(0, 0, 0, 1); print(b.r)"
+
+about:
+  home: https://github.com/kliment-olechnovic/voronotalt_python
+  dev_url: https://github.com/kliment-olechnovic/voronotalt_python
+  doc_url: https://github.com/kliment-olechnovic/voronotalt_python/blob/master/README.md
+  license: MIT
+  license_file: LICENSE.txt
+  summary: Voronota-LT Python bindings via SWIG
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - eunos-1128

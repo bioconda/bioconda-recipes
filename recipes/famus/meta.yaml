@@ -1,5 +1,5 @@
 {% set name = "famus" %}
-{% set version = "0.2.3" %}
+{% set version = "0.2.4" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/burstein-lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ef3963b1028352ce2e75add2053fe4bcf1b95108a88a7903480c3934a93842a4
+  sha256: 10395cc36b57ea7d338d596d6b131bd1e8a6ee6732ff02434b8f1d6ce4672e45
 
 build:
   number: 0
@@ -39,6 +39,8 @@ requirements:
     - matplotlib-base >=3.7.0
     - seaborn >=0.13.2
     - pyyaml >=5.0
+    # conda picks a CPU or CUDA build from the machine's GPU driver; see the README
+    - pytorch >=2.0
     # Bioinformatics tools
     - hmmer
     - mafft
@@ -60,6 +62,8 @@ test:
     - famus-convert-sdf --help
     - famus-install --help
     - famus-defaults
+    # the module imports above tolerate a missing torch, so exercise the model for real
+    - 'python -c "import torch, famus.model; out = famus.model.MLP(4, 8)(torch.zeros(2, 4)); assert tuple(out.shape) == (2, 8)"'
     - which hmmsearch
     - which mafft
     - which mmseqs
@@ -74,9 +78,7 @@ about:
   description: |
     FAMUS is a supervised contrastive learning (supcon) based framework that annotates 
     protein sequences with function using pre-trained models or custom training.
-    
-    NOTE: PyTorch must be installed separately according to your system configuration.
-    Visit https://pytorch.org/get-started/locally/ for installation instructions.
+    For GPU (CUDA) support, see the installation notes in the README.
   doc_url: https://github.com/burstein-lab/famus
   dev_url: https://github.com/burstein-lab/famus
 

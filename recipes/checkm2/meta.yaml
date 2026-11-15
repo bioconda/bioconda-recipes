@@ -11,23 +11,29 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   noarch: python
+  script:
+    - sed -i.bak 's|find_packages|find_namespace_packages|g' setup.py
+    - rm -f *.bak
+    - {{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv
+  entry_points:
+    - checkm2 = checkm2.main:main
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
-  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
-    - python
+    - python >=3.12
     - pip
     - setuptools
   run:
-    - python >3.12
-    - scikit-learn =1.6.1
+    - python >=3.12
+    - scikit-learn >=1.6.1
     - numpy
-    - diamond =2.1.11
-    - tensorflow =2.17
+    - diamond >=2.1.11
+    # https://github.com/bioconda/bioconda-recipes/issues/69866
+    - tensorflow >=2.17,<2.20
     - lightgbm
     - pandas
     - scipy
@@ -42,14 +48,19 @@ test:
     - checkm2 --help
 
 about:
-  home: https://github.com/chklovski/CheckM2
-  license: GPL-3.0-only
-  license_family: GPL
+  home: "https://github.com/chklovski/CheckM2"
+  license: "GPL-3.0-only"
+  license_family: GPL3
   license_file: LICENSE
   summary: "Assessing the quality of metagenome-derived genome bins using machine learning."
-  dev_url: https://github.com/chklovski/CheckM2
+  dev_url: "https://github.com/chklovski/CheckM2"
+  doc_url: "https://github.com/chklovski/CheckM2/blob/{{ version }}/README.md"
 
 extra:
   notes: "CheckM2 requries the DIAMOND database that can be downloaded with `checkm2 database --download`."
   recipe-maintainers:
     - chklovski
+  identifiers:
+    - biotools:checkm2
+    - usegalaxy-eu:checkm2
+    - doi:10.1038/s41592-023-01940-w

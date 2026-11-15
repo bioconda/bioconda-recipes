@@ -1,0 +1,70 @@
+{% set name = "genomeblocks" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6ef9a63e43e471be9ccad4b238d3fec1a00b845448926d43dc4ff7d3b6e2a012
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=69
+    - wheel
+  run:
+    - python >=3.10
+    - numpy
+    - pandas >=2.0
+    - pyarrow
+    - narwhals >=1.0
+    - scipy
+    - matplotlib-base
+    - tqdm
+    - cooler
+    - pybigtools >=0.2
+    - moods                 # the motif engine; lightmotif (PyPI only) is an optional alternative
+
+test:
+  requires:
+    - pip
+  imports:
+    - genomeblocks
+    - genomeblocks.backends.motifs
+    - genomeblocks.loci
+    - genomeblocks.genes
+    - genomeblocks.architecture
+  commands:
+    - pip check
+  # run_test.py: a small end-to-end run (tables, intervals, a MOODS motif scan)
+
+about:
+  home: https://github.com/birkiy/genomeblocks
+  summary: Building blocks for regulatory genomics, as columnar tables.
+  description: |
+    genomeblocks is a Python toolkit for regulatory genomics: interval tables
+    (Loci) with set algebra, gene annotation tables (Genes), chromatin
+    contact graphs (Architecture) from HiChIP / Hi-C loops, bigWig signal
+    cubes and heatmaps, motif scanning (MOODS), GIGGLE-style enrichment
+    (Atlas) and genome browsers. Every table converts to and from pandas,
+    polars, Arrow, bioframe, pyranges, pybedtools, AnnData and Biopython,
+    and the heavy work runs through swappable backends.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: https://birkiy.github.io/genomeblocks/
+  dev_url: https://github.com/birkiy/genomeblocks
+
+extra:
+  recipe-maintainers:
+    - birkiy

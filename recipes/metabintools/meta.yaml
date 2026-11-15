@@ -1,0 +1,51 @@
+{% set version = "0.4.0" %}
+
+package:
+  name: metabintools
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/m/metabintools/metabintools-{{ version }}.tar.gz
+  sha256: dde43ed03f03292d096deb5ffc0faf204a36250cf3dcb3c17418d6d02d9d22a9
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("metabintools", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.13
+    - hatchling
+    - pip
+  run:
+    - python >=3.13
+    - click >=8.5.0
+    - loguru >=0.7.3
+    - pydantic >=2.13.5
+    - pyfastx >=2.3.1
+    - requests >=2.34.2
+    - zstandard >=0.25.0
+
+test:
+  imports:
+    - metabintools
+  commands:
+    - pip check
+    - bintools --help
+    - metabintools --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/sanger-tol/metabintools
+  summary: A toolkit for collating and manipulating metagenome bins.
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - prototaxites

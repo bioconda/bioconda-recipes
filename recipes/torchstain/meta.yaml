@@ -1,0 +1,46 @@
+{% set version = "1.4.1" %}
+
+package:
+  name: torchstain
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/t/torchstain/torchstain-{{ version }}.tar.gz
+  sha256: 6469c29d7dd8e231aff4bd76d23b138cd2ac97cc81128c979ec2d3468641ecdc
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("torchstain", max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+    - setuptools
+    - wheel
+  run:
+    - python >=3.6
+    - numpy
+
+test:
+  imports:
+    - torchstain
+    - torchstain.numpy
+  commands:
+    - pip check
+    - python -c "from torchstain.base.normalizers import MacenkoNormalizer, ReinhardNormalizer; MacenkoNormalizer(backend='numpy'); ReinhardNormalizer(backend='numpy')"
+  requires:
+    - pip
+
+about:
+  home: https://github.com/EIDOSlab/torchstain
+  summary: Stain normalization tools for histological analysis and computational pathology
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - dianichj

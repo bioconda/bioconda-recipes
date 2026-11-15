@@ -1,0 +1,52 @@
+{% set name = "emuse" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/kclinmicro/emuse/archive/v{{ version }}.tar.gz
+  sha256: 998329da9426a685998283c2c5032683b69b298c7c3f7b7b29a6c86b2c2dc802
+
+build:
+  entry_points:
+    - emuse = emuse.make_report:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.11
+    - setuptools >=64
+    - pip
+  run:
+    - python >=3.11
+    - jinja2
+    - pandas
+    - pyyaml
+    - pysam
+
+test:
+  imports:
+    - emuse
+  commands:
+    - pip check
+    - emuse --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/kclinmicro/emuse
+  summary: Report generator for the TRANA 16S rRNA taxonomic profiling pipeline
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_LICENSES.txt
+
+extra:
+  recipe-maintainers:
+    - rannick
+  skip-lints:
+    - missing_run_exports  # emuse is a CLI application; no ABI/API run_exports needed

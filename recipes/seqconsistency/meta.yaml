@@ -1,0 +1,53 @@
+{% set name = "seqconsistency" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jiangyun-fun/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: aba614d5a3baed275d0a2e6328c8fa681934d4fb794d09dff6a4631a6a09940a
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - seqconsistency = seqconsistency.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage('seqconsistency', max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+  run:
+    - python >=3.11
+    - numpy >=1.26
+    - scipy >=1.11
+    - pyarrow >=15
+    - pysam >=0.22
+    - pyyaml >=6
+    - threadpoolctl >=3
+
+test:
+  imports:
+    - seqconsistency
+  commands:
+    - seqconsistency --version
+    - seqconsistency --help
+
+about:
+  home: "https://github.com/jiangyun-fun/seqconsistency"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Structural, technical, and pooling-consistency assessment for sequencing datasets (FASTQ/BAM)."
+  doc_url: "https://github.com/jiangyun-fun/seqconsistency/blob/v{{ version }}/README.md"
+  dev_url: "https://github.com/jiangyun-fun/seqconsistency"
+
+extra:
+  recipe-maintainers:
+    - jiangyun-fun

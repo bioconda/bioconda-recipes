@@ -1,7 +1,10 @@
 #!/bin/bash
 set -ex
 
-export CXXFLAGS="${CXXFLAGS} -O3"
+# conda-forge puts -O2 in CPPFLAGS, which the Makefile passes after its own
+# -O3 (compile and LTO link lines). Strip it so -O3 wins. Remove when bumping
+# past 0.15.1: newer Makefiles strip it themselves.
+export CPPFLAGS="${CPPFLAGS//-O2/}"
 
 # Use conda-forge htslib instead of building the bundled submodule.
 # ext/htslib stays on disk because the Makefile has explicit prereqs
@@ -85,6 +88,8 @@ else
   MAKE_ARGS+=(
     HTS_LIB="${PREFIX}/lib/libhts.so"
     LIBS_EXTRA="-lrt -L${PREFIX}/lib -lsais -Wl,-rpath,${PREFIX}/lib"
+    # Fail the build if LTO can't be had, instead of LTO=auto's silent fallback.
+    LTO=full
   )
 fi
 

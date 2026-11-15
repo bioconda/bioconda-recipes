@@ -1,0 +1,45 @@
+{% set name = "alntools" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/richarddurbin/alntools/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b27c25b9b3692f7533998e53314b1f5c502893ee11d7790b43fa2b3e5becbc49
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - zlib
+
+test:
+  commands:
+    - 'svfind 2>&1 | grep -q "Usage: svfind"'
+    - 'taco 2>&1 | grep -q "Usage: taco"'
+    - 'gdbmask 2>&1 | grep -q "Usage: gdbmask"'
+    - 'tanbed 2>&1 | grep -q "Usage: tanbed"'
+
+about:
+  home: https://github.com/richarddurbin/alntools
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Utilities for processing .1aln files from FastGA, FasTAN etc.
+  dev_url: https://github.com/richarddurbin/alntools
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - piosierra
