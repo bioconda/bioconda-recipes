@@ -1,0 +1,58 @@
+{% set name = "rfam-seed-qc" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Rfam/rfam-seed-qc/archive/refs/tags/v{{ version }}.tar.gz
+  # Replace once the v1.3.0 release is tagged:
+  #   curl -sL <url above> | sha256sum
+  sha256: 0000000000000000000000000000000000000000000000000000000000000000
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.8
+    - biopython >=1.79
+    - infernal    # cmscan, cmpress (--cm-db)
+    - easel       # esl-reformat (gap minimization); not included in infernal
+    - blast       # blastn, blastdbcmd (--local)
+    - wget        # build_live_cm.py
+
+test:
+  commands:
+    - rfam-seed-qc --help
+    - rfam-seed-qc-build-live-cm --help
+    - command -v cmscan esl-reformat blastn blastdbcmd
+    # Offline validation of a minimal alignment (no --fix, so no network)
+    - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\nX02/1-4 ACGU\n#=GC SS_cons <..>\n//\n' > ok.sto
+    - rfam-seed-qc -v ok.sto | grep -q "Valid Stockholm file"
+    - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\n' > bad.sto
+    - '! rfam-seed-qc bad.sto'
+
+about:
+  home: https://github.com/Rfam/rfam-seed-qc
+  dev_url: https://github.com/Rfam/rfam-seed-qc
+  doc_url: https://github.com/Rfam/rfam-seed-qc#readme
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Validate and fix Stockholm seed alignments for Rfam.
+  description: |
+    rfam-seed-qc checks Stockholm multiple sequence alignments (Rfam seed
+    alignments) for format errors and, with --fix, corrects common problems:
+    missing coordinates, duplicate and overlapping sequences, and sequences
+    that do not match their NCBI or RNAcentral source, with a BLAST fallback
+    (NCBI web BLAST, or a local database with --local). Optional checks
+    against known Rfam families use Infernal's cmscan.
+
+extra:
+  recipe-maintainers:
+    - pmb59
