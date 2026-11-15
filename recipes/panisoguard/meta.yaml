@@ -39,8 +39,13 @@ test:
       > mini.gtf
     - panisoguard combine --gtf flair:mini.gtf --out combine_smoke.tsv
     - test -s combine_smoke.tsv
-    - panisoguard example tiny
-    - bash tiny/run.sh
+    - >-
+      cd "$(mktemp -d)" && panisoguard example tiny && cd tiny && mkdir -p out &&
+      panisoguard adjudicate --classification data/classification.tsv --isoforms-gtf data/caller.gtf
+      --ref-gtf data/reference.gtf --sj-tab data/short_read.SJ.tab --out-prefix out/sample &&
+      diff -u expected/sample.adjudicated.tsv out/sample.adjudicated.tsv &&
+      diff -u expected/sample.attribution.jsonl out/sample.attribution.jsonl &&
+      diff -u expected/sample.junctions.tsv out/sample.junctions.tsv
 
 about:
   home: https://github.com/jibeomko/PanIsoGuard
