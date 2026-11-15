@@ -1,0 +1,76 @@
+{% set name = "abotyper-core" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/abotyper_core-{{ version }}.tar.gz
+  sha256: 4f31750a2bd20f7e4965fea4eaa4105940a69c5afb3cf322b8bf73498efbd670
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  entry_points:
+    - abotyper-panel = abotyper_core.panel:main
+    - abotyper-panel-to-bed = abotyper_core.panel_to_bed:main
+    - abotyper-clair2metrics = abotyper_core.clair2metrics:main
+    - abotyper-clair2haplotypes = abotyper_core.clair2haplotypes:main
+    - abotyper-pileup2metrics = abotyper_core.pileup2metrics:main
+    - abotyper-predict-phenotype = abotyper_core.predict_phenotype:main
+    - abotyper-aggregate = abotyper_core.aggregate:main
+    - abotyper-calibrate-panel = abotyper_core.calibrate_panel:main
+    - abotyper-rename-samples = abotyper_core.rename_samples:main
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - hatchling >=1.25
+  run:
+    - python >=3.11
+    - pandas >=2.2
+    - numpy >=1.26
+    - pyyaml >=6.0
+    - xlsxwriter >=3.1
+    - openpyxl >=3.1
+
+test:
+  imports:
+    - abotyper_core
+  commands:
+    - pip check
+    - abotyper-panel --summary
+    - abotyper-panel-to-bed --help
+    - abotyper-clair2metrics --help
+    - abotyper-clair2haplotypes --help
+    - abotyper-pileup2metrics --help
+    - abotyper-predict-phenotype --help
+    - abotyper-aggregate --help
+    - abotyper-calibrate-panel --help
+    - abotyper-rename-samples --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/fmobegi/abotyper-core
+  summary: ABO blood group typing logic from long-read amplicon data, as used by nf-core/abotyper
+  description: |
+    Loads and validates the ABO variant panel, turns Clair3 calls and BAM pileups into per-position evidence,
+    resolves phenotype, genotype and ISBT allele names, and writes the per-sample and aggregated result tables.
+    Research use only.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/fmobegi/abotyper-core
+  doc_url: https://github.com/fmobegi/abotyper-core#readme
+
+extra:
+  recipe-maintainers:
+    - fmobegi
+  identifiers:
+    - doi:10.3390/ijms26125443

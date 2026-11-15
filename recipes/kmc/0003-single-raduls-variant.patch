@@ -1,0 +1,156 @@
+Keep a single x86 RADULS variant.
+
+The SSE4.1/AVX/AVX2 variants share one RadixSortMSD_impl template, so the linker
+keeps one copy (SSE2) and the CPU check cannot select different code.
+Upstream issue: https://github.com/refresh-bio/KMC/issues/254
+
+diff --git a/kmc_core/CMakeLists.txt b/kmc_core/CMakeLists.txt
+index 478ee36..4f3c740 100644
+--- a/kmc_core/CMakeLists.txt
++++ b/kmc_core/CMakeLists.txt
+@@ -23,15 +23,8 @@ endif()
+ if (${ARCH} STREQUAL "arm64")
+   set(raduls_sources raduls_neon.cpp)
+ elseif (${ARCH} STREQUAL "x86_64")
+-  set(raduls_sources
+-    raduls_sse2.cpp
+-    raduls_sse41.cpp
+-    raduls_avx2.cpp
+-    raduls_avx.cpp)
++  set(raduls_sources raduls_sse2.cpp)
+   set_source_files_properties(raduls_sse2.cpp PROPERTIES COMPILE_OPTIONS "-msse2")
+-  set_source_files_properties(raduls_sse41.cpp PROPERTIES COMPILE_OPTIONS "-msse4.1")
+-  set_source_files_properties(raduls_avx.cpp PROPERTIES COMPILE_OPTIONS "-mavx")
+-  set_source_files_properties(raduls_avx2.cpp PROPERTIES COMPILE_OPTIONS "-mavx2")
+ endif()
+ 
+ add_library(kff_core OBJECT
+diff --git a/kmc_core/kmc.h b/kmc_core/kmc.h
+index f0304f7..6444377 100644
+--- a/kmc_core/kmc.h
++++ b/kmc_core/kmc.h
+@@ -1538,19 +1538,7 @@ template <unsigned SIZE> KMC::Stage2Results CKMC<SIZE>::ProcessStage2_impl()
+ 	bool is_xeon = proc_name.find("xeon") != string::npos;
+ 	if (is_xeon || (is_intel && at_least_avx))
+ 	{
+-		if (CCpuInfo::AVX2_Enabled())
+-			sort_func = RadulsSort::RadixSortMSD_AVX2<CKmer<SIZE>>;
+-		else if (CCpuInfo::AVX_Enabled())
+-			sort_func = RadulsSort::RadixSortMSD_AVX<CKmer<SIZE>>;
+-		else if (CCpuInfo::SSE41_Enabled())
+-			sort_func = RadulsSort::RadixSortMSD_SSE41<CKmer<SIZE>>;
+-		else if (CCpuInfo::SSE2_Enabled())
+-			sort_func = RadulsSort::RadixSortMSD_SSE2<CKmer<SIZE>>;
+-		else
+-		{
+-			//probably never because x64 always supports sse2 as far as I know
+-			std::cerr << "Error: At least SSE2 must be supported\n";
+-		}
++		sort_func = RadulsSort::RadixSortMSD_SSE2<CKmer<SIZE>>;
+ 	}
+ 	else
+ 	{
+diff --git a/kmc_core/raduls.h b/kmc_core/raduls.h
+index da80366..581a144 100644
+--- a/kmc_core/raduls.h
++++ b/kmc_core/raduls.h
+@@ -24,15 +24,6 @@ namespace RadulsSort
+ #ifndef __aarch64__
+ 	template<typename KMER_T>
+ 	void RadixSortMSD_SSE2(KMER_T* kmers, KMER_T* tmp, uint64 n_recs, uint32 byte, uint32 n_threads, CMemoryPool* pmm_radix_buf);
+-
+-	template<typename KMER_T>
+-	void RadixSortMSD_SSE41(KMER_T* kmers, KMER_T* tmp, uint64 n_recs, uint32 byte, uint32 n_threads, CMemoryPool* pmm_radix_buf);
+-
+-	template<typename KMER_T>
+-	void RadixSortMSD_AVX(KMER_T* kmers, KMER_T* tmp, uint64 n_recs, uint32 byte, uint32 n_threads, CMemoryPool* pmm_radix_buf);
+-
+-	template<typename KMER_T>
+-	void RadixSortMSD_AVX2(KMER_T* kmers, KMER_T* tmp, uint64 n_recs, uint32 byte, uint32 n_threads, CMemoryPool* pmm_radix_buf);
+ #else
+ 	template<typename KMER_T>
+ 	void RadixSortMSD_NEON(KMER_T* kmers, KMER_T* tmp, uint64 n_recs, uint32 byte, uint32 n_threads, CMemoryPool* pmm_radix_buf);
+diff --git a/kmc_core/raduls_avx.cpp b/kmc_core/raduls_avx.cpp
+deleted file mode 100644
+index 257a2a3..0000000
+--- a/kmc_core/raduls_avx.cpp
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/*
+-  This file is a part of KMC software distributed under GNU GPL 3 licence.
+-  The homepage of the KMC project is http://sun.aei.polsl.pl/kmc
+-  
+-  Authors: Sebastian Deorowicz, Agnieszka Debudaj-Grabysz, Marek Kokot
+-  
+-  Version: 3.2.4
+-  Date   : 2024-02-09
+-*/
+-
+-#include "raduls_impl.h"
+-
+-// ***** EOF
+diff --git a/kmc_core/raduls_avx2.cpp b/kmc_core/raduls_avx2.cpp
+deleted file mode 100644
+index 257a2a3..0000000
+--- a/kmc_core/raduls_avx2.cpp
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/*
+-  This file is a part of KMC software distributed under GNU GPL 3 licence.
+-  The homepage of the KMC project is http://sun.aei.polsl.pl/kmc
+-  
+-  Authors: Sebastian Deorowicz, Agnieszka Debudaj-Grabysz, Marek Kokot
+-  
+-  Version: 3.2.4
+-  Date   : 2024-02-09
+-*/
+-
+-#include "raduls_impl.h"
+-
+-// ***** EOF
+diff --git a/kmc_core/raduls_impl.h b/kmc_core/raduls_impl.h
+index b9e80bb..06ccd11 100644
+--- a/kmc_core/raduls_impl.h
++++ b/kmc_core/raduls_impl.h
+@@ -753,16 +753,13 @@ namespace RadulsSort
+ 		}
+ 	}
+ 
+-#if defined(__AVX2__)
+-#define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_AVX2
+-#elif defined (__AVX__)
+-#define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_AVX
+-#elif defined(__SSE4_1__)
+-#define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_SSE41
+-#elif defined(__SSE2__)
+-#define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_SSE2
+-#elif defined(__aarch64__)
++// One variant per architecture. The x86 name stays SSE2 even if a global -march enables more.
++#if defined(__aarch64__)
+ #define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_NEON
++#elif defined(__x86_64__) || defined(_M_X64) || defined(__i386__) || defined(_M_IX86)
++#define RADULS_RADIX_SORT_FUNNAME RadixSortMSD_SSE2
++#else
++#error "RADULS: unsupported architecture"
+ #endif
+ 
+ 
+diff --git a/kmc_core/raduls_sse41.cpp b/kmc_core/raduls_sse41.cpp
+deleted file mode 100644
+index 257a2a3..0000000
+--- a/kmc_core/raduls_sse41.cpp
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/*
+-  This file is a part of KMC software distributed under GNU GPL 3 licence.
+-  The homepage of the KMC project is http://sun.aei.polsl.pl/kmc
+-  
+-  Authors: Sebastian Deorowicz, Agnieszka Debudaj-Grabysz, Marek Kokot
+-  
+-  Version: 3.2.4
+-  Date   : 2024-02-09
+-*/
+-
+-#include "raduls_impl.h"
+-
+-// ***** EOF

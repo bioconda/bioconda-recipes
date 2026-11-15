@@ -1,0 +1,63 @@
+{% set name = "recore" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PathoGenOmics-Lab/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: eb5dd01968a6b8d3536201f59e275ac05d66c1cc7ac7bec64f75c6fcac547bdf
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  run:
+    - minimap2
+
+test:
+  commands:
+    - recore --version | grep '{{ version }}'
+    - recore --help
+    - minimap2 --version
+
+about:
+  home: https://github.com/PathoGenOmics-Lab/recore
+  license: AGPL-3.0-only
+  license_family: AGPL
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Post-hoc rescue and quality control of pangenome presence/absence matrices
+  description: |
+    Recore searches every empty cell of a pangenome presence/absence matrix in the
+    genome assemblies with minimap2, puts back the genes that are really there and
+    keeps the evidence for each one. It reads the output of Panaroo, Roary,
+    PPanGGOLiN, PanTA and PIRATE, and writes a corrected matrix, a matrix with an
+    evidence state in every cell, one row of evidence per decision, and a
+    self-contained HTML report.
+  dev_url: https://github.com/PathoGenOmics-Lab/recore
+  doc_url: https://pathogenomics-lab.github.io/recore/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - paururo
+    - PathoGenOmics-Lab
+  categories:
+    - Genomics
+    - Comparative Genomics
+  identifiers:
+    - doi:10.5281/zenodo.23448590
