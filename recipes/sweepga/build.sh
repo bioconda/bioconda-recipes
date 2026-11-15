@@ -47,10 +47,6 @@ if [[ $(uname) == "Darwin" ]]; then
     export LDFLAGS="${LDFLAGS} -L${LIBCXX_DIR} -lc++"
     export LIBRARY_PATH="${LIBCXX_DIR}:${LIBRARY_PATH:-}"
 
-    # IMPORTANT: Set DYLD_FALLBACK_LIBRARY_PATH to help cmake find its libraries
-    # This is safer than DYLD_LIBRARY_PATH as it only gets used if libraries aren't found normally
-    export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib:${PREFIX}/lib:/usr/lib:/System/Library/Frameworks"
-
     # For C++ builds that might not respect LDFLAGS
     export CXXFLAGS="${CXXFLAGS} -L${LIBCXX_DIR}"
 
@@ -91,25 +87,10 @@ mkdir -p "${LIBEXEC}"
 
 BUILT="${CARGO_TARGET_DIR}/release"
 
-# The build tree is the reliable source once cargo has returned.
-find_built() {
-    local name="$1" hit
-    if [[ -f "${BUILT}/${name}" ]]; then
-        echo "${BUILT}/${name}"
-        return 0
-    fi
-    hit=$(find "${BUILT}/build" -maxdepth 4 -type f -name "${name}" -print -quit 2>/dev/null || true)
-    [[ -n "${hit}" ]] && echo "${hit}"
-}
-
+# sweepga's build.rs copies the 8 tools to its cache directory.
+CACHE=$(ls -d "${HOME}/.cache/sweepga/${PKG_VERSION}_"*)
 for bin in wfmash FastGA FAtoGDB GIXmake GIXrm ALNtoPAF PAFtoALN ONEview; do
-    src=$(find_built "${bin}" || true)
-    if [[ -z "${src}" ]]; then
-        echo "ERROR: companion binary ${bin} was not built"
-        exit 1
-    fi
-    echo "installing companion binary ${bin} from ${src}"
-    install -m 755 "${src}" "${LIBEXEC}/${bin}"
+    install -m 755 "${CACHE}/${bin}" "${LIBEXEC}/${bin}"
 done
 
 # wfmash's build-time RPATH points into the target dir, which does not survive.
