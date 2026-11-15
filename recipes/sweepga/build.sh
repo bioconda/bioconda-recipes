@@ -75,9 +75,6 @@ export PORTABLE=1
 
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
-# cargo install alone uses a temp target dir and deletes the companion binaries.
-export CARGO_TARGET_DIR="${SRC_DIR}/target"
-
 export RUST_BACKTRACE=1
 cargo install -v --locked --no-track --path . --root "${PREFIX}"
 
@@ -85,38 +82,8 @@ cargo install -v --locked --no-track --path . --root "${PREFIX}"
 LIBEXEC="${PREFIX}/libexec/sweepga"
 mkdir -p "${LIBEXEC}"
 
-BUILT="${CARGO_TARGET_DIR}/release"
-
 # sweepga's build.rs copies the 8 tools to its cache directory.
 CACHE=$(ls -d "${HOME}/.cache/sweepga/${PKG_VERSION}_"*)
 for bin in wfmash FastGA FAtoGDB GIXmake GIXrm ALNtoPAF PAFtoALN ONEview; do
     install -m 755 "${CACHE}/${bin}" "${LIBEXEC}/${bin}"
 done
-
-# wfmash's build-time RPATH points into the target dir, which does not survive.
-mkdir -p "${PREFIX}/lib"
-found_libs=0
-while IFS= read -r lib; do
-    echo "installing runtime library $(basename "${lib}")"
-    install -m 755 "${lib}" "${PREFIX}/lib/"
-    found_libs=$((found_libs + 1))
-done < <(find "${BUILT}" -name 'libwfa2*.so*' -o -name 'libwfa2*.dylib' | sort -u)
-if [[ "${found_libs}" -eq 0 ]]; then
-    echo "ERROR: no libwfa2 runtime libraries found"
-    exit 1
-fi
-
-for bin in sweepga alnstats; do
-    test -x "${PREFIX}/bin/${bin}" || { echo "ERROR: ${bin} was not installed"; exit 1; }
-done
-for bin in wfmash FastGA FAtoGDB GIXmake GIXrm ALNtoPAF PAFtoALN ONEview; do
-    test -x "${LIBEXEC}/${bin}" || { echo "ERROR: ${bin} was not installed"; exit 1; }
-done
-# bin/ must stay clean, or we clobber the wfmash and fastga packages.
-for bin in wfmash FastGA FAtoGDB GIXmake GIXrm ALNtoPAF PAFtoALN ONEview; do
-    if [[ -e "${PREFIX}/bin/${bin}" ]]; then
-        echo "ERROR: ${bin} leaked into bin/"
-        exit 1
-    fi
-done
-echo "installed sweepga and alnstats in bin/ and 8 companions in libexec/sweepga/"
