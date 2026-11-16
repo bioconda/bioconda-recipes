@@ -1,0 +1,72 @@
+{% set name = "colabalign" %}
+{% set version = "1.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/crfield18/ColabAlign/archive/v{{ version }}.tar.gz
+  sha256: 8985c548309c17aeb95236ceabf0194ad266629912b0d599f26a86b785d4c5ad
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - colabalign = colabalign.pipeline:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  # Compatible ranges, not the exact reference pins: an exactly pinned noarch
+  # package would only install into the reference environment. Lower bounds are
+  # the tested versions; locks/ holds the exact reproducible environments.
+  host:
+    - python >=3.12
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.12
+    - numpy >=2.5,<3
+    - pandas >=3.1,<4
+    - biopython >=1.88,<2
+    - scipy >=1.18,<2
+    - tqdm >=4.70,<5
+    - treecluster >=1.0.5,<2
+    - usalign >=20241201
+    - beem-bio >=1.0.1,<2
+
+test:
+  imports:
+    - colabalign
+    - colabalign.pipeline
+  commands:
+    - colabalign --help
+    - colabalign --version
+    - USalign -h > /dev/null
+    - command -v BeEM > /dev/null
+    - TreeCluster.py -h > /dev/null
+
+about:
+  home: https://github.com/crfield18/ColabAlign
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "All-vs-all US-align protein structure comparison, structural dendrograms and clustering."
+  description: |
+    ColabAlign runs parallel all-vs-all US-align (TM-align) structural
+    alignments of protein chains, builds a UPGMA structural dendrogram from
+    the TM-score matrix, clusters it with TreeCluster at one or more
+    thresholds, superposes each cluster onto its medoid, and picks a
+    consensus representative per cluster. Accepts .pdb, .cif and .zip inputs.
+  dev_url: https://github.com/crfield18/ColabAlign
+  doc_url: https://github.com/crfield18/ColabAlign/blob/v{{ version }}/README.md
+
+extra:
+  identifiers:
+    - doi:10.1101/2025.10.06.677802
+    - doi:10.5281/zenodo.14169501
+  recipe-maintainers:
+    - crfield18
