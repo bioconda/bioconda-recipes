@@ -67,15 +67,15 @@ test:
       def trace(segs, seed):
           r, o, out = np.random.default_rng(seed), np.zeros(3), []
           for k, n in segs:
-              q = np.linalg.qr(r.normal(size=(3, 3)))[0]
+              q, _ = np.linalg.qr(r.normal(size=(3, 3)))
               x = seg(k, n, r)
               x = (x - x[0]) @ q + o
               out.append(x)
-              o = x[-1] + 3.8 * q[0]
+              o = x[-1] + q[0] * 3.8
           x = np.vstack(out)
           return x + r.normal(scale=0.3, size=x.shape)
       def write_pdb(p, x):
-          rows = [f'ATOM  {i:5d}  CA  ALA A{i:4d}    {a:8.3f}{b:8.3f}{c:8.3f}  1.00  0.00           C' for i, (a, b, c) in enumerate(x, 1)]
+          rows = list(f'ATOM  {i:5d}  CA  ALA A{i:4d}    {a:8.3f}{b:8.3f}{c:8.3f}  1.00  0.00           C' for i, (a, b, c) in enumerate(x, 1))
           p.write_text(chr(10).join(rows + ['TER', 'END', '']))
       fams = {'hh': [('h', 14), ('c', 4), ('h', 14)], 'bab': [('s', 6), ('c', 3), ('h', 12), ('c', 3), ('s', 6)]}
       work = pathlib.Path(tempfile.mkdtemp())
