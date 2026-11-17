@@ -53,8 +53,11 @@ test:
     - treeannotator -help
     # verify the bundled packages are discoverable without writable $HOME,
     # as required in containerised environments (e.g. Galaxy / Singularity);
-    # prints nothing to stdout if package discovery fails
-    - _JAVA_OPTIONS="-Duser.home=${PWD}/no-such-home" beast -version \| grep "BEAST v"
+    # prints nothing to stdout if package discovery fails.
+    # NOTE: use an absolute path outside ${PWD}: the mulled docker test mounts
+    # its working directory read-write and runs as root, so files created
+    # under ${PWD} would break bioconda-utils' tempdir cleanup.
+    - _JAVA_OPTIONS="-Duser.home=/nonexistent" beast -version \| grep "BEAST v"
 
 about:
   home: http://www.beast2.org
