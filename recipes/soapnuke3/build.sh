@@ -21,6 +21,8 @@ python3 tests/check_modules.py --binary "$binary" --threads 2 --out .scratch/tmp
 python3 tests/check_adapter_overlap.py --binary "$binary" --out .scratch/tmp/conda-overlap
 install -Dm755 "$binary" "$PREFIX/bin/SOAPnuke"
 
+(cd soapnuke-rs && CARGO_NET_OFFLINE=true cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml")
+
 python3 - <<'PY'
 from pathlib import Path
 
