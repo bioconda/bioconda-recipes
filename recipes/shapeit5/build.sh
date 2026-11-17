@@ -48,11 +48,13 @@ DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm -lcrypto"
 DYN_LIBS="${DYN_LIBS} -lboost_iostreams -lboost_program_options -lboost_serialization"
 
 # The makefile link rule receives the boost archives as file paths.
-# conda-forge ships boost as shared libraries on macOS, so fall back to the
-# .dylib when no static archive is available.
+# conda-forge ships boost as shared libraries on macOS (.dylib), so fall
+# back to the shared library when no static archive is available.
 boost_lib() {
     if [[ -f "${PREFIX}/lib/lib${1}.a" ]]; then
         echo "${PREFIX}/lib/lib${1}.a"
+    elif [[ -f "${PREFIX}/lib/lib${1}.so" ]]; then
+        echo "${PREFIX}/lib/lib${1}.so"
     else
         echo "${PREFIX}/lib/lib${1}.dylib"
     fi
