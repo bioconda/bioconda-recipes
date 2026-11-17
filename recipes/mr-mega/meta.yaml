@@ -1,0 +1,42 @@
+{% set version = "0.2" %}
+
+package:
+  name: mr-mega
+  version: {{ version }}
+
+source:
+  url: https://tools.gi.ut.ee/tools/MR-MEGA_v{{ version }}.zip
+  sha256: e91eb5bdba0a398619e6cd98c351ea72d94e09d6f5a1d25bb7da8a66da938ffe
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('mr-mega', max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - MR-MEGA --help | grep "MR-MEGA"
+    - MR-MEGA --version | grep "{{ version }}"
+
+about:
+  home: https://genomics.ut.ee/en/tools
+  license: GPL-2.0-or-later AND BSD-3-Clause AND MIT
+  license_file:
+    - main.cpp
+    - igammaf.cpp
+    - Arg.h
+  summary: Meta-regression of multi-ancestry genetic association results
+
+extra:
+  identifiers:
+    - doi:10.1093/hmg/ddx280
+  recipe-maintainers:
+    - lyh970817

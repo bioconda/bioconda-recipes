@@ -1,0 +1,50 @@
+{% set version = "1.5.0" %}
+
+package:
+  name: tuna-kmer
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vicLeva/tuna/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: bae0f299a00dec3da89388d048de2358bb7f919cce6776346c091c06b7e6d913
+  - url: https://github.com/Kmer-File-Format/kff-cpp-api/archive/refs/heads/main.tar.gz
+    sha256: a28867c3503c37b0dce5498fb3d3148b88e30196ea2404ff60627619ab8d6a9e
+    folder: kff_src
+  - url: https://github.com/martinus/unordered_dense/archive/refs/tags/v4.10.0.tar.gz
+    sha256: 3a3ab0abd80cbfd6b8f86becf9f82fc0961230abcea2d34a8b1035c59d5dd24d
+    folder: unordered_dense_src
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('tuna-kmer', max_pin='x.x') }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.17
+    - make
+  host:
+    - zlib  # conda-forge zlib is backed by zlib-ng in compat mode — same performance
+  run:
+    - libgcc-ng   # [linux]
+    - libstdcxx-ng  # [linux]
+    - __osx >=11.0  # [osx]
+
+test:
+  commands:
+    - tuna --version
+
+about:
+  home: https://github.com/vicLeva/tuna
+  license: MIT
+  summary: Streaming k-mer counter built on superkmer partitioning
+  description: |
+    tuna counts k-mers in FASTA/FASTQ files (plain or gzipped) using a
+    streaming superkmer-partitioning pipeline.  This conda build supports
+    k ∈ {21, 31, 51, 63, 127} with common odd minimizer lengths.
+
+extra:
+  recipe-maintainers:
+    - vicLeva

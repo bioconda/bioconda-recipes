@@ -23,38 +23,31 @@ then
 java="$JAVA_HOME/bin/java"
 fi
 
-# extract memory and system property Java arguments from the list of provided arguments
-# http://java.dzone.com/articles/better-java-shell-script
-default_jvm_mem_opts="-Xms512m -Xmx1g"
-jvm_mem_opts=""
-jvm_prop_opts=""
-pass_args=""
+# Split JVM options from tool arguments. Keep every argument as a separate
+# array element and exec java directly: arguments are never re-parsed by the
+# shell (no eval), so values like '$(cmd)' or 'x;cmd' stay plain data.
+jvm_mem_opts=()
+jvm_prop_opts=()
+pass_args=()
 for arg in "$@"; do
-    case $arg in
-        '-D'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
-            ;;
-        '-XX'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
-            ;;
-         '-Xm'*)
-            jvm_mem_opts="$jvm_mem_opts $arg"
-            ;;
-         *)
-            pass_args="$pass_args $arg"
-            ;;
+    case "$arg" in
+        -D*|-XX*) jvm_prop_opts+=("$arg") ;;
+        -Xm*)     jvm_mem_opts+=("$arg") ;;
+        *)        pass_args+=("$arg") ;;
     esac
 done
 
-if [ "$jvm_mem_opts" == "" ]; then
-    jvm_mem_opts="$default_jvm_mem_opts"
+if [[ -z ${jvm_mem_opts[0]:-} ]]; then
+    jvm_mem_opts=(-Xms512m -Xmx1g)
 fi
 
-pass_arr=($pass_args)
-if [[ ${pass_arr[0]} == org* ]]
-then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/MendelScan.v1.2.2.jar" $pass_args
+# The + form also preserves empty arrays with nounset on older Bash releases.
+if [[ ${pass_args[0]:-} == org* ]]; then
+    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
+        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
+        -cp "$JAR_DIR/MendelScan.v1.2.2.jar" ${pass_args[@]+"${pass_args[@]}"}
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/MendelScan.v1.2.2.jar" $pass_args
+    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
+        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
+        -jar "$JAR_DIR/MendelScan.v1.2.2.jar" ${pass_args[@]+"${pass_args[@]}"}
 fi
-exit

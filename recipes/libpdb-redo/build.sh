@@ -35,5 +35,5 @@ cmake -S . -B build -G Ninja \
     -Wno-dev -Wno-deprecated --no-warn-unused-cli \
     ${CONFIG_ARGS}
 
-cmake --build build --config Release --parallel "${CPU_COUNT}"
+cmake --build build --parallel "${CPU_COUNT}"
 cmake --install build

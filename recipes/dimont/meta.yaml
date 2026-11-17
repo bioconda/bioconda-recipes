@@ -1,0 +1,65 @@
+{% set name = "dimont" %}
+{% set version = "2.4.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Jstacs/Jstacs/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b93a3ea2e4b84e1fddfd5f53bc179e8c0da4f1f1a8e84afd23b18069bfaa124c
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - openjdk >=11,<18
+  run:
+    - openjdk >=11,<18
+
+test:
+  commands:
+    - dimont 2>&1 | grep -q "required parameters"
+    - slimdimont 2>&1 | grep -q "required parameters"
+    - dimont-predictor 2>&1 | grep -q "required parameters"
+    - slimdimont-predictor 2>&1 | grep -q "required parameters"
+    - dimont-genomescan 2>&1 | grep -i "Dimont"
+    - dimont-cli 2>&1 | grep -i "SlimDimont"
+
+about:
+  home: https://www.jstacs.de/index.php/Dimont
+  dev_url: https://github.com/Jstacs/Jstacs
+  doc_url: https://www.jstacs.de/index.php/Dimont
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: COPYING.txt
+  summary: Dimont and SlimDimont (Slim, LSlim) de-novo motif discovery for ChIP-seq and PBM data
+  description: |
+    Dimont is a universal tool for discriminative de-novo motif discovery of
+    transcription factor binding sites from high-throughput data such as
+    ChIP-seq, ChIP-exo and protein-binding microarrays (PBM). Motifs are
+    modelled as position weight matrices (PWM) or inhomogeneous Markov models.
+
+    SlimDimont extends Dimont with Slim (sparse local inhomogeneous mixture)
+    and LSlim models, which capture neighbouring and non-neighbouring
+    dependencies between motif positions. Dependency logos, motif scanning
+    and genome-wide binding site prediction are provided as well.
+
+    Both tools are part of the Jstacs Java library. This package installs the
+    authors' command line programs, which take key=value arguments exactly as
+    documented on the Jstacs web site: dimont, slimdimont, dimont-predictor,
+    slimdimont-predictor and dimont-genomescan, plus dimont-cli, the multi-tool
+    interface that also includes sequence extraction, motif scanning and
+    QuickScan binding site prediction. JVM options such as -Xmx4G may be given
+    before the tool arguments.
+
+extra:
+  recipe-maintainers:
+    - ubercomrade
+  identifiers:
+    - doi:10.1093/nar/gkt831
+    - doi:10.1093/nar/gkv577
