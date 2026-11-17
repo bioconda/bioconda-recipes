@@ -6,21 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  # The walker lives in walker/ of the disassembler repository, with its own tag series.
   url: https://github.com/nekrut/disassembler/archive/refs/tags/logan-walker-v{{ version }}.tar.gz
   sha256: 8774df0d6e010715958775ea2b89ae0327be2ce34e6ec5e3ea5b72c1762ccf21
 
 build:
-  # 1: version 0.1.1 build 0 was published from the autobump bot's version-only recipe
-  # (bioconda-recipes#71067). The source is unchanged; this build exists to carry the
-  # corrected platform comment below and to turn the bot off.
   number: 1
-  # linux-64 only, and not for the CI reason the 0.1.0 recipe gave. GraphAligner 1.0.17b has
-  # no osx-arm64 build at all, and both of its osx-64 builds (h66d0458_0, h8d12793_2) require
-  # protobuf 3.14.0, which conda-forge ships for osx-64 only up to Python 3.9 while
-  # disassembler needs >= 3.11. An osx-64 logan-walker would pass its own CI (it pulls 3.9 on
-  # its own) and leave `disassembler` unsatisfiable on macOS. Linux solves only because of the
-  # protobuf-free build hdcf5f25_1. macOS returns when an equivalent osx-64 build exists.
+  # Skipping macOS for now: no usable GraphAligner 1.0.17b build there
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -28,13 +19,11 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
-    # ring (TLS) and zstd-sys (bundled libzstd) compile C.
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - cargo-bundle-licenses
   run:
-    # 1.0.19 and 1.0.20 clip the last query base, and 1.0.18 cannot be installed with
-    # Python 3.11+. See docs/issue_graphaligner_end_clipping.md in the source.
+    # 1.0.19+ clips the last query base; 1.0.18 cannot be installed with Python 3.11+
     - graphaligner ==1.0.17b
 
 test:
@@ -54,13 +43,10 @@ about:
   license_family: MIT
   license_file:
     - LICENSE
+    - NOTICE
     - walker/THIRDPARTY.yml
   dev_url: https://github.com/nekrut/disassembler
 
 extra:
-  # See the disassembler recipe: the bot's version-only PR for 0.1.1 merged ahead of the
-  # maintainer PR. Version bumps here are done by hand.
-  autobump:
-    enable: False
   recipe-maintainers:
     - as042

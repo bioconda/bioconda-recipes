@@ -1,20 +1,18 @@
 {% set name = "kmer-diversity-sieve" %}
 {% set version = "0.1.0" %}
-{% set commit = "70022dac889ce315a938310fe49e93618e79ddc6" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  # Upstream has no tagged releases; 0.1.0 is this commit of main.
-  url: https://github.com/stevenweaver/{{ name }}/archive/{{ commit }}.tar.gz
-  sha256: dd3a65c9e42cfc1efb9c99b0261515f31dc8f59b68bd1c32805fef2c095afb56
+  url: https://github.com/stevenweaver/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 506057948f429d5529dcef2b9eb3198912b521b8a4f0c5b55256c50dd2684439
 
 build:
-  # 1: macOS builds re-enabled (bioconda/bioconda-recipes#70401 closed 2026-10-21); the
-  # source is unchanged, so the version stays at 0.1.0.
   number: 1
+  # Linux only: the package exists for disassembler, which cannot be installed on macOS
+  skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
@@ -26,7 +24,7 @@ requirements:
 
 test:
   commands:
-    # There is no --version or --help; with no arguments it names the required flag.
+    # There is no --version or --help; with no arguments it names the required flag
     - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
 
 about:
@@ -43,10 +41,5 @@ about:
   dev_url: https://github.com/stevenweaver/kmer-diversity-sieve
 
 extra:
-  # Upstream has no tags, so the version here is set by hand against a pinned commit; an
-  # automatic version bump would have nothing correct to bump to.
-  autobump:
-    enable: False
   additional-platforms:
     - linux-aarch64
-    - osx-arm64
