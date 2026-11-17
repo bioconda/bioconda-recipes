@@ -34,7 +34,8 @@ rm -f bin/util/irfinder bin/util/irfinder_cnn bin/util/trim bin/util/winflat
 rm -f bin/util/model/best_model.h5
 
 (cd src/irfinder/Release && make -j"${CPU_COUNT}" && cp irfinder "${SRC_DIR}/bin/util/")
-(cd src/trim && make -j"${CPU_COUNT}" trim CC="${CXX}" LDFLAGS="${LDFLAGS}" && cp trim "${SRC_DIR}/bin/util/")
+# The trim Makefile hardcodes its own CCFLAGS_MAIN (incl. an unused -fopenmp): override it.
+(cd src/trim && make -j"${CPU_COUNT}" trim CC="${CXX}" CCFLAGS_MAIN="-std=c++0x -O3 ${CXXFLAGS}" LDFLAGS="${LDFLAGS}" && cp trim "${SRC_DIR}/bin/util/")
 (cd src/winflat && make winflat CC="${CC}" && cp winflat "${SRC_DIR}/bin/util/")
 
 # CNN validator: upstream ships a prebuilt binary; install the python sources instead.
@@ -43,6 +44,10 @@ CNN_SRC=src/cnnfilter/testCNN
 sed -i.bak 's/^import tflite_runtime.interpreter as tflite$/try:\n    import tflite_runtime.interpreter as tflite\nexcept ImportError:\n    from tensorflow import lite as tflite/' ${CNN_SRC}/actions/models.py
 rm -f ${CNN_SRC}/actions/models.py.bak
 grep -q "from tensorflow import lite" ${CNN_SRC}/actions/models.py
+
+# Perl helpers use #!/usr/bin/perl, which does not exist in the biocontainer.
+grep -rl '^#!/usr/bin/perl' bin | xargs sed -i.bak '1s|^#!/usr/bin/perl|#!/usr/bin/env perl|'
+find bin -name '*.bak' -delete
 
 irfinder_home="${PREFIX}/opt/irfinder-${PKG_VERSION}"
 mkdir -p "${irfinder_home}/bin" "${PREFIX}/bin"
