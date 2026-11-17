@@ -35,7 +35,8 @@ test:
     - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\nX02/1-4 ACGU\n#=GC SS_cons <..>\n//\n' > ok.sto
     - rfam-seed-qc -v ok.sto | grep -q "Valid Stockholm file"
     - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\n' > bad.sto
-    - '! rfam-seed-qc bad.sto'
+    - if rfam-seed-qc bad.sto > bad.log 2>&1; then exit 1; fi
+    - grep -qF "Missing required '//' terminator" bad.log
 
 about:
   home: https://github.com/Rfam/rfam-seed-qc
