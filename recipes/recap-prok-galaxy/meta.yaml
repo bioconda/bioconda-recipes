@@ -1,0 +1,47 @@
+{% set name = "recap-prok-galaxy" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/AboJoan/galaxy-tools/releases/download/recap-prok-galaxy-v0.1.0/recap-prok-galaxy-0.1.0.tar.gz
+  sha256: bd965b760cf09db7a29e853e71b6dcd609003175c863a467202694c968d45abf
+
+build:
+  number: 0
+  noarch: generic
+  script: bash packaging/galaxy-conda/install_galaxy.sh
+
+requirements:
+  build:
+    - bash
+    - coreutils
+  run:
+    - python >=3.11
+    - biopython
+    - matplotlib-base
+    - pandas
+    - bash
+    - bedtools
+    - gawk
+    - coreutils
+
+test:
+  commands:
+    - test -x "${PREFIX}/bin/recap-prok-galaxy"
+    - "bash -c 'output=$(recap-prok-galaxy 2>&1); status=$?; [[ $status -eq 2 && $output == *Usage* ]]'"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module3_table3_columns.sh"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/pairs_classified_inter.py"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module4_build_genbank.py"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module4_hypothetical_comparison.py"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module4_nr_analysis.py"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module4_functional_comparison.py"
+    - test -f "${PREFIX}/share/recap-prok-galaxy/galaxy_scripts/module4_antismash_analysis.py"
+
+about:
+  home: https://github.com/Helmholtz-UFZ/galaxy-tools/tree/main/tools/recap-prok
+  summary: "RECAP-PROK Galaxy analysis tools for modules 3 and 4"
+  license: MIT
+  license_file: LICENSE
