@@ -30,7 +30,8 @@ test:
     - rfam-seed-qc-build-live-cm --help
     # Must also work when the environment is not activated
     - env -i PATH=/usr/bin:/bin "${PREFIX}/bin/rfam-seed-qc" --help
-    - command -v cmscan esl-reformat blastn blastdbcmd
+    # One tool per check: command -v with several names can return 0 when one is missing
+    - for t in cmscan cmpress esl-reformat blastn blastdbcmd wget; do command -v "$t"; done
     # Offline validation of a minimal alignment (no --fix, so no network)
     - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\nX02/1-4 ACGU\n#=GC SS_cons <..>\n//\n' > ok.sto
     - rfam-seed-qc -v ok.sto | grep -q "Valid Stockholm file"
