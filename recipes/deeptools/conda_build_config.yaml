@@ -1,0 +1,13 @@
+# deeptools 4.1.0 builds a Rust extension via maturin, and the conda-forge
+# rust 1.100.0 package is built against LLVM 23. On macOS the bioconda CI
+# resolves the C compiler to clang 19 (c_compiler_version pin), whose
+# libLLVM.19 makes rustc abort during maturin's metadata generation with
+#   "LLVM version mismatch: this compiler was built for LLVM 23, but LLVM
+#    19.1.7 was found at .../lib/libLLVM.19.1.dylib"
+# (observed on osx-arm64). Pin the macOS C compiler to the LLVM version that
+# rust 1.100.0 was built with; clangdev/llvmdev follow automatically because
+# clangdev depends on the exact matching clang version.
+# Remove these pins once bioconda's macOS compiler pinning is based on
+# LLVM >= 23.
+c_compiler_version:            # [osx]
+  - 23                         # [osx]
