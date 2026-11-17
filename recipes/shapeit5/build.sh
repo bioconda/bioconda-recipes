@@ -45,6 +45,11 @@ else
 fi
 
 DYN_LIBS="-lz -lpthread -lbz2 -llzma -lcurl -lhts -ldeflate -lm -lcrypto"
+if [[ "${OS}" != "Darwin" ]]; then
+    # htslib's plugin loader (plugin.c) calls dlopen/dlsym/dlclose/dlerror,
+    # which live in libdl on older glibc (bioconda CentOS 7 = glibc 2.17).
+    DYN_LIBS="${DYN_LIBS} -ldl"
+fi
 DYN_LIBS="${DYN_LIBS} -lboost_iostreams -lboost_program_options -lboost_serialization"
 
 # The makefile link rule receives the boost archives as file paths.
