@@ -30,6 +30,11 @@ elif [[ "${ARCH}" == "aarch64" || "${ARCH}" == "arm64" ]]; then
     EXTRA_ARCH_FLAGS=""
 else
     EXTRA_ARCH_FLAGS="-mavx2 -mfma"
+    if [[ "${OS}" == "Darwin" ]]; then
+        # osx-64 (x86_64 macOS only): the conda-forge deployment baseline is
+        # 10.13, but std::filesystem (used by xcftools) requires 10.15.
+        EXTRA_ARCH_FLAGS="${EXTRA_ARCH_FLAGS} -mmacosx-version-min=10.15"
+    fi
 fi
 
 # Drop any -march=... inherited from the conda toolchain (e.g. -march=westmere
