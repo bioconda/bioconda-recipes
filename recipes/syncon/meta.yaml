@@ -1,0 +1,49 @@
+{% set name = "syncon" %}
+{% set version = "1.0" %}
+{% set sha256 = "29ed689b05307614b2339e7077fdd92a1a8b8591fee533df3c67b6e12ea6450e" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/c-zhou/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  host:
+    - zlib
+  run:
+    - python >=3
+    - numpy
+    - pandas
+
+test:
+  commands:
+    - syncon -h
+    - cutoff.py
+
+about:
+  home: "https://github.com/c-zhou/syncon"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "SynCON identifies and removes (typically low-coverage) contaminant contigs from draft genome assemblies by comparing syncmer-derived coverage signatures against the sequence data."
+  dev_url: "https://github.com/c-zhou/syncon"
+  doc_url: "https://github.com/c-zhou/syncon"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - c-zhou
+    - prototaxites
