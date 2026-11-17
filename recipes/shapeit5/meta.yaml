@@ -1,5 +1,5 @@
 {% set name = "shapeit5" %}
-{% set version = "5.1.1" %}
+{% set version = "5.1.2" %}
 {% set user = "odelaneau" %}
 
 package:
@@ -7,14 +7,15 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/odelaneau/shapeit5
-  git_commit: 990ed0dd0a814756c90e16d3a771bc0089b1177a
+  git_url: https://github.com/ltalignani/shapeit.git
+  git_rev: dce5c198392c292dc5f1e7954ad300e663215be8
   sha256: ignored
-  patches:
-    - arm64.patch  # [arm64 or aarch64]
+  # Points at the fork (branch apple-silicon-port @ dce5c19) until
+  # odelaneau/shapeit PR #5 is merged; re-point to odelaneau/shapeit
+  # at the merged commit afterwards.
 
 build:
-  number: 2
+  number: 0
   run_exports:
     - {{ pin_subpackage('shapeit5', max_pin="x") }}
 
@@ -22,8 +23,6 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - make
-    - cmake
-    - clangdev  # [osx]
   host:
     - boost-cpp
     - libcurl
@@ -42,23 +41,23 @@ test:
     - SHAPEIT5_phase_rare --help
     - SHAPEIT5_switch --help
     - SHAPEIT5_ligate --help
+    - SHAPEIT5_xcftools
 
 about:
-  home: https://odelaneau.github.io/shapeit5
+  home: https://odelaneau.github.io/shapeit
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: 'Fast and accurate method for estimation of haplotypes (phasing).'
-  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants.'
-  dev_url: https://github.com/odelaneau/shapeit5
-  doc_url: https://odelaneau.github.io/shapeit5
+  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants. The HMM engine uses native ARM NEON SIMD kernels on Apple Silicon (no sse2neon emulation) and AVX2/FMA on x86_64.'
+  dev_url: https://github.com/odelaneau/shapeit
+  doc_url: https://odelaneau.github.io/shapeit
 
 extra:
   identifiers:
-    - doi:10.1101/2022.10.19.512867 
+    - doi:10.1101/2022.10.19.512867
     - biotools:shapeit5
-  #additional-platforms:
-    #- linux-aarch64
-    #- osx-arm64
+  additional-platforms:
+    - osx-arm64
   skip-lints:
     - uses_vcs_url
