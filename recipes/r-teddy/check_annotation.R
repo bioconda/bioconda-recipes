@@ -40,3 +40,13 @@ stopifnot(
   identical(out$TE_position, rep(c("5prime", "internal", "3prime"), 2)),
   identical(out$TE_boundary, rep(c("TE-associated-initiation", "TE-internal", "TE-associated-termination"), 2))
 )
+
+(function() {
+  gtffile <- tempfile(fileext = ".gtf")
+  on.exit(unlink(gtffile))
+  gtf$gene_id <- gtf$transcript_id
+  gtf$exon_number <- gtf$tx_exon_rank
+  rtracklayer::export(gtf, gtffile, format = "gtf")
+  out <- Teddy::prepareAnno(gtffile, transposon = te, cores = 1)
+  stopifnot(length(out) == 6L, setequal(out$transposon, c("p5", "pi", "p3", "m3", "mi", "m5")))
+})()
