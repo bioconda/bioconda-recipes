@@ -1,20 +1,21 @@
 {% set name = "sigProfilerPlotting" %}
-{% set version = "1.4.3" %}
+{% set version = "1.5.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/sigprofilerplotting-{{ version }}.tar.gz
-  sha256: 0e72603798eb00d93a8d546091ce55a372e373300203fff795fafb120a0d4465
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/sigprofilerplotting-{{ version }}.tar.gz
+  sha256: 3bfcbb032fd5bb88522798e62c5dbf144bbee0b3c6b494dbee13b100ac7b08d3
 
 build:
-  entry_points:
-    - SigProfilerPlotting=sigProfilerPlotting.sigProfilerPlotting_CLI:main_function
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
   number: 0
+  noarch: python
+  entry_points:
+    - SigProfilerPlotting = sigProfilerPlotting.sigProfilerPlotting_CLI:main_function
+    - sigprofilerplotting-web = sigProfilerPlotting.web.launcher:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
 
@@ -22,13 +23,16 @@ requirements:
   host:
     - python >=3.9
     - pip
-    - setuptools
+    - setuptools-scm >=8
   run:
     - python >=3.9
     - matplotlib-base >=3.4.3
     - pandas >=2.0.0
     - scikit-learn >=1.1.3
     - pillow >=10.0.0
+    - plotly >=6.1.1
+    - python-kaleido >=1.0.0
+    - pypdf >=5.0.0
 
 test:
   imports:
@@ -37,10 +41,10 @@ test:
     - SigProfilerPlotting plotSBS --help
 
 about:
-  home: https://github.com/alexandrovlab/SigProfilerPlotting
+  home: "https://github.com/alexandrovlab/SigProfilerPlotting"
   summary: "SigProfiler plotting tool."
-  license: BSD-2-Clause
+  license: "BSD-2-Clause"
   license_family: BSD
   license_file: LICENSE
-  dev_url: https://github.com/alexandrovlab/SigProfilerPlotting
-  doc_url: https://osf.io/2aj6t/wiki/home
+  dev_url: "https://github.com/alexandrovlab/SigProfilerPlotting"
+  doc_url: "https://osf.io/2aj6t/wiki/home"

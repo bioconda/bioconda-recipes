@@ -1,6 +1,6 @@
 {% set name = "proteinortho" %}
-{% set version = "6.3.6" %}
-{% set sha256 = "2e41c9698bb7eaacdde242233e3a1643b429587d4b458577ecc5be2e752a2be5" %}
+{% set version = "6.3.7" %}
+{% set sha256 = "9ebc51af7f9653a24d93cb930afebf4fbc3df5be088c121ddf56928556187830" %}
 
 package:
   name: {{ name }}
@@ -20,6 +20,7 @@ requirements:
     - make
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - {{ stdlib('c') }}
     - cmake
   host:
     - llvm-openmp  # [osx]
@@ -30,6 +31,8 @@ requirements:
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
     - perl
+    - perl-dbi
+    - perl-dbd-sqlite
     - python
     - diamond >=0.9.29
     - liblapacke
@@ -37,6 +40,8 @@ requirements:
  
 test:
   commands:
+    - perl -MDBI -e 'print $DBI::VERSION'
+    - perl -MDBD::SQLite -e 'print $DBD::SQLite::VERSION'
     - proteinortho --version
     - proteinortho -test
     - proteinortho_clustering -test
