@@ -1,0 +1,53 @@
+{% set name = "eimdl" %}
+{% set version = "3.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MdSaifulIslamMSI/hypergrass-research/releases/download/v{{ version }}/hypergrass-research-v{{ version }}.tar.gz
+  sha256: b3217cd10f2ce668449c102b0b78e814aca4dbab4e41c8789e49584e4f287802
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - openjdk >=25
+  run:
+    - openjdk >=25
+
+test:
+  requires:
+    - python
+  commands:
+    - eimdl --version
+    - hypergrass --version
+
+about:
+  home: "https://github.com/MdSaifulIslamMSI/hypergrass-research"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "Evolutionary MDL lossless genomic compressor and compressed-domain analytics engine (.hgs2/.hgs3)."
+  description: |
+    EIMDL (HyperGraSS / HGS2 / HGS3) unites deterministic seven-law evolutionary lossless DNA compression
+    with zero-crate C23/C++23/Rust 2024 native execution (eimdl) and zero-dependency Java 25 LTS tooling
+    (hypergrass, eimdl-java). Supports .hgs2 and multi-omic .hgs3 (FASTA/FASTQ + 6-frame CDS digests)
+    archives as well as direct zero-FASTA analyze, VCF v4.2 variant calling, k-mer search, and slice queries.
+  doc_url: https://github.com/MdSaifulIslamMSI/hypergrass-research/blob/master/paper/HGS2_EIMDL_Research_Paper.pdf
+  dev_url: https://github.com/MdSaifulIslamMSI/hypergrass-research
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - MdSaifulIslamMSI
