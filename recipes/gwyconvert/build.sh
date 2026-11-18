@@ -18,7 +18,7 @@ cp "${BUILD_PREFIX}"/share/gnuconfig/config.* gwyddion/
 
 source "${CI_DIR}/gwyddion-configure-flags.sh"
 
-# conda's -dead_strip_dylibs idrops libgwydraw, which libgwydgets needs at runtime.
+# conda's -dead_strip_dylibs drops libgwydraw, which libgwydgets needs at runtime.
 export LDFLAGS="${LDFLAGS//-Wl,-dead_strip_dylibs/}"
 
 cd gwyddion
