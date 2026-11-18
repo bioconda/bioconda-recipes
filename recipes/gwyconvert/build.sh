@@ -18,6 +18,9 @@ cp "${BUILD_PREFIX}"/share/gnuconfig/config.* gwyddion/
 
 source "${CI_DIR}/gwyddion-configure-flags.sh"
 
+# conda's -dead_strip_dylibs idrops libgwydraw, which libgwydgets needs at runtime.
+export LDFLAGS="${LDFLAGS//-Wl,-dead_strip_dylibs/}"
+
 cd gwyddion
 # --build/--host are equal on a native build and turn on cross mode otherwise.
 ./configure --prefix="${PREFIX}" --build="${BUILD}" --host="${HOST}" \
