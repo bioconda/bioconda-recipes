@@ -11,7 +11,11 @@
 #
 # Pin the combination that conda's solver picks on osx-64 (where the build
 # passes): rust 1.95.0 (LLVM 19 era) together with clang 19, so rustc finds
-# a matching libLLVM and its own binaries load cleanly.
+# a matching libLLVM and its own binaries load cleanly. meta.yaml additionally
+# extends DYLD_FALLBACK_LIBRARY_PATH with the build prefix, because the clang
+# 19 linker driver cannot otherwise find libclang-cpp.19.1.dylib (it ships in
+# the separate libclang-cpp19.1 package, not in the clang package's own
+# lib/ directory that the driver's rpath resolves to).
 # Remove these pins once the macOS rust/clang pinning is consistent again.
 c_compiler_version:            # [osx]
   - 19                         # [osx]
