@@ -17,10 +17,18 @@ sed -i -e 's|\$cd_path/USER_SHUFFLED_DB|USER_SHUFFLED_DB|g' \
        -e 's|\$cd_path/DB/|DB/|g' \
        CRISPRTarget.pl
 
-# Upstream scripts are run as `perl <script>` (no shebang) or `sh <script>`;
-# make them directly executable.
-sed -i '1i #!/usr/bin/env perl' CRISPRTarget.pl
-sed -i '1i #!/usr/bin/env bash' MakeUserDB.sh MakeUserShuffledDB.sh
+# Upstream runs the scripts as `perl <script>` and `sh <script>` (one script
+# hardcodes #!/usr/bin/perl); give all of them a working interpreter so that
+# they can be called directly from PATH. The existing shebang has to be removed
+# in a separate pass, `d` ends the sed cycle and would drop the inserted line.
+for f in ./*.pl; do
+    sed -i '1{/^#!/d}' "${f}"
+    sed -i '1i #!/usr/bin/env perl' "${f}"
+done
+for f in ./*.sh; do
+    sed -i '1{/^#!/d}' "${f}"
+    sed -i '1i #!/usr/bin/env bash' "${f}"
+done
 
 cp CRISPRTarget.pl \
    CRISPRTargetGraphics.pl \
@@ -34,6 +42,8 @@ cp CRISPRTarget.pl \
    MakeUserShuffledDB.sh \
    "${PREFIX}/bin/"
 
-chmod 0755 "${PREFIX}/bin/CRISPRTarget.pl" \
-           "${PREFIX}/bin/MakeUserDB.sh" \
-           "${PREFIX}/bin/MakeUserShuffledDB.sh"
+chmod 0755 "${PREFIX}"/bin/CRISPRTarget*.pl \
+           "${PREFIX}"/bin/CT*.pl \
+           "${PREFIX}"/bin/PAMRescore.pl \
+           "${PREFIX}"/bin/TargetPredict.pl \
+           "${PREFIX}"/bin/MakeUser*.sh

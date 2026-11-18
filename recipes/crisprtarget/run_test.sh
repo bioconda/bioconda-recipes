@@ -1,40 +1,59 @@
 #!/bin/bash
 set -euo pipefail
 
+perl_scripts="CRISPRTarget.pl
+CRISPRTargetGraphics.pl
+CRISPRTarget_cmd.pl
+CTFlankExtract.pl
+CTGFFInput.pl
+CTProcessInput.pl
+PAMRescore.pl
+TargetPredict.pl"
+
+sh_scripts="MakeUserDB.sh
+MakeUserShuffledDB.sh"
+
 # Without arguments CRISPRTarget.pl must report that no BLAST database was
 # given (it dies with exit code 2, hence the `|| true`).
 out=$(CRISPRTarget.pl 2>&1 || true)
 grep -q "BLASTDB" <<< "${out}"
-
-# All scripts must be syntactically valid once patched.
-for script in CRISPRTarget.pl \
-              CRISPRTargetGraphics.pl \
-              CRISPRTarget_cmd.pl \
-              CTFlankExtract.pl \
-              CTGFFInput.pl \
-              CTProcessInput.pl \
-              PAMRescore.pl \
-              TargetPredict.pl; do
-    perl -c "${PREFIX}/bin/${script}"
-done
 
 # The tools that upstream vendors in bin/ must come from the dependencies.
 for tool in blastn blastdbcmd makeblastdb bedtools samtools esl-shuffle realpath; do
     command -v "${tool}"
 done
 
-# No leftover calls to the (removed) bundled binaries.
-for script in CRISPRTarget.pl \
-              CRISPRTargetGraphics.pl \
-              CRISPRTarget_cmd.pl \
-              CTFlankExtract.pl \
-              CTGFFInput.pl \
-              CTProcessInput.pl \
-              PAMRescore.pl \
-              TargetPredict.pl \
-              MakeUserDB.sh \
-              MakeUserShuffledDB.sh; do
-    ! grep -q 'bin/\(blastn\|blastdbcmd\|makeblastdb\|bedtools\|samtools\|esl-shuffle\)' "${PREFIX}/bin/${script}"
+check_script() {
+    local script="$1"
+    local interpreter="$2"
+
+    if [ ! -x "${PREFIX}/bin/${script}" ]; then
+        echo "ERROR: ${PREFIX}/bin/${script} is missing or not executable" >&2
+        exit 1
+    fi
+
+    IFS= read -r shebang < "${PREFIX}/bin/${script}"
+    if [ "${shebang}" != "#!${interpreter}" ]; then
+        echo "ERROR: unexpected shebang in ${script}: ${shebang}" >&2
+        exit 1
+    fi
+
+    # no leftover calls to the (removed) bundled binaries
+    if grep -q 'bin/\(blastn\|blastdbcmd\|makeblastdb\|bedtools\|samtools\|esl-shuffle\)' \
+            "${PREFIX}/bin/${script}"; then
+        echo "ERROR: ${script} still calls the bundled binaries" >&2
+        exit 1
+    fi
+}
+
+for script in ${perl_scripts}; do
+    check_script "${script}" "/usr/bin/env perl"
+    perl -c "${PREFIX}/bin/${script}"
+done
+
+for script in ${sh_scripts}; do
+    check_script "${script}" "/usr/bin/env bash"
+    bash -n "${PREFIX}/bin/${script}"
 done
 
 # The DB helper scripts must find makeblastdb/samtools/esl-shuffle in PATH.
