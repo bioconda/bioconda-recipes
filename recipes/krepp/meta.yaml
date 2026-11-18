@@ -1,6 +1,6 @@
 {% set name = "krepp" %}
-{% set version = "0.11.1" %}
-{% set sha256 = "a69d96249c0276e74155199a5a7a91f53da67e5cc5aac50fc2ed16d72aec9c04" %}
+{% set version = "0.12.0" %}
+{% set sha256 = "bf89eb5774201d46d260e3a658cb285f0fb371d8aaa234c128a3bf55110425df" %}
 
 package:
   name: {{ name }}
@@ -31,15 +31,24 @@ requirements:
     - llvm-openmp  # [osx]
 
 test:
+  source_files:
+    - test/regression/data/query_contigs.fa
   commands:
-    - krepp --help &> /dev/null
+    - krepp --help 2>&1 | grep -F "krepp version: v{{ version }}"
+    - krepp index -i test/regression/data/query_contigs.fa -o smoke-index -k 19 -w 19 -h 9 -m 1 -r 0
+    - krepp dist -i smoke-index -q test/regression/data/query_contigs.fa --no-multi -o smoke.tsv
+    - >-
+      awk -F '\t' '$1 == $2 && $3 == "0.00001" { exact[$1] = 1 }
+      END { exit !(exact["contig0"] && exact["contig1"]) }' smoke.tsv
 
 about:
   home: "https://github.com/bo1929/krepp"
   dev_url: "https://github.com/bo1929/krepp"
-  license: MIT
+  license: MIT AND BSL-1.0
   license_family: MIT
-  license_file: LICENSE
+  license_file:
+    - LICENSE
+    - LICENSE_1_0.txt
   summary: "krepp: a k-mer-based maximum pseudo-likelihood method for estimating read distances and genome-wide phylogenetic placement."
 
 extra:
