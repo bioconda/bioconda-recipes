@@ -1,0 +1,83 @@
+# conda recipe for Bioconda: https://bioconda.github.io
+# conda name differs from the PyPI `gwyddionpy-converter`: this package ships
+# only the binary, not the `gwyddionpy_converter` Python module.
+{% set name = "gwyconvert" %}
+{% set version = "0.1.1" %}
+# Must match `gwyddion-version` in ../pyproject.toml; build.sh fails otherwise.
+{% set gwyddion_version = "2.71" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+# PyPI has only prebuilt wheels for this package, so it is built from source:
+# Gwyddion itself, and gwyconvert.c from the gwyddionPy release tag.
+source:
+  - url: https://downloads.sourceforge.net/project/gwyddion/gwyddion/{{ gwyddion_version }}/gwyddion-{{ gwyddion_version }}.tar.xz
+    sha256: 2df721befccbe4d5ee2ba564b32e69341f8ce1de637e2045838a09a2d46b5dba
+    folder: gwyddion
+  - url: https://github.com/FAIRmat-NFDI/gwyddionPy/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 2ffd320ba6c98d67bfa6c0119e578afa64f89be07d588116c9d7ead153a2e54f
+    folder: gwyddionpy
+
+build:
+  number: 0
+  # Bioconda does not build for Windows; Windows users install the wheel with pip.
+  skip: true  # [win]
+  # Bioconda requires run_exports; 0.x versions pin to the minor release.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - gnuconfig  # [unix]
+    - make
+    - pkg-config
+    # Tools that run during the build; the host copy is for the target platform.
+    - glib  # [build_platform != target_platform]
+  host:
+    - gtk2
+    # gtk2's pkg-config chain needs these .pc files (fontconfig, x11).
+    - expat
+    - xorg-xorgproto
+    - glib
+    - fftw
+    - libxml2
+    - libpng
+    - libzip
+    - zlib
+    - bzip2
+  run:
+    # gtk2 adds no run requirement by itself, but libgwyddion links it.
+    - gtk2
+
+test:
+  commands:
+    - test -x "${PREFIX}/bin/gwyconvert"
+    # A build that lost its file modules still exits 0, so count the formats.
+    - test "$(gwyconvert --list-formats | grep -c '"name"')" -gt 100
+
+about:
+  home: https://github.com/FAIRmat-NFDI/gwyddionPy
+  summary: The gwyconvert binary that lets gwyddionpy read vendor SPM files through Gwyddion.
+  description: |
+    Installs `gwyconvert` on `PATH`, together with the Gwyddion libraries and
+    file modules it links. `gwyddionpy` finds the binary on `PATH`, or in
+    the env's `bin` folder when the env is not activated.
+  license: GPL-2.0-or-later
+  license_family: GPL
+  license_file:
+    - gwyddionpy/gwyddionpy-converter/COPYING
+    - gwyddion/COPYING
+  dev_url: https://github.com/FAIRmat-NFDI/gwyddionPy
+
+extra:
+  # Bioconda builds only linux-64 and osx-64 unless a recipe opts in here.
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - RubelMozumder
