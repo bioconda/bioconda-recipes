@@ -1,16 +1,16 @@
 {% set name = "Binette" %}
-{% set version = "1.2.1" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 source:
-  url: https://github.com/genotoul-bioinfo/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: dce9d8fdd0c68da0724a725d5048196f5aa618d5c1e7a04527d618b8a7872bf7
+  url: https://github.com/genotoul-bioinfo/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f8defafffcc8a95b1a57d5ff9090793c24ae363f05d76dd22aab75acc3ee759c
 
 build:
   noarch: python
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install --no-deps --ignore-installed -vv .
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
@@ -18,21 +18,26 @@ build:
 
 requirements:
   host:
-    - python
+    - python >=3.12
     - pip
     - setuptools
 
   run:
+    - python >=3.12
     - checkm2 >=1.1,<2.0
+    # tensorflow 2.19 builds request an executable stack and fail to load with glibc >= 2.41
+    # https://github.com/conda-forge/tensorflow-feedstock/issues/455
+    - tensorflow >=2.17,<2.19
     - numpy >=1.24,<3.0
     - diamond >=2.1,<3
     - pandas >=2,<3
+    - joblib >=1.0,<2.0
     - networkx >=3.0,<4.0
     - pyfastx >=2,<3
-    - pyrodigal >=3.0,<3.7.0
+    - pyrodigal >=3.0,<4.0
     - typer >=0.9,<1.0
     - pyroaring >=1.0.0,<2.0.0
-    - rich >=12.0.0,<14.0.0
+    - rich >=12.0.0,<16.0.0
 
 
 
@@ -43,7 +48,7 @@ test:
     - binette -h
 
 about:
-  home: https://github.com/genotoul-bioinfo/{{ name|lower }}
+  home: https://github.com/genotoul-bioinfo/Binette
   doc_url: https://binette.readthedocs.io
   license: GPL-3.0-only
   license_family: GPL
