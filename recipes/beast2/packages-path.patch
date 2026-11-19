@@ -1,0 +1,227 @@
+--- a/beast/bin/beast
++++ b/beast/bin/beast
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -x "${JAVA_HOME}/bin/java" ]; then
+@@ -34,7 +41,7 @@
+ CPU=`uname -m`
+ 
+ # use BEAGLE_LIB if the BEAGLE library is not in a standard location
+-if [ $CPU  = 'x86_64' ]; then
++if [ "$CPU" = 'x86_64' ]; then
+   if [ -n "$BEAGLE_LIB" ]; then
+ 	if [ -n "$BEAST_EXTRA_LIBS" ]; then
+ 		BEAST_EXTRA_LIBS="$BEAST_EXTRA_LIBS:$BEAGLE_LIB:$JAVA_HOME/lib/amd64"
+@@ -55,7 +62,7 @@
+ # Explicitly add /usr/local/lib to library search path to ensure 
+ # beast continues to find beagle when installed here.  (This is
+ # necessary due to known problems with certain JREs.)
+-if [ $CPU  = 'x86_64' ]; then
++if [ "$CPU" = 'x86_64' ]; then
+   if [ -z "$LD_LIBRARY_PATH" ]; then
+     export LD_LIBRARY_PATH="/usr/local/lib:$JAVA_HOME/lib/amd64"
+   else
+@@ -63,9 +70,9 @@
+   fi
+ else
+   if [ -z "$LD_LIBRARY_PATH" ]; then
+-    export LD_LIBRARY_PATH=/usr/local/lib:$HOME/lib:$BEAST_EXTRA_LIBS   
++    export LD_LIBRARY_PATH="/usr/local/lib:$HOME/lib:$BEAST_EXTRA_LIBS"   
+   else
+-    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/usr/local/lib:$HOME/lib:$BEAST_EXTRA_LIBS   
++    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib:$HOME/lib:$BEAST_EXTRA_LIBS"   
+   fi
+ fi
+ 
+@@ -73,9 +80,9 @@
+ # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
+ # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
+ if [ -n "$BEAST_EXTRA_LIBS" ]; then 
+-	if [ $CPU  = 'x86_64' ]; then
++	if [ "$CPU" = 'x86_64' ]; then
+ 	  BEAST_EXTRA_LIBS="$JAVA_HOME/lib/amd64"
+ 	fi
+ fi
+ 
+-"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$LD_LIBRARY_PATH" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeastLauncher $*
++"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$LD_LIBRARY_PATH" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeastLauncher "$@"
+--- a/beast/bin/beauti
++++ b/beast/bin/beauti
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -31,5 +38,5 @@
+   JAVA="$JAVA_HOME"/bin/java
+ fi
+ 
+-"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeautiLauncher -capture $*
++"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.BeautiLauncher -capture "$@"
+ 
+--- a/beast/bin/applauncher
++++ b/beast/bin/applauncher
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -53,7 +60,7 @@
+ # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
+ # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
+ if [ -n "$BEAST_EXTRA_LIBS" ]; then 
+-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
++  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher "$@"
+ else	
+-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher $*
++  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher "$@"
+ fi
+--- a/beast/bin/densitree
++++ b/beast/bin/densitree
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -30,5 +37,5 @@
+ else
+   JAVA="$JAVA_HOME"/bin/java
+ fi
+-"$JAVA" -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/DensiTree.jar:$BEAST/DensiTree.app/Contents/Resources/Java/DensiTree.jar" viz.DensiTree $*
++"$JAVA" -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -cp "$BEAST_LIB/DensiTree.jar:$BEAST/DensiTree.app/Contents/Resources/Java/DensiTree.jar" viz.DensiTree "$@"
+ 
+--- a/beast/bin/loganalyser
++++ b/beast/bin/loganalyser
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -53,9 +60,9 @@
+ # use BEAST_EXTRA_LIBS variable to load BEAGLE and other libraries from non-default locations 
+ # this assumes that the library path contains all these libraries (or are set through LD_LIBRARY_PATH)
+ if [ -n "$BEAST_EXTRA_LIBS" ]; then 
+-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher beastfx.app.tools.LogAnalyser $*
++  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_EXTRA_LIBS" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher beastfx.app.tools.LogAnalyser "$@"
+ else	
+-  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher beastfx.app.tools.LogAnalyser $*
++  "$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.AppLauncherLauncher beastfx.app.tools.LogAnalyser "$@"
+ fi
+ 
+ 
+--- a/beast/bin/logcombiner
++++ b/beast/bin/logcombiner
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -30,5 +37,5 @@
+ else
+   JAVA="$JAVA_HOME"/bin/java
+ fi
+-"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.LogCombinerLauncher $*
++"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.LogCombinerLauncher "$@"
+ 
+--- a/beast/bin/packagemanager
++++ b/beast/bin/packagemanager
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -30,5 +37,5 @@
+ else
+   JAVA="$JAVA_HOME"/bin/java
+ fi
+-"$JAVA" -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.PackageManager $*
++"$JAVA" -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.PackageManager "$@"
+ 
+--- a/beast/bin/treeannotator
++++ b/beast/bin/treeannotator
+@@ -23,6 +23,13 @@
+ fi
+ 
+ BEAST_LIB="$BEAST/lib"
++
++# Make the conda-bundled BEAST packages discoverable by the BEAST package
++# manager without writing to $HOME/.beast, which may be read-only in
++# containerised environments (e.g. Singularity, Galaxy). Any user-provided
++# paths are preserved.
++BEAST_PACKAGE_PATH="$BEAST/packages${BEAST_PACKAGE_PATH:+:$BEAST_PACKAGE_PATH}"
++export BEAST_PACKAGE_PATH
+ export JAVA_HOME="$BEAST/jre"
+ 
+ if [ -z "$JAVA_HOME" ]; then
+@@ -30,5 +37,5 @@
+ else
+   JAVA="$JAVA_HOME"/bin/java
+ fi
+-"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.TreeAnnotatorLauncher $*
++"$JAVA" -Dlauncher.wait.for.exit=true -Xss256m -Xmx8g -Djava.library.path="$BEAST_LIB" -Duser.language=en -cp "$BEAST_LIB/launcher.jar" beast.pkgmgmt.launcher.TreeAnnotatorLauncher "$@"
+ 

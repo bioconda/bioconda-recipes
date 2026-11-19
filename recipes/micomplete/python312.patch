@@ -1,0 +1,51 @@
+diff -ru a/micomplete/micomplete.py b/micomplete/micomplete.py
+--- a/micomplete/micomplete.py	2019-07-25 14:32:07.000000000 +0000
++++ b/micomplete/micomplete.py	2026-11-13 19:17:39.222693491 +0000
+@@ -32,7 +32,7 @@
+ import sys
+ from collections import OrderedDict, defaultdict
+ from contextlib import contextmanager
+-from distutils import spawn
++import shutil
+ 
+ import Bio
+ from Bio import SeqIO
+@@ -470,7 +470,7 @@
+         raise RuntimeError("Unable to locate prodigal in path")
+     except AttributeError:
+         try:
+-            assert spawn.find_executable('prodigal')
++            assert shutil.which('prodigal')
+         except AssertionError:
+             raise RuntimeError('Unable to find prodigal in path')
+     if not base_name:
+@@ -666,7 +666,7 @@
+             raise RuntimeError('Unable to find hmmsearch in path')
+         except AttributeError:
+             try:
+-                assert spawn.find_executable('hmmsearch')
++                assert shutil.which('hmmsearch')
+             except AssertionError:
+                 raise RuntimeError('Unable to find hmmsearch in path')
+         if args.hmms in BUILTIN_MARKERS.keys():
+diff -ru a/micomplete/parseseqs.py b/micomplete/parseseqs.py
+--- a/micomplete/parseseqs.py	2019-07-23 11:43:24.000000000 +0000
++++ b/micomplete/parseseqs.py	2026-11-13 19:17:39.225119897 +0000
+@@ -10,7 +10,7 @@
+ import re
+ 
+ from Bio import SeqIO
+-from Bio.SeqUtils import GC
++from Bio.SeqUtils import gc_fraction
+ 
+ 
+ class parseSeqStats():
+@@ -76,7 +76,7 @@
+             except AttributeError:
+                 pass
+             # implement memory-efficient method here
+-            gc_content = round(GC(''.join(str(total_fasta))), 2)
++            gc_content = round(100 * gc_fraction(''.join(str(total_fasta)), ambiguous="ignore"), 2)
+         seq_length = sum(all_lengths)
+         return seq_length, all_lengths, gc_content
+ 
