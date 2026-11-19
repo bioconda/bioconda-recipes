@@ -1,0 +1,112 @@
+{% set version = "1.0.16" %}
+{% set sha256 = "862aa0499dfbac37dda98f3eb5eef4ffa3a6465e7c5be13923a556c86786f5ae" %}
+
+package:
+  name: r-popgenvcf
+  version: {{ version }}
+
+source:
+  url: https://github.com/duceppemo/popgenVCF/releases/download/v{{ version }}/popgenVCF_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  # Real semantic versioning, not 0.x.x: popgenVCF's own public-API-contract
+  # check (inst/api-contract/) pins and re-verifies its exported R API on
+  # every release, patch included, with zero drift ever recorded -- API/ABI/
+  # CLI breakage is reserved for major-version bumps.
+  run_exports:
+    - {{ pin_subpackage("r-popgenvcf", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - {{ stdlib('c') }}
+    - make
+    - pkg-config
+  host:
+    - r-base >=4.3
+    - r-ade4
+    - r-adegenet
+    - r-ape
+    - r-data.table
+    - r-digest
+    - bioconductor-gdsfmt
+    - r-ggplot2 >=3.5.0
+    - r-ggrepel
+    - r-igraph
+    - r-jsonlite
+    - r-openssl
+    - r-poppr
+    - r-processx
+    - r-rmarkdown
+    - r-scales
+    - bioconductor-snprelate
+    - r-vegan
+    - r-yaml
+  run:
+    - r-base >=4.3
+    - r-ade4
+    - r-adegenet
+    - r-ape
+    - r-data.table
+    - r-digest
+    - bioconductor-gdsfmt
+    - r-ggplot2 >=3.5.0
+    - r-ggrepel
+    - r-igraph
+    - r-jsonlite
+    - r-openssl
+    - r-poppr
+    - r-processx
+    - r-rmarkdown
+    - r-scales
+    - bioconductor-snprelate
+    - r-vegan
+    - r-yaml
+    # Required at runtime, not just build time: VCF sorting, BGZF
+    # compression, indexing, and runs-of-homozygosity detection all shell
+    # out to these (DESCRIPTION's SystemRequirements). Deliberately NOT
+    # included: admixture and faststructure, both genuinely optional
+    # (only used by the ancestry backends when explicitly configured) and
+    # each a heavyweight compiled tool in its own right -- a user who
+    # wants them installs them separately.
+    - bcftools
+    - htslib
+    # Exercised by every report-rendering code path; without it the core
+    # "produce a manuscript report" feature fails outright rather than
+    # being a true optional extra.
+    - pandoc
+
+test:
+  commands:
+    - $R -e "library('popgenVCF')"
+    # Confirms the installed CLI wrapper (see build.sh) actually runs
+    # popgenVCF::cli_main() end to end, not just that the library loads.
+    - popgenVCF --help
+
+about:
+  home: https://github.com/duceppemo/popgenVCF
+  license: MIT
+  license_file: LICENSE
+  summary: Population genomics toolkit for VCF data
+  description: |
+    A modular R package and command-line toolkit for reproducible
+    population-genomic analysis of diploid, biallelic SNP data stored in
+    VCF files: quality control, PCA, IBS/MDS, diversity, FST, kinship,
+    genetic sex check, runs of homozygosity, sliding-window genome scans,
+    DAPC, AMOVA, population structure, spatial genetics, and
+    manuscript-oriented publication reports.
+  dev_url: https://github.com/duceppemo/popgenVCF
+  doc_url: https://duceppemo.github.io/popgenVCF/
+
+extra:
+  recipe-maintainers:
+    - duceppemo
+  identifiers:
+    - doi:10.5281/zenodo.21747067
