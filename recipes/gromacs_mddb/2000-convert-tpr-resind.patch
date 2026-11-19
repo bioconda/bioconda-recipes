@@ -1,0 +1,40 @@
+From 9e3b5bfc691feeb98a24638a7fb98a4d94423ec7 Mon Sep 17 00:00:00 2001
+From: Petter Johansson <pettjoha@kth.se>
+Date: Wed, 18 Nov 2026 11:47:50 +0100
+Subject: [PATCH] Fix residue index copying for convert-tpr
+
+---
+ src/gromacs/tools/convert_tpr.cpp | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/gromacs/tools/convert_tpr.cpp b/src/gromacs/tools/convert_tpr.cpp
+index 8c12ff15739..6cb7e91f8b7 100644
+--- a/src/gromacs/tools/convert_tpr.cpp
++++ b/src/gromacs/tools/convert_tpr.cpp
+@@ -197,17 +197,20 @@ static void reduce_atom(int gnx, const int index[], t_atom atom[], char*** atomn
+     {
+         atom[i]     = ptr[i];
+         atomname[i] = aname[i];
+-        if ((i == 0) || (atom[i].resind != atom[i - 1].resind))
++        // Increment the new residue index if the old index (in ptr) changes.
++        // Do not use atom[i-1] in this check since it is updated below!
++        if ((i == 0) || (ptr[i].resind != ptr[i - 1].resind))
+         {
+             nr++;
+-            rinfo[nr] = resinfo[atom[i].resind];
++            rinfo[nr] = resinfo[ptr[i].resind];
+         }
+         atom[i].resind = nr;
+     }
+     nr++;
+     for (i = 0; (i < nr); i++)
+     {
+-        resinfo[i] = rinfo[i];
++        resinfo[i]    = rinfo[i];
++        resinfo[i].nr = i + 1;
+     }
+     *nres = nr;
+ 
+-- 
+GitLab
+

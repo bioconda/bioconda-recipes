@@ -1,0 +1,67 @@
+{% set name = "g2pinsight" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8a6142e85746f00346ebde1de8683ba4efbe7b785ca4485f58908bf949cdef1d
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - G2PInsight = G2PInsight.main:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.8,<3.14
+    - pip
+    - setuptools >=65
+    - wheel
+  run:
+    # Critical upper pins match pyproject (Python <3.13). numpy/pandas/scipy
+    # use floors only so conda-forge can solve with modern ML stacks.
+    - python >=3.8,<3.14
+    - numpy >=1.20
+    - pandas >=1.3
+    - scikit-learn >=1.0
+    - scipy >=1.7
+    - joblib >=1.0
+    - matplotlib-base >=3.5
+    - pillow >=8,<12.3
+    - numba >=0.57
+    - lightgbm >=3.3,<4.0
+    - xgboost >=1.6,<2.1
+    - catboost >=1.2,<2.0
+    - shap >=0.40
+    - plotly >=5.0
+    - python-kaleido >=0.2,<1
+    - seaborn >=0.11
+    - bed-reader >=1.0
+    - psutil >=5.0
+
+test:
+  imports:
+    - G2PInsight
+  commands:
+    - G2PInsight --version
+    - G2PInsight --help
+
+about:
+  home: https://github.com/ZBaoyi/G2PInsight
+  summary: Genome-wide association / genotype-to-phenotype analysis toolkit
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  doc_url: https://github.com/ZBaoyi/G2PInsight
+  dev_url: https://github.com/ZBaoyi/G2PInsight
+
+extra:
+  recipe-maintainers:
+    - ZBaoyi
