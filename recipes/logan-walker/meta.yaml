@@ -6,14 +6,12 @@ package:
   version: {{ version }}
 
 source:
-  # The walker lives in walker/ of the disassembler repository, with its own tag series.
   url: https://github.com/nekrut/disassembler/archive/refs/tags/logan-walker-v{{ version }}.tar.gz
   sha256: 8774df0d6e010715958775ea2b89ae0327be2ce34e6ec5e3ea5b72c1762ccf21
 
 build:
-  number: 0
-  # macOS is skipped until bioconda/bioconda-recipes#70401 is fixed: CI currently builds
-  # against the 10.9 SDK, and Rust's standard library needs macOS 10.12+ symbols.
+  number: 1
+  # Skipping macOS for now: no usable GraphAligner 1.0.17b build there
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -21,13 +19,11 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
-    # ring (TLS) and zstd-sys (bundled libzstd) compile C.
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - cargo-bundle-licenses
   run:
-    # 1.0.19 and 1.0.20 clip the last query base, and 1.0.18 cannot be installed with
-    # Python 3.11+. See docs/issue_graphaligner_end_clipping.md in the source.
+    # 1.0.19+ clips the last query base; 1.0.18 cannot be installed with Python 3.11+
     - graphaligner ==1.0.17b
 
 test:
@@ -47,6 +43,7 @@ about:
   license_family: MIT
   license_file:
     - LICENSE
+    - NOTICE
     - walker/THIRDPARTY.yml
   dev_url: https://github.com/nekrut/disassembler
 

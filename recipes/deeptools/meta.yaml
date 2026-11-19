@@ -1,5 +1,5 @@
 {% set name = "deeptools" %}
-{% set version = "4.0.0" %}
+{% set version = "4.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,12 +7,21 @@ package:
 
 source:
   url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 9823dffaaa1fa73b1483ed846c1894a89a1ba790a9a812da047057e69475228a
+  sha256: 244cc0242bc8799b68f5798737fd616f7f0f364c0ee3bab28db27b986f4cc76e
 
 build:
   number: 0
   skip: True  # [py < 312]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  script:
+    # The clang 19 linker driver resolves @rpath/libclang-cpp.19.1.dylib
+    # relative to its conda package cache (loader_path), where the library
+    # does not exist - it ships in the separate libclang-cpp19.1 package and
+    # is installed into the build prefix. dyld then aborts the linker with
+    #   dyld: Library not loaded: @rpath/libclang-cpp.19.1.dylib
+    # Extend dyld's fallback search path with the build prefix so the clang
+    # libraries are found.
+    - export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   entry_points:
     - alignmentSieve_old = deeptools.alignmentSieve:main
     - bamCompare_old = deeptools.bamCompare:main
