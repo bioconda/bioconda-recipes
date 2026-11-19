@@ -10,4 +10,7 @@ set -xeuo pipefail
 #
 # `--locked`: refuse to update Cargo.lock; build exactly the resolution we ship.
 # `--no-track`: don't write .crates.toml tracking into $PREFIX.
-cargo install --locked --no-track --path . --root "${PREFIX}"
+# Rust recipes bundle their third-party licences; `license_file` lists the output.
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+
+cargo install -v --locked --no-track --root "${PREFIX}" --path .
