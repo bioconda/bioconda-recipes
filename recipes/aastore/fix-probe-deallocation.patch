@@ -1,0 +1,38 @@
+# Backported from https://github.com/RabbitBio/RabbitAAStore/commit/d6473cc62d5e5218700f3bc46a470e8155d3f1a0
+# Use liburing's release API for probes allocated by its optional non-libc allocator.
+
+--- a/src/io_uring_backend.cpp
++++ b/src/io_uring_backend.cpp
+@@ -68,8 +68,8 @@
+ bool select_read_opcode(ReadRing& state, std::string& unavailable_reason) {
+     state.use_readv = true;
+ #if defined(AASTORE_URING_HAS_PROBE)
+-    const std::unique_ptr<io_uring_probe, decltype(&std::free)> probe(
+-        io_uring_get_probe_ring(&state.ring), &std::free);
++    const std::unique_ptr<io_uring_probe, decltype(&io_uring_free_probe)> probe(
++        io_uring_get_probe_ring(&state.ring), &io_uring_free_probe);
+     if (!probe) return true;
+ #if defined(AASTORE_URING_HAS_READ)
+     if (io_uring_opcode_supported(probe.get(), IORING_OP_READ)) {
+--- a/cmake/FindAAStoreUring.cmake
++++ b/cmake/FindAAStoreUring.cmake
+@@ -101,7 +101,7 @@
+                     io_uring_probe* probe = io_uring_get_probe_ring(&ring);
+                     const int supported = probe
+                         ? io_uring_opcode_supported(probe, IORING_OP_READV) : 0;
+-                    std::free(probe);
++                    io_uring_free_probe(probe);
+                     return supported;
+                 }
+             ]] AAStoreUring_HAS_PROBE)
+--- a/examples/Makefile
++++ b/examples/Makefile
+@@ -73,7 +73,7 @@
+ EXAMPLE_CPPFLAGS += -DAASTORE_URING_HAS_READ=1
+ endif
+ URING_PROBE_PROBE := '\#include <cstdlib>' '\#include <liburing.h>' \
+-	'int main() { io_uring ring = {}; io_uring_probe* probe = io_uring_get_probe_ring(&ring); const int supported = probe ? io_uring_opcode_supported(probe, IORING_OP_READV) : 0; std::free(probe); return supported; }'
++	'int main() { io_uring ring = {}; io_uring_probe* probe = io_uring_get_probe_ring(&ring); const int supported = probe ? io_uring_opcode_supported(probe, IORING_OP_READV) : 0; io_uring_free_probe(probe); return supported; }'
+ ifeq ($(call compile_probe,$(URING_PROBE_PROBE),$(URING_CFLAGS),$(URING_LIBS)),yes)
+ EXAMPLE_CPPFLAGS += -DAASTORE_URING_HAS_PROBE=1
+ endif
