@@ -1,38 +1,53 @@
-{% set version = "0.9.1" %}
+{% set version = "1.0.1" %}
 
 package:
   name: snpsplit
   version: {{ version }}
 
 source:
-  url: https://github.com/FelixKrueger/SNPsplit/archive/{{ version }}.tar.gz
-  sha256: 09ae96231882741f5ae9efa17d1f5be298568f6052c1e623fc87131ff7ea46e4
+  # Rust releases are tagged snpsplit-rust-v*; the Perl stays at 0.9.2
+  url: https://github.com/FelixKrueger/SNPsplit/archive/refs/tags/snpsplit-rust-v{{ version }}.tar.gz
+  sha256: 6d3fac8fb1ad82b18b8132d203eac07a6fdd4c85d8ba5692bd8e0a3aecf7e405
 
 build:
   number: 0
-  noarch: generic
+  skip: True  # [osx and x86_64]
   run_exports:
-    - {{ pin_subpackage('snpsplit', max_pin="x.x") }}
+    - {{ pin_subpackage('snpsplit', max_pin="x") }}
 
 requirements:
-  run:
-    - perl
-    - samtools >=1.7
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
 
 test:
   commands:
-    - SNPsplit_genome_preparation --version
-    - SNPsplit --version
-    - tag2sort --version
+    - 'SNPsplit --version | grep -q "Version: {{ version }}"'
+    - 'tag2sort --version | grep -q "version: {{ version }}"'
+    - 'SNPsplit_genome_preparation --version | grep -q "version: {{ version }}"'
 
 about:
-  home: "https://github.com/FelixKrueger/SNPsplit"
-  summary: SNPsplit is an allele-specific alignment sorter which is designed to
-            read in alignment files in SAM/BAM format and determine the allelic
-            origin of reads that cover known SNP positions.
-  license: "GPL-3.0-or-later"
+  home: https://github.com/FelixKrueger/SNPsplit
+  license: GPL-3.0-or-later
   license_family: GPL3
+  license_file:
+    - LICENSE
+    - rust/THIRD-PARTY-NOTICES.md
+  summary: Allele-specific alignment sorter for reads covering known SNP positions.
+  description: |
+    SNPsplit sorts reads from hybrid samples by parental origin, using known SNP positions.
+    Since 1.0.0 it is a single Rust binary installed as SNPsplit, with tag2sort and
+    SNPsplit_genome_preparation linked to it. The Perl version remains available as
+    snpsplit=0.9.2.
+  dev_url: https://github.com/FelixKrueger/SNPsplit
+  doc_url: https://felixkrueger.github.io/SNPsplit
 
 extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - FelixKrueger
   identifiers:
     - doi:10.12688/f1000research.9037.2

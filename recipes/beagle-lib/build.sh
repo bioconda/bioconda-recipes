@@ -21,6 +21,14 @@ if [[ "${ARCH}" == "arm64" ]]; then
 	export CONFIG_ARGS="${CONFIG_ARGS} -DBUILD_SSE=OFF"
 fi
 
+# Upstream defaults BEAGLE_OPTIMIZE_FOR_NATIVE_ARCH=ON, which compiles with
+# -march=native and bakes the build machine's instruction set (e.g. AVX-512)
+# into the shipped library, causing SIGILL on CPUs without it
+# (beagleLoadPlugins -> vpbroadcastq EVEX). Turn it off: portable binaries
+# only need the baseline ISA, performance-critical paths live in the
+# separately dispatched plugins (libhmsbeagle-cpu, -cpu-sse, ...).
+export CONFIG_ARGS="${CONFIG_ARGS} -DBEAGLE_OPTIMIZE_FOR_NATIVE_ARCH=OFF"
+
 sed -i.bak 's|-std=c++11|-std=c++14|' CMakeLists.txt
 rm -rf *.bak
 
