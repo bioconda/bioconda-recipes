@@ -1,0 +1,152 @@
+--- a/nasp/nasptool/command/export/cmd.go
++++ b/nasp/nasptool/command/export/cmd.go
+@@ -7,7 +7,6 @@
+ 	"io"
+ 	"log"
+ 	"os"
+-	"strconv"
+ 	"strings"
+ 
+ 	"github.com/TGenNorth/nasp/command"
+@@ -172,12 +171,15 @@
+ }
+ 
+ func (v *vcf) WriteMetadataAndHeader(contigs []contigmeta, identifiers [][]byte) error {
+-	if _, err := fmt.Fprintf(v.w, "##fileFormat=VCFv4.2\n##source=NASP\n"); err != nil {
++	if _, err := fmt.Fprintf(v.w, "##fileformat=VCFv4.2\n##source=NASP\n"); err != nil {
+ 		return err
+ 	}
+ 
+ 	for i := range contigs {
+-		if _, err := fmt.Fprintf(v.w, "##contig=<ID=\"%s\",length=%d>\n", contigs[i].name, contigs[i].length); err != nil {
++		if contigs[i].name == "" {
++			continue
++		}
++		if _, err := fmt.Fprintf(v.w, "##contig=<ID=%s>\n", contigs[i].name); err != nil {
+ 			return err
+ 		}
+ 	}
+@@ -188,11 +190,13 @@
+ 		}
+ 	}
+ 
+-	if _, err := fmt.Fprintf(v.w, `##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
++	if _, err := fmt.Fprintf(v.w, `##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
++##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+ ##FILTER=<ID=NoCall,Description="No call for this sample at this position">
+ ##FILTER=<ID=CovFail,Description="Insufficient depth of coverage for this sample at this position">
+ ##FILTER=<ID=PropFail,Description="Insufficient proportion of reads were variant for this sample at this position">
+ ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
++##FORMAT=<ID=FT,Number=1,Type=String,Description="Sample genotype filter">
+ `); err != nil {
+ 		return err
+ 
+@@ -213,16 +217,7 @@
+ // <contig name>::<position>
+ // TODO: implement io.Writer interface
+ func (v *vcf) Write(line []byte) (n int64, err error) {
+-	const ONE = "1"
+ 	var start, end int
+-	var ns uint
+-
+-	// TODO: TrimSpace resolves a bug introduced when a bytes.Scanner was replaces by a bytes.Reader to resolve a buffer overflow (#47)
+-	// Add a unit test verifying the output. In particular, does NASP handle input with long lines and does it handle newlines correctly.
+-	sampleColumns, isAllPassFilters, err := v.translateSampleAnalysisColumns(bytes.TrimSpace(line))
+-	if err != nil {
+-		return 0, err
+-	}
+ 
+ 	// The Matrix first column, LocusID, is the contig name and position
+ 	// delimited by '::'. Therefore, the VCF #CHROM column is everything up
+@@ -244,7 +239,15 @@
+ 	// endCallRegion is derived starting from the Reference column counting
+ 	// all the sample columns and delimiting tab characters.
+ 	endCallRegion := startCallRegion + 2*v.numSamples + 1
+-	alts := v.alts(line[startCallRegion:endCallRegion])
++	callRegion := line[startCallRegion:endCallRegion]
++	alts := v.alts(callRegion)
++
++	// TODO: TrimSpace resolves a bug introduced when a bytes.Scanner was replaces by a bytes.Reader to resolve a buffer overflow (#47)
++	// Add a unit test verifying the output. In particular, does NASP handle input with long lines and does it handle newlines correctly.
++	sampleColumns, isAllPassFilters, ns, err := v.translateSampleAnalysisColumns(bytes.TrimSpace(line), callRegion, alts)
++	if err != nil {
++		return 0, err
++	}
+ 
+ 	// VCF POS column
+ 	v.w.Write(line[start:end])
+@@ -258,33 +261,15 @@
+ 
+ 	v.w.Write(alts)
+ 
+-	// VCF QUAL FILTER FORMAT
++	// VCF QUAL FILTER
+ 	if isAllPassFilters {
+-		v.w.WriteString("\t.\tPASS\tGT:FT\t")
++		v.w.WriteString("\t.\tPASS\t")
+ 	} else {
+-		v.w.WriteString("\t.\tFAIL\tGT:FT\t")
+-	}
+-
+-	// VCF INFO
+-	v.w.WriteString("AN=")
+-	if alts[0] == '.' {
+-		v.w.WriteString(ONE)
+-		ns = 0
+-	} else {
+-		v.w.WriteString(strconv.Itoa(len(alts) + 1))
+-		ns = uint(len(alts))
+-	}
+-	v.w.WriteString(";NS=")
+-	// Find the #SNPcall column
+-	start = endCallRegion + 2
+-	// Find the #Indelcall column
+-	start += bytes.IndexByte(line[start:], '\t') + 1
+-	// Find the #Refcall column
+-	start += bytes.IndexByte(line[start:], '\t') + 1
+-	// Find the end of #Refcall
+-	end = start + bytes.IndexByte(line[start:], '\t')
+-	ns += parseUint(line[start:end])
+-	v.w.WriteString(strconv.Itoa(int(ns)))
++		v.w.WriteString("\t.\tFAIL\t")
++	}
++
++	// VCF INFO FORMAT
++	fmt.Fprintf(v.w, "AN=%d;NS=%d\tGT:FT", ns, ns)
+ 
+ 	v.w.Write(sampleColumns)
+ 
+@@ -331,7 +316,7 @@
+ // for the reference.
+ // It is assumes the columns are delimited by one tab character.
+ // It assumes there is no trailing newline/whitespace characters.
+-func (v *vcf) translateSampleAnalysisColumns(matrixLine []byte) (buf []byte, isAllPassFilters bool, err error) {
++func (v *vcf) translateSampleAnalysisColumns(matrixLine, callRegion, alts []byte) (buf []byte, isAllPassFilters bool, ns int, err error) {
+ 	const (
+ 		nocall   = ":NoCall"
+ 		covfail  = ":CovFail"
+@@ -372,9 +357,12 @@
+ 	for i := range callWasMade {
+ 		// Assume pattern is a string consisting of the digits 0,1,2,3,4
+ 		if pattern[i+1] != '0' {
+-			// Since we know the byte is one of 1,2,3,4 we can take advantage of
+-			// ASCII codes to subtract 1 without parsing it as an integer.
+-			buf = append(buf, '\t', pattern[i+1]-1)
++			ns++
++			gt := byte('0')
++			if call := callRegion[2*(i+1)]; call != callRegion[0] {
++				gt += byte(bytes.IndexByte(alts, call)/2 + 1)
++			}
++			buf = append(buf, '\t', gt)
+ 		} else {
+ 			// '0' indicates the analysis was not of sufficent quality to identify
+ 			// Early versions of NASP used a pattern value of 'N'
+@@ -394,7 +382,7 @@
+ 	// End the line with a linefeed
+ 	buf = append(buf, '\n')
+ 
+-	return buf, isAllPassFilters, nil
++	return buf, isAllPassFilters, ns, nil
+ }
+ 
+ func (v *vcf) ReadFrom(r io.Reader) error {

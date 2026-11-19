@@ -1,39 +1,36 @@
 {% set name = "percolator" %}
-{% set version = "3.9" %}
+{% set version = "3.9.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-09.tar.gz
-  sha256: 2caed6362638f401a1527b09dcb2888320dab10fe003f76f584cfd395ed30f73
+  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-09-01.tar.gz
+  sha256: 149bf2776c6c944a221bffd0eba352a70e5c97eda7a06d34973f1ee3d8e5f133
 
 build:
-  number: 1
-  skip: True  # [osx]
+  number: 0
   run_exports:
     - {{ pin_subpackage('percolator', max_pin="x") }}
 
 requirements:
   build:
-    - make
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - cmake
+    - make
+    - git  # CMake downloads Eigen during the configure step
   host:
     - libboost-devel
-    - sqlite
-    - bzip2
-    - zlib
+    - llvm-openmp  # [osx]
   run:
-    - libboost
-    - sqlite
-    - zlib
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - percolator $PREFIX/testdata/percolatorTab > /dev/null
+    - percolator "${PREFIX}/testdata/percolatorTab" > /dev/null
+    - test -x "${PREFIX}/bin/qvality"
 
 about:
   home: "https://github.com/percolator/percolator"
@@ -47,6 +44,7 @@ about:
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:Percolator
     - doi:10.1007/s13361-016-1460-7
