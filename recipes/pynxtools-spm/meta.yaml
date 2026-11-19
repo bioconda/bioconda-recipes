@@ -1,0 +1,68 @@
+{% set name = "pynxtools-spm" %}
+{% set version = "0.5.0" %}
+# Matches requires-python; also lets the recipe render outside conda-forge.
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pynxtools_spm-{{ version }}.tar.gz
+  sha256: 4a784b5dc526f2afe4ee93c8df8bc86ca39ce8221cd372ecf73f3f041177890b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  # Required by the Bioconda linter, also for noarch packages.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=78.1.1
+    - setuptools-scm >=6.2
+  run:
+    - python >={{ python_min }}
+    - pynxtools >=0.16.0
+    - findiff >=0.11.1
+    - matplotlib-base
+    - scipy
+    - hvplot
+    - tzlocal
+    # gwyddionpy[converter] on PyPI: the reader plus the gwyconvert binary.
+    - gwyddionpy
+    - gwyconvert
+
+test:
+  requires:
+    - python {{ python_min }}
+  # pynxtools_spm.nomad is left out: it needs the optional nomad-lab package.
+  imports:
+    - pynxtools_spm
+    - pynxtools_spm.reader
+  # No `pip check` for now: conda-forge gwyfile 0.3.0 reports version 0.0.0.
+  # Add it back once conda-forge/gwyfile-feedstock#4 is fixed.
+  commands:
+    # The reader must be registered as a pynxtools plugin.
+    - python -c "from importlib.metadata import entry_points; assert 'spm' in [e.name for e in entry_points(group='pynxtools.reader')]"
+    - gwyconvert --list-formats
+
+about:
+  home: https://github.com/FAIRmat-NFDI/pynxtools-spm
+  summary: A pynxtools reader plugin that converts scanning probe microscopy (SPM) data to NeXus.
+  description: |
+    pynxtools-spm converts STM, STS and AFM data from several vendors into
+    NeXus/HDF5 files that follow NXstm, NXsts and NXafm.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  doc_url: https://fairmat-nfdi.github.io/pynxtools-spm/
+  dev_url: https://github.com/FAIRmat-NFDI/pynxtools-spm
+
+extra:
+  recipe-maintainers:
+    - RubelMozumder

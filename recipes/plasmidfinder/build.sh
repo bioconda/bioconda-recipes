@@ -18,7 +18,7 @@ tar -xvf plasmidfinder-3.0.3.tar.gz --strip-components 1
 rm -f *.tar.gz
 
 # Install PlasmidFinder database. NOTE that KMA needs to have been installed for the following comand.
-python ./INSTALL.py
+${PYTHON} ./INSTALL.py
 
 # set PLASMID_DB variable on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d

@@ -1,0 +1,67 @@
+{% set name = "ciri3" %}
+{% set version = "3.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/gyjames/CIRI3/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ffcebe2e762b14cd85f969acc15fe9c212a1f517524c6068d5f6f10b8e7a431c
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - openjdk >=8
+    - r-base
+    - bioconductor-edger
+    - r-statmod
+    - rmats >=4.1,<5
+
+test:
+  source_files:
+    - data/circRNA/ref.fa
+    - data/circRNA/Single/sample.sam
+    - data/circRNA/Single/result.txt
+    - data/DE/Ratio/infor.tsv
+    - data/DE/Ratio/BSJ_Matrix.txt
+    - data/DE/Ratio/FSJ_Matrix.txt
+  commands:
+    - ciri3 -H > help.txt 2>&1
+    - grep -q 'circRNA identifier3' help.txt
+    - ciri3 DE_BSJ -H > bsj-help.txt 2>&1
+    - grep -q DE_BSJ bsj-help.txt
+    - ciri3 DE_Ratio -H > ratio-help.txt 2>&1
+    - grep -q DE_Ratio ratio-help.txt
+    - ciri3 DE_Relative -H > relative-help.txt 2>&1
+    - grep -q DE_Relative relative-help.txt
+    - Rscript -e 'library(edgeR)'
+    - Rscript -e 'library(statmod)'
+    - test -x "$PREFIX/share/ciri3-{{ version }}-0/scripts/rMATSexe"
+    - test -s "$PREFIX/share/ciri3-{{ version }}-0/scripts/BSJ_yes.R"
+    - test -x "$PREFIX/rMATS/rMATS_C/rMATSexe"
+
+about:
+  home: https://github.com/gyjames/CIRI3
+  dev_url: https://github.com/gyjames/CIRI3
+  doc_url: https://github.com/gyjames/CIRI3/blob/v{{ version }}/README.md
+  license: GPL-2.0-only
+  license_file: LICENSE.txt
+  summary: Detection, quantification, and differential expression analysis of circular RNAs.
+
+extra:
+  recipe-maintainers:
+    - nictru
+  identifiers:
+    - doi:10.1038/s41587-025-02835-1
+  notes: |
+    Run CIRI3 with the ciri3 wrapper instead of java -jar CIRI3.jar.
+    The Java 8-compatible upstream JAR and companion R scripts are installed
+    under share/ciri3-{{ version }}-0. Differential expression uses the
+    platform-native rMATSexe supplied by the rmats dependency rather than
+    the Linux x86-64 binary bundled upstream.

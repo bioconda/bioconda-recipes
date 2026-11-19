@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# https://github.com/antismash/antismash/issues/926#issuecomment-6196255758
+antismash --prepare-data
+
 cat <<EOF >> ${PREFIX}/.messages.txt
 
 

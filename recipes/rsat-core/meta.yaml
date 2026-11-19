@@ -1,31 +1,30 @@
-{% set version = "2025.04.04" %} 
-{% set sha256 = "e1391de42c9115f1675f6399f02b5e364fc229d4ae185643a78ac75d1fe97c62" %}
+{% set version = "2026.10.08" %} 
+{% set sha256 = "7d9cc49148130e53a4190db0078c1f4a89cdb520ecadec4def146342b7331c5d" %}
 
 package:
   name: rsat-core
   version: {{ version }}
 
-build:
-  run_exports:
-    - {{ pin_subpackage('rsat-core', max_pin="x.x") }}
-  number: 1
-  skip: True  # [py2k]
-  script_env:
-   - LC_ALL=POSIX
-
 source:
   url: https://github.com/rsa-tools/rsat-code/archive/refs/tags/{{ version }}.tar.gz
   sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script_env:
+    - LC_ALL=POSIX
+  run_exports:
+    - {{ pin_subpackage('rsat-core', max_pin=None) }}
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - {{ stdlib('c') }}
     - make
-    - r-base 4.2.3 
-    - openssl 3.5.4
-
+    - r-base
+    - openssl
   run:
     ## Python3      
     - python
@@ -38,8 +37,8 @@ requirements:
     - pyyaml
     - opencv
     ## R and BioConductor dependencies
-    - r-base 4.2.3
-    - openssl 3.5.4  
+    - r-base
+    - openssl
     - r-gplots
     - r-jpeg
     - r-png
@@ -115,11 +114,14 @@ test:
     - "rsat matrix-clustering -h"
 
 about:
-  home: "http://rsat.eu"
+  home: "https://github.com/rsa-tools/rsat-code"
   summary: "Regulatory Sequence Analysis Tools (RSAT)"
-  license: "GNU Affero General Public License v3"
-  license_file: LICENSE.txt
+  license: "AGPL-3.0-only"
+  license_family: AGPL
+  license_file: "LICENSE.txt"
   description: "Detection and analysis of regulatory signals in non-coding sequences."
+  dev_url: "https://github.com/rsa-tools/rsat-code"
+  doc_url: "http://rsat.eu"
 
 extra:
   identifiers:
@@ -127,6 +129,8 @@ extra:
     - doi:10.1093/nar/gky317
   additional-platforms:
     - linux-aarch64
+    # nothing provides perl-socket needed by perl-mce-shared-1.894-pl5321hdfd78af_0
+    #- osx-arm64
   notes: |
     This package installs RSAT tools to analyse cis-regulatory elements, supporting:
     * motif discovery (support genome-wide data sets like ChIP-seq)

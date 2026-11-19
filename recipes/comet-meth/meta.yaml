@@ -1,0 +1,64 @@
+{% set name = "comet-meth" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/fanglab/COMET/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fb303901ec96ab0169b682375f14d64b5f7a5d8e4cefdcfcd910f13c0ee12bb0
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3.8
+    - pysam >=0.21
+    - numpy >=1.20
+    - pandas >=1.3
+    - scipy >=1.7
+    - matplotlib-base >=3.5
+    - mscorefonts
+    - samtools >=1.15
+    - bedtools >=2.29
+    - htslib >=1.15
+    - ont-modkit ==0.3.1
+    - metilene ==0.2.9
+    - perl
+    - gawk
+    - coreutils
+
+test:
+  commands:
+    - comet --version
+    - comet --help
+    - comet_assign.py --help
+    - comet_summarize.py --help
+    - comet dmr --help
+    - comet test --help
+    - comet test --env-only
+    - test -s $PREFIX/share/comet/test/dmr/brain_deep_AD_1.Microglia.CG.bed.gz
+    - comet assign --help
+    - metilene --version || true
+    - modkit --version
+
+about:
+  home: https://github.com/fanglab/COMET
+  dev_url: https://github.com/fanglab/COMET
+  license: CC-BY-NC-SA-4.0
+  license_family: OTHER
+  license_file: LICENSE
+  summary: Read-level cell-type assignment and cell-type-resolved DMR analysis for long-read methylation data
+  description: |
+    COMET (Cell-of-Origin from METhylation) assigns individual long reads from bulk tissue to
+    their cell type of origin using per-read CpG methylation and a cell-type reference panel,
+    and outputs cell-type BAMs, per-site methylation calls and cell-type composition.
+
+extra:
+  recipe-maintainers:
+    - Kanochan-hao

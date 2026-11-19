@@ -6,18 +6,23 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/nictru/psirc/archive/0c4e49d7636c0e9120d9119e098bb515a17dc9b6.zip
-  sha256: 7acff956ceb8e24b43aa14ad35bbce8f2e646884d83aec45e9e6326d9a1a5a26
+  - url: https://github.com/nictru/psirc/archive/9046acc666c971eea17b6da9112beb3bed8000dc.zip
+    sha256: feb67bf60b68c2207e46c81a7b2340c4beb0af7af1bbc44c7669f28aac0ecc50
+  - url: https://github.com/Christina-hshi/kallisto-b/archive/1ed5583ba5f1e964932556fb1b001709ad648648.tar.gz
+    sha256: f96a117a946bd8a85f0f9909e3f79c98a8d5bdf79ade10b083f7e3761cdb29e1
+    folder: kallisto-b
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('psirc', max_pin="x") }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - {{ stdlib('c') }}
+    - cmake <4.0
     - make
   host:
     - htslib
@@ -30,19 +35,28 @@ test:
   commands:
     - psirc-quant cite
     - psirc-quant version
-    - type psirc
-    - type create_custom_transcriptome_fa.pl
+    - perl -MFAlite -e 1
+    - perl -c "$(command -v psirc)"
+    - perl -c "$(command -v create_custom_transcriptome_fa.pl)"
+    - kallisto_b version
 
 about:
   home: "https://github.com/nictru/psirc"
-  license: "MIT"
-  license_family: MIT
-  license_file: LICENSE
+  license: MIT AND BSD-3-Clause AND BSD-2-Clause AND LicenseRef-kallisto-b-non-commercial
+  license_file:
+    - LICENSE
+    - psirc-quant/license.txt
+    - kallisto-b/license.txt
   summary: "Full-length linear and circular transcript isoform reconstruction and quantification."
   dev_url: "https://github.com/nictru/psirc"
   doc_url: "https://github.com/nictru/psirc/blob/master/README.md"
 
 extra:
+  notes: |
+    The bundled kallisto fork is compiled from source and installed as kallisto_b.
+    Pass kallisto_b explicitly as the positional kallisto argument to psirc.
+    The fork's license permits educational and research not-for-profit use;
+    commercial use requires a separate license (see kallisto-b/license.txt).
   additional-platforms:
     - linux-aarch64
   identifiers:

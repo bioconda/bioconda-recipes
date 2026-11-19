@@ -1,0 +1,65 @@
+{% set version = "0.0.2" %}
+
+package:
+  name: r-hyprcoloc
+  version: {{ version }}
+
+source:
+  url: https://github.com/jrs95/hyprcoloc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 333303cefce724fdd66f92ba822c75cbb0f463e36f3391e6d162efa69ef2e921
+  patches:
+    - eigen-indices.patch
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-hyprcoloc', max_pin="x.x") }}
+  script: |
+    $R CMD INSTALL --build .
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base >=3.6
+    - r-iterpc
+    - r-knitr
+    - r-matrix
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - r-rmarkdown
+    - r-rmpfr
+  run:
+    - r-base >=3.6
+    - r-iterpc
+    - r-knitr
+    - r-matrix
+    - r-pheatmap
+    - r-rcolorbrewer
+    - r-rcpp
+    - r-rcppeigen
+    - r-rmarkdown
+    - r-rmpfr
+
+test:
+  commands:
+    - $R -e "library('hyprcoloc')"
+
+about:
+  home: https://github.com/jrs95/hyprcoloc
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Hypothesis prioritisation in multi-trait colocalization analyses using HyPrColoc.
+
+extra:
+  recipe-maintainers:
+    - edg1983
