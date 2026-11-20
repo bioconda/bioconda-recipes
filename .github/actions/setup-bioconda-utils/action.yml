@@ -1,0 +1,24 @@
+name: Set up pinned bioconda-utils
+description: Install the bioconda-utils revision pinned in this recipes checkout.
+runs:
+  using: composite
+  steps:
+    - name: Check out the pinned bioconda-utils revision
+      id: checkout
+      shell: bash
+      run: |
+        source scripts/bioconda-utils-versions.sh
+        echo "pixi-version=$BIOCONDA_PIXI_VERSION" >> "$GITHUB_OUTPUT"
+        bash scripts/setup-bioconda-utils.sh checkout
+
+    - name: Set up pixi
+      uses: prefix-dev/setup-pixi@v0
+      with:
+        pixi-version: ${{ steps.checkout.outputs.pixi-version }}
+        manifest-path: bioconda-utils/pixi.toml
+        environments: default
+        locked: true
+
+    - name: Install and configure bioconda-utils
+      shell: bash
+      run: bash scripts/setup-bioconda-utils.sh configure
