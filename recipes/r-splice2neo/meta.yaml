@@ -1,0 +1,97 @@
+{% set name = "r-splice2neo" %}
+{% set version = "0.6.14" %}
+{% set liftover_version = "1.35.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/TRON-Bioinformatics/splice2neo/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: d8007ee2a370a499ee5a347a88465e95036e872c0af3258bcad9ded0c6ace003
+    folder: splice2neo_src
+  # liftOver is a Bioconductor workflow package not available via conda;
+  # bundle the source so it can be installed during build.
+  - url: https://www.bioconductor.org/packages/3.23/workflows/src/contrib/liftOver_{{ liftover_version }}.tar.gz
+    sha256: f7abbe5f531b17f05d99bbd03bae405e65b4aba3a2eff25e01f766d32273d419
+    folder: liftover_src
+
+build:
+  number: 0
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+# FIXME Enable cross-compilation to ARM platforms. You'll need to deal with
+# the issue laid out here:
+# https://github.com/bioconda/bioconda-recipes/pull/65691#issuecomment-4542058008.
+requirements:
+  host:
+    - r-base >=4.4
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomicfeatures >=1.21.10
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-gwascat
+    - bioconductor-homo.sapiens
+    - bioconductor-iranges
+    - bioconductor-rtracklayer
+    - bioconductor-s4vectors
+    - bioconductor-txdbmaker
+    - bioconductor-xvector
+    - r-dplyr >=1.1.1
+    - r-magrittr
+    - r-purrr
+    - r-readr
+    - r-rlang
+    - r-stringr >=1.5.0
+    - r-tibble
+    - r-tidyr
+    - r-vcfr
+  run:
+    - r-base >=4.4
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomicfeatures >=1.21.10
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-gwascat
+    - bioconductor-homo.sapiens
+    - bioconductor-iranges
+    - bioconductor-rtracklayer
+    - bioconductor-s4vectors
+    - bioconductor-txdbmaker
+    - bioconductor-xvector
+    - r-dplyr >=1.1.1
+    - r-magrittr
+    - r-purrr
+    - r-readr
+    - r-rlang
+    - r-stringr >=1.5.0
+    - r-tibble
+    - r-tidyr
+    - r-vcfr
+
+test:
+  commands:
+    - $R -e "library('splice2neo')"
+
+about:
+  home: https://github.com/TRON-Bioinformatics/splice2neo
+  license: MIT
+  license_family: MIT
+  license_file: splice2neo_src/LICENSE
+  summary: Aberrant splice junction analysis with associated mutations
+  description: >
+    This package provides functions for analyzing alternative splicing
+    and aberrant splice junctions and their creation from or association with
+    somatic mutations. It integrates the output of several tools that predict
+    splicing effects from mutation or RNA-seq data into a unified splice junction
+    format. Splice junctions can be annotated with affected transcript sequences,
+    CDS, and resulting peptide sequences.
