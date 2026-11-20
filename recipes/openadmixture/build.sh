@@ -18,7 +18,9 @@ cp -R "$SRC_DIR/OpenADMIXTURE.jl" "$depot/dev/OpenADMIXTURE"
 #    image (e.g. "generic;apple-m1,clone_all"), not for the builder's CPU. Any other
 #    target makes Julia recompile the stdlibs into the depot with absolute paths,
 #    which are then rejected once conda installs the package elsewhere.
-export JULIA_CPU_TARGET="$("$julia" --startup-file=no -e 'print(Sys.sysimage_target())')"
+# Separate assignment so that a Julia that fails to start stops the build.
+cpu_target="$("$julia" --startup-file=no -e 'print(Sys.sysimage_target())')"
+export JULIA_CPU_TARGET="$cpu_target"
 export JULIA_DEPOT_PATH="$depot:"   # trailing ":" keeps Julia's bundled depots (precompiled stdlibs)
 export JULIA_LOAD_PATH="@:@stdlib"
 export JULIA_PKG_PRECOMPILE_AUTO=0
