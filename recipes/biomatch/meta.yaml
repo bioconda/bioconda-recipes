@@ -1,0 +1,75 @@
+{% set name = "biomatch" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/VonPoo/BioMatch/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 44a0138bf968e33dd474e3242799f9c95813bfa479b57b10dc0d031553e5e777
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - biomatch = biomatch.biomatch:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python
+    - pyfaidx
+    - pandas
+    - numpy
+    - biopython
+    - tqdm
+    - bwa
+    - r-base
+    - r-deepkin
+    - r-readr
+    - r-tidyverse
+    - r-caret
+    - r-e1071
+    - r-pls
+    - git
+    - libgit2
+    - curl
+    - scikit-learn
+    - scipy
+    - pyvcf3
+    - parallel
+    - bcftools
+    - tabix
+    - samtools
+    - plink
+    - plink2
+    - ntsm
+    - perl
+
+test:
+  commands:
+    - biomatch --version
+    - python -c "import os, biomatch, biomatch.biomatch as bm; import pathlib; p=os.path.join(os.environ.get('CONDA_PREFIX',''), 'share','biomatch','kmer_ref_panels'); print(bm.__version__); assert os.path.isdir(p), f'kmer panels not found at {p}'; print('kmer panels OK:', len([d for d in pathlib.Path(p).iterdir() if d.is_dir()]))"
+
+about:
+  home: https://github.com/VonPoo/BioMatch
+  summary: BioMatch - A data-driven framework for comprehensive sample identification
+  description: |
+    BioMatch is a data-driven framework for comprehensive sample identification.
+    It provides functionality for generating k-mer panels, counting k-mers in samples,
+    and evaluating sample identity.
+    Copyright (C) 2025 Zhejiang University
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - VonPoo
