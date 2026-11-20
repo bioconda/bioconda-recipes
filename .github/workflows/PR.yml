@@ -2,6 +2,8 @@ name: PR Check
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+env:
+  BIOCONDA_COMMON_REF: ${{ github.base_ref == 'bulk' && 'bulk' || 'master' }}
 concurrency:
   group: build-${{ github.event.pull_request.number || github.head_ref }}
   cancel-in-progress: true
@@ -28,14 +30,14 @@ jobs:
 
       - name: Fetch conda install script
         run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/"{install-and-set-up-conda,configure-conda,common}.sh
 
       - name: Restore cache
         id: cache
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
-          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+          key: ${{ runner.os }}--${{ env.BIOCONDA_COMMON_REF }}--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
         if: steps.cache.outputs.cache-hit != 'true'
@@ -112,14 +114,14 @@ jobs:
 
       - name: Fetch conda install script
         run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/"{install-and-set-up-conda,configure-conda,common}.sh
 
       - name: Restore cache
         id: cache
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
-          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+          key: ${{ runner.os }}--${{ env.BIOCONDA_COMMON_REF }}--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
         if: steps.cache.outputs.cache-hit != 'true'
@@ -216,7 +218,7 @@ jobs:
 
       - name: Fetch conda install script
         run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
+          wget "https://raw.githubusercontent.com/bioconda/bioconda-common/${BIOCONDA_COMMON_REF}/"{install-and-set-up-conda,configure-conda,common}.sh
 
       # This is required so actions/cache below will restore properly
       # See: https://github.com/actions/cache/issues/629#issuecomment-1189184648
@@ -233,7 +235,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /opt/mambaforge
-          key: ${{ runner.os }}--master--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
+          key: ${{ runner.os }}--${{ env.BIOCONDA_COMMON_REF }}--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
 
       - name: Set up bioconda-utils
         if: steps.cache.outputs.cache-hit != 'true'
