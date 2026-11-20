@@ -1,0 +1,77 @@
+{% set name = "distillr" %}
+{% set version = '0.0.0.9000' %}
+{% set github = "https://github.com/cmkobel/distillr" %}
+{% set sha256 = '649b0bedcb2c82c7185f0f7990e1f304f97646ece7b605bb89d692f66a91bff1' %}
+
+package:
+  name: r-{{ name }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    #- {{ github }}/archive/refs/tags/v{{ version }}.tar.gz
+     - https://github.com/cmkobel/distillR/archive/refs/heads/package.zip # This is a hack and requires updating the sha256, but it is an easy way to get started.
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: R CMD INSTALL --build .
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage("r-distillr", max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    #- glpk >=4.65
+    #- libsbml >=5.18.0
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix
+    - r-cppRouting
+    - r-dplyr
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+    - r-matrix 
+    - r-cppRouting
+    - r-dplyr
+    - r-stringr
+    - r-tibble
+    - r-tidyr
+
+
+
+
+
+
+test:
+  commands:
+    - $R -e "library('distillr')"
+
+about:
+  home: https://github.com/cmkobel/distillr
+  license: MIT
+  summary: R package for distilling functional annotations of bacterial genomes and metagenomes.
+  license_family: MIT
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+  #doc_url: https://<repo>.github.io/distillr/
+  dev_url: https://github.com/cmkobel/distillr
+  
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - cmkobel
+
