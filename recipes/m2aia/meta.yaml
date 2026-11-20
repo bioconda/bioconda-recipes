@@ -1,0 +1,61 @@
+{% set name = "m2aia" %}
+{% set version = "0.5.10p0" %}
+{% set sha256 = "547db82795187055dcef089fe3cf768f7f2d2b732b51374417fa8cb508d9a574" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bgruening/pym2aia/archive/f618fff8b78f3fdd8351692fe3c08e4ff375f9d5.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('m2aia', max_pin='x.x') }}
+
+requirements:
+  build:
+    ##- {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}      # [linux]
+    - {{ cdt('mesa-libegl-devel') }}     # [linux]
+    - {{ cdt('mesa-dri-drivers') }}      # [linux]
+    - {{ cdt('libdrm-devel') }}          # [linux]
+    - {{ cdt('libxi-devel') }}       # [linux]
+    - {{ cdt('libxext-devel') }}     # [linux]
+  host:
+    - xorg-libx11                        # [linux]
+    - xorg-libxext                       # [linux]
+    - xorg-libxdamage                    # [linux]
+    - xorg-libsm                         # [linux]
+    - xorg-libice                        # [linux]
+    - xorg-libxcomposite                 # [linux]
+    - xorg-libxxf86vm                    # [linux]
+    - xorg-xf86vidmodeproto              # [linux]
+    - vtk
+    - wget
+    - python >=3.8
+    - pip
+  run:
+    - {{ pin_compatible('vtk', max_pin='x.x') }}
+    - python >=3.8
+    - numpy
+    - simpleitk
+    - wget
+    - openslide 3.*
+
+test:
+  imports:
+    - m2aia
+
+about:
+  home: https://m2aia.github.io/m2aia
+  summary: Provide interfaces for M2aia.
+  license: 'BSD-3-Clause'
+  license_file: 'LICENSE'
+
+extra:
+  recipe-maintainers:
+    - cKNUSPeR
