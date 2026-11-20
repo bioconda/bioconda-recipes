@@ -6,10 +6,21 @@ executors:
     macos:
       xcode: 15.4.0
     resource_class: m4pro.medium
+    environment:
+      # Preserve the SDK and deployment target previously set by bioconda-common.
+      MACOSX_DEPLOYMENT_TARGET: "11.3"
+      MACOSX_SDK_VERSION: "11.3"
   linux-aarch64:
     machine:
       image: ubuntu-2404:current
     resource_class: arm.large
+
+commands:
+  setup-bioconda-utils:
+    steps:
+      - run:
+          name: Set up pinned bioconda-utils
+          command: bash scripts/setup-bioconda-utils.sh
 
 jobs: # a basic unit of work in a run
   build_and_test:
@@ -30,60 +41,41 @@ jobs: # a basic unit of work in a run
                 circleci-agent step halt
             fi
 
-      - run:
-          name: Fetch bioconda install script
-          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - run:
-          name: Install bioconda-utils
-          command: |
-            sudo mkdir -p /opt/
-            sudo chmod o+rwx /opt
-            bash install-and-set-up-conda.sh
-
-      - run:
-          name: Setup PATH
-          command:
-            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
-
-      - run:
-          name: Configure conda
-          command: bash configure-conda.sh
+      - setup-bioconda-utils
 
       - run:
           name: Build and test
           command: |
             set -xe
-            eval "$(conda shell.bash hook)"
-            conda activate bioconda
-            source common.sh
+            source scripts/activate-bioconda-utils.sh
 
             # Sets up OSX SDK
             if [[ $(uname) = "Darwin" ]]; then
               if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
-                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+                OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
               fi
-              sudo chmod o+rwx ${OSX_SDK_DIR}
+              sudo chmod o+rwx "$OSX_SDK_DIR"
               run_conda_forge_build_setup
             fi
 
             if command -V docker >/dev/null; then
               bioconda-utils build recipes config.yml \
-                  --lint --docker --mulled-test \
-                  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
-                  --git-range origin/master HEAD
+                  --lint --docker --mulled-build-and-test \
+                  --git-range origin/master...HEAD
             else
               bioconda-utils build recipes config.yml \
-                  --lint --git-range origin/master HEAD
+                  --lint --git-range origin/master...HEAD
             fi
 
       - run:
           name: Prepare artifacts
           command: |
+            source scripts/activate-bioconda-utils.sh
+            conda_bld=$(python -c 'from conda_build.config import Config; print(Config().croot)')
             (
             mkdir -p /tmp/artifacts/packages
-            cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-            find -name .cache | xargs rm -rf || true
+            cd "$conda_bld" || exit 0
+            find . -name .cache | xargs rm -rf || true
             for n in index.html channeldata.json linux-aarch64 linux-64 osx-64 osx-arm64 noarch; do
               cp -rv $n /tmp/artifacts/packages || true
             done
@@ -122,46 +114,26 @@ jobs: # a basic unit of work in a run
                 circleci-agent step halt
             fi
 
-      - run:
-          name: Fetch bioconda install script
-          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - run:
-          name: Install bioconda-utils
-          command: |
-            sudo mkdir -p /opt
-            sudo chmod o+rwx /opt
-            bash install-and-set-up-conda.sh
-
-      - run:
-          name: Setup PATH
-          command:
-            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
-
-      - run:
-          name: Configure conda
-          command: bash configure-conda.sh
+      - setup-bioconda-utils
 
       - run:
           name: Build and push
           command: |
             set -xe
-            eval "$(conda shell.bash hook)"
-            conda activate bioconda
-            source common.sh
+            source scripts/activate-bioconda-utils.sh
 
             # Sets up OSX SDK
             if [[ $(uname) = "Darwin" ]]; then
               if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
-                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+                OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
               fi
-              sudo chmod o+rwx ${OSX_SDK_DIR}
+              sudo chmod o+rwx "$OSX_SDK_DIR"
               run_conda_forge_build_setup
             fi
 
             bioconda-utils handle-merged-pr recipes config.yml \
               --repo bioconda/bioconda-recipes \
-              --git-range ${CIRCLE_SHA1}~1 ${CIRCLE_SHA1} \
+              --git-range ${CIRCLE_SHA1}~1...${CIRCLE_SHA1} \
               --fallback build \
               --artifact-source circleci
 
@@ -197,46 +169,26 @@ jobs: # a basic unit of work in a run
             git config user.email biocondabot@users.noreply.github.com
             git branch --set-upstream-to=origin/$CIRCLE_BRANCH $CIRCLE_BRANCH
 
-      - run:
-          name: Fetch bioconda install script
-          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+      - setup-bioconda-utils
 
-      - run:
-          name: Install bioconda-utils
-          command: |
-            sudo mkdir -p /opt/
-            sudo chmod o+rwx /opt
-            bash install-and-set-up-conda.sh
-
-      - run:
-          name: Setup PATH
-          command:
-            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
-
-      - run:
-          name: Configure conda
-          command: bash configure-conda.sh
-
-      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      # For now, do not upload ARM images to biocontainers: --container-upload-target biocontainers
       - run:
           name: Build and upload
           command: |
             set -e
-            eval "$(conda shell.bash hook)"
-            conda activate bioconda
-            source common.sh
+            source scripts/activate-bioconda-utils.sh
 
             echo '============'
             conda info --all
             conda config --show-sources
-            python -c 'import bioconda_utils.utils as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+            bioconda-utils diagnostics
             echo '============'
             bioconda-utils build recipes config.yml \
               --worker-offset << parameters.runner >> --n-workers 6 \
-              --docker --mulled-test --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+              --docker --mulled-build-and-test \
               --anaconda-upload \
               --record-build-failures \
-              --skiplist-leafs
+              --skiplist-leaves
             conda clean -y --all
 
   nightly_build:
@@ -251,40 +203,20 @@ jobs: # a basic unit of work in a run
 
       - checkout
 
-      - run:
-          name: Fetch bioconda install script
-          command: wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
+      - setup-bioconda-utils
 
-      - run:
-          name: Install bioconda-utils
-          command: |
-            sudo mkdir -p /opt/
-            sudo chmod o+rwx /opt
-            bash install-and-set-up-conda.sh
-
-      - run:
-          name: Setup PATH
-          command:
-            echo 'export PATH=/opt/mambaforge/bin:"$PATH"' >> "$BASH_ENV"
-
-      - run:
-          name: Configure conda
-          command: bash configure-conda.sh
-
-      # For now, do not upload ARM images to biocontainers: --mulled-upload-target biocontainers
+      # For now, do not upload ARM images to biocontainers: --container-upload-target biocontainers
       - run:
           name: Build and push leftover packages
           command: |
             set -e
-            eval "$(conda shell.bash hook)"
-            conda activate bioconda
-            source common.sh
+            source scripts/activate-bioconda-utils.sh
 
             # build and push all leftover packages
             bioconda-utils build recipes config.yml \
-                --docker --mulled-test  --docker-base-image "quay.io/bioconda/bioconda-utils-build-env-cos7-$(arch):${BIOCONDA_UTILS_TAG#v}" \
+                --docker --mulled-build-and-test \
                 --anaconda-upload \
-                --prelint --exclude bioconda-repodata-patches
+                --lint --exclude bioconda-repodata-patches
 
 workflows:
   build and test (ARM):

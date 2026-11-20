@@ -19,26 +19,14 @@ stages:
           maxParallel: 8
 
         steps:
-          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
-            displayName: Add conda to PATH
-
-          - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-            displayName: Fetch bioconda install script
-
-          - script: bash install-and-set-up-conda.sh
-            displayName: Install bioconda-utils
-
-          # We reconfigure conda to use the right channel setup.
-          - script: bash configure-conda.sh
-            displayName: Configure conda
+          - bash: bash scripts/setup-bioconda-utils.sh
+            displayName: Set up pinned bioconda-utils
 
           - bash: |
               set -e
-              eval "$(conda shell.bash hook)"
-              conda activate bioconda
+              source scripts/activate-bioconda-utils.sh
               source=`echo $(Build.SourceBranch) | sed -e "s#^refs/pull/#pull/#"`
-              bioconda-utils lint --loglevel debug --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" "$source"
+              bioconda-utils lint --loglevel debug --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH"..."$source"
             displayName: Lint
 
   - stage: "test_linux"
@@ -53,36 +41,26 @@ stages:
         timeoutInMinutes: 360
 
         steps:
-          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
-            displayName: Add conda to PATH
-
-          - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-            displayName: Fetch bioconda install script
-
-          - script: bash install-and-set-up-conda.sh
-            displayName: Install bioconda-utils
-
-          # We reconfigure conda to use the right channel setup.
-          - script: bash configure-conda.sh
-            displayName: Configure conda
+          - bash: bash scripts/setup-bioconda-utils.sh
+            displayName: Set up pinned bioconda-utils
 
           - bash: |
               set -e
-              eval "$(conda shell.bash hook)"
-              conda activate bioconda
+              source scripts/activate-bioconda-utils.sh
               export OSTYPE="linux-gnu"
               export CI="true"
               bioconda-utils build recipes config.yml \
-                  --docker --mulled-test \
-                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
+                  --docker --mulled-build-and-test \
+                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH"...HEAD
             displayName: Test
 
           - bash: |
+              source scripts/activate-bioconda-utils.sh
+              conda_bld=$(python -c 'from conda_build.config import Config; print(Config().croot)')
               (
               mkdir -p /tmp/artifacts/packages
-              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-              find -name .cache | xargs rm -rf || true
+              cd "$conda_bld" || exit 0
+              find . -name .cache | xargs rm -rf || true
               for n in index.html channeldata.json linux-64 osx-64 noarch; do
                 cp -rv $n /tmp/artifacts/packages || true
               done
@@ -114,39 +92,28 @@ stages:
         timeoutInMinutes: 360
 
         steps:
-          - bash: echo "##vso[task.prependpath]/opt/mambaforge/bin"
-            displayName: Add conda to PATH
-
-          - bash: |
-              wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{common,install-and-set-up-conda,configure-conda}.sh
-            displayName: Fetch setup scripts
-
-          - script: bash install-and-set-up-conda.sh
-            displayName: Install bioconda-utils
-
-          # We reconfigure conda to use the right channel setup.
-          - script: bash configure-conda.sh
-            displayName: Configure conda
+          - bash: bash scripts/setup-bioconda-utils.sh
+            displayName: Set up pinned bioconda-utils
 
           - bash: |
               set -e
-              eval "$(conda shell.bash hook)"
-              conda activate bioconda
+              source scripts/activate-bioconda-utils.sh
               export OSTYPE="darwin"
               export CI="true"
 
-              # Get MACOSX vars
-              source common.sh
+              run_conda_forge_build_setup
 
               bioconda-utils build recipes config.yml \
-                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH" HEAD
+                  --git-range origin/"$SYSTEM_PULLREQUEST_TARGETBRANCH"...HEAD
             displayName: Test
 
           - bash: |
+              source scripts/activate-bioconda-utils.sh
+              conda_bld=$(python -c 'from conda_build.config import Config; print(Config().croot)')
               (
               mkdir -p /tmp/artifacts/packages
-              cd /opt/mambaforge/envs/bioconda/conda-bld || exit 0
-              find -name .cache | xargs rm -rf || true
+              cd "$conda_bld" || exit 0
+              find . -name .cache | xargs rm -rf || true
               for n in index.html channeldata.json linux-64 osx-64 noarch; do
                 cp -rv $n /tmp/artifacts/packages || true
               done
