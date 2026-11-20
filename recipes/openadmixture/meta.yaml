@@ -1,0 +1,74 @@
+{% set name = "openadmixture" %}
+{% set version = "0.2.0" %}
+{% set julia_version = "1.13.4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/ltalignani/OpenADMIXTURE.jl/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: f24be156dca67740f5681417e6c1148ef6e95efc231f3a7ea74d5da06a502c7a
+    folder: OpenADMIXTURE.jl
+  # Official Julia binaries: conda-forge's julia has no osx-arm64 build.
+  - url: https://julialang-s3.julialang.org/bin/mac/aarch64/1.13/julia-{{ julia_version }}-macaarch64.tar.gz  # [osx and arm64]
+    sha256: 8e58a1993ecbadb9a762a987eefa4e484b364a8560349609cc05e93287b9a8fe  # [osx and arm64]
+    folder: julia  # [osx and arm64]
+  - url: https://julialang-s3.julialang.org/bin/mac/x64/1.13/julia-{{ julia_version }}-mac64.tar.gz  # [osx and x86_64]
+    sha256: c84de0fcb4268841f296fd56c47c27383d81358033428389b0d1882b110b9bcd  # [osx and x86_64]
+    folder: julia  # [osx and x86_64]
+  - url: https://julialang-s3.julialang.org/bin/linux/x64/1.13/julia-{{ julia_version }}-linux-x86_64.tar.gz  # [linux and x86_64]
+    sha256: cf1658f13b91facccd57d41464d7125a0e48a1d24f49062d71532d04d4ec4130  # [linux and x86_64]
+    folder: julia  # [linux and x86_64]
+  - url: https://julialang-s3.julialang.org/bin/linux/aarch64/1.13/julia-{{ julia_version }}-linux-aarch64.tar.gz  # [linux and aarch64]
+    sha256: d1814cb51e49a1ecd0c95ff0e4ac267ec5ddaba051f5eed2d866d55e40274de5  # [linux and aarch64]
+    folder: julia  # [linux and aarch64]
+
+build:
+  number: 0
+  skip: true  # [win]
+  # Julia and its precompiled package images must not be rewritten by conda:
+  # install_name_tool / prefix patching would break their code signatures and
+  # cache checksums. The launcher finds everything relative to itself instead.
+  binary_relocation: false
+  detect_binary_files_with_prefix: false
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: []
+  run: []
+
+test:
+  commands:
+    # The bundled caches must load as installed: nothing may be recompiled into
+    # the per-user depot.
+    - export OPENADMIXTURE_DEPOT="$PWD/user_depot"
+    - openadmixture --help
+    - openadmixture -j2 -s 1 "$PREFIX/share/openadmixture/testdata/EUR_subset.bed" 2
+    - test -s EUR_subset.2.Q && test -s EUR_subset.2.P
+    - test ! -d "$PWD/user_depot/compiled"
+
+about:
+  home: https://github.com/OpenMendel/OpenADMIXTURE.jl
+  # OpenADMIXTURE.jl is MIT. The bundled Julia is MIT, with some dependencies under
+  # other licenses (see share/openadmixture/julia/share/doc/julia/LICENSE.md).
+  license: MIT
+  license_family: MIT
+  license_file:
+    - OpenADMIXTURE.jl/LICENSE
+    - julia/LICENSE.md
+  summary: ADMIXTURE-compatible ancestry estimation in Julia, with a native Apple Silicon build
+  description: |
+    OpenADMIXTURE estimates individual ancestry proportions (Q) and population allele
+    frequencies (P) from PLINK .bed files, with the same model and command-line
+    interface as ADMIXTURE 1.3 (-j, -s, -C, --cv, -B). This package bundles its own
+    Julia runtime and precompiled dependencies, so it runs offline.
+  dev_url: https://github.com/ltalignani/OpenADMIXTURE.jl
+
+extra:
+  additional-platforms:
+    - osx-arm64
+    - linux-aarch64
+  recipe-maintainers:
+    - ltalignani
