@@ -17,19 +17,7 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      # This script can be used to reconfigure conda to use the right channel setup.
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -43,8 +31,7 @@ jobs:
           CI: "true"
         run: |
           set -ex
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
           bioconda-utils handle-merged-pr recipes config.yml \
             --repo bioconda/bioconda-recipes \
             --git-range ${GITHUB_SHA}~1...${GITHUB_SHA} \
@@ -65,19 +52,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      # This script can be used to reconfigure conda to use the right channel setup.
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and Test
         env:
@@ -91,8 +66,7 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
 
           # Sets up OSX SDK
           run_conda_forge_build_setup
@@ -129,22 +103,8 @@ jobs:
   #             echo "skip_build=true" >> $GITHUB_OUTPUT
   #         fi
 
-  #     - name: set path
-  #       run: |
-  #         echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-  #     - name: Fetch conda install script
+  #     - uses: ./.github/actions/setup-bioconda-utils
   #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: |
-  #         wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-  #     - name: Set up bioconda-utils
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash install-and-set-up-conda.sh
-
-  #     - name: Configure conda
-  #       if: steps.additional_platforms.outputs.skip_build != 'true'
-  #       run: bash configure-conda.sh
 
   #     - name: Build and Upload
   #       if: steps.additional_platforms.outputs.skip_build != 'true'
@@ -159,9 +119,7 @@ jobs:
   #         CI: "true"
   #       run: |
   #         set -xe
-  #         eval "$(conda shell.bash hook)"
-  #         conda activate bioconda
-  #         source common.sh
+  #         source scripts/activate-bioconda-utils.sh
   #         # Sets up OSX SDK
   #         run_conda_forge_build_setup
 

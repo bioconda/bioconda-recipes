@@ -33,18 +33,7 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -56,12 +45,11 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
           echo '============'
           conda info --all
           conda config --show-sources
-          python -c 'import bioconda_utils.conda.conda_build_bridge as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          bioconda-utils diagnostics
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 3 \
@@ -90,18 +78,7 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -113,17 +90,14 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
 
-          source common.sh
           run_conda_forge_build_setup
 
           echo '============'
           conda info --all
           conda config --show-sources
-          conda activate bioconda
-          python -c 'import bioconda_utils.conda.conda_build_bridge as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          bioconda-utils diagnostics
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 3 \
@@ -151,18 +125,7 @@ jobs:
           git config user.name BiocondaBot
           git config user.email BiocondaBot@users.noreply.github.com
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/bulk/{common,install-and-set-up-conda,configure-conda}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and upload
         env:
@@ -174,18 +137,15 @@ jobs:
           CI: "true"
         run: |
           set -xe
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
 
-          source common.sh
           # Sets up OSX SDK
           run_conda_forge_build_setup
 
           echo '============'
           conda info --all
           conda config --show-sources
-          conda activate bioconda
-          python -c 'import bioconda_utils.conda.conda_build_bridge as u ; import pathlib as p ; print(*(f"{f}:\n{p.Path(f).read_text()}" for f in u.load_conda_build_config().exclusive_config_files), sep="\n")'
+          bioconda-utils diagnostics
           echo '============'
           bioconda-utils build recipes config.yml \
             --worker-offset ${{ matrix.runner }} --n-workers 1 \
