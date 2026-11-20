@@ -21,15 +21,12 @@ requirements:
     - cargo-bundle-licenses
 
 test:
-  files:
-    - test/a.bed
-    - test/b.bed
-    - test/expected.bed
   commands:
     - gloci --version
     - gloci genomes show hg38
-    # conda copies the listed files with their test/ prefix.
-    - cd test && gloci intersect -a a.bed -b b.bed | cmp - expected.bed
+    # The inputs are written here, not shipped as test files: bioconda's container test
+    # (mulled-build) runs these commands without the recipe's files. The output is a.bed.
+    - cd "$(mktemp -d)" && printf 'chr1\t100\t200\tgeneA\nchr1\t300\t400\tgeneB\nchr2\t50\t150\tgeneC\n' > a.bed && printf 'chr1\t150\t350\tpeak1\nchr2\t100\t200\tpeak2\nchr3\t0\t10\tpeak3\n' > b.bed && gloci intersect -a a.bed -b b.bed | cmp - a.bed
     - test -f $PREFIX/share/man/man1/gloci.1
     - test -f $PREFIX/share/bash-completion/completions/gloci
     - test -f $PREFIX/share/zsh/site-functions/_gloci
