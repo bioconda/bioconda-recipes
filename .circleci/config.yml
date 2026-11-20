@@ -6,6 +6,10 @@ executors:
     macos:
       xcode: 15.4.0
     resource_class: m4pro.medium
+    environment:
+      # Preserve the SDK and deployment target previously set by bioconda-common.
+      MACOSX_DEPLOYMENT_TARGET: "11.3"
+      MACOSX_SDK_VERSION: "11.3"
   linux-aarch64:
     machine:
       image: ubuntu-2404:current
@@ -45,10 +49,9 @@ jobs: # a basic unit of work in a run
             set -xe
             source scripts/activate-bioconda-utils.sh
 
-            # Sets up OSX SDK
             if [[ $(uname) = "Darwin" ]]; then
               if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
-                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+                OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
               fi
               sudo chmod o+rwx "$OSX_SDK_DIR"
               run_conda_forge_build_setup
@@ -118,10 +121,9 @@ jobs: # a basic unit of work in a run
             set -xe
             source scripts/activate-bioconda-utils.sh
 
-            # Sets up OSX SDK
             if [[ $(uname) = "Darwin" ]]; then
               if [[ "${OSX_SDK_DIR:-}" == "" ]]; then
-                  OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
+                OSX_SDK_DIR="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs"
               fi
               sudo chmod o+rwx "$OSX_SDK_DIR"
               run_conda_forge_build_setup
