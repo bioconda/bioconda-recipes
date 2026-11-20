@@ -1,0 +1,50 @@
+{% set name = "metdecode" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/m/metdecode/metdecode-{{ version }}.tar.gz
+  sha256: baeb8bdab59c36a659e10d0f92fceb181f3f8c4c21e743d783e60fad1734d463
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools
+    - wheel
+
+  run:
+    - python >=3.11
+    - numpy
+    - pandas
+    - scipy
+    - pytorch
+    - tqdm
+
+test:
+  imports:
+    - metdecode
+    - metdecode.cli
+    - metdecode.model
+  commands:
+    - metdecode --help
+
+about:
+  home: https://github.com/JorisVermeeschLab/MetDecode
+  license: MIT
+  license_file: LICENSE
+  summary: Reference-based deconvolution of whole-genome methylation sequencing data
+
+extra:
+  recipe-maintainers:
+    - AntoinePassemiers
