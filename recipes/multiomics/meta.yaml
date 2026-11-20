@@ -1,0 +1,40 @@
+{% set name = "multiomics" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DilaDeniz/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 51e68137172ad1dce90c21bc03efe6e007ef4e58a9cc33291bd876d223e7781d
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+
+test:
+  commands:
+    - multiomics --version | grep '{{ version }}'
+
+about:
+  home: "https://github.com/DilaDeniz/{{ name }}"
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: "High-performance multi-omics analysis: VCF + TSV + BED → integrated HTML/JSON report."
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - DilaDeniz
+  skip-lints:
+    - compiler_needs_stdlib_c
