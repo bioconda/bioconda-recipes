@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/BirolLab/DynaMIC/releases/download/v1.0.0/dynamic-1.0.0.tar.gz
+  url: https://github.com/BirolLab/DynaMIC/releases/download/v{{ version }}/dynamic-{{ version }}.tar.gz
   sha256: e775e1041f89fe37b6866e6b6b650f6666213b59cba65076ff1c89d3e759250f
 
 build:
@@ -16,7 +16,7 @@ build:
     - {{ pin_subpackage('dynamic', max_pin="x") }}
   entry_points:
     - dynamic = dynamic.cli:main
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
 
 requirements:
   host:
@@ -42,15 +42,25 @@ test:
     - dynamic.report
   requires:
     - python {{ python_min }}
+    - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/BirolLab/DynaMIC
+  doc_url: https://github.com/BirolLab/DynaMIC#readme
   dev_url: https://github.com/BirolLab/DynaMIC
   license: GPL-3.0-or-later
   license_file:
     - LICENSE
     - dynamic/assets/licenses.txt
   summary: Calibrated detection and modelling of antimicrobial dose responses
+  description: |
+    DynaMIC analyzes broth microdilution assays and generates an interactive
+    report with fitted dose-response curves and estimated MIC values.
+
+    To install DynaMIC in a dedicated environment, run
+    `conda create -n dynamic -c conda-forge -c bioconda bioconda::dynamic`.
 
 extra:
   recipe-maintainers:

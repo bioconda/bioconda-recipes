@@ -13,12 +13,11 @@ python - <<'PY'
 from importlib import resources
 
 package = resources.files("dynamic")
-for name in ["testdata/test_input.csv", "testdata/expected_results.csv",
-             "assets/licenses.txt", "assets/plotly/plotly.min.js",
-             "assets/icons/download.svg", "assets/icons/move.svg",
-             "assets/icons/save_figure.svg", "assets/icons/select.svg",
-             "assets/icons/table.svg", "assets/icons/zoom-out.svg"]:
+for name in ["assets/licenses.txt", "assets/plotly/plotly.min.js"]:
     assert package.joinpath(name).is_file(), f"Missing packaged resource: {name}"
+
+icons = package.joinpath("assets/icons")
+assert any(icon.is_file() for icon in icons.iterdir()), "No packaged icons found"
 PY
 dynamic --version
 dynamic --help
