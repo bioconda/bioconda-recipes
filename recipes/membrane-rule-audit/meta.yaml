@@ -1,0 +1,62 @@
+{% set name = "membrane-rule-audit" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/btrinh0/Protein-Topology/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5e5efbd316287bb8654d3f2b2ccaca3c6f69e53ec687cc77bd4b894fd1e59104
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script: "{{ PYTHON }} -m pip install ./project6_membrane_variant_topology_audit/tools --no-deps --no-build-isolation -vv"
+  entry_points:
+    - membrane-rule-audit = membrane_rule_audit.audit:main
+    - membrane-rule-panel = membrane_rule_audit.panel:main
+    - disulfide-rule-audit = membrane_rule_audit.disulfide:main
+    - proline-rule-audit = membrane_rule_audit.proline:main
+    - multi-rule-refine = membrane_rule_audit.refinement:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77.0.3
+    - wheel
+  run:
+    - python >=3.10
+    - numpy >=1.23
+
+test:
+  imports:
+    - membrane_rule_audit
+  commands:
+    - membrane-rule-audit --help
+    - membrane-rule-panel --help
+    - disulfide-rule-audit --help
+    - proline-rule-audit --help
+    - multi-rule-refine --help
+
+about:
+  home: https://github.com/btrinh0/Protein-Topology
+  dev_url: https://github.com/btrinh0/Protein-Topology
+  doc_url: https://github.com/btrinh0/Protein-Topology/blob/v0.1.1/project6_membrane_variant_topology_audit/tools/README.md
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: project6_membrane_variant_topology_audit/tools/LICENSE
+  summary: Audit biological patterns in protein variant scores
+  description: |
+    Analyze existing protein variant scores with supplied biological
+    annotations. Includes positive-inside, disulfide, proline, and refinement
+    command interfaces. The optional SeqRecord integration additionally
+    requires Biopython, which can be installed separately.
+
+extra:
+  recipe-maintainers:
+    - btrinh0
+
