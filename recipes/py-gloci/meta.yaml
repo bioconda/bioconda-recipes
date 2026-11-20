@@ -1,0 +1,54 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: py-gloci
+  version: {{ version }}
+
+# The sdist attached to the GitHub Release (the same file as on PyPI).
+source:
+  url: https://github.com/duartemolha/gloci/releases/download/v{{ version }}/gloci-{{ version }}.tar.gz
+  sha256: 8a591a5efd007a49c08d7fc4b88e383afc3b51288ae7e018321dcb01848bd212
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('py-gloci', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python >=3.10
+    - pip
+    - maturin >=1.9.4,<2
+  run:
+    - python >=3.10
+
+test:
+  imports:
+    - gloci
+  commands:
+    # Needs the Python-object sources: gloci.open([...]) of in-memory tuples.
+    - python -c "import gloci; assert gloci.open([('chr1', 1, 5), ('chr1', 9, 12)]).count() == 2"
+    - python -c "import gloci; print(gloci.__version__)"
+    # The library ships no command-line program; that is the gloci package.
+    - test ! -e $PREFIX/bin/gloci
+
+about:
+  home: https://github.com/duartemolha/gloci
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast genomic interval and VCF toolkit as lazy, streaming Python pipelines (in-process)
+  dev_url: https://github.com/duartemolha/gloci
+
+extra:
+  recipe-maintainers:
+    - duartemolha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
