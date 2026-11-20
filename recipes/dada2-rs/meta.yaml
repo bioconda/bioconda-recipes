@@ -7,15 +7,11 @@ package:
 
 # The crates.io tarball, not the GitHub tag: the published manifest has the
 # experimental WFA backend's git dependency stripped, so the build needs no git
-# fetch. It is the Needleman-Wunsch-only build.
+# fetch. It is the Needleman-Wunsch-only build. build.sh unpacks it, since
+# conda-build does not recognise .crate archives.
 source:
-  url: https://crates.io/api/v1/crates/{{ name }}/{{ version }}/download
-  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://static.crates.io/crates/{{ name }}/{{ name }}-{{ version }}.crate
   sha256: d400ab90e077b6eaca4e9b3c33114c1269b7f385d71c757f5ad501a7ba62b081
-  patches:
-    # Upstream PR HPCBio/dada2-rs#329: without it, Cargo's new build-dir
-    # layout tags the version '+build'. Drop at the next release.
-    - build-tags-new-build-dir.patch
 
 build:
   number: 0
@@ -28,6 +24,7 @@ requirements:
     - {{ compiler("c") }}
     - {{ stdlib("c") }}
     - cargo-bundle-licenses
+    - patch
 
 test:
   commands:
