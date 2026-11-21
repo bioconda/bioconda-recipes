@@ -1,0 +1,154 @@
+{% set name = "ont-dorado" %}
+{% set version = "2.1.2" %}
+{% set pod5 = "0.3.39" %}
+{% set fa = "flashattention-fa4-v4.0.0.beta10-1-cu12.8-Linux-x86_64" %}
+{% if osx %}
+# Apple Silicon only: dorado runs on Metal there, without CUDA, koi or
+# FlashAttention, and refuses to build for x86_64 macOS.
+{% set torch = "torch-2.9.0.2-ont-macos-m1" %}
+{% set torch_sha256 = "84113189187bc3d3f4d3948a15b5c4ee13f05ffc4df1449e733e3dcf286e1c80" %}
+{% set pod5_arch = "osx-14.0-arm64" %}
+{% set pod5_sha256 = "710db33a00ca041094588b7c7b5355ad45611e6160e2e3ec8763e8be34f4ac91" %}
+{% elif aarch64 %}
+# ONT only ships CUDA 12.6 builds of libtorch and koi for aarch64; dorado's
+# CMake picks them when building with any CUDA 12.x toolkit.
+{% set torch = "torch-2.9.0.0-ont-CUDA-12.6-linux-aarch64" %}
+{% set torch_sha256 = "431804fc5993b9fef0f2f8b8b1f97c70775409252186c50704a691257d80987f" %}
+{% set koi = "libkoi-0.7.5-Linux-aarch64-cuda-12.6" %}
+{% set koi_sha256 = "bc3ddab1b0f76f43c357666538f8348209dbd4cf67d9dd9912b1e0a7002d0bf8" %}
+{% set pod5_arch = "linux-arm64" %}
+{% set pod5_sha256 = "04902f353a9a8d642ba6d58b1c063e002dfd481c35f47e7f189035bb9ecc9baa" %}
+{% else %}
+{% set torch = "torch-2.9.0.0-ont-CUDA-12.8-linux-x64-cxx11-abi" %}
+{% set torch_sha256 = "ed09249f48bc3e20130307e86a729e8bc8a97aed794c149b60efcae172654a9d" %}
+{% set koi = "libkoi-0.7.5-Linux-x86_64-cuda-12.8" %}
+{% set koi_sha256 = "bfb3bea6f1bb7f7e6e602d4899db14f422a46519ce69e2d1b645050eba307aad" %}
+{% set pod5_arch = "linux-x64" %}
+{% set pod5_sha256 = "7fcf1d9f1da6f1bd13167782e900462fbadb0db57c666911bdba9bbdfd4e7e06" %}
+{% endif %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Git source is required: the release archives omit the nested submodules.
+  - git_url: https://github.com/nanoporetech/dorado.git
+    git_rev: v{{ version }}
+    patches:
+      - openssl-shared.patch
+      - htslib-conda-flags.patch
+      - no-werror.patch
+      - metallib-path.patch
+
+  # Prebuilt inputs dorado's CMake would otherwise download, placed where it
+  # looks for them so the build runs offline. Hashes match those pinned in
+  # dorado's cmake/*.cmake at v{{ version }}.
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ torch }}.zip
+    sha256: {{ torch_sha256 }}
+    folder: download/{{ torch }}/libtorch
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ koi }}.tar.gz  # [linux]
+    sha256: {{ koi_sha256 }}  # [linux]
+    folder: download/{{ koi }}/{{ koi }}  # [linux]
+  - url: https://github.com/nanoporetech/pod5-file-format/releases/download/{{ pod5 }}/lib_pod5-{{ pod5 }}-{{ pod5_arch }}.tar.gz
+    sha256: {{ pod5_sha256 }}
+    folder: download/pod5-{{ pod5 }}-{{ "Darwin" if osx else "Linux" }}
+  - url: https://developer.apple.com/metal/cpp/files/metal-cpp_26.zip  # [osx]
+    sha256: 4df3c078b9aadcb516212e9cb03004cbc5ce9a3e9c068fa3144d021db585a3a4  # [osx]
+    folder: download/metal-cpp_26/metal-cpp  # [osx]
+  # FlashAttention has no CUDA 12 aarch64 build; dorado builds without it.
+  - url: https://cdn.oxfordnanoportal.com/software/analysis/{{ fa }}.zip  # [x86_64]
+    sha256: 92f36783e1cf6f968ea7d1201237566844d4a1da650f697e24b2aab4813c95e6  # [x86_64]
+    folder: download/{{ fa }}  # [x86_64]
+
+build:
+  number: 0
+  skip: true  # [not (linux or (osx and arm64))]
+  # ONT's libtorch is large; skip conda-build's binary prefix scan of it.
+  binary_relocation:
+    - bin/dorado
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.25
+    - make
+    - git
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - python
+    # On macOS the Metal kernels are compiled with Xcode's `xcrun metal`,
+    # which conda cannot provide; Bioconda's CI image has Xcode installed.
+    - patchelf  # [linux]
+    - cuda-version 12.8.*  # [linux]
+    - cuda-nvcc  # [linux]
+    - cuda-nvrtc-dev  # [linux]
+    - cuda-cudart-dev  # [linux]
+    - cuda-nvml-dev  # [linux]
+    - libcublas-dev  # [linux]
+    - libcublas-static  # [linux]
+    - libcufft-dev  # [linux]
+    - libcusolver-dev  # [linux]
+    - libcusparse-dev  # [linux]
+  host:
+    - openssl
+    - zlib
+  run:
+    # dorado is built with CUDA 12.8; any 12.x runtime >= 12.8 works.
+    - cuda-version >=12.8,<13  # [linux]
+    - cuda-cudart  # [linux]
+    - cuda-nvrtc  # [linux]
+    - libcublas  # [linux]
+    - libcufft  # [linux]
+    - libcusolver  # [linux]
+    - libcusparse  # [linux]
+    # Linked by ONT's libtorch_cuda.so, which ships cuDNN 9.8 and cuSPARSELt 0.7
+    # on x86_64, and cuDNN 9.14 (no cuSPARSELt) on aarch64.
+    - cudnn >=9.8,<10  # [x86_64]
+    - cusparselt >=0.7.1,<0.8  # [x86_64]
+    - cudnn >=9.14,<10  # [aarch64]
+    # ONT's aarch64 libtorch_cpu.so links libgomp instead of libiomp5.
+    - libgomp  # [aarch64]
+    # ONT's aarch64 libtorch uses hypot@GLIBC_2.35, newer than the 2.34
+    # sysroot it is linked against (see conda_build_config.yaml).
+    - __glibc >=2.35  # [aarch64]
+
+test:
+  commands:
+    - dorado --version
+    - dorado --help
+    - dorado aligner --help
+
+about:
+  home: https://github.com/nanoporetech/dorado
+  license: Oxford Nanopore Technologies PLC. Public License Version 1.0
+  license_family: PROPRIETARY
+  license_file: LICENCE.txt
+  summary: High-performance basecaller for Oxford Nanopore reads
+  description: |
+    Dorado is a high-performance, easy-to-use analysis engine for Oxford
+    Nanopore reads. It supports simplex and duplex basecalling, modified-base
+    calling, alignment, demultiplexing, polishing, and read correction.
+    On Linux, basecalling requires an NVIDIA GPU with driver >=525.105; on
+    macOS it requires Apple Silicon and macOS >=14.0.
+  dev_url: https://github.com/nanoporetech/dorado
+  doc_url: https://software-docs.nanoporetech.com/dorado/latest/
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  skip-lints:
+    # Release archives omit required submodules.
+    - uses_vcs_url
+    # The git source is pinned by git_rev and has no checksum.
+    - missing_hash
+  recipe-maintainers:
+    - dialvarezs
+    - renatosantos98
