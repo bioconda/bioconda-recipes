@@ -1,0 +1,63 @@
+{% set name = "tangermeme" %}
+{% set version = "1.6.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/t/tangermeme/tangermeme-{{ version }}.tar.gz
+  sha256: 740f37cdb7d7e5084affadd80209c8ac199b063d0c6920bce77191ebfde7767c
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv"
+  entry_points:
+    - tangermeme-install-skills = tangermeme._skills.install:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling >=1.21
+  run:
+    - python >=3.10
+    - figwig >=0.1.0
+    - joblib >=1.3
+    - matplotlib-base >=3.7
+    - memelite >=0.2
+    - numba >=0.58
+    - numpy >=1.23
+    - pandas >=2.0
+    - pyfaidx >=0.7.2.1
+    - scikit-learn >=1.3
+    - scipy >=1.10
+    - pytorch >=2.0
+    - tqdm >=4.65
+
+test:
+  imports:
+    - tangermeme
+    - tangermeme.ersatz
+    - tangermeme.predict
+    - tangermeme.deep_lift_shap
+  requires:
+    - pip
+  commands:
+    - pip check
+    - tangermeme-install-skills --print-path
+
+about:
+  home: https://github.com/jmschrei/tangermeme
+  summary: Biological sequence analysis for the modern age.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/jmschrei/tangermeme
+
+extra:
+  recipe-maintainers:
+    - musharna
