@@ -11,10 +11,12 @@ OS=$(uname)
 ARCH=$(uname -m)
 
 if [[ "${OS}" == "Darwin" && "${ARCH}" == "arm64" ]]; then
-	wget https://github.com/ldc-developers/ldc/releases/download/v1.40.0/ldc2-1.40.0-osx-arm64.tar.xz
-	tar -xf ldc2-1.40.0-osx-arm64.tar.xz
-	export PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/bin:${PATH}"
-	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.40.0-osx-arm64/lib-ios-arm64"
+	# LDC <= 1.40 links a druntime that segfaults at startup on macOS >= 15.4
+	# (dlang/dmd#21126, ldc-developers/ldc#4899); the fix ships from LDC 1.41.
+	wget https://github.com/ldc-developers/ldc/releases/download/v1.43.0/ldc2-1.43.0-osx-arm64.tar.xz
+	tar -xf ldc2-1.43.0-osx-arm64.tar.xz
+	export PATH="${SRC_DIR}/ldc2-1.43.0-osx-arm64/bin:${PATH}"
+	export LIBRARY_PATH="${SRC_DIR}/ldc2-1.43.0-osx-arm64/lib"
 	export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"
 fi
 
