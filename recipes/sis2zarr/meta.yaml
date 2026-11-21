@@ -1,0 +1,47 @@
+{% set name = "sis2zarr" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/camlloyd/sis2zarr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b28bddea23284309be45d05873c86f83624febe3488a157803ad03496b7ea15f
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - sis2zarr --help
+
+about:
+  home: https://github.com/camlloyd/sis2zarr
+  license: "MIT OR Apache-2.0"
+  license_family: MIT
+  license_file:
+    - LICENSE-MIT
+    - LICENSE-APACHE
+    - THIRDPARTY.yml
+  summary: Convert arivis SIS (.sis) files to OME-Zarr
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - camlloyd

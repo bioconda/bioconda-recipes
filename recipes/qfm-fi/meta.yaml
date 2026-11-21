@@ -1,0 +1,68 @@
+{% set name = "qfm-fi" %}
+# The upstream repository has no release tags. The version is the latest entry in its versionInfo.txt.
+{% set version = "2.1.4" %}
+{% set commit = "990507a4a6c82d49faff2922b6a753b10f98adba" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # Ready-built jars: QFM-FI.jar and QFM-FI_lib/main.jar (PhyloNet).
+  - url: https://github.com/sharmin-mim/qfm_java/raw/{{ commit }}/QFM-FI.zip
+    sha256: 450bec175d42c8eb821cce95028fae66ec28f8726026fd65bdf37addc1b92317
+  - url: https://github.com/sharmin-mim/qfm_java/raw/{{ commit }}/LICENSE
+    sha256: 8489434415c7f6864ed4c0d06c5a1270832bb6855aab44155a5500fe4658c8cb
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - openjdk >=17
+
+test:
+  commands:
+    # All quartets of ((A,B),C,(D,E)). QFM-FI must recover the splits AB|CDE and DE|ABC.
+    # QFM-FI exits with status 0 also after errors, so the output file is checked.
+    - printf 'A,B|C,D A,B|C,E A,B|D,E A,C|D,E B,C|D,E\n' > quartets.txt
+    - QFM-FI quartets.txt species.tre
+    - grep -Eq '\((A,B|B,A)\)' species.tre
+    - grep -Eq '\((D,E|E,D)\)' species.tre
+    # Java options are passed to java. QFM-FI needs about 1.1 GB of heap, also for small inputs.
+    - QFM-FI -Xmx2g quartets.txt species2.tre
+    - cmp species.tre species2.tre
+
+about:
+  home: https://github.com/sharmin-mim/qfm_java
+  license: MIT AND GPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - LICENSE-PhyloNet
+  summary: QFM Fast and Improved (QFM-FI), species tree estimation from a set of quartets.
+  description: |
+    QFM-FI (Quartet Fiduccia-Mattheyses, Fast and Improved) amalgamates quartets
+    into a species tree. It scales to millions of quartets over thousands of taxa.
+    The input is a set of quartets in the format a,b|c,d; the output is a tree in
+    Newick format. Usage: QFM-FI <input file> <output file>.
+    QFM-FI is MIT licensed. The package includes the PhyloNet library it uses
+    (QFM-FI_lib/main.jar, the same file as in the astral-tree package); PhyloNet is
+    licensed under the GPL-3.0-or-later.
+  dev_url: https://github.com/sharmin-mim/qfm_java
+  doc_url: https://github.com/sharmin-mim/qfm_java#readme
+
+extra:
+  notes: |
+    QFM-FI is a Java program. The QFM-FI command is a wrapper script that runs java -jar.
+    Java options, e.g. for memory (-Xmx8g), can be given before the input file:
+    QFM-FI -Xmx8g input.txt output.tre
+    QFM-FI needs at least about 1.1 GB of Java heap, also for small inputs. By default
+    java uses up to a quarter of the memory of the computer.
+  identifiers:
+    - doi:10.1093/bioinformatics/btad332
+  recipe-maintainers:
+    - gkanogiannis
+    - KulyaNikita
