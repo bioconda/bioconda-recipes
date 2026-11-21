@@ -1,0 +1,77 @@
+{% set name = "sweepga" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/pangenome/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 2f5fc2189eaa04427691f8d05d2dbd9211fa5b9ee871963527ec97f08f473b61
+
+build:
+  number: 0
+  run_exports:
+      - {{ pin_subpackage(name, max_pin="x.x") }}
+  skip: true  # [win]
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - cargo-bundle-licenses
+    # .cargo/config.toml sets git-fetch-with-cli for the git dependencies
+    - git
+    - pkg-config
+    # hts-sys and onecode run bindgen, which needs libclang
+    - clangdev  # [linux]
+    - libclang {{ c_compiler_version }}.*  # [osx]
+  host:
+    - llvm-openmp  # [osx]
+    - zlib
+    - zstd
+    - bzip2
+    - xz
+    - libcurl
+    - htslib
+    - gsl
+    - jemalloc
+
+test:
+  commands:
+    - sweepga --help
+    - sweepga --version
+    - alnstats --help
+    # The bundled tools live in libexec, not bin, so they do not overwrite the
+    # separate wfmash and fastga packages. sweepga finds them there.
+    # Run each one: a tool that cannot load its shared libraries fails here.
+    - $PREFIX/libexec/sweepga/wfmash --version
+    - $PREFIX/libexec/sweepga/FastGA 2>&1 | grep -qE "Usage.*FastGA"
+    - $PREFIX/libexec/sweepga/FAtoGDB 2>&1 | grep -qE "Usage.*FAtoGDB"
+    - $PREFIX/libexec/sweepga/GIXmake 2>&1 | grep -qE "Usage.*GIXmake"
+    - $PREFIX/libexec/sweepga/GIXrm 2>&1 | grep -qE "Usage.*GIXrm"
+    - $PREFIX/libexec/sweepga/ALNtoPAF 2>&1 | grep -qE "Usage.*ALNtoPAF"
+    - $PREFIX/libexec/sweepga/PAFtoALN 2>&1 | grep -qE "Usage.*PAFtoALN"
+    - $PREFIX/libexec/sweepga/ONEview 2>&1 | grep -q ONEview
+
+about:
+  home: "https://github.com/pangenome/{{ name }}"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "sweepga: genome alignment with FastGA or wfmash and plane-sweep filtering."
+  dev_url: "https://github.com/pangenome/{{ name }}"
+  doc_url: "https://github.com/pangenome/sweepga/blob/v{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - AndreaGuarracino
