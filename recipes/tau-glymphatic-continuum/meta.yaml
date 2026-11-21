@@ -12,11 +12,9 @@ source:
 build:
   number: 0
   noarch: python
-  entry_points:
-    - tau-calc = tau_glymphatic.cli:main
   script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv"
   run_exports:
-    - {{ pin_subpackage("tau-glymphatic-continuum", max_pin="x.x") }}
+    - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
@@ -27,6 +25,8 @@ requirements:
     - python >=3.9
 
 test:
+  requires:
+    - pip
   imports:
     - tau_glymphatic
     - tau_glymphatic.alps
@@ -35,13 +35,15 @@ test:
     - tau_glymphatic.statistics
     - tau_glymphatic.audit
     - tau_glymphatic.cohorts
+    - tau_glymphatic.models
+    - tau_glymphatic.cli
   commands:
+    - python -m pip check
     - tau-calc --help
     - tau-calc --audit
     - tau-calc --alps 1.50 --apoe-e4 1 --json
 
 about:
-  home: https://github.com/Lukecele/tau-glymphatic-continuum
   dev_url: https://github.com/Lukecele/tau-glymphatic-continuum
   license: MIT
   license_family: MIT
