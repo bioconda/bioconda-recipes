@@ -1,0 +1,51 @@
+{% set name = "phytoreg" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/caixudong2001/PhytoReg/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4a8cb891d026a0016df23cb0863ad34ca9fbdf28a6ae4c5da0436a597d6ce99a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vv
+  entry_points:
+    - phytoreg = phytoreg.cli:main
+    - phytoreg-inspect = phytoreg.cli:inspect_main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - wheel
+  run:
+    - python >=3.10
+    - numpy >=1.24
+    - pytorch >=2.1
+
+test:
+  imports:
+    - phytoreg
+  commands:
+    - phytoreg --help
+    - phytoreg predict --help
+    - phytoreg-inspect --help
+
+about:
+  home: https://github.com/caixudong2001/PhytoReg
+  license: MIT
+  license_file: LICENSE
+  summary: Predict plant regulatory activity from DNA sequences
+  dev_url: https://github.com/caixudong2001/PhytoReg
+  doc_url: https://github.com/caixudong2001/PhytoReg/blob/main/docs/inference.md
+
+extra:
+  recipe-maintainers:
+    - caixudong2001

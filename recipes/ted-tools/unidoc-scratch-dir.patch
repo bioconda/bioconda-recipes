@@ -1,0 +1,63 @@
+diff --git a/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py b/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
+--- a/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
++++ b/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
+@@ -3,6 +3,8 @@ import argparse
+ import subprocess
+ import hashlib
+ import re
++import shutil
++import tempfile
+ import time
+ 
+ from natsort import natsorted
+@@ -54,7 +56,11 @@ def main():
+ 
+             pdb = os.path.realpath(pdb_path)
+             pdb_bn, pdb_ext = os.path.splitext(pdb)
+-            pdb_ss = pdb + '.ss'
++            # UniDoc_struct runs ./stride and writes pdb_ss in its cwd, so give each target
++            # its own scratch dir rather than writing next to the input or into the install dir
++            workdir = tempfile.mkdtemp(prefix='unidoc_')
++            os.symlink(STRIDE, os.path.join(workdir, 'stride'))
++            pdb_ss = os.path.join(workdir, 'pdb_ss')
+             
+             fasta = str(subprocess.check_output(f"{pdb_to_fasta} {pdb}", shell=True), 'utf-8').split('\n')[1:-1]
+             seq = ''.join(fasta)
+@@ -67,7 +73,7 @@ def main():
+             # save as new file and point to the new file
+             if chopping not in ['NULL','NO_SS']:
+                 print(f"Processing chopping for {bn}: {chopping}")
+-                pdb_path_chopped = pdb_bn + '_chopped.pdb'
++                pdb_path_chopped = os.path.join(workdir, bn + '_chopped.pdb')
+                 resrng = chopping.replace('-',':').replace('_',',') # convert domain chopping into segments
+                 print(f"Extracting residues {resrng} from {pdb_path}")
+                 subprocess.check_output(f"{pdb_selres} -{resrng} {pdb_path} > {pdb_path_chopped} 2> /dev/null", shell=True)
+@@ -87,18 +93,7 @@ def main():
+                     
+                     # Run UniDoc
+                     print(f"Running UniDoc on {pdb}")
+-                    # UniDoc_struct needs to be run from the directory containing it as it looks for ./stride
+-                    # Change to the directory containing UNIDOC
+-                    unidoc_dir = os.path.dirname(UNIDOC)
+-                    original_dir = os.getcwd()
+-                    os.chdir(unidoc_dir)
+-                    
+-                    # Run UniDoc from its directory
+-                    # output = subprocess.check_output(f"./UniDoc_struct {pdb} {args.chain} {pdb_ss}", shell=True)
+-                    output = subprocess.check_output(f"./UniDoc_struct {pdb} {args.chain}", shell=True)
+-                    
+-                    # Change back to original directory
+-                    os.chdir(original_dir)
++                    output = subprocess.check_output([UNIDOC, pdb, args.chain], cwd=workdir)
+                     # Format the output
+                     output = str(output, 'utf-8').replace('~','-').replace(',','_').replace('/',',').rstrip('\n')
+                     print(f"UniDoc output: {output}")
+@@ -136,6 +131,8 @@ def main():
+             
+             # Cleanup temporary files
+             try:
++                shutil.rmtree(workdir, ignore_errors=True)
++
+                 if os.path.exists(pdb_ss):
+                     os.remove(pdb_ss)
+                     print(f"Cleaned up temporary file: {pdb_ss}")
