@@ -1,0 +1,19 @@
+--- a/python/pqsio/__init__.py
++++ b/python/pqsio/__init__.py
+@@ -5,2 +5,3 @@
+ import os
++import sys
+ import threading
+@@ -58,3 +59,11 @@
+         return _lib
+-    path = os.environ.get("PQSIO_LIBRARY") or ctypes.util.find_library("pqsio")
++    path = os.environ.get("PQSIO_LIBRARY")
++    if not path:
++        for filename in ("libpqsio.so", "libpqsio.dylib"):
++            candidate = os.path.join(sys.prefix, "lib", filename)
++            if os.path.isfile(candidate):
++                path = candidate
++                break
++    if not path:
++        path = ctypes.util.find_library("pqsio")
+     if not path:
