@@ -7,8 +7,8 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 export CARGO_PROFILE_RELEASE_LTO=thin
 cargo build --release --locked
 
-# conda's Rust sets CARGO_BUILD_TARGET, so binaries go to target/<triple>/release.
-out="target/${CARGO_BUILD_TARGET:+${CARGO_BUILD_TARGET}/}release"
+# conda's Rust builds for an explicit target, so binaries are in target/<triple>/release.
+out=$(dirname "$(find target -type f -path '*/release/sheetgen' | head -n 1)")
 mkdir -p "${PREFIX}/bin"
 for b in sheetgen leanqc isotable dblock seqplan cooccur gtdbprep irit-gtdb-prep irit-mcp; do
   install -m 755 "${out}/${b}" "${PREFIX}/bin/${b}"
