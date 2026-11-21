@@ -1,0 +1,67 @@
+{% set name = "comebin-llmopt" %}
+{% set version = "1.1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/paulzierep/COMEBin-LLMopt/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 58443e2eb6d832c99bb069c80a19f640beff761edbaddc79e53fdccc491fce1c
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python >=3.11,<3.14
+    - bedtools >=2.31,<3
+    - biolib >=0.1.9,<0.2
+    - biopython >=1.85,<2
+    - bwa >=0.7.17,<0.8
+    - checkm-genome >=1.2,<2
+    - checkm2 >=1.1.0,<2
+    - click >=8,<9
+    - fraggenescan >=1.31,<2
+    - hmmer >=3.4,<4
+    - hnswlib >=0.8,<1
+    - leidenalg >=0.12,<0.13
+    - numpy >=2,<3
+    - perl
+    - prodigal >=2.6,<3
+    - python-igraph >=1,<2
+    - pytorch >=2.12,<2.14
+    - pyyaml >=6,<7
+    - samtools >=1.20,<2
+    - scikit-learn >=1.5,<1.10
+    - scipy >=1.13,<2
+    - setuptools <82
+    - tensorboard >=2.18,<3
+    - tqdm >=4.66,<5
+
+test:
+  commands:
+    - comebin-llmopt -h
+    - comebin-llmopt -V | grep -q "{{ version }}"
+    - python -c "import Bio, hnswlib, igraph, leidenalg, numpy, scipy, sklearn, torch, tqdm, yaml"
+    - python -c "from biolib.common import make_sure_path_exists; from checkm.defaultValues import DefaultValues"
+    - python "${PREFIX}/share/comebin-llmopt/COMEBin/main.py" -h
+    - comebin-llmopt-gen-cov -h 2>&1 | grep -q "Usage"
+    - checkm2 --version
+
+about:
+  home: https://github.com/paulzierep/COMEBin-LLMopt
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE.txt
+    - NOTICE.md
+  summary: "An LLM-optimized, faster COMEBin: binning of metagenomic contigs with contrastive multi-view representation learning"
+  dev_url: https://github.com/paulzierep/COMEBin-LLMopt
+
+extra:
+  recipe-maintainers:
+    - paulzierep

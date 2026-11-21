@@ -1,6 +1,6 @@
 {% set name = "Trinotate" %}
-{% set version = "4.0.2" %}
-{% set sha256 = "2f633df2e05e5d22e19159aa147060be7884a057314cad3e6db91dba8910fad1" %}
+{% set version = "4.0.4" %}
+{% set sha256 = "ca434ea64ed55c8f74ea96dcf21a475ce0035584080c7ef7c867d28561763e8a" %}
 
 package:
   name: {{ name|lower }}
@@ -9,8 +9,6 @@ package:
 source:
   url: https://github.com/Trinotate/Trinotate/archive/refs/tags/Trinotate-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  # patches:
-      # - trinotate.patch
 
 build:
   noarch: generic
@@ -33,6 +31,7 @@ requirements:
     - perl-module-build
     - perl-dbi
     - perl-dbd-sqlite
+    - perl-cgi
     - blast
     - hmmer
     - perl-file-find-rule
@@ -43,6 +42,11 @@ requirements:
 test:
   commands:
     - Trinotate --help 2>&1 | grep "Trinotate --db <sqlite.db>"
+    - test -n "${TRINOTATE_HOME}" && test -x "${TRINOTATE_HOME}/util/Trinotate_report_writer.pl"
+    # exercise the driver end to end: create an empty Trinotate schema, then generate a (header-only) report
+    - perl "${TRINOTATE_HOME}/util/admin/util/init_Trinotate_sqlite_db.pl" --sqlite test.sqlite
+    - Trinotate --db test.sqlite --report > report.tsv
+    - head -1 report.tsv | grep transcript_id
 
 about:
   home: https://trinotate.github.io/

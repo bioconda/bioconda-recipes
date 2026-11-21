@@ -1,0 +1,71 @@
+# HyPrColoc 0.0.2 uses numeric SNP IDs as Eigen matrix indices.
+# Cast to Eigen::Index so Eigen 3.4 selects scalar coefficient access.
+# Related upstream report: https://github.com/cnfoley/hyprcoloc/issues/13
+--- a/src/align2.cpp
++++ b/src/align2.cpp
+@@ -177,7 +177,7 @@
+   VectorXd Wco(Map<VectorXd>(W1.data(), n_cv*ncolZco));
+ 
+   for (int m = 0; m < ncolZco; m++){
+-   tmp_rho(i) = RHO(snps1(1 , i)-1, snps1(0 , i)-1);
++   tmp_rho(i) = RHO(static_cast<Eigen::Index>(snps1(1 , i)-1), static_cast<Eigen::Index>(snps1(0 , i)-1));
+    tmp_rho_11(2*m+1) = tmp_rho(i);
+    tmp_rho_12(2*m) = tmp_rho(i);
+    tmp_rho_21(2*m+1) = tmp_rho(i);
+@@ -210,8 +210,8 @@
+     Wdiag_1 = W_1cv.row(iter_1).asDiagonal();
+ 
+     for (int m = 0; m < ncolZco; m++){
+-     snp_cor_1cv(2*m) = RHO(snps1(0,i)-1, j2)*tet_1cv(2*m);
+-     snp_cor_1cv(2*m+1) = RHO(snps1(1,i)-1, j2)*tet_1cv(2*m+1);
++     snp_cor_1cv(2*m) = RHO(static_cast<Eigen::Index>(snps1(0,i)-1), j2)*tet_1cv(2*m);
++     snp_cor_1cv(2*m+1) = RHO(static_cast<Eigen::Index>(snps1(1,i)-1), j2)*tet_1cv(2*m+1);
+     }
+ 
+     snp_cor_1cv(sigZdim - n_cv) = sigZ1_new(sigZdim - n_cv,sigZdim - n_cv);
+@@ -262,10 +262,10 @@
+     Wdiag_2 = W_2cv.row(iter_2).asDiagonal();
+ 
+     for (int m = 0; m < ncolZco; m++){
+-     snp_cor_2cv(2*m) = RHO(snps1(0,i)-1, snps1(0,j2)-1)*tet_2cv(2*m);
+-     snp_cor_2cv(2*m+1) = RHO(snps1(1,i)-1, snps1(0,j2)-1)*tet_2cv(2*m+1);
+-     snp_cor_2cv_1(2*m) = RHO(snps1(0,i)-1, snps1(1,j2)-1)*tet_2cv(2*m);
+-     snp_cor_2cv_1(2*m+1) = RHO(snps1(1,i)-1, snps1(1,j2)-1)*tet_2cv(2*m+1);
++     snp_cor_2cv(2*m) = RHO(static_cast<Eigen::Index>(snps1(0,i)-1), static_cast<Eigen::Index>(snps1(0,j2)-1))*tet_2cv(2*m);
++     snp_cor_2cv(2*m+1) = RHO(static_cast<Eigen::Index>(snps1(1,i)-1), static_cast<Eigen::Index>(snps1(0,j2)-1))*tet_2cv(2*m+1);
++     snp_cor_2cv_1(2*m) = RHO(static_cast<Eigen::Index>(snps1(0,i)-1), static_cast<Eigen::Index>(snps1(1,j2)-1))*tet_2cv(2*m);
++     snp_cor_2cv_1(2*m+1) = RHO(static_cast<Eigen::Index>(snps1(1,i)-1), static_cast<Eigen::Index>(snps1(1,j2)-1))*tet_2cv(2*m+1);
+     }
+ 
+     snp_cor_2cv(sigZdim - n_cv) = sigZ2_new(sigZdim - n_cv, sigZdim - n_cv);
+@@ -274,8 +274,8 @@
+     sigZ2.col(sigZdim - n_cv) = snp_cor_2cv;
+     sigZ2.row(sigZdim - 1) = snp_cor_2cv_1;
+     sigZ2.col(sigZdim - 1) = snp_cor_2cv_1;
+-    sigZ2(2*ncolZco+1, 2*ncolZco) = RHO(snps1(1 , j2)-1, snps1(0 , j2)-1);
+-    sigZ2(2*ncolZco, 2*ncolZco+1) = RHO(snps1(1 , j2)-1, snps1(0 , j2)-1);
++    sigZ2(2*ncolZco+1, 2*ncolZco) = RHO(static_cast<Eigen::Index>(snps1(1 , j2)-1), static_cast<Eigen::Index>(snps1(0 , j2)-1));
++    sigZ2(2*ncolZco, 2*ncolZco+1) = RHO(static_cast<Eigen::Index>(snps1(1 , j2)-1), static_cast<Eigen::Index>(snps1(0 , j2)-1));
+ 
+     adjZ_2 = Wdiag_2*sigZ2*Wdiag_2;
+ 
+--- a/src/regional2.cpp
++++ b/src/regional2.cpp
+@@ -128,7 +128,7 @@
+ 
+   // compute the subseted correlation matrix for co and no-co Z-scores
+   for (int k = 0; k < m; k++){
+-   tmp_rho(i) = RHO(snps(0 , i)-1, snps(1 , i)-1);
++   tmp_rho(i) = RHO(static_cast<Eigen::Index>(snps(0 , i)-1), static_cast<Eigen::Index>(snps(1 , i)-1));
+    tmp_rho_21(2*k+1) = tmp_rho(i);
+    tmp_rho_22(2*k) = tmp_rho(i);
+   }
+@@ -169,7 +169,7 @@
+ 
+   // compute the subseted correlation matrix for coloc Z-scores
+   for (int k = 0; k < m; k++){
+-   tmp_rho(i) = RHO(snps(0 , i)-1, snps(1 , i)-1);
++   tmp_rho(i) = RHO(static_cast<Eigen::Index>(snps(0 , i)-1), static_cast<Eigen::Index>(snps(1 , i)-1));
+    tmp_rho_21(2*k+1) = tmp_rho(i);
+    tmp_rho_22(2*k) = tmp_rho(i);
+   }

@@ -1,0 +1,53 @@
+{% set name = "core-score" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/c/core_score/core_score-{{ version }}.tar.gz
+  sha256: 9ec88bbda2185c9b8ae6a92006cdea29c2868c3e6c28a42c98898e3833c13d1a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - core-score = core_score.cli:main
+    - core-score-csv = core_score.inputs.make_csv:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.11
+    - numpy >=2
+    - scipy >=1.13
+    - gemmi >=0.7.5,<0.8
+    - rdkit >=2025.03
+    - pandas >=2.2
+    - posebusters >=0.6.5,<0.7
+    - openstructure >=2.12
+
+test:
+  imports:
+    - core_score
+  commands:
+    - core-score --help
+    - core-score-csv --help
+
+about:
+  home: https://github.com/James-Broster/core-score
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE
+  summary: "CORE Score: agreement within an ensemble of predicted protein-ligand poses"
+
+extra:
+  recipe-maintainers:
+    - James-Broster
