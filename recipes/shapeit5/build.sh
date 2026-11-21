@@ -37,7 +37,12 @@ fi
 # when cross-compiling from an osx-64 build platform): it is x86-only and
 # conflicts with the explicit arch flags below.
 CLEAN_CXXFLAGS="$(printf '%s\n' "${CXXFLAGS}" | tr ' ' '\n' | grep -v '^-march=' | tr '\n' ' ')"
-CXXFLAGS="${CLEAN_CXXFLAGS} -O3 ${EXTRA_ARCH_FLAGS} -Wno-unused-command-line-argument -Wno-ignored-attributes"
+# -fmacro-prefix-map keeps the conda build prefix out of __FILE__ strings
+# (boost headers embed __FILE__ in the binary). If the build prefix were
+# embedded, conda's binary prefix replacement at install time would rewrite
+# the Mach-O in place, invalidating the code signature and causing SIGKILL
+# on macOS. Mapping the prefix to /usr/local makes the binary prefix-free.
+CXXFLAGS="${CLEAN_CXXFLAGS} -O3 ${EXTRA_ARCH_FLAGS} -Wno-unused-command-line-argument -Wno-ignored-attributes -fmacro-prefix-map=${PREFIX}=/usr/local"
 CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
 if [[ "${OS}" == "Darwin" ]]; then
     LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib -fno-define-target-os-macros"
