@@ -1,0 +1,90 @@
+{% set name = "ribonet" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a35feb9d174f149daba495758085c6562228720008c3dc1bfd41f28186e9c76c
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - ribonet = ribonet.ribonet:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.22
+    - pandas >=1.5
+    - scipy >=1.9
+    - numba >=0.56
+    - scikit-learn >=1.1
+    - matplotlib-base >=3.5
+    - seaborn >=0.12
+    - pillow
+    - pytorch >=2.0
+    - transformers >=4.30,<5
+    - tqdm
+    - pyarrow >=10
+    - h5py
+    - hdf5plugin
+    - openpyxl
+    - logomaker
+    - biopython
+    - pysam >=0.21
+    - gffutils >=0.12
+    - python-igraph
+    - leidenalg
+    - reportlab >=4.0
+    - beautifulsoup4
+    # tomtom, used to annotate discovered motifs
+    - meme
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  imports:
+    - ribonet
+    - ribonet.preprocessing
+    - ribonet.training
+    - ribonet.interpretation
+  commands:
+    - pip check
+    - ribonet --help
+    - ribonet --version
+    - tomtom -version
+
+about:
+  home: https://github.com/nedialkova-lab/RiboNet
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Deep learning analysis toolkit for ribosome profiling
+  description: |
+    RiboNet is an automated analysis pipeline for the quantification, prediction,
+    and interpretation of ribosome occupancy from ribosome profiling data. It estimates
+    A-site offsets (RiboA), extracts ribosome density profiles at codon or nucleotide
+    resolution, trains deep neural networks to predict ribosome counts and their
+    distribution along transcripts, and discovers cis-regulatory motifs with in silico
+    mutagenesis and TF-MoDISco. Training and interpretation require an NVIDIA GPU.
+  doc_url: https://ribonet.readthedocs.io
+  dev_url: https://github.com/nedialkova-lab/RiboNet
+
+extra:
+  identifiers:
+    - doi:10.64898/2026.11.15.766763
+  recipe-maintainers:
+    - hexavier
