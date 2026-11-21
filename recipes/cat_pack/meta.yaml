@@ -1,0 +1,66 @@
+{% set version = "7.0.0b0" %}
+{% set python_min = "3.11" %}
+{% set sha256 = "de352239fcf82e3c1cb0dc1e306c565488ba54f33f2b10fc450de3f0cbe738ad" %}
+
+
+package:
+  name: cat_pack
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/dd/77/a51272658e9363842f1233ef9e10ccfa4d98b5ed03b3c685314172232da9/cat_pack-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - CAT_pack = CAT_pack.cli:app
+    - cat_pack = CAT_pack.cli:app
+  run_exports:
+    - {{ pin_subpackage("cat_pack", max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - pip
+    - setuptools >=77
+  run:
+    - python >={{ python_min }}
+    - typer
+    - rich
+    - pyrodigal
+    - numpy
+    - polars ==2.0.0
+    - psutil
+    - diamond
+    - mmseqs2
+    - bwa
+    - bwa-mem2
+    - samtools
+  run_constrained:
+    - cat >=7.0.0b0
+
+test:
+  requires:
+    - python {{ python_min }}.*
+    - pip
+  imports:
+    - CAT_pack.cli
+    - polars
+    - pyrodigal
+  commands:
+    - CAT_pack --version
+    - cat_pack rat --help
+    - bwa-mem2 version
+    - mmseqs version
+
+about:
+  summary: |
+    CAT/BAT: tool for taxonomic classification of contigs and metagenome-assembled genomes (MAGs)
+  home: https://github.com/MGXlab/CAT_pack
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.md
+  dev_url: https://github.com/MGXlab/CAT_pack
