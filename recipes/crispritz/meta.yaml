@@ -39,6 +39,14 @@ requirements:
     - openmp     # [osx]
     - zlib
     - python >=3.11,<3.12
+  run_constrained:
+    # CRISPRme X.Y.z requires CRISPRitz X.Y.* (they share major.minor; CRISPRitz
+    # docs/RELEASING.md, Version policy). CRISPRitz 2.10 writes index format 2, which
+    # crisprme 2.8.1 refuses and 2.8.0 aborts on, and codes every allele of a split site:
+    # keep it out of any environment that holds an earlier crisprme, existing ones
+    # included (crisprme 2.8.1 build 1 pins crispritz <2.10; its build 0 and the 2.8.0
+    # and 2.7.9 builds set no upper bound).
+    - crisprme >=2.10.0
 
 test:
   commands:
@@ -46,6 +54,10 @@ test:
     - crispritz.py index-genome help
     - crispritz.py search help
     - crispritz.py add-variants help
+    - crispritz.py index-info help
+    - crispritz.py version
+    - test -x "$PREFIX/bin/enricher"
+    - test -x "$PREFIX/opt/crispritz/Python_Scripts/Enrichment/enricher"
 
 about:
   home: https://github.com/pinellolab/CRISPRitz
