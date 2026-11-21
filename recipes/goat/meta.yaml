@@ -1,39 +1,50 @@
-{% set version = "0.2.5" %}
+{% set version = "0.3.0" %}
 
 package:
   name: goat
   version: {{ version }}
 
-build:
-  number: 3
-
 source:
-  url: https://github.com/genomehubs/goat-cli/archive/{{ version }}.tar.gz
-  sha256: 613c1d6bb07edfea07c68006b388b7401e03402aac98464881eaefe5284291dc
+  url: https://github.com/genomehubs/goat-cli/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5956e1aa1e50026f1b1b8f548a6398456d36918f632742ae60b201dbcc214489
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('goat', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - cmake
-    - make
-    - rust >=1.52
-    - pkg-config # [osx]
-  host:
-    - openssl
-  run:
-    
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
 
 test:
   commands:
     - goat-cli --help
-    - goat-cli --version
+    - goat-cli --version | grep {{ version }}
+    - goat-cli taxon search --help
 
 about:
   home: https://github.com/genomehubs/goat-cli
   license: MIT
-  license_file: LICENSE
-  summary: |
-    Query metadata for any taxon across the tree of life.
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Query metadata for any taxon across the tree of life.
   description: |
     A command line interface for the GoaT API, which is a collection of datasets to decorate the genomic tree of life.
+  dev_url: https://github.com/genomehubs/goat-cli
+  doc_url: https://github.com/genomehubs/goat-cli/blob/v{{ version }}/README.md
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - Euphrasiologist
