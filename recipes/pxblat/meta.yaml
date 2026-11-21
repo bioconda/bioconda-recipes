@@ -1,6 +1,6 @@
 {% set name = "PxBLAT" %}
-{% set version = "1.2.8" %}
-{% set sha256 = "f0392e18359c8e02be9e44e65e857d5e214c3799177962e732fbe3ee9a5f74cd" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "06772354e11ef0432987f10865c4be4d5f56f8c3334a937670908d71b7280d70" %}
 
 package:
   name: {{ name|lower }}
@@ -11,9 +11,9 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   # osx x86_64 error: OSError: [Errno 63] File name too long: "/usr/local/Homebrew/Library/Homebrew/startup/config.rb:84:in 'File.expand_path'
-  skip: True  # [py > 311 or (osx and x86_64)]
+  #skip: True  # [py > 311 or (osx and x86_64)]
   script:
     - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
     - export LDFLAGS="${LDFLAGS} -Wl,-rpath,${PREFIX}/lib -headerpad_max_install_names"  # [osx]
@@ -31,6 +31,7 @@ build:
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - make  # 如果使用Makefile
     - pkg-config
@@ -47,12 +48,13 @@ requirements:
     - loguru
     - pybind11 >=2.10.4
     - rich
-    - pysimdjson >=6.0.2
+    - pysimdjson >=5.0.2
     - biopython
     - typer
     - deprecated
     - mashumaro
-    - urllib3
+    - typing-extensions >=4.0.0
+    - typer >=0.9
 
 test:
   imports:
