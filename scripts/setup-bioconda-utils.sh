@@ -6,11 +6,25 @@ source "$(dirname "${BASH_SOURCE[0]}")/bioconda-utils-versions.sh"
 utils_dir="$PWD/bioconda-utils"
 
 checkout_utils() {
+    local tag=${BIOCONDA_UTILS_TAG:?BIOCONDA_UTILS_TAG must be set}
+    local revision=${BIOCONDA_UTILS_REVISION:-}
+    local url=https://github.com/bioconda/bioconda-utils.git
+
     git init --quiet "$utils_dir"
-    # The release tag supplies the version for setuptools-scm.
-    git -C "$utils_dir" fetch --depth 1 https://github.com/bioconda/bioconda-utils.git \
-        "$BIOCONDA_UTILS_REVISION" "refs/tags/$BIOCONDA_UTILS_TAG:refs/tags/$BIOCONDA_UTILS_TAG"
-    git -C "$utils_dir" checkout --quiet --detach "$BIOCONDA_UTILS_REVISION"
+
+    # Fetch the tag explicitly: a depth-1 fetch of a SHA does not include tag
+    # refs, and setuptools-scm needs the tag to derive the version.
+    git -C "$utils_dir" fetch --depth 1 "$url" \
+        "refs/tags/$tag:refs/tags/$tag"
+
+    if [[ -n $revision ]]; then
+        # Test an unreleased commit or branch instead of the release tag.
+        git -C "$utils_dir" fetch --depth 1 "$url" \
+            "$revision:refs/bioconda-utils/revision"
+        git -C "$utils_dir" checkout --quiet --detach refs/bioconda-utils/revision
+    else
+        git -C "$utils_dir" checkout --quiet --detach "refs/tags/$tag"
+    fi
 }
 
 # CircleCI and Azure install Pixi here. GitHub Actions uses setup-pixi.
@@ -22,6 +36,22 @@ install_pixi() {
 }
 
 configure_utils() {
+    local tag=${BIOCONDA_UTILS_TAG:?BIOCONDA_UTILS_TAG must be set}
+    local revision=${BIOCONDA_UTILS_REVISION:-}
+
+    if [[ -n $revision ]]; then
+        local head_sha tag_commit
+        head_sha=$(git -C "$utils_dir" rev-parse HEAD)
+        tag_commit=$(git -C "$utils_dir" rev-parse "refs/tags/$tag^{commit}")
+        if [[ $head_sha != "$tag_commit" ]]; then
+            # The shallow clone has no history linking the revision to the
+            # tag, so setuptools-scm cannot derive a version itself. Keep the
+            # X.Y.Z prefix that extract_stable_version() needs for the build
+            # image lookup.
+            export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_BIOCONDA_UTILS="${tag#v}.post0.dev0+${head_sha:0:7}"
+        fi
+    fi
+
     export PIXI_PROJECT_MANIFEST="$utils_dir/pixi.toml"
     pixi run --locked -e default install
     pixi run --locked conda config --set always_yes yes
