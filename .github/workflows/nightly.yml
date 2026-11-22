@@ -13,18 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: set path
-        run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
-
-      - name: Fetch conda install script
-        run: |
-          wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/{install-and-set-up-conda,configure-conda,common}.sh
-
-      - name: Set up bioconda-utils
-        run: bash install-and-set-up-conda.sh
-
-      - name: Configure conda
-        run: bash configure-conda.sh
+      - uses: ./.github/actions/setup-bioconda-utils
 
       - name: Build and push leftover packages
         env:
@@ -38,14 +27,12 @@ jobs:
           CI: "true"
         run: |
           set -e
-          eval "$(conda shell.bash hook)"
-          conda activate bioconda
+          source scripts/activate-bioconda-utils.sh
 
-          source common.sh
           # Sets up OSX SDK
           run_conda_forge_build_setup
 
           # build and push all leftover packages
           bioconda-utils build recipes config.yml \
               --anaconda-upload \
-              --prelint --exclude bioconda-repodata-patches
+              --lint --exclude bioconda-repodata-patches
