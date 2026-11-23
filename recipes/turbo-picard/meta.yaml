@@ -1,19 +1,18 @@
 {% set name = "turbo-picard" %}
-{% set version = "0.1.15" %}
+{% set version = "0.1.20" %}
 
 package:
-  name: {{ name }}
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/dnncha/turbo-picard/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 9903afb5a8a1846ab6d38340d695ebe9ed313cbda53f192f0cc0c63059fbb6b1
-
+  url: https://github.com/dnncha/turbo-picard/archive/refs/tags/v0.1.20.tar.gz
+  sha256: 682540133ed06387d33d88d6623f4e60e87238d0dddbf2bbf904da228bfaf25e
 build:
   number: 0
-  skip: True  # [win]
+  skip: true  # [win]
   run_exports:
-    - {{ pin_subpackage(name, max_pin="x.x") }}
+    - {{ pin_subpackage('turbo-picard', max_pin="x.x") }}
 
 requirements:
   build:
@@ -32,16 +31,21 @@ requirements:
     - openssl
     - xz
   run:
+    - bzip2
     - curl
+    - libzlib
     - openssl
+    - xz
 
 test:
   commands:
     - turbo-picard --version
     - turbo-picard AccelerationStatus --help
+    - turbo-picard capabilities --help
     - turbo-picard doctor --help
     - turbo-picard explain --help
     - turbo-picard trial --help
+    - turbo-picard mcp --help
     - turbo-picard MarkDuplicates --help
     - turbo-picard SortSam --help
     - turbo-picard CleanSam --help
@@ -52,7 +56,10 @@ test:
     - turbo-picard CollectAlignmentSummaryMetrics --help
     - turbo-picard CollectBaseDistributionByCycle --help
     - turbo-picard CollectGcBiasMetrics --help
+    - turbo-picard CollectHsMetrics --help
     - turbo-picard CollectQualityYieldMetrics --help
+    - turbo-picard CollectRnaSeqMetrics --help
+    - turbo-picard CollectSamErrorMetrics --help
     - turbo-picard CollectWgsMetrics --help
     - turbo-picard QualityScoreDistribution --help
     - turbo-picard MeanQualityByCycle --help
@@ -77,10 +84,9 @@ test:
 
 about:
   home: https://github.com/dnncha/turbo-picard
-  doc_url: https://turbo-picard.readthedocs.io
+  doc_url: https://turbo-picard.readthedocs.io/
   dev_url: https://github.com/dnncha/turbo-picard
   license: MIT
-  license_family: MIT
   license_file:
     - LICENSE
     - THIRDPARTY.yml
@@ -97,6 +103,3 @@ about:
 extra:
   recipe-maintainers:
     - dnncha
-  additional-platforms:
-    - linux-aarch64
-    - osx-arm64
