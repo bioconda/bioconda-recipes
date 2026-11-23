@@ -1,5 +1,5 @@
 {% set name = "focaloop" %}
-{% set version = "0.3.0" %}
+{% set version = "0.4.0" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/nekrut/focaloop/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7b2657012b143fab822b4e7f7fbd50bd3881534e0a6caa1753b521510884dc24
+  sha256: 7639681000aa4aead19add1c869c992793940d2e5f154d75f12ed1c9ab5b7aa7
 
 build:
   number: 0
@@ -21,6 +21,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
+    - make
     - llvm-openmp  # [osx]
     - libgomp      # [linux]
   host:
@@ -77,6 +78,12 @@ test:
     - focaloop variationloop --help
     - focaloop geneloop --help
     - focaloop query --help
+    - '(glcore 2>&1 || true) | grep -q "usage: glcore"'
+    - 'prep_unitigs_filt_adapt < /dev/null'
+    - '(logan_var_pileup 2>&1 || true) | grep -q "usage: logan_var_pileup"'
+    - 'prep_expr_unitigs < /dev/null'
+    - '(expr_sam_ec_v2 2>&1 || true) | grep -q "usage: expr_sam_ec_v2"'
+    - python -c "from focaloop.galaxy_runners import prebuild_all_native_libs; assert len(prebuild_all_native_libs()) == 16"
 
 about:
   home: https://github.com/nekrut/focaloop
