@@ -1,0 +1,67 @@
+{% set name = "mark_pipeline" %}
+{% set version = "1.7.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DP-Genome/MARK/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 2c841c4d78aa9dba9cff2c2e2f0583966f3ec2e2767c85f36fa3c618001193b2
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  run:
+    - python 3.10.*
+    - tk
+    - biopython
+    - pandas
+    - numpy <2.0
+    - matplotlib-base
+    - pysam
+    - pillow
+    - fastp >=1.3.7
+    - fastplong >=0.7.1
+    - fastqc >=0.12.1
+    - cutadapt >=5.2
+    - bwa-mem2 >=2.3
+    - minimap2 >=2.31
+    - samtools >=1.24
+    - bcftools >=1.24
+    # freebayes, the default variant caller, is installed in its own environment (see the description):
+    # its builds need an older htslib and libdeflate than samtools/bcftools 1.24 and fastp 1.3.7.
+
+test:
+  commands:
+    - MARK.sh --help
+    - MARK-I.sh --help
+    - MARKLaunch.py --help
+    - test -f $PREFIX/share/{{ name }}/linearized_mtdna.fasta
+    - test -f $PREFIX/share/{{ name }}/linearized_regions.bed
+
+about:
+  home: https://github.com/DP-Genome/MARK
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Variant calling for the mitochondrial control region from overlapping amplicons (Illumina and Oxford Nanopore)."
+  description: |
+    MARK (Mitochondrial Amplicon Resolving Kit) analyses mtDNA control-region data from overlapping amplicon panels
+    such as the Promega PowerSeq CRM Nested System, on Illumina and Oxford Nanopore data. It keeps only whole PCR
+    products of one amplicon, hard-clips the primer bases, aligns to a shifted rCRS so the control region is
+    continuous, and calls variants with freebayes, with a heteroplasmy report and a mixture check. MARK.sh (nanopore)
+    and MARK-I.sh (Illumina) run from the command line; MARKLaunch.py opens a graphical launcher.
+    freebayes is not a dependency of this package, because its builds conflict with samtools/bcftools 1.24. Install
+    it in its own environment, which MARK finds by itself:
+    conda create -n mark_fb -c conda-forge -c bioconda freebayes=1.3.10
+  dev_url: https://github.com/DP-Genome/MARK
+  doc_url: https://github.com/DP-Genome/MARK/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - AKMARTIAN

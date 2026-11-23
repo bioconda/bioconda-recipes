@@ -1,5 +1,5 @@
 {% set name = "cif-tools" %}
-{% set version = "1.0.13" %}
+{% set version = "2.0.1" %}
 
 package:
   name: {{ name }}
@@ -7,38 +7,40 @@ package:
 
 source:
   url: https://github.com/PDB-REDO/{{ name|lower }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0d18a69c18fbaf8f4fc59b85b3a171de613734ea34f524e86ee79f17c50cc4be
+  sha256: 23ee68083e13d58501192e486d431f2425c4e71cabe74bb164e098559b014c5a
 
 build:
   number: 0
-  run_exports: []
+  run_exports:
+    # Added per Bioconda guidelines (no shared libraries).
+    - {{ pin_subpackage(name, max_pin="x") }}
 
 requirements:
   build:
     - {{ compiler("cxx") }}
+    - {{ stdlib("c") }}
     - cmake
     - ninja
     - pkg-config
-    - sed  # [osx]
   host:
-    - fast_float
-    - libcifpp ==9.0.5
+    - libcifpp 10.0.*
     - libmcfp ==1.4.2
     - zlib
 
 test:
   commands:
-    - pdb2cif --help
-    - cif2pdb --help || true
-    - cif-diff --help
-    - cif-grep --help
-    - cif-merge --help
-    - cif-validate --help
-    - mmCQL --help
+    - pdb2cif --version
+    - cif2pdb --version
+    - cif-diff --version
+    - cif-merge --version
+    - cif-validate --version
+    - mmcql --version
   files:
     - test.cql
   source_files:
+    - 1cbs_final.cif
     - 443d_final.cif
+    - 6yrb_0cyc.pdb
     - 7f95-carb.cif
     - 7f95-carb.pdb
     - 7f95_flipper.pdb

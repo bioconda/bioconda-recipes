@@ -1,0 +1,65 @@
+{% set name = "depthcharge-ms" %}
+{% set version = "0.5.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/depthcharge_ms-{{ version }}.tar.gz
+  sha256: c5d1a1526d78fb0f09bd530ee5cfcf2d6b2caedf2946aa4d8afe450b7ba80494
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10,<3.14
+    - setuptools >=61
+    - wheel
+    - setuptools-scm >=3.4
+    - pip
+  run:
+    - python >=3.10,<3.14
+    - pytorch >=2.0.0
+    - polars >=0.19.0
+    - pyarrow >=12.0.1
+    - pylance >=0.7.5
+    - pyteomics >=4.7.2
+    - numpy >=1.18.1
+    - numba >=0.48.0
+    - lxml >=4.9.1
+    - einops >=0.4.1
+    - tqdm >=4.65.0
+    - lark >=1.1.4
+    - selfies >=2.1.1
+    - sortedcontainers >=2.4.0
+    - dill >=0.3.6
+    - rdkit >=2023.03.1
+    - pillow >=9.4.0
+    - spectrum_utils >=0.4.1
+    - cloudpathlib >=0.18.1
+    - psims >=1.3.3
+    - timsrust_pyo3 >=0.4.1,<0.5.0
+
+test:
+  imports:
+    - depthcharge
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://wfondrie.github.io/depthcharge/latest
+  summary: A mass spectrometry toolkit for deep learning with Transformer models.
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - wagnerr-umn

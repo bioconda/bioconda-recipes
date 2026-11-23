@@ -1,4 +1,4 @@
-{% set version = "4.3.3" %}
+{% set version = "4.5.0" %}
 
 package:
   name: bwa-mem4
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/IPNP-BIPN/bwa-mem4/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3325d9f84cc14a75d4e7e03de003c70946c6378dc8199397851d5907443bb38a
+  sha256: f8b292ec9392212dd877ee90ac54c52d8b9d512c988b35af41e11a03fde0c1d4
 
 build:
   number: 0
@@ -24,7 +24,11 @@ requirements:
     - make
     - cmake
     - pkg-config
-    - clangdev
+    # bindgen only needs libclang. On osx, clangdev's llvmdev puts an unversioned libLLVM.dylib
+    # (LLVM 19) in BUILD_PREFIX/lib, where conda-forge rust >= 1.99 resolves its own
+    # @rpath/libLLVM.dylib (LLVM 23) and aborts with an LLVM version mismatch.
+    - clangdev  # [not osx]
+    - libclang  # [osx]
   host:
     - zlib
     - bzip2

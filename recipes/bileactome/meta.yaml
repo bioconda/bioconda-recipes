@@ -1,0 +1,69 @@
+{% set name = "bileactome" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/1362996609zby/BileActome/releases/download/cli-v{{ version }}/bileactome-{{ version }}.tar.gz"
+  sha256: bd1f98226c70f8830e67309e2b91198015fb6914fb960532128312ace1723bce
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  entry_points:
+    - bileactome = bileactome.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.10,<3.13
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10,<3.13
+    - bash >=4
+    - hmmer >=3.4,<3.5
+    - prodigal >=2.6.3,<2.7
+    - bowtie2 >=2.5.4,<2.6
+    - biopython >=1.81,<2
+    - numpy >=1.24,<2
+    - pandas >=2.0,<3
+    - openpyxl >=3.1,<4
+
+test:
+  imports:
+    - bileactome
+    - bileactome.cli
+    - bileactome.selftest
+  commands:
+    - bileactome --version
+    - bileactome --help
+    - bileactome license
+    - bileactome db verify
+    - bileactome doctor --workflow all
+    - python -c "from bileactome.selftest import locate_fixture, locate_mag_fixture; assert (locate_mag_fixture(locate_fixture()) / 'toy_genome.fna').is_file()"
+
+about:
+  home: https://github.com/1362996609zby/BileActome
+  license: BSD-3-Clause AND CC-BY-4.0
+  license_file:
+    - LICENSE
+    - NOTICE
+    - LICENSES/CC-BY-4.0.txt
+  summary: Microbial bile acid metabolism gene annotation and abundance workflows
+
+extra:
+  recipe-maintainers:
+    - 1362996609zby
+  identifiers:
+    - doi:10.1093/ismeco/ycag205
+  notes: >-
+    CLI code uses BSD-3-Clause; bundled paper HMMs, legacy scripts, metadata
+    and toy data retain CC BY 4.0. Both licenses permit commercial reuse
+    under their respective terms. Linux is the currently validated platform;
+    other platforms require upstream validation.
