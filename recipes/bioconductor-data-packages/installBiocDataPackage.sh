@@ -25,7 +25,13 @@ TARBALL=$STAGING/$FN
 CACHE_DIR="${CONDA_PKGS_DIRS:-$HOME/.conda/pkgs}/bioc_data_cache/$1/$MD5"
 mkdir -p $CACHE_DIR
 R_PLATFORM=$(Rscript -e 'cat(R.version$platform)')
-BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.tar.gz"
+# R CMD INSTALL --build writes <pkg>_<ver>_R_<platform>.tar.gz on Linux, but <pkg>_<ver>.tgz on macOS
+if [[ $(uname -s) == "Darwin" ]]; then
+  BINARY_EXT="tgz"
+else
+  BINARY_EXT="tar.gz"
+fi
+BINARY_TARBALL="${FN%.tar.gz}_R_${R_PLATFORM}.${BINARY_EXT}"
 CACHED_BINARY_TARBALL="$CACHE_DIR/$BINARY_TARBALL"
 
 # Install CACHED_BINARY_TARBALL if it exists
@@ -77,6 +83,9 @@ fi
 # Build binary package and delete source package
 R CMD INSTALL --build $TARBALL
 rm $TARBALL
+if [[ ! -f "$BINARY_TARBALL" && -f "${FN%.tar.gz}.tgz" ]]; then
+  mv "${FN%.tar.gz}.tgz" "$BINARY_TARBALL"
+fi
 
 # Install binary package
 R CMD INSTALL --library=$PREFIX/lib/R/library $BINARY_TARBALL
