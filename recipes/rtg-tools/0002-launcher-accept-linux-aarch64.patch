@@ -1,0 +1,19 @@
+From: aarchbio <noreply@aarch.bio>
+Subject: [PATCH] launcher: accept Linux aarch64
+
+The launcher accepts uname -m "arm64" (macOS) but not "aarch64", which is what
+Linux reports on 64-bit ARM, so rtg refuses to start on Graviton and other
+aarch64 Linux hosts. The Java code itself runs fine there.
+
+---
+--- a/rtg
++++ b/rtg
+@@ -5,7 +5,7 @@
+     # If you comment this check out you are on your own :-)
+     echo "Sorry, only Linux and MacOS are supported."
+     exit 1
+-elif [[ "$(uname -m)" != "x86_64" ]] && [[ "$(uname -m)" != "arm64" ]]; then
++elif [[ "$(uname -m)" != "x86_64" ]] && [[ "$(uname -m)" != "arm64" ]] && [[ "$(uname -m)" != "aarch64" ]]; then
+     # If you comment this check out you are on your own :-)
+     echo "Sorry, you must be running a 64bit operating system."
+     exit 1
