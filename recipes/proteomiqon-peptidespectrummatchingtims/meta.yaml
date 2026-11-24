@@ -1,0 +1,42 @@
+{% set name = "proteomiqon-peptidespectrummatchingtims" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "00744a51890c10da736ae2def83eb1f7659d8706ed7bd63ca642fe9d8a34c26f" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.PeptideSpectrumMatchingTIMs/{{version}}
+  sha256: '{{sha256}}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-peptidespectrummatchingtims"
+    - test -f "$PREFIX/lib/dotnet/tools/PeptideSpectrumMatchingTIMs/ProteomIQon.PeptideSpectrumMatchingTIMs.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-peptidespectrummatchingtims"
+    - grep -q "PeptideSpectrumMatchingTIMs/ProteomIQon.PeptideSpectrumMatchingTIMs.dll" "$PREFIX/bin/proteomiqon-peptidespectrummatchingtims"
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  description: |
+    PeptideSpectrumMatchingTIMs identifies peptides from timsTOF runs using precursor ion mobility data. It accepts mzlite input and follows the search pattern used by MSFragger. PeptideSpectrumMatching performs the corresponding search for mzlite and mzML files.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/peptide-spectrum-matching-tims/

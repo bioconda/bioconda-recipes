@@ -1,0 +1,43 @@
+{% set name = "proteomiqon-adddeducedpeptides" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "1253784e2c11fc2ddfa17481a73f68faabc8b356680348d6698a40cf95696fc2" %}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.AddDeducedPeptides/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-adddeducedpeptides"
+    - test -f "$PREFIX/lib/dotnet/tools/AddDeducedPeptides/ProteomIQon.AddDeducedPeptides.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-adddeducedpeptides"
+    - grep -q "AddDeducedPeptides/ProteomIQon.AddDeducedPeptides.dll" "$PREFIX/bin/proteomiqon-adddeducedpeptides"
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT 
+  description: | 
+    AddDeducedPeptides takes the protein groups of the combined inference and assigns them to every peptide present in each aligned .quant file, so that JoinQuantPepIonsWithProteins can join the transferred quantifications to proteins.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/add-deduced-peptides/

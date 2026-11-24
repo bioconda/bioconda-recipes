@@ -1,0 +1,43 @@
+{% set name = "proteomiqon-ratiolfq" %}
+{% set version = "0.0.2" %}
+{% set sha256 = "caa51715039e94725ecdf53089cf59bc09d0d74a1a0d99aad56405ebd09db422" %}
+
+package:
+  name: '{{name}}'
+  version: '{{ version }}'
+
+source:
+  url: https://www.nuget.org/api/v2/package/ProteomIQon.RatioLFQ/{{ version }}
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build: 
+    - {{ stdlib('c') }}
+  host:
+    - unzip
+  run:
+    - dotnet-runtime >=10.0, <11.0
+    - zlib
+
+test:
+  commands:
+    - test -x "$PREFIX/bin/proteomiqon-ratiolfq"
+    - test -f "$PREFIX/lib/dotnet/tools/RatioLFQ/ProteomIQon.RatioLFQ.dll"
+    # Sanity-check the wrapper is valid bash and points at the right DLL
+    - bash -n "$PREFIX/bin/proteomiqon-ratiolfq"
+    - grep -q "RatioLFQ/ProteomIQon.RatioLFQ.dll" "$PREFIX/bin/proteomiqon-ratiolfq"
+
+
+about:
+  home: https://csbiology.github.io/ProteomIQon/
+  license: MIT
+  description: | 
+    A labeled experiment gives one light-to-heavy ratio per protein and run. RatioLFQ uses the shared heavy reference to convert these ratios into one comparable intensity per protein and run.
+  dev_url: https://github.com/CSBiology/ProteomIQon
+  doc_url: https://csbiology.github.io/ProteomIQon/tools/ratio-lfq/
