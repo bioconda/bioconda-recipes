@@ -1,0 +1,68 @@
+{% set name = "Casanovo" %}
+{% set version = "5.2.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/casanovo-{{ version }}.tar.gz
+  sha256: b310d4f32a108748c4e9abc9fa7974ef8a33e01cc31f2d24759764834b1e0e60
+
+build:
+  entry_points:
+    - casanovo = casanovo.casanovo:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - setuptools >=61
+    - wheel
+    - setuptools-scm >=3.4
+    - pip
+  run:
+    - python >=3.10
+    - appdirs
+    - lightning >=2.6
+    - click
+    - depthcharge-ms >=0.4.10,<0.5.0
+    - natsort
+    - numpy <2.0
+    - pandas
+    - psutil
+    - pygithub
+    - pylance ==0.15.0
+    - pyyaml
+    - requests
+    - rich-click >=1.6.1
+    - scikit-learn
+    - spectrum_utils >=0.5.0
+    - tensorboard
+    - pytorch >=2.2
+    - tqdm
+
+test:
+  imports:
+    - casanovo
+    - dist
+    - docs
+  commands:
+    - pip check
+    - casanovo --help
+  requires:
+    - pip
+
+about:
+  home: https://casanovo.readthedocs.io/en/latest/
+  summary: De novo mass spectrometry peptide sequencing with a transformer model
+  license: Apache-2.0
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - wagnerr-umn
