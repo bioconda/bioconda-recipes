@@ -40,16 +40,16 @@ requirements:
 test:
   imports:
     - kplex
-  source_files:
-    - tests/test_run.py
-  requires:
-    - pytest
+  # bioconda's container test installs only the package (no test requirements), so the end-to-end check is
+  # plain shell + python: a 200-kb random genome with an N gap; total_kmers must be the exact N-free count
   commands:
     - kplex --version
     - kplex --help
     - Kplex 2>&1 | grep -q "Usage"
     - kplex schedule --genome-bp 3.1e9
-    - pytest -v tests/test_run.py
+    - 'python -c "import random; r=random.Random(1); a=lambda n: \"\".join(r.choice(\"ACGT\") for _ in range(n)); open(\"/tmp/toy.fa\", \"w\").write(\">toy\\n\" + a(100000) + \"N\" * 300 + a(100000) + \"\\n\")"'
+    - kplex run /tmp/toy.fa -o /tmp/toy -k 7,13,21,31 -T 2
+    - 'python -c "import pandas as pd; c = pd.read_csv(\"/tmp/toy.kplex.csv\"); assert list(c.k) == [7, 13, 21, 31]; assert (c.total_kmers == 2 * (100000 - c.k + 1)).all(); assert c.fraction_unique.iloc[-1] > 0.99; print(c)"'
 
 about:
   home: https://github.com/jacgonisa/kplexity
