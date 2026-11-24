@@ -1,0 +1,72 @@
+{% set name = "kplexity" %}
+{% set version = "0.4.0" %}
+{% set fastk_commit = "0ed9428782c94b10b7db3d8bdfcd3d1367b1580a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # the kplex Python package (CLI: kplex run / fit / plot / schedule)
+  - url: https://github.com/jacgonisa/kplexity/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: a28bceb9c8512ceb793625d8263bcba7ffc45f2fe60cca1dd9db67d578ef4a4f
+  # Kplex, the k-plexity driver for FastK, from the FASTK fork (FastK 1.2 + Kplex.c); only Kplex is built here,
+  # FastK, Histex and Fastrm come from the bioconda fastk package
+  - url: https://github.com/jacgonisa/FASTK/archive/{{ fastk_commit }}.tar.gz
+    sha256: 0089b8fe6cb13ac6e57d7ca8969f59871e5b6fde33bee0e8dcfb59cf3f0cc5f5
+    folder: FASTK
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools >=61
+  run:
+    - python
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib-base
+    - fastk >=1.2
+
+test:
+  imports:
+    - kplex
+  source_files:
+    - tests/test_run.py
+  requires:
+    - pytest
+  commands:
+    - kplex --version
+    - kplex --help
+    - Kplex 2>&1 | grep -q "Usage"
+    - kplex schedule --genome-bp 3.1e9
+    - pytest -v tests/test_run.py
+
+about:
+  home: https://github.com/jacgonisa/kplexity
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - FASTK/LICENSE
+  summary: "Profile the repeat architecture of a genome assembly from its k-mer uniqueness curve"
+  description: |
+    kplexity profiles the repeat architecture of a genome from its assembly alone. `kplex run` counts the
+    fraction of distinct k-mers for k = 5-151 with FastK (or a sketch of 15 k values), and `kplex fit` fits a model
+    with one term for each source of repeated k-mers: chance collisions, diverged repeat copies and identical
+    copies (parameters A, S, divergence, k0 and b).
+  dev_url: https://github.com/jacgonisa/kplexity
+  doc_url: https://github.com/jacgonisa/kplexity#readme
+
+extra:
+  recipe-maintainers:
+    - jacgonisa
