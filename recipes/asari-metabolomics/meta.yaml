@@ -10,7 +10,9 @@ source:
   sha256: 8c4fb75b4262656767c4e95995e7f69d97b1ad3e4e89ab50e8501ff68c1e4ca2
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    - {{ PYTHON }} -c "from pathlib import Path; Path('requirements.txt').write_text(Path('asari_metabolomics.egg-info/requires.txt').read_text())"
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   skip: true  # [py<37]
   run_exports:
@@ -48,7 +50,7 @@ requirements:
 
 test:
   imports:
-    - asari_metabolomics
+    - asari
   commands:
     - pip check
   requires:
