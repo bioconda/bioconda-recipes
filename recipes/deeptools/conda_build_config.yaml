@@ -1,0 +1,23 @@
+# deeptools 4.1.0 builds a Rust extension via maturin. Two problems on
+# bioconda's macOS CI:
+#
+# 1. conda-forge's rust 1.100.0 is built against LLVM 23, while the macOS C
+#    compiler resolves to clang 19 (c_compiler_version pin). Its libLLVM.19
+#    makes rustc abort with "LLVM version mismatch" during maturin's
+#    metadata generation.
+# 2. rust 1.100.0's own binaries abort at startup on the CI runners with
+#    "dyld: missing symbol called" (SIGABRT) even with a matching LLVM 23
+#    toolchain in the build env.
+#
+# Pin the combination that conda's solver picks on osx-64 (where the build
+# passes): rust 1.95.0 (LLVM 19 era) together with clang 19, so rustc finds
+# a matching libLLVM and its own binaries load cleanly. meta.yaml additionally
+# extends DYLD_FALLBACK_LIBRARY_PATH with the build prefix, because the clang
+# 19 linker driver cannot otherwise find libclang-cpp.19.1.dylib (it ships in
+# the separate libclang-cpp19.1 package, not in the clang package's own
+# lib/ directory that the driver's rpath resolves to).
+# Remove these pins once the macOS rust/clang pinning is consistent again.
+c_compiler_version:            # [osx]
+  - 19                         # [osx]
+rust_compiler_version:         # [osx]
+  - 1.95.0                     # [osx]

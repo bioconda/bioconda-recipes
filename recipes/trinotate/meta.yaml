@@ -1,6 +1,6 @@
 {% set name = "Trinotate" %}
-{% set version = "4.0.2" %}
-{% set sha256 = "2f633df2e05e5d22e19159aa147060be7884a057314cad3e6db91dba8910fad1" %}
+{% set version = "4.0.5" %}
+{% set sha256 = "947248b45f2d82af1cd4c899a5e24b0b0b9dda4bf7bb8c137d4a504a18c16a2e" %}
 
 package:
   name: {{ name|lower }}
@@ -9,8 +9,6 @@ package:
 source:
   url: https://github.com/Trinotate/Trinotate/archive/refs/tags/Trinotate-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  # patches:
-      # - trinotate.patch
 
 build:
   noarch: generic
@@ -33,6 +31,7 @@ requirements:
     - perl-module-build
     - perl-dbi
     - perl-dbd-sqlite
+    - perl-cgi
     - blast
     - hmmer
     - perl-file-find-rule
@@ -43,6 +42,19 @@ requirements:
 test:
   commands:
     - Trinotate --help 2>&1 | grep "Trinotate --db <sqlite.db>"
+    - test -n "${TRINOTATE_HOME}" && test -x "${TRINOTATE_HOME}/util/Trinotate_report_writer.pl"
+    # exercise the driver end to end: create an empty Trinotate schema; --report must refuse an empty db
+    - perl "${TRINOTATE_HOME}/util/admin/util/init_Trinotate_sqlite_db.pl" --sqlite test.sqlite
+    - Trinotate --db test.sqlite --report > report.tsv 2> report.err || true
+    - grep -q "Transcript table in test.sqlite is empty" report.err
+    # then load the bundled sample transcripts/proteins with --init and generate a report
+    - gunzip -c "${TRINOTATE_HOME}/testing/input_data/Trinity.fasta.gz" > Trinity.fasta
+    - gunzip -c "${TRINOTATE_HOME}/testing/input_data/Trinity.fasta.gene_to_trans_map.gz" > gene_trans_map
+    - gunzip -c "${TRINOTATE_HOME}/testing/input_data/Trinity.fasta.transdecoder.pep.gz" > transdecoder.pep
+    - Trinotate --db test.sqlite --init --gene_trans_map gene_trans_map --transcript_fasta Trinity.fasta --transdecoder_pep transdecoder.pep
+    - Trinotate --db test.sqlite --report --pfam_cutoff DNC > report.tsv
+    - head -1 report.tsv | grep transcript_id
+    - test $(grep -c TRINITY_ report.tsv) -gt 600
 
 about:
   home: https://trinotate.github.io/

@@ -1,0 +1,52 @@
+{% set name = "pmdshodh" %}
+{% set version = "0.3.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pmdshodh/pmdshodh-{{ version }}.tar.gz
+  sha256: 59d3c7f0bafdf72150fb7eb6ef37a2bbf84eba12303765c2768d9894522c5f36
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - pmdshodh --version
+    - pmdshodh filter --help
+    # A one-read SAM written here: the container test has no source files.
+    - printf "@SQ\tSN:c\tLN:20\nr1\t0\tc\t1\t60\t10M\t*\t0\t0\tACGTACGTAC\tIIIIIIIIII\tMD:Z:10\n" > t.sam
+    - pmdshodh score --quiet t.sam -o scores.tsv
+    - test "$(wc -l < scores.tsv)" -eq 2
+    - pmdshodh damage --quiet t.sam -o damage.json
+    - pmdshodh report --quiet damage.json -o report.html
+    - grep -q "<!DOCTYPE html>" report.html
+
+about:
+  home: https://github.com/dpatel511/pmdshodh
+  dev_url: https://github.com/dpatel511/pmdshodh
+  doc_url: https://github.com/dpatel511/pmdshodh/blob/v{{ version }}/README.md
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Per-read post-mortem damage (PMD) scoring and filtering of ancient DNA alignments, compatible with PMDtools.
+
+extra:
+  recipe-maintainers:
+    - dpatel511
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-mkdir -p "${PREFIX}"/bin
-gunzip *.gz
-mv pbfusion* pbfusion
-chmod +x pbfusion
-cp pbfusion "${PREFIX}"/bin/
-
+mkdir -p "${PREFIX}/bin"
+install -m 755 pbfusion "${PREFIX}/bin/pbfusion"
