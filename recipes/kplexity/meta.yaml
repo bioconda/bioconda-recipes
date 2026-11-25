@@ -1,5 +1,5 @@
 {% set name = "kplexity" %}
-{% set version = "0.4.0" %}
+{% set version = "0.4.1" %}
 {% set fastk_commit = "0ed9428782c94b10b7db3d8bdfcd3d1367b1580a" %}
 
 package:
@@ -9,7 +9,7 @@ package:
 source:
   # the kplex Python package (CLI: kplex run / fit / plot / schedule)
   - url: https://github.com/jacgonisa/kplexity/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: a28bceb9c8512ceb793625d8263bcba7ffc45f2fe60cca1dd9db67d578ef4a4f
+    sha256: e0a4b14469a8c6a7ab5b5fe2e99f8cf5890d84fdaf0bd221a1d0c7d0d1caf3a2
   # Kplex, the k-plexity driver for FastK, from the FASTK fork (FastK 1.2 + Kplex.c); only Kplex is built here,
   # FastK, Histex and Fastrm come from the bioconda fastk package
   - url: https://github.com/jacgonisa/FASTK/archive/{{ fastk_commit }}.tar.gz
@@ -45,7 +45,7 @@ test:
   commands:
     - kplex --version
     - kplex --help
-    - Kplex 2>&1 | grep -q "Usage"
+    - 'python -c "from kplex.kmers import CONDA_KPLEX, find_counter; assert find_counter(\"fastk\", None, None)[1] == str(CONDA_KPLEX.resolve())"'
     - kplex schedule --genome-bp 3.1e9
     - 'python -c "import random; r=random.Random(1); a=lambda n: \"\".join(r.choice(\"ACGT\") for _ in range(n)); open(\"/tmp/toy.fa\", \"w\").write(\">toy\\n\" + a(100000) + \"N\" * 300 + a(100000) + \"\\n\")"'
     - kplex run /tmp/toy.fa -o /tmp/toy -k 7,13,21,31 -T 2
