@@ -1,0 +1,42 @@
+{% set name = "bullseyeR" %}
+{% set version = "0.1.0" %}
+{% set sha256 = "d5b382108d1bd99f2f744307464c119a507f18496097fc54d7d3dcd4b64593fa" %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mflamand/bullseyeR/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  run_exports:
+    - {{ pin_subpackage('r-' ~ name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+    - r-aod
+
+test:
+  commands:
+    - $R -e "library('{{ name }}')"
+
+about:
+  home: "https://github.com/mflamand/bullseyeR"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Site-level differential RNA editing analysis: binomial, quasibinomial, and beta-binomial GLMs with fixed-effect multifactor designs, numeric covariates, interactions, and user-defined linear contrasts."
+  dev_url: "https://github.com/mflamand/bullseyeR"
+
+extra:
+  recipe-maintainers:
+    - brovolia
