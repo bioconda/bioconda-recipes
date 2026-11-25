@@ -1,0 +1,47 @@
+{% set name = "asperasragetter" %}
+{% set version = "3.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9439b11c4ace9e1519ba559ccddf4f7aaf4d965e7bfa4bf7afd6e23e6d1bca97
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - sragetter = AsperaSRAgetter.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=77.0.0
+  run:
+    - python >=3.9
+    - aspera-cli
+
+test:
+  imports:
+    - AsperaSRAgetter
+  commands:
+    - sragetter --help
+    - sragetter --version
+
+about:
+  home: https://github.com/RunJiaJi/AsperaSRAgetter
+  license: MIT
+  license_family: MIT
+  license_file: License.txt
+  summary: "Lightweight ENA data downloader powered by Aspera (ascp)."
+  dev_url: https://github.com/RunJiaJi/AsperaSRAgetter
+
+extra:
+  recipe-maintainers:
+    - RunJiaJi

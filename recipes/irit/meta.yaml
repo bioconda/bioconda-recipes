@@ -1,0 +1,61 @@
+{% set name = "irit" %}
+{% set version = "0.7.0" %}
+{% set sha256 = "006ff4bb79e49702624645ac562a656f1cfb7f2ba4b341e72b636310cf5b06bc" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/dzulfikar08/irit/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    - make
+    - pkg-config
+
+test:
+  commands:
+    - sheetgen --version | grep '{{ version }}'
+    - leanqc --version | grep '{{ version }}'
+    - isotable --version | grep '{{ version }}'
+    - dblock --version | grep '{{ version }}'
+    - seqplan --version | grep '{{ version }}'
+    - cooccur --version | grep '{{ version }}'
+    - gtdbprep --version | grep '{{ version }}'
+    - irit-mcp --version | grep '{{ version }}'
+
+about:
+  home: "https://dzulfikar08.github.io/irit/"
+  license: "GPL-3.0-or-later"
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Bacterial genomics and metagenomics on an 8 GB laptop: read QC, sample sheets, result tables, reference databases, GTDB species checks, co-occurrence, and an MCP server for AI agents."
+  description: |
+    irit is a set of small command-line tools: leanqc (read QC), sheetgen (sample sheets for
+    nf-core pipelines and read-file checks against MD5s), isotable (one graded row per sample from
+    tool outputs, MIMAG tiers for MAGs), dblock (pinned reference databases), seqplan (isolates per
+    sequencing run), gtdbprep (GTDB-Tk species checks and tree placement in 8 GB), cooccur
+    (co-occurrence statistics) and irit-mcp (an MCP server that runs bioinformatics tools for AI
+    agents with a replayable record). The msascope alignment viewer is not included.
+  dev_url: "https://github.com/dzulfikar08/irit"
+  doc_url: "https://dzulfikar08.github.io/irit/"
+
+extra:
+  recipe-maintainers:
+    - dzulfikar08
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

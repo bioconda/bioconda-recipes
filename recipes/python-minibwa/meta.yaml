@@ -14,7 +14,7 @@ source:
   sha256: f7d057b6431ad58f3e384d2358a938cdd5505fc4f547a46f5e99b396ad5eadaf
 
 build:
-  number: 0
+  number: 1
   run_exports:
     # 0.x: API is not yet stable, so pin downstream consumers to the minor.
     - {{ pin_subpackage('python-minibwa', max_pin="x.x") }}
@@ -31,8 +31,12 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}
     - {{ compiler('rust') }}
-    # minibwa-sys runs bindgen at build time, which needs libclang.
-    - clangdev
+    # minibwa-sys runs bindgen at build time, which needs libclang. On osx, use libclang rather
+    # than clangdev: clangdev's llvmdev puts an unversioned libLLVM.dylib (LLVM 19) in
+    # BUILD_PREFIX/lib, where conda-forge rust >= 1.99 resolves its own @rpath/libLLVM.dylib
+    # (LLVM 23) and aborts with an LLVM version mismatch.
+    - clangdev  # [not osx]
+    - libclang  # [osx]
     # Bundles the verbatim license text of the Rust crate dependencies (see
     # build.sh and the THIRD-PARTY.yml entry in license_file below).
     - cargo-bundle-licenses

@@ -1,20 +1,17 @@
 {% set name = "kmer-diversity-sieve" %}
-{% set version = "0.1.0" %}
-{% set commit = "70022dac889ce315a938310fe49e93618e79ddc6" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  # Upstream has no tagged releases; 0.1.0 is this commit of main.
-  url: https://github.com/stevenweaver/{{ name }}/archive/{{ commit }}.tar.gz
-  sha256: dd3a65c9e42cfc1efb9c99b0261515f31dc8f59b68bd1c32805fef2c095afb56
+  url: https://github.com/stevenweaver/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a4a145f21039f1745d6f6f330a888ea5e58646486b96f8e6a9026f62bacf378b
 
 build:
   number: 0
-  # macOS is skipped until bioconda/bioconda-recipes#70401 is fixed: CI currently builds
-  # against the 10.9 SDK, which lacks clock_gettime (macOS 10.12+).
+  # Linux only: the package exists for disassembler, which cannot be installed on macOS
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -27,7 +24,7 @@ requirements:
 
 test:
   commands:
-    # There is no --version or --help; with no arguments it names the required flag.
+    # There is no --version or --help; with no arguments it names the required flag
     - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
 
 about:

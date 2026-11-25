@@ -1,0 +1,26 @@
+diff --git a/soapnuke-rs/src/cpu_budget.rs b/soapnuke-rs/src/cpu_budget.rs
+index f82137e..30edd86 100644
+--- a/soapnuke-rs/src/cpu_budget.rs
++++ b/soapnuke-rs/src/cpu_budget.rs
+@@ -334,6 +334,7 @@ mod tests {
+     #[test]
+     fn permits_bound_simultaneous_active_work() {
+         let budget = CpuBudget::new(1);
++        let held = budget.acquire(Stage::Source);
+         let barrier = Arc::new(Barrier::new(3));
+         let mut handles = Vec::new();
+         for _ in 0..2 {
+@@ -349,6 +350,13 @@ mod tests {
+             }));
+         }
+         barrier.wait();
++        // Both workers must queue before the sole permit becomes available.
++        let deadline = Instant::now() + std::time::Duration::from_secs(10);
++        while budget.state.lock().unwrap().next_ticket < 3 {
++            assert!(Instant::now() < deadline, "workers did not queue for permits");
++            thread::yield_now();
++        }
++        drop(held);
+         for handle in handles {
+             handle.join().unwrap();
+         }

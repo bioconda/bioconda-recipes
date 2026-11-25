@@ -1,0 +1,46 @@
+{% set name = "noref" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rderelle/noref/archive/{{ version }}.tar.gz
+  sha256: 861cb27e7ff0ebba5d93f8ac3c4dc21163b10db1d433447a3b6a6e8bfae4b08b
+
+build:
+  number: 0
+  script:
+    - export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib"
+    - export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - "RUST_BACKTRACE=1 cargo install --no-track --verbose --root \"${PREFIX}\" --path ."
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - noref -h
+
+about:
+   home: "https://github.com/rderelle/noref"
+   license: MIT
+   license_family: MIT
+   license_file:
+     - LICENSE
+     - THIRDPARTY.yml
+   summary: "SNP-calling and recombination detection without a reference genome"
+   dev_url: "https://github.com/rderelle/noref"
+   doc_url: "https://github.com/rderelle/noref/blob/{{ version }}/README.md"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
