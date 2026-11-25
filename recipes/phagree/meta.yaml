@@ -1,0 +1,72 @@
+{% set name = "phagree" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/rarltyD/Phagree/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cdf6a85a9fdb8c094e27c0179fad2e4813553046a9dcd2e37dffd05bf7951f89
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - phagree = phagree.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=69
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.85,<2
+    - pyarrow >=19,<27
+    - python-duckdb >=1.2,<2
+    - pandas >=2
+    - numpy >=1.26
+    - psutil >=7,<8
+    # Exact gene caller and search versions of the study (results depend on them).
+    - pyrodigal-gv 0.3.2
+    - pyhmmer >=0.12.3,<0.13
+    - phanotate 1.6.7
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - phagree
+    - phagree.reannotation
+    - phagree.phrogs_search
+  commands:
+    - phagree --version
+    - phagree annotate --help
+    - python -c "from phagree.setup_tools import run_template; assert run_template()['seed'] == 30102026"
+    - phanotate.py --help
+
+about:
+  home: https://github.com/rarltyD/Phagree
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Annotate or re-annotate bacteriophage genomes with two gene callers and PHROGs, and check GenBank annotations
+  description: |
+    Phagree compares the CDS of bacteriophage genomes with PHANOTATE and Pyrodigal-gv gene calls
+    and PHROGs homology, applies explicit consensus rules and reports genes without support, genes to
+    add, start codon corrections and hypothetical proteins with a known function. Inputs are GenBank
+    accessions, GenBank files or FASTA files. The PHROGs library is downloaded and verified by
+    `phagree setup`.
+  dev_url: https://github.com/rarltyD/Phagree
+  doc_url: https://github.com/rarltyD/Phagree#readme
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.24523208
+  recipe-maintainers:
+    - rarltyD
