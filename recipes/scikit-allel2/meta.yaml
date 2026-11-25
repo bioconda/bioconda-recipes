@@ -36,8 +36,6 @@ requirements:
     - zarr >=3.1
 
 test:
-  source_files:
-    - ci/smoke_wheel.py
   imports:
     - allel2
     - allel2.opt.io_vcf_read_rs
@@ -45,9 +43,26 @@ test:
     - pip
   commands:
     - pip check
-    # reads the bundled test VCF with the Rust parser and checks the version
-    - python ci/smoke_wheel.py
     - python -c "import allel2; assert allel2.__version__ == '{{ version }}', allel2.__version__"
+    # same checks as upstream ci/smoke_wheel.py, inline because the
+    # biocontainer test has no source files: reads the installed test VCF and
+    # checks from the debug log that the Rust parser read it
+    - >-
+      python -c "import importlib.resources as r, logging, allel2;
+      m = [];
+      h = logging.Handler();
+      h.emit = lambda rec: m.append(rec.getMessage());
+      lg = logging.getLogger('allel2.io.vcf_read');
+      lg.addHandler(h);
+      lg.setLevel(logging.DEBUG);
+      vcf = str(r.files('allel2.test') / 'data' / 'sample.vcf');
+      c = allel2.read_vcf(vcf, fields=['variants/POS', 'calldata/GT']);
+      assert any('with the Rust VCF parser' in x for x in m), m;
+      gt = allel2.GenotypeArray(c['calldata/GT']);
+      assert gt.shape == (9, 3, 2), gt.shape;
+      assert c['variants/POS'][:3].tolist() == [111, 112, 14370];
+      assert gt.count_alleles()[4].tolist() == [0, 2, 4];
+      print('smoke test passed')"
 
 about:
   home: https://github.com/ltalignani/scikit-allel2
