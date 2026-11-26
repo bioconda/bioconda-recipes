@@ -42,7 +42,11 @@ requirements:
     - pip
     - python >=3
   run:
-    - python >=3
+    # Upper bound needed on top of the metaphlan pin: metaphlan 4.1.x requires
+    # matplotlib-base <3.9, and matplotlib 3.8.x has builds only up to python 3.12.
+    # Without it the solver picks metaphlan 4.1.1 + matplotlib 3.11 for python 3.13+,
+    # whose libraqm needs __glibc >=2.28 (unavailable in the bioconda test container).
+    - python >=3,<3.13
     # humann 3.9 runs metaphlan with --bowtie2out/--bowtie2db in its prescreen step.
     # MetaPhlAn 4.2.0 renamed these options to --mapout/--db_dir, which breaks the
     # prescreen ("metaphlan: error: unrecognized arguments: --bowtie2out").
