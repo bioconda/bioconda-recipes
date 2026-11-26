@@ -1,0 +1,57 @@
+{% set name = "isosel" %}
+{% set version = "2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.in2p3.fr/guy.perriere/isosel/-/archive/v{{ version }}/isosel-v{{ version }}.tar.gz
+  sha256: a259f0b1407a3fa8d3197fa8295fafa8c69896cfbd24f4d30c9f5aed2ede7563
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  run:
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+    # IsoSel calls the aligners through PATH; mafft is the default.
+    - mafft
+    - clustalo
+    # Muscle 5.x is not supported (no user-supplied guide trees).
+    - muscle <5
+
+test:
+  commands:
+    - isosel --help 2>&1 | grep -q "IsoSel version {{ version }}"
+    - fastdist --help
+
+about:
+  home: "https://gitlab.in2p3.fr/guy.perriere/isosel"
+  license: "CECILL-2.1"
+  license_family: OTHER
+  license_file: LICENSE
+  summary: "IsoSel: select the best-aligned alternative transcript (isoform) from sets of homologous protein sequences for phylogenetic reconstructions."
+  dev_url: "https://gitlab.in2p3.fr/guy.perriere/isosel"
+  doc_url: "https://gitlab.in2p3.fr/guy.perriere/isosel/-/blob/v{{ version }}/README"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1371/journal.pone.0174250
+  recipe-maintainers:
+    - leapicard
