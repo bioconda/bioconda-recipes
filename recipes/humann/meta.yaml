@@ -10,7 +10,7 @@ source:
   sha256: d018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287
 
 build:
-  number: 0
+  number: 1
   noarch: generic
   entry_points:
     - humann = humann.humann:main
@@ -43,7 +43,11 @@ requirements:
     - python >=3
   run:
     - python >=3
-    - metaphlan >=4.0
+    # humann 3.9 runs metaphlan with --bowtie2out/--bowtie2db in its prescreen step.
+    # MetaPhlAn 4.2.0 renamed these options to --mapout/--db_dir, which breaks the
+    # prescreen ("metaphlan: error: unrecognized arguments: --bowtie2out").
+    # See https://forum.biobakery.org/t/metaphlan-unrecognized-argument-bowtie2out/8147/12
+    - metaphlan >=4.0,<4.2
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
@@ -75,6 +79,12 @@ test:
     - humann_barplot --help
     - humann_benchmark --help
     - humann_test
+    # Guard the metaphlan pin in the requirements above: humann's prescreen step calls
+    # `metaphlan --bowtie2out ... --bowtie2db ...`. MetaPhlAn 4.2+ only *mentions*
+    # --bowtie2out in its --help text ("old --bowtie2out option") while actually defining
+    # --mapout/--db_dir, so check the parser definitions instead of grepping --help.
+    - >-
+      python -c 'import os, re, metaphlan; src = open(os.path.join(os.path.dirname(metaphlan.__file__), "metaphlan.py")).read(); assert re.search(r"arg\(.--bowtie2out", src), "metaphlan no longer defines --bowtie2out (required by the humann prescreen)"; assert re.search(r"arg\(.--bowtie2db", src), "metaphlan no longer defines --bowtie2db (required by the humann prescreen)"'
 
 about:
   home: "https://huttenhower.sph.harvard.edu/humann"
