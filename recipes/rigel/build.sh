@@ -11,4 +11,7 @@ if [[ "${OSTYPE:-}" == darwin* ]]; then
     export LDFLAGS="${LDFLAGS:-} -Wl,-ld_classic"
 fi
 
+# Portable: a package built with -march=native dies with an illegal instruction on any CPU older than the build host's
+export CMAKE_ARGS="${CMAKE_ARGS:-} -DRIGEL_PORTABLE=ON"
+
 $PYTHON -m pip install . --no-deps --no-build-isolation -vv
