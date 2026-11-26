@@ -1,6 +1,6 @@
 {% set name = "pydna" %}
-{% set version = "5.2.0" %}
-{% set hash = "24e89cc71c77c727c3681da8fe889fb65f243766db63fb17f67a8a6280fde313" %}
+{% set version = "5.5.16" %}
+{% set hash = "244caaf598544bc1f8af95a480379e600617b243036438c065aac1187df3ad49" %}
 
 package:
   name: {{ name|lower }}
@@ -9,7 +9,7 @@ package:
 build:
   number: 0
   noarch: python
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   script_env:
     # Workaround for poetry-dynamic-versioning generating incorrect version due
     # to missing Git metadata.
@@ -18,29 +18,41 @@ build:
     - {{ pin_subpackage('pydna', max_pin='x.x') }}
 
 source:
-  url: https://github.com/BjornFJohansson/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/p/pydna/pydna-{{ version }}.tar.gz
   sha256: {{ hash }}
 
 requirements:
   host:
-  - python >=3.8
-  - pip
-  - poetry
-  - poetry-dynamic-versioning
+    - python >=3.10
+    - pip
+    - poetry-core
+    - poetry-dynamic-versioning
   run:
-  - python >=3.8
-  - appdirs >=1.4.4
-  - biopython >=1.80
-  - networkx >=2.8.8
-  - prettytable >=3.5.0
-  - pyperclip >=1.8.2
-  - pyfiglet >=0.8.post1
-  - pyparsing >=2.4.7
-  - requests >=2.26.0
+    - python >=3.10,<4.0
+    - appdirs >=1.4.4
+    - biopython >=1.87,<2.0
+    - networkx >=2.8.8
+    - numpy >=2.3.0
+    - prettytable >=3.5.0
+    - pydivsufsort >=0.0.20,<0.0.21
+    - pyfiglet ==0.8.post1
+    - seguid >=0.0.5
+    - regex >=2024.11.6,<2027.0.0
+    - opencloning-linkml >=1.0.0,<2.0.0
+    - sgffp >=0.18.0
+    - pyperclip >=1.8.2
+    - pyparsing >=2.4.7
+    - requests >=2.26.0
 
 test:
   imports:
     - pydna
+    - pydna.dseqrecord
+    - pydna.design
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/BjornFJohansson/pydna
