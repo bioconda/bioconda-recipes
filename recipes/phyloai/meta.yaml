@@ -1,0 +1,80 @@
+{% set name = "phyloai" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "5da4d8499ea47b38123116c5399dbfcc5c7773ebe6a2467209f9d60bd505e3f4" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/KulyaNikita/PhyloAI/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - phyloai = phyloai.cli:main
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61
+  run:
+    - python >=3.10
+    - numpy
+    - tensorflow >=2.15
+    - tf-keras  # Keras 2 for `phyloai train` with TensorFlow >=2.16
+    - scikit-learn
+    - biopython
+    - quartet-pattern-counter >=1.8,<2
+    - astraq >=0.5.8
+    - astral-tree >=5.7.8
+    - qfm-fi >=2.1.4
+    - polymosim >=1.2.0
+    - openjdk >=17
+
+test:
+  imports:
+    - phyloai
+    - phyloai.run
+    - phyloai.benchmark
+  requires:
+    - pip
+  commands:
+    - pip check
+    - phyloai --version | grep -F "{{ version }}"
+    - phyloai --help
+    - phyloai run --help
+    - phyloai download-models --help
+    # Python packages, QPC version and the programs; the models are downloaded by the user afterwards.
+    - phyloai check --no-models
+    - python -c "import tensorflow, phyloai.benchmark as b; assert b.SavedModelNetwork"
+
+about:
+  home: https://github.com/KulyaNikita/PhyloAI
+  license: BSD-2-Clause
+  license_family: BSD
+  license_file: LICENSE.md
+  summary: Neural-network quartet inference and species-tree reconstruction for protein alignments.
+  description: |
+    PhyloAI reconstructs phylogenetic trees from protein alignments with neural
+    networks. ModelDetector selects the substitution model of each alignment,
+    model-specific networks predict the topology of every quartet of sequences
+    from their site pattern frequencies (computed with Quartet Pattern Counter),
+    and the quartets are amalgamated into a species tree with ASTRAQ, ASTRAL or
+    QFM-FI. PhyloAI also simulates training data with PolyMoSim and trains new
+    networks. The pretrained networks are not part of the package; download them
+    with `phyloai download-models` (about 525 MB).
+  dev_url: https://github.com/KulyaNikita/PhyloAI
+  doc_url: https://github.com/KulyaNikita/PhyloAI#readme
+
+extra:
+  recipe-maintainers:
+    - gkanogiannis
+    - KulyaNikita
+    - cmayer

@@ -1,0 +1,55 @@
+{% set name = "insilicopcr" %}
+{% set version = "1.0.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # The release's ZIP without a runtime: insilicoPCR and its libraries; Java, BLAST+ and BBTools come from conda.
+  url: https://github.com/duceppemo/insilicoPCR/releases/download/v{{ version }}/insilicoPCR-{{ version }}-linux-x64-no-runtime.zip
+  sha256: e113f455895eb8597c1ebfa07e658e31ed5c1660efe374c892a61cee99ea038f
+
+build:
+  number: 0
+  # The JavaFX libraries in the ZIP (the application's window) are those for Linux x64.
+  skip: True  # [not linux64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - openjdk >=25
+    - blast >=2.17.0
+    - bbmap >=40.04,<41
+
+test:
+  # run_test.sh: a genome with one product, as an assembly and as reads.
+  commands:
+    - insilicoPCR --version
+
+about:
+  home: https://github.com/duceppemo/insilicoPCR
+  dev_url: https://github.com/duceppemo/insilicoPCR
+  doc_url: https://github.com/duceppemo/insilicoPCR/wiki
+  license: MIT AND GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRD-PARTY-NOTICES.md
+    - third_party/OpenJFX/LICENSE
+    - third_party/OpenJFX/ASSEMBLY_EXCEPTION
+  summary: In silico PCR and qPCR of primer and probe assays on genome assemblies and raw sequencing reads.
+  description: |
+    insilicoPCR finds the products of PCR and qPCR assays (primer pairs, with or without
+    a probe) in genome assemblies (FASTA) and in raw Illumina reads (FASTQ), with BLAST+
+    and BBTools, and reports every product with its size, mismatches and position. It runs
+    on the command line (insilicoPCR -i <input> -p <primers> -o <output>) or in a window
+    (insilicoPCR without arguments).
+
+extra:
+  recipe-maintainers:
+    - duceppemo
+  skip-lints:
+    # Not noarch: the JavaFX libraries it holds have native code for Linux x64 only.
+    - should_be_noarch_generic

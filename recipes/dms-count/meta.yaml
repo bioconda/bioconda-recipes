@@ -1,0 +1,48 @@
+{% set name = "dms-count" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MaximilianStammnitz/dms-count/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 527bac05284d9de5f1c59bd83a819fa70951ce5c686dc80dc19ff1d9ea8967dd
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - htslib >=1.17
+  run:
+    - htslib >=1.17
+
+test:
+  commands:
+    - dms_count --version
+
+about:
+  home: https://github.com/MaximilianStammnitz/dms-count
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Variant counter for deep mutational scanning alignments (nf-core/deepmutscan)
+  description: |
+    Counts the variants in reads aligned to a single open reading frame (BAM or SAM, sorted or not,
+    from a file or standard input; CIGAR + MD), with base-quality and read-edge filters and per-base
+    coverage, and writes one row per distinct variant with its nucleotide, codon and amino-acid
+    annotation. The variant counter of nf-core/deepmutscan.
+
+extra:
+  recipe-maintainers:
+    - MaximilianStammnitz
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

@@ -1,16 +1,13 @@
 #!/bin/bash
+set -euo pipefail
 
 TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
-[ -d "$TGT" ] || mkdir -p "$TGT"
-[ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
-
-cd "${SRC_DIR}"
-# Do not install Linux specific x86-acceleration libraries
-if [ "$(uname)" == "Darwin" ]; then
-    rm -f libIntel*.so
+mkdir -p "$TGT" "$PREFIX/bin"
+cp -p "$SRC_DIR"/*.jar "$TGT/"
+# This optional native compressor was included by the historical Linux packages.
+if [[ "$(uname)" == "Linux" ]]; then
+    cp -p "$SRC_DIR/libIntelDeflater.so" "$TGT/"
 fi
-cp -rvp . "${TGT}"
-
-cp $RECIPE_DIR/picard.sh $TGT/picard
-ln -s $TGT/picard $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/picard"
+cp "$RECIPE_DIR/picard.sh" "$TGT/picard"
+chmod 0755 "$TGT/picard"
+ln -s "$TGT/picard" "$PREFIX/bin/picard"

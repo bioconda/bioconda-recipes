@@ -10,7 +10,7 @@ source:
   sha256: 8be464163a939c1a01e9d0399e72af63c0b583397945596b6d6b1c332d61c3a0
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
@@ -27,23 +27,21 @@ requirements:
     - python >=3.11
     - biopython
     - requests
-    - zstandard
-    - numpy
-    - pandas
-    # Binaries the subcommands shell out to.
-    - logan-walker >=0.1.0,<0.2
+    - logan-walker >=0.1.1,<0.2
     - kmer-diversity-sieve >=0.1.0,<0.2
-    - mafft
+    - mafft >=7.526
     - fasttree
 
 test:
+  source_files:
+    - tests/fixture_query.fasta
+    - tests/fixture_reconstructed.fasta
   imports:
     - disassembler
     - disassembler.cli
   commands:
     - disassembler --version | grep -q "disassembler {{ version }}"
     - disassembler --help
-    # The walker and sieve subcommands resolve their binaries from PATH.
     - disassembler walker --version | grep -q "logan-walker"
     - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
 
@@ -65,5 +63,8 @@ about:
   dev_url: https://github.com/nekrut/disassembler
 
 extra:
+  # Version-only bumps miss dependency changes
+  autobump:
+    enable: False
   recipe-maintainers:
     - as042
