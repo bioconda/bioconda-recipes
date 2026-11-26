@@ -1,0 +1,49 @@
+{% set version = "0.2.1" %}
+
+package:
+  name: seguid
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/seguid/seguid-{{ version }}.tar.gz
+  sha256: cc5482aea6264d5370076a82559b7ccd0810d4e38489437a9e9118affa9762e5
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage('seguid', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python
+    - poetry-core
+    - pip
+  run:
+    - python >=3.6,<4.0
+    - pydivsufsort >=0.0.18  # [py>=39]
+    - pydivsufsort <=0.0.14  # [py<39]
+    - setuptools <=69.0.3  # [py<38]
+    - setuptools <=59.6.0  # [py<37]
+
+test:
+  imports:
+    - seguid
+  commands:
+    - pip check
+  requires:
+    - pip
+    - python
+    - wheel
+
+about:
+  home: https://www.seguid.org
+  summary: Sequence Globally Unique Identifier (SEGUID) Checksums for Linear, Circular, Single-Stranded and Double-Stranded Biological Sequences
+  doc_url: https://seguid-python.seguid.org
+  license: MIT
+  license_file: LICENSE.txt
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
