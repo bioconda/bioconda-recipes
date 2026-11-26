@@ -12,8 +12,9 @@ current_dir=`pwd`
 cd jms-implementation/support-mini-x86-32/src/coils/ncoils/2.2.1/
 # remove CC=gcc from Makefile
 perl -ni -e 'print unless $. == 1' Makefile
-sed -i 's/ncoilsd.c /ncoilsd.c -std=gnu89 /' Makefile
-make
+# the Makefile sets CFLAGS itself, so pass them on the command line; gnu89 allows the
+# implicit function declarations of ncoils that newer GCC rejects
+make CC="${CC}" CFLAGS="-I. -lpthread -lm -std=gnu89"
 cp ncoils ../../../../bin/ncoils/2.2.1/
 cd ${current_dir}
 

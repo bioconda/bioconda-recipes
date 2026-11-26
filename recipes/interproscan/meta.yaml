@@ -16,7 +16,7 @@ source:
     - "no_setup.patch"
 
 build:
-  number: 3
+  number: 4
   skip: True  # [osx]
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
@@ -25,10 +25,12 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - openjdk >=11,<17
-    - maven >=3
+    - maven >=3,<3.9  # 3.9 binds maven-jar-plugin 3.x, which fails on the interproscan-web module
   run:
     - python >=3
+    - procps-ng # ps -p, used before each binary step; busybox ps in the container lacks -p
     - perl >=5.08
     - openjdk >=11,<17
     - cath-tools # for cath-resolve-hits used by CATH-Gene3D
@@ -53,6 +55,7 @@ test:
     - interproscan.sh | grep XX
     - interproscan.sh | grep Xmx
     - interproscan.sh --version
+    - ps -o pid,vsize,rss,command -p $$
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_proteins.fasta -cpu 1 -f tsv -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
 #    - interproscan.sh -i test_nt_seqs.fasta -cpu 1 -t n -f tsv -dp -appl sfld, hamap,prints,smart,pfam,pirsf,tigrfam,prositeprofiles,prositepatterns,gene3d,superfamily
