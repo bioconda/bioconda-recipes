@@ -1,18 +1,18 @@
-*** fastqc.orig	2015-10-09 11:59:24.000000000 -0400
---- fastqc	2015-12-16 13:27:53.953520316 -0500
-***************
-*** 158,167 ****
---- 158,170 ----
-  	
-  	push @java_args ,"-Dfastqc.threads=$threads";
-  	my $memory = 250 * $threads;
-+ 	my $stack = 200 * $threads;
-  	unshift @java_args,"-Xmx${memory}m";
-+ 	unshift @java_args,"-Xms${memory}m";
-  }
-  else {
-  	unshift @java_args,'-Xmx250m';
-+ 	unshift @java_args,'-Xms200m';
-  }
-  
-  if ($kmer_size) {
+--- fastqc	2026-10-02 21:32:49.415079626 -0400
++++ fastqc	2026-10-02 21:55:06.441747572 -0400
+@@ -96,6 +96,7 @@
+     # which will be processed in parallel, this will be based on the number
+     # of files supplied and the number of threads selected.
+     used_memory = options.memory
++    used_stack = options.memory
+ 
+     if len(options.files) > 1:
+         file_multipler = len(options.files)
+@@ -106,6 +107,7 @@
+ 
+ 
+     java_args.insert(0,f"-Xmx{used_memory}m")
++    java_args.insert(0,f"-Xms{used_stack}m")
+ 
+     if options.quiet:
+         java_args.append("-Dfastqc.quiet=true")

@@ -1,5 +1,5 @@
 {% set name = "crispritz" %}
-{% set version = "2.8.2" %}
+{% set version = "2.10.0" %}
 
 package:
   name: {{name}}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/pinellolab/CRISPRitz/archive/v{{ version }}.tar.gz
-  sha256: da52cb9286ab4bf741e815f593f8cb221ffcc8828e1f36f26dd6f88cad76161d
+  sha256: a3d7ce8936d2a882d788a47f03fde2fbbd038f10a2a27340f94c3011ba4338b2
 
 build:
   number: 0
@@ -24,46 +24,50 @@ requirements:
     - llvm-openmp  # [osx]
     - make
   host:
-    - boost-cpp
     # The C++ enricher (add-variants) links against zlib; header needed at build.
     - zlib
     - python >=3.11,<3.12
   run:
-    - rename
-    - bedtools
-    - bedops
-    # The azimuth (Doench 2016) on-target model is vendored from CRISPR-HAWK and
-    # only unpickles on this scikit-learn/numpy/pandas/scipy combo. Do NOT bump
-    # scikit-learn past 1.1.x without re-serializing the model: sklearn 1.2
-    # removed sklearn.ensemble._gb_losses, which the model references.
-    - scikit-learn ==1.1.3
-    - numpy ==1.24.4
-    - pandas ==2.0.3
-    - scipy ==1.10.1
-    - biopython
-    - intervaltree
-    - matplotlib-base
-    - more-itertools
-    - statsmodels
-    - bcftools
+    # CRISPRitz is from now on (2026-10-08) a PURE ENUMERATION ENGINE 
+    # (index-genome / search / add-variants).
+    # Scoring (CFD + azimuth), annotation and reporting moved to CRISPRme+, so the whole
+    # azimuth ML stack is GONE: no scikit-learn / scipy / matplotlib-base / biopython /
+    # statsmodels / more-itertools / intervaltree / tk, and numpy/pandas are UNPINNED
+    - pandas                 # add-variants Python-fallback enricher
+    - bcftools               # add-variants VCF handling
     - boost-cpp
-    - tk
     - openmp     # [osx]
+    - zlib
     - python >=3.11,<3.12
-    - pysam 0.22.1
-    - htslib
+  run_constrained:
+    # CRISPRme X.Y.z requires CRISPRitz X.Y.* (they share major.minor; CRISPRitz
+    # docs/RELEASING.md, Version policy). CRISPRitz 2.10 writes index format 2, which
+    # crisprme 2.8.1 refuses and 2.8.0 aborts on, and codes every allele of a split site:
+    # keep it out of any environment that holds an earlier crisprme, existing ones
+    # included (crisprme 2.8.1 build 1 pins crispritz <2.10; its build 0 and the 2.8.0
+    # and 2.7.9 builds set no upper bound).
+    - crisprme >=2.10.0
 
 test:
   commands:
     - crispritz.py
+    - crispritz.py index-genome help
+    - crispritz.py search help
+    - crispritz.py add-variants help
+    - crispritz.py index-info help
+    - crispritz.py version
+    - test -x "$PREFIX/bin/enricher"
+    - test -x "$PREFIX/opt/crispritz/Python_Scripts/Enrichment/enricher"
 
 about:
   home: https://github.com/pinellolab/CRISPRitz
-  license: AGPL-3.0-or-later
+  license: LicenseRef-MGBOA-1.0        # CRISPRitz relicensed AGPL -> MGBOA 1.0 (see repo LICENSE)
+  license_family: OTHER
   license_file: LICENSE
-  summary: CRISPRitz, tool package for CRISPR experiments assessment and analysis.
+  summary: CRISPRitz enumeration engine for CRISPR off-target search (index / search / add-variants).
 extra:
   recipe-maintainers:
     - lucapinello
+    - ManuelTgn
   additional-platforms:
     - linux-aarch64

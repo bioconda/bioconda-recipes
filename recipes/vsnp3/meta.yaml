@@ -1,7 +1,13 @@
 {% set user = "USDA-VS" %}
 {% set name = "vsnp3" %}
-{% set version = "3.36" %}
-{% set sha256 = "b4757cf716cbeb05700b2ce8841c27a2e6f45077422acc652652dd921649708e" %}
+{% set version = "3.37" %}
+# sha256 of https://github.com/USDA-VS/vsnp3/archive/<version>.tar.gz.  It can
+# only be computed once the tag exists, so internal/bump_version.sh writes the
+# placeholder REGENERATE_AFTER_TAG here and tests/test_release_consistency.py
+# fails until a real hash replaces it:
+#     curl -L https://github.com/USDA-VS/vsnp3/archive/<version>.tar.gz | shasum -a 256
+# 3.37: the hash below is still the 3.36 tarball's. Regenerate it after tagging 3.37 and delete this line.
+{% set sha256 = "2bae01be95e03930748f219913f2e09ede43d0bdaa4a3aa7f3d3ed77bd216f9b" %}
 
 
 package:
@@ -41,25 +47,31 @@ requirements:
     # bin/vsnp3_best_reference_sourmash.py use PEP 701 f-strings, which are a
     # SyntaxError before 3.12.  noarch adds no python constraint of its own, so
     # this line is the only thing stopping an install into a 3.11 env.
-    - python >=3.12, <3.14
+    - python >=3.12,<3.14
     - bcftools
     - biopython >=1.84          # 1.84 is the numpy 2 release
     - bwa
     - minimap2 >=2.24
     - dask >=2024.6             # 2024.6 is the numpy 2 / pandas 2.2 release
     - freebayes >=1.3.5
-    - vcflib =1.0.12
+    # Reached only through freebayes-parallel, and bioconda's freebayes already
+    # requires vcflib >=1.0.12,<2.0a0: an exact pin here would only break the
+    # solve when freebayes moves.  Floor only, per the policy above.
+    - vcflib >=1.0.12
     - humanize >=3.14.0
-    - numpy >=1.26.4, <3
+    - numpy >=1.26.4,<3
     # 2.2.2 is the first pandas built against numpy 2; everything below it
     # assumes the numpy 1 C-ABI.  <3 is held for now because pandas 3 makes
     # copy-on-write mandatory and changes the default string dtype.
-    - pandas >=2.2.2, <3
+    - pandas >=2.2.2,<3
     - openpyxl >=3.0.9
     - xlsxwriter >=3.0.2
     - parallel
     - pigz
-    - regex >=2.5.110
+    # regex releases are calendar-versioned (2024.11.6 is what the 3.27 env holds);
+    # the old floor 2.5.110 was the module's internal __version__ string, which
+    # conda never sees, so it constrained nothing.
+    - regex >=2023.0
     - samtools >=1.14
     - seqkit >=2.1.0
     - sourmash >=4.8.4
@@ -71,10 +83,10 @@ requirements:
     # on the minor because the MPI-free 4.2.0 build (haf24da9_0) is older than the
     # MPI ones at the same version, so the solver takes the MPI build if 4.2 is
     # admitted at all.  Lift this when bioconda ships a nompi variant.
-    - spades >=3.15.2, <4.2
+    - spades >=3.15.2,<4.2
     - py-cpuinfo
     - raxml >=8.2.12
-    - plotly >=5.22, <7          # writes the HTML tree, which is a compared artifact
+    - plotly >=5.22,<7          # writes the HTML tree, which is a compared artifact
     - pyyaml
     - jinja2                    # renders the step 1 HTML report
     # Renders that same HTML to the PDF written beside it.  The floor is a tested
@@ -83,13 +95,16 @@ requirements:
     # raises TypeError.  The report's CSS also avoids grid, unimplemented before
     # 63.  Do not lower this without rendering a report at the new floor.
     - weasyprint >=66
-    - matplotlib-base >=3.9, <4  # 3.9 is the numpy 2 release
+    - matplotlib-base >=3.9,<4  # 3.9 is the numpy 2 release
     # Reached through seaborn's kdeplot, and the package that actually pinned
     # down the numpy floor: scipy 1.17 requires numpy >=1.26.4.  Declared
     # explicitly because it otherwise arrives only as a dependency of the
     # seaborn metapackage.
-    - scipy >=1.11, <2
-    - seaborn >=0.13.2, <1       # 0.13.2 is the numpy 2 release
+    - scipy >=1.11,<2
+    - seaborn >=0.13.2,<1       # 0.13.2 is the numpy 2 release
+    # Not imported: bin/vsnp3_kernel_plots.py runs it with subprocess to get the
+    # pairwise distance matrix the kernel plot is drawn from.
+    - snp-dists
 
 test:
   commands:
@@ -109,7 +124,8 @@ test:
 
 about:
   home: https://github.com/{{ user }}/{{ name }}
-  license: GPL3
+  license: GPL-3.0-or-later   # SPDX identifier; LICENSE is the GPLv3 text
+  license_family: GPL3
   license_file: LICENSE
   summary: Rapidly call, validate, and compare SNPs from FASTQ files in a timely manner utilizing large data sets.
   dev_url: https://github.com/USDA-VS/vsnp3

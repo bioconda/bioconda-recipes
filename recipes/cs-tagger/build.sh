@@ -7,14 +7,11 @@ export CARGO_PROFILE_RELEASE_LTO=fat
 # Tell bindgen where to find libclang
 export LIBCLANG_PATH="${BUILD_PREFIX}/lib"
 
-# The Cargo project lives in the nested cs-tagger/ directory of the source tree.
-cd cs-tagger
-
 # Vendor all dependencies locally so we can patch them.
 mkdir -p .cargo
 cargo vendor vendor/ > .cargo/config.toml
 
-# rust-htslib 1.0.0 hardcodes features = ["bindgen"] on hts-sys in its
+# rust-htslib 1.0.1 hardcodes features = ["bindgen"] on hts-sys in its
 # [dependencies.hts-sys] section. This forces runtime bindgen which produces
 # opaque struct bindings in conda's cross-compilation environment because
 # the sysroot lacks standard C headers. Patch it out so hts-sys uses its
@@ -40,7 +37,7 @@ for f in vendor/rust-htslib/Cargo.toml "$BINDINGS"; do
         "${dir}/.cargo-checksum.json"
 done
 
-# Build from vendored deps
+# Build from vendored deps; the Cargo project is at the source root since v0.3.1
 cargo install --no-track --root "$PREFIX" --path .
 
-cargo-bundle-licenses --format yaml --output "${SRC_DIR}/cs-tagger/THIRDPARTY.yml"
+cargo-bundle-licenses --format yaml --output "${SRC_DIR}/THIRDPARTY.yml"

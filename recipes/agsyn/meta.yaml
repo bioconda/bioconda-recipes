@@ -1,0 +1,52 @@
+package:
+  name: agsyn
+  version: "0.6.1"
+
+source:
+  url: https://github.com/abysw/agsyn-0.6.1/archive/v0.6.1.tar.gz
+  sha256: cf33e17d187b30630778c11af1c3af56e299d1a0e686cc76c51de3ad989c02f8
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('agsyn', max_pin="x") }}
+  script: |
+    mkdir -p $PREFIX/bin
+    mkdir -p $PREFIX/share/agsyn
+    cp -r abysw/bin/* $PREFIX/bin/
+    cp -r abysw/perl $PREFIX/share/agsyn/
+    cp -r abysw/R $PREFIX/share/agsyn/
+    cp -r abysw/shell $PREFIX/share/agsyn/
+    cp -r abysw/ref $PREFIX/share/agsyn/
+    cp -r abysw/config $PREFIX/share/agsyn/
+    cp README.md $PREFIX/share/agsyn/
+    cp agsyn.yml $PREFIX/share/agsyn/
+    chmod +x $PREFIX/bin/*
+    chmod +x $PREFIX/share/agsyn/perl/* || true
+    chmod +x $PREFIX/share/agsyn/R/* || true
+    chmod +x $PREFIX/share/agsyn/shell/* || true
+  script_env:
+    - AGSYN_HOME=$PREFIX/share/agsyn
+
+requirements:
+  run:
+    - jcvi >=1.3.9
+    - bedtools >=2.31.1
+    - ucsc-fasize >=377
+    - gffread >=0.12.7
+    - cyipopt >=1.3.0
+    - tantan >=49
+    - perl
+    - r-base
+
+test:
+  commands:
+    - abysw --help || true
+
+about:
+  home: https://github.com/abysw/agsyn-0.6.1
+  license: MIT
+  summary: 'A Genome-guided method for large-scale comparative Synteny analysis.'
+  description: |
+    Please cite: Fu Y, Sun W, Hansson B. Evolutionary dynamics of sex chromosomes and candidate sex-determining genes across the beetle phylogeny. bioRxiv. 2026. doi: 10.64898/2026.07.17.739015.
+    If you used abysw, please also cite https://github.com/abysw/abysw or abysw.com.

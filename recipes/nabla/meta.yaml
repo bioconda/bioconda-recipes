@@ -1,0 +1,46 @@
+{% set name = "nabla" %}
+{% set version = "1.3.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/CNHume/nabla/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 28f413d34c127c762fe279a927753f9f65f41b1d095160702dbdf5381e34e790
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('nabla', max_pin="x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    - nabla -V
+    - nabla64 -V
+
+about:
+  home: https://github.com/CNHume/nabla
+  license: LGPL-3.0-or-later
+  license_file:
+    - cli/LICENSES/COPYING_LESSER.txt
+    - cli/LICENSES/COPYING.txt
+  summary: "Longest Common Subsequence of two sequences or files, supporting whole-genome scale FASTA input and CIGAR output."
+  description: |
+    nabla finds the Longest Common Subsequence (LCS) of two record or text
+    sequences, selecting automatically among four algorithms — Myers,
+    Hunt-Szymanski, RickSpace, or RickTime — based on the input's edit
+    distance, match count, and alphabet size.  It is able to read FASTA (-F)
+    and can emit SAM CIGAR alignments (-G), so nucleotide and protein
+    sequences can be compared.  The nabla64 build lifts the 32-bit (4G)
+    length limitation for very long genome inputs.
+
+extra:
+  recipe-maintainers:
+    - CNHume

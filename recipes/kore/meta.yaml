@@ -1,0 +1,53 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: kore
+  version: {{ version }}
+
+source:
+  url: "https://github.com/treangenlab/kore/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: 794abab3476ec8e92e393d1a48cfdbc24f3db12d16e19249ca5c1004ec5976b8
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('kore', max_pin="x.x") }}
+  script:
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
+    - cargo install -v --locked --no-track --root $PREFIX --path .
+
+requirements:
+  build:
+    - {{ compiler("rust") }}
+    - {{ compiler("c") }}        # minimap2 (C) is compiled by the minimap2 crate
+    - {{ stdlib("c") }}
+    - cargo-bundle-licenses
+    - make
+  host:
+    - zlib
+  run:
+    - parsnp >=2.1               # kore build only
+    - skani >=0.3
+    - blast >=2.17
+
+test:
+  commands:
+    - kore --help
+    - kore estimate --help
+    - kore build --help
+
+about:
+  home: "https://github.com/treangenlab/kore"
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "kore: bacterial genome completeness and contamination estimation using core genomes"
+  doc_url: "https://github.com/treangenlab/kore/blob/main/README.md"
+  dev_url: "https://github.com/treangenlab/kore"
+
+extra:
+  recipe-maintainers:
+    - rdoughty10
+

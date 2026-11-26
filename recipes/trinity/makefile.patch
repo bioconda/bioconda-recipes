@@ -1,6 +1,6 @@
---- a/Makefile	2021-09-04 18:16:53.000000000 +0200
-+++ b/Makefile	2021-11-19 18:41:26.104768702 +0100
-@@ -22,25 +22,25 @@
+--- a/Makefile
++++ b/Makefile
+@@ -22,25 +22,25 @@ all: inchworm_target chrysalis_target trinity_essentials
  
  
  no_bamsifter: inchworm_target chrysalis_target
@@ -30,10 +30,10 @@
 +	cd trinity-plugins && ${MAKE} plugins CC=${CC} CXX=${CXX} CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" -j"${CPU_COUNT}"
  	sh ./util/support_scripts/plugin_install_tests.sh
  
- test:
---- a/trinity-plugins/Makefile	2021-09-04 18:16:54.000000000 +0200
-+++ b/trinity-plugins/Makefile	2021-11-19 18:44:48.622807984 +0100
-@@ -19,16 +19,16 @@
+ 
+--- a/trinity-plugins/Makefile
++++ b/trinity-plugins/Makefile
+@@ -49,16 +49,16 @@ trimmomatic_target:
  
  
  seqtk_target:
@@ -42,7 +42,7 @@
  	mv seqtk-trinity/seqtk-trinity ./BIN/.
  
  parafly_target:
--	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=$(CXX) CC=$(CC) CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
+-	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=$(CXX) CC=$(CC) CFLAGS="$(PARAFLY_OMP_CFLAGS)" CXXFLAGS="$(PARAFLY_OMP_CFLAGS)" CPPFLAGS="$(PARAFLY_CPPFLAGS)" LDFLAGS="$(PARAFLY_LDFLAGS)" && $(MAKE) install && \
 +	cd ${PARAFLY_CODE} && ./configure --prefix=`pwd` CXX=${CXX} CC=${CC} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" && ${MAKE} install && \
  	cp bin/ParaFly ../BIN/
  
@@ -53,7 +53,7 @@
  
  ##################################
  ### Needed for downstream analyses
-@@ -39,7 +39,7 @@
+@@ -69,7 +69,7 @@ plugins: slclust_target collectl_target
  
  
  slclust_target:
@@ -83,43 +83,3 @@
  clean:
  	@echo cleaning
  	(cd build && make clean) || :
---- a/trinity-plugins/bamsifter/Makefile	2021-09-04 18:17:05.000000000 +0200
-+++ b/trinity-plugins/bamsifter/Makefile	2021-11-19 18:47:19.136336019 +0100
-@@ -2,8 +2,8 @@
- 
- cwd = $(shell pwd)
- 
--sift_bam_max_cov: sift_bam_max_cov.cpp htslib/version.h
--	g++ -std=c++11 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O2 -L./htslib/build/lib/ -I./htslib/build/include -lhts
-+sift_bam_max_cov: sift_bam_max_cov.cpp
-+	${CXX} -std=c++14 -o _sift_bam_max_cov sift_bam_max_cov.cpp -Wall -O3 ${LDFLAGS} ${CXXFLAGS} -lhts
- 
- 
- htslib/version.h :
---- a/trinity-plugins/bamsifter/build_htslib.sh
-+++ b/trinity-plugins/bamsifter/build_htslib.sh
-@@ -6,9 +6,7 @@ cd htslib
- git submodule init && git submodule update
- mkdir -p build
- autoheader
--autoconf
--./configure --prefix=`pwd`/build/
-+autoreconf -if
-+./configure --prefix=`pwd`/build/ CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include" CFLAGS="${CFLAGS} ${LDFLAGS}"
- make
- make install
--
--
---- a/trinity-plugins/bamsifter/sift_bam_max_cov.cpp
-+++ b/trinity-plugins/bamsifter/sift_bam_max_cov.cpp
-@@ -14,8 +14,8 @@
- #include <vector>
- #include <string>
-
--#include "htslib/sam.h"
--#include "htslib/bgzf.h"
-+#include "htslib/htslib/sam.h"
-+#include "htslib/htslib/bgzf.h"
-
-
- enum test_op {

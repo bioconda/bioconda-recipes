@@ -1,10 +1,10 @@
-{% set version = "1.42.0" %}
+{% set version = "1.44.1" %}
 {% set name = "msa" %}
-{% set bioc = "3.22" %}
+{% set bioc = "3.23" %}
 
 package:
   name: bioconductor-{{ name|lower }}
-  version: '{{ version }}'
+  version: {{ version }}
 
 source:
   url:
@@ -12,20 +12,26 @@ source:
     - https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
     - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz
-  md5: 25fd612fbd98d45aede78f9e596998aa
+  sha256: 922db8b2355196d561a7ceb5e09737460ea9d63ba311d60549253d577874e0e0
+  patches:
+    - clustalw-os-fallback.patch  # [osx and x86_64]
 
 build:
   number: 0
+  # clustal/../squid/squid.h:32:10: error: '../config.h' file not found, did you mean 'config.h'?
+  #include "../config.h"
+  skip: True  # [osx and x86_64]
   rpaths:
     - lib/R/lib/
     - lib/
-  run_exports: '{{ pin_subpackage("bioconductor-msa", max_pin="x.x") }}'
+  run_exports: {{ pin_subpackage('bioconductor-msa', max_pin="x.x") }}
 
 # Suggests: Biobase, knitr, seqinr, ape (>= 5.1), phangorn, pwalign
 # SystemRequirements: GNU make
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
@@ -53,15 +59,17 @@ test:
     - $R -e "library('{{ name }}')"
 
 about:
-  home: https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html
-  license: GPL (>= 2)
-  summary: Multiple Sequence Alignment
+  home: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
+  license: "GPL-2.0-or-later"
+  license_family: GPL
+  summary: "Multiple Sequence Alignment"
   description: The 'msa' package provides a unified R/Bioconductor interface to the multiple sequence alignment algorithms ClustalW, ClustalOmega, and Muscle. All three algorithms are integrated in the package, therefore, they do not depend on any external software tools and are available for all major platforms. The multiple sequence alignment algorithms are complemented by a function for pretty-printing multiple sequence alignments using the LaTeX package TeXshade.
   license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  doc_url: "https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html"
 
 extra:
   additional-platforms:
     - linux-aarch64
+    - osx-arm64
   identifiers:
     - biotools:msa
-

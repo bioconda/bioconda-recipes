@@ -1,0 +1,45 @@
+{% set name = "kmer-diversity-sieve" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/stevenweaver/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a4a145f21039f1745d6f6f330a888ea5e58646486b96f8e6a9026f62bacf378b
+
+build:
+  number: 0
+  # Linux only: the package exists for disassembler, which cannot be installed on macOS
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+
+test:
+  commands:
+    # There is no --version or --help; with no arguments it names the required flag
+    - l1_pipeline_serial 2>&1 | grep -q -- "--input required"
+
+about:
+  home: https://github.com/stevenweaver/kmer-diversity-sieve
+  summary: Alignment-free, streaming k-mer sieve that reduces large FASTA collections to a diversity-preserving subset.
+  description: |
+    Drops partial records, sequencing-error records (Count-Min sketch admission) and
+    near-duplicates (MinHash/LSH novelty) in a single streaming pass, so downstream analyses
+    only process an informative subset. This package ships the serial build,
+    l1_pipeline_serial.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/stevenweaver/kmer-diversity-sieve
+
+extra:
+  additional-platforms:
+    - linux-aarch64

@@ -1,0 +1,107 @@
+MIST 2.0.0 patches for the bioconda recipe. Not submitted upstream.
+
+# 1/2  setup.cfg: set version and license; find_namespace: so src/mist is packaged
+
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -1,15 +1,15 @@
+ [metadata]
+ name = mist
+-version = <version number: 0.0.1
+-#license = <license name, e.g. MIT>
++version = 2.0.0
++license = MIT
+ description = Metabolite Inference with Spectrum Transformers
+ long_description = file: README.md
+ author = Samuel Goldman
+ #author_email = 
+ classifiers=
+ 
+ [options]
+-packages = find:
++packages = find_namespace:
+ package_dir =
+     =src
+ include_package_data = True
+
+# 2/2  pytorch-lightning 2: relocated Logger and seed_everything
+
+--- a/src/mist/hyperopt_contrastive.py
++++ b/src/mist/hyperopt_contrastive.py
+@@ -34,7 +34,7 @@
+ 
+     new_args = copy.deepcopy(base_args)
+     new_args.update(config)
+-    pl.utilities.seed.seed_everything(new_args.get("seed"))
++    pl.seed_everything(new_args.get("seed"))
+ 
+     # Split data
+     my_splitter = splitter.get_splitter(**new_args)
+--- a/src/mist/hyperopt_ffn_binned.py
++++ b/src/mist/hyperopt_ffn_binned.py
+@@ -32,7 +32,7 @@
+ 
+     kwargs = copy.deepcopy(base_args)
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Split data
+     my_splitter = splitter.get_splitter(**kwargs)
+--- a/src/mist/hyperopt_mist.py
++++ b/src/mist/hyperopt_mist.py
+@@ -42,7 +42,7 @@
+ 
+     kwargs = copy.deepcopy(base_args)
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Split data
+     my_splitter = splitter.get_splitter(**kwargs)
+--- a/src/mist/hyperopt_xformer.py
++++ b/src/mist/hyperopt_xformer.py
+@@ -32,7 +32,7 @@
+ 
+     kwargs = copy.deepcopy(base_args)
+     kwargs.update(config)
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Split data
+     my_splitter = splitter.get_splitter(**kwargs)
+--- a/src/mist/utils/base_hyperopt.py
++++ b/src/mist/utils/base_hyperopt.py
+@@ -52,7 +52,7 @@
+     utils.setup_logger(
+         save_dir, log_name="hyperopt.log", debug=kwargs.get("debug", False)
+     )
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     shared_args = gen_shared_data(kwargs)
+ 
+--- a/src/mist/utils/misc_utils.py
++++ b/src/mist/utils/misc_utils.py
+@@ -13,10 +13,10 @@
+ import pytorch_lightning as pl
+ 
+ from pytorch_lightning.utilities.rank_zero import rank_zero_only
+-from pytorch_lightning.loggers.base import LightningLoggerBase, rank_zero_experiment
++from pytorch_lightning.loggers.logger import Logger, rank_zero_experiment
+ 
+ 
+-class ConsoleLogger(LightningLoggerBase):
++class ConsoleLogger(Logger):
+     """Custom console logger class"""
+ 
+     def __init__(self):
+@@ -65,7 +65,7 @@
+ 
+     """
+     # Seed everything
+-    pl.utilities.seed.seed_everything(kwargs.get("seed"))
++    pl.seed_everything(kwargs.get("seed"))
+ 
+     # Define default root dir
+     setup_logger(save_dir, debug=kwargs["debug"])

@@ -1,0 +1,58 @@
+{% set name = "nmd-scanner" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/nmd_scanner-{{ version }}.tar.gz
+  sha256: ebaaa6a509b52b1c277ceaaee89889bdc01b437e19839f14d7624475209b6698
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - nmd-scanner = nmd_scanner.cli:main_cli
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.12
+    - hatchling
+    - pip
+  run:
+    - python >=3.12
+    - pandas
+    - numpy
+    - pyfaidx
+    - biopython
+    - tqdm >=4.66.5,<5
+    - polars >=1.44
+    - polars-bio >=0.36.1,<0.37
+    - pyarrow >=23.0.1
+    - onnxruntime >=1.23.2
+
+test:
+  imports:
+    - nmd_scanner
+  commands:
+    - pip check  # please don't remove, to ensure pyproject.toml dependencies respected
+    - nmd-scanner --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/gagneurlab/NMD-Scanner
+  summary: A simple scanner package for NMD
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/gagneurlab/NMD-Scanner
+  doc_url: https://github.com/gagneurlab/NMD-Scanner/blob/v{{ version }}/README.md
+
+extra:
+  recipe-maintainers:
+    - Hoeze

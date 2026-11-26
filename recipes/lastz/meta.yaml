@@ -1,18 +1,22 @@
 {% set name = "lastz" %}
-{% set version = "1.04.52" %}
+{% set version = "1.04.60" %}
+# 1.04.60 is lastz master at fbc303c (2026-09-28), which merged lastz#78 (segfault when --masking is
+# combined with --segments) and lastz#80 (gcc 15 build failure) and set its version to 1.04.60; it is not
+# tagged yet. Switch source back to the release tarball once 1.04.60 is tagged.
+{% set commit = "fbc303c77f60fdaf6e9830e3c723d77f7b296e36" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('lastz', max_pin='x') }}
 
 source:
-  url: https://github.com/lastz/lastz/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 274bf0d774e3f4da87c23ca0b5cc4269f3dcaecf71a1c6289d426e24fbccf4c8
+  url: https://github.com/lastz/lastz/archive/{{ commit }}.tar.gz
+  sha256: 3aec02eee8bbf5138fa468c431efae50c457299afcf2d7897a78e8656ba99577
   patches:
     - makefile.patch
 
@@ -20,6 +24,7 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
 
 test:
   commands:

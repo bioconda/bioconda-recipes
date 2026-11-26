@@ -1,16 +1,20 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 set -xe
 
-wget https://github.com/simd-everywhere/simde/archive/refs/tags/v0.8.2.tar.gz
-tar zxvf v0.8.2.tar.gz
+cd 1.9
 
-export CFLAGS="${CFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2 -DDYNAMIC_ZLIB"
-export CXXFLAGS="${CXXFLAGS} -I ${SRC_DIR}/simde-0.8.2/simde -Wall -O2"
-export LDFLAGS="${LDFLAGS} -lopenblas -lpthread -ldl"
+# The source tarball carries the SIMD Everywhere headers in 2.0/simde, which
+# the non-x86 builds need.
+export CFLAGS="${CFLAGS} ${CPPFLAGS} -Wall -O2 -I../2.0/simde"
+export CXXFLAGS="${CXXFLAGS} ${CPPFLAGS} -Wall -O2 -I../2.0/simde"
 
-echo Building ... 
-make -j CFLAGS="${CFLAGS}" DESTDIR="${PREFIX}" PREFIX="" CC="${CC}" CXX="${CXX}" CXXFLAGS="${CXXFLAGS}" ZLIB="-lz" LDFLAGS="${LDFLAGS}" BLASFLAGS=""
+args=(CC="${CC}" CXX="${CXX}" ZLIB="-L${PREFIX}/lib -lz")
+if [[ "$(uname)" != "Darwin" ]]; then
+  # OpenBLAS ships LAPACK, so a single -lopenblas replaces the ATLAS default.
+  args+=(BLASFLAGS="-L${PREFIX}/lib -lopenblas" LDFLAGS="${LDFLAGS} -lm -lpthread -ldl")
+fi
 
-echo Installing
-make install DESTDIR="${PREFIX}" PREFIX="" 
+make -j"${CPU_COUNT}" "${args[@]}"
+
+mkdir -p "${PREFIX}/bin"
+install -m 755 plink "${PREFIX}/bin/"
