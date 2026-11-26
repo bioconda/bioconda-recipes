@@ -14,6 +14,11 @@ build:
   number: 4
   run_exports:
     - {{ pin_subpackage('imods', max_pin="x") }}
+  ignore_run_exports:
+    - arpack
+    - libopenblas
+    - libgfortran5
+    - mkl
 
   script:
     - mkdir -p $PREFIX/bin
@@ -26,10 +31,17 @@ build:
     - install_name_tool -change /opt/anaconda3/envs/dev/lib/libgfortran.5.dylib $PREFIX/lib/libgfortran.5.dylib $PREFIX/bin/imode_gcc      # [osx]
     - install_name_tool -change /opt/anaconda3/envs/imods/lib/libmkl_rt.2.dylib $PREFIX/lib/libmkl_rt.2.dylib $PREFIX/bin/imode_gcc        # [osx]
 
-# Prebuilt binaries: nothing is compiled, so no host section. A package in host would
-# add its run_exports, which pin it to the exact version found at build time (that is
-# how every build so far ended up requiring arpack 3.7.0 only).
+# Prebuilt binaries, nothing is compiled. The macOS libraries are in host only so that
+# conda-build can relocate the links of imode_gcc when packaging; their run_exports are
+# ignored (they would pin the exact build-time versions, e.g. arpack 3.7.0 before), and
+# the run requirements below say what the binaries really need.
 requirements:
+  host:
+    - arpack >=3.7.0,<4                                           # [osx]
+    - libopenblas                                                 # [osx]
+    - libgfortran5                                                # [osx]
+    - libcxx                                                      # [osx]
+    - mkl >=2023.0,<2024                                          # [osx]
   run:
     - arpack >=3.7.0,<4                                           # all 3.7-3.9 ship libarpack.2.dylib
     - libopenblas                                                 # [osx]
