@@ -10,7 +10,7 @@ source:
   sha256: d018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287
 
 build:
-  number: 1
+  number: 2
   noarch: generic
   entry_points:
     - humann = humann.humann:main
@@ -40,12 +40,16 @@ build:
 requirements:
   host:
     - pip
-    - python >=3
+    # The python bound must also go here: bioconda derives the python test matrix from
+    # the host requirements, so an unbounded host keeps testing python 3.15 cells that
+    # cannot solve with the metaphlan pin below (see comment in run).
+    - python >=3,<3.13
   run:
     # Upper bound needed on top of the metaphlan pin: metaphlan 4.1.x requires
     # matplotlib-base <3.9, and matplotlib 3.8.x has builds only up to python 3.12.
     # Without it the solver picks metaphlan 4.1.1 + matplotlib 3.11 for python 3.13+,
-    # whose libraqm needs __glibc >=2.28 (unavailable in the bioconda test container).
+    # whose libraqm needs __glibc >=2.28 (unavailable in the bioconda test container,
+    # which pins c_stdlib_version 2.17).
     - python >=3,<3.13
     # humann 3.9 runs metaphlan with --bowtie2out/--bowtie2db in its prescreen step.
     # MetaPhlAn 4.2.0 renamed these options to --mapout/--db_dir, which breaks the
