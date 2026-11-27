@@ -10,7 +10,7 @@ source:
   sha256: d018ddbbe45f5e3e11080620b4ae5f1737ba213d2c8cecdc8237859f853b2287
 
 build:
-  number: 2
+  number: 3
   noarch: generic
   entry_points:
     - humann = humann.humann:main
@@ -40,22 +40,28 @@ build:
 requirements:
   host:
     - pip
-    # The python bound must also go here: bioconda derives the python test matrix from
-    # the host requirements, so an unbounded host keeps testing python 3.15 cells that
-    # cannot solve with the metaphlan pin below (see comment in run).
+    # The python bound must also go here: bioconda derives the python test matrix from the
+    # host requirements, so an unbounded host keeps adding (python, pin) cells we do not
+    # validate. 3.15 cannot solve at all (metaphlan's dependency pysam has no 3.15 build),
+    # and the 3.13/3.14 cells are not tested by this recipe.
     - python >=3,<3.13
   run:
-    # Upper bound needed on top of the metaphlan pin: metaphlan 4.1.x requires
-    # matplotlib-base <3.9, and matplotlib 3.8.x has builds only up to python 3.12.
-    # Without it the solver picks metaphlan 4.1.1 + matplotlib 3.11 for python 3.13+,
-    # whose libraqm needs __glibc >=2.28 (unavailable in the bioconda test container,
-    # which pins c_stdlib_version 2.17).
+    # Keep the tested range; the same bound as in host: without it the package would be
+    # offered for python versions whose humann stack is untested here.
     - python >=3,<3.13
     # humann 3.9 runs metaphlan with --bowtie2out/--bowtie2db in its prescreen step.
     # MetaPhlAn 4.2.0 renamed these options to --mapout/--db_dir, which breaks the
     # prescreen ("metaphlan: error: unrecognized arguments: --bowtie2out").
     # See https://forum.biobakery.org/t/metaphlan-unrecognized-argument-bowtie2out/8147/12
-    - metaphlan >=4.0,<4.2
+    #
+    # The bound has to stop at 4.1.1 rather than 4.2.0: MetaPhlAn 4.1.2 made
+    # `metaphlan --version` print a second line ("Installed databases: ..." or
+    # "No complete MetaPhlAn Bowtie2 database found"), and humann.config.metaphlan_version
+    # parses the *last* line (line=-1, column=2) of that output. Any humann 3.9 run that
+    # screens reads in nucleotide mode therefore dies with
+    # "CRITICAL ERROR: Can not call software version for metaphlan". 4.1.1 is the last
+    # release with a single-line --version output.
+    - metaphlan >=4.0,<4.1.2
     - diamond >=0.9.36
     - glpk
     - bowtie2 >2.1
@@ -93,6 +99,10 @@ test:
     # --mapout/--db_dir, so check the parser definitions instead of grepping --help.
     - >-
       python -c 'import os, re, metaphlan; src = open(os.path.join(os.path.dirname(metaphlan.__file__), "metaphlan.py")).read(); assert re.search(r"arg\(.--bowtie2out", src), "metaphlan no longer defines --bowtie2out (required by the humann prescreen)"; assert re.search(r"arg\(.--bowtie2db", src), "metaphlan no longer defines --bowtie2db (required by the humann prescreen)"'
+    # Guard the upper bound of the metaphlan pin with humann's own version probe: this is
+    # the exact call a prescreen run performs, so it fails when a run would fail.
+    - >-
+      python -c 'from humann.config import metaphlan_version; from humann.utilities import check_software_version; check_software_version("metaphlan", metaphlan_version)'
 
 about:
   home: "https://huttenhower.sph.harvard.edu/humann"
