@@ -1,0 +1,65 @@
+{% set name = "diamond-module" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/REPO4EU/DIAMOnD/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 73b38dbae2f1d5e829da785eaf188e293ff6a16621ab153ed164f03e93f32f42
+
+build:
+  number: 0
+  noarch: python
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - diamond-module = DIAMOnD:main
+
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - hatchling
+  run:
+    - python >=3.9
+    - networkx >=2.4
+    - numpy >=1.19
+    - scipy >=1.5
+
+test:
+  source_files:
+    - tests/
+    - Example/
+  requires:
+    - pip
+    - pytest
+  imports:
+    - DIAMOnD
+  commands:
+    - pip check
+    - pytest -v tests
+    - diamond-module Example/PPI.txt Example/seed_genes.txt 10 && test -s first_10_added_nodes_weight_1.txt
+
+about:
+  home: https://github.com/REPO4EU/DIAMOnD
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "DIAMOnD: DIseAse MOdule Detection in protein-protein interaction networks"
+  description: |
+    DIAMOnD identifies disease modules in the human interactome by iteratively
+    adding the node with the most significant connectivity to the seed genes.
+    This is a maintained fork of https://github.com/dinaghiassian/DIAMOnD,
+    packaged with the original author's agreement
+    (https://github.com/dinaghiassian/DIAMOnD/issues/8).
+  dev_url: https://github.com/REPO4EU/DIAMOnD
+
+extra:
+  identifiers:
+    - doi:10.1371/journal.pcbi.1004120
+  recipe-maintainers:
+    - JohannesKersting
+    - dinaghiassian
