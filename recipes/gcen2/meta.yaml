@@ -1,0 +1,85 @@
+{% set name = "gcen2" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "ec3ca6a6b01f3f65b41da8a2fa6b7ce1bde6e49effdcf2f39a9741df17959a76" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  # Supported platforms: Linux x86-64 and macOS on Apple Silicon (Windows: PyPI).
+  skip: true  # [win or (osx and not arm64) or py < 39]
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.18
+    - ninja
+    - make
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.10
+    - pybind11 >=2.10
+  run:
+    - python
+    - numpy >=1.24
+    - pandas >=2.0
+    - scipy >=1.10
+    - threadpoolctl >=3.0
+    - typer >=0.9
+    # the optional parts (pip install "gcen2[all]"): single cells, figures, reports
+    - anndata >=0.10
+    - scanpy >=1.9
+    - matplotlib-base >=3.7
+    - seaborn >=0.12
+    - pyvis >=0.3
+    - networkx >=3.1
+    - jinja2 >=3.1
+    - weasyprint
+
+test:
+  imports:
+    - gcen2
+    - gcen2.core
+    - gcen2.network
+    - gcen2.tom_modules
+    - gcen2.single_cell
+    - gcen2.plot
+  commands:
+    - gcen2 --help
+    - gcen2 plot --help
+    - python -c "from gcen2.core import require_extension; require_extension()"
+
+about:
+  home: https://www.biochen.org/gcen2/
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Gene co-expression network analysis from bulk to single-cell and spatial transcriptomes
+  description: |
+    GCEN2 is a command-line tool and Python package (with C++ kernels) for gene
+    co-expression network analysis, the successor of GCEN. It does everything GCEN
+    does, with the same commands, files and results, and adds differential
+    co-expression, WGCNA module analysis, the hdWGCNA single-cell and spatial
+    workflows, networks along trajectories, multi-omics networks, publication
+    figures and reports.
+  dev_url: https://github.com/wen-chen/GCEN2
+  doc_url: https://www.biochen.org/gcen2/docs/
+
+extra:
+  additional-platforms:
+    - osx-arm64
+  recipe-maintainers:
+    - wen-chen

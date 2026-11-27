@@ -1,0 +1,58 @@
+{% set name = "thresher" %}
+{% set version = "0.4.1" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/microbialARC/THRESHER/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: cf31cec89862c76a9d13cb7130577811b24b3b4276a4b90ae3ed8533b3dcc81a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - thresher = thresher.bin.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=62.3
+  run:
+    - python >={{ python_min }}
+    - snakemake-minimal >=9.0,<10
+    - pandas >=2.0
+    - pyyaml >=6.0
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - thresher
+  commands:
+    - thresher --help
+    - thresher --version
+
+about:
+  home: https://github.com/microbialARC/THRESHER
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Strain and transmission cluster inference with data-driven phylothresholds.
+  description: |
+    THRESHER replaces fixed SNP cutoffs with data-driven phylothresholds, SNP thresholds corrected for phylogenetic topology and inferred from each dataset's genomic structure, to identify bacterial strains and transmission clusters.
+    This package installs the command-line interface and the Snakemake workflow. Tool environments are created by Snakemake on first use.
+  dev_url: https://github.com/microbialARC/THRESHER
+  doc_url: https://github.com/microbialARC/THRESHER/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - qianxuans
+  notes: |
+    Tool environments are built by Snakemake on the first run, so the first run needs internet access. The full and new-full modes require Linux and at least 40 GB of RAM.

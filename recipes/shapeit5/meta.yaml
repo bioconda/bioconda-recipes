@@ -17,7 +17,7 @@ source:
     - apple-silicon-port.patch
 
 build:
-  number: 0
+  number: 1
   # osx-64 (Intel Mac) is no longer maintained: Apple Silicon replaced it,
   # and Apple announced Rosetta 2 support ends with macOS 27. Existing
   # 5.1.1 osx-64 packages remain available on the bioconda channel.
@@ -49,6 +49,11 @@ test:
     - SHAPEIT5_switch --help
     - SHAPEIT5_ligate --help
     - SHAPEIT5_xcftools
+    # The binary must keep a valid code signature after conda's prefix
+    # handling, otherwise macOS kills it at launch (SIGKILL). The
+    # --help commands above already fail on that, and this makes the
+    # signature validity explicit on Apple Silicon.
+    - codesign --verify --strict --verbose=2 $PREFIX/bin/SHAPEIT5_phase_common  # [osx and arm64]
 
 about:
   home: https://odelaneau.github.io/shapeit

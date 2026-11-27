@@ -1,0 +1,45 @@
+diff --git a/ted_consensus_1.0/programs/merizo/predict_afdb.py b/ted_consensus_1.0/programs/merizo/predict_afdb.py
+--- a/ted_consensus_1.0/programs/merizo/predict_afdb.py
++++ b/ted_consensus_1.0/programs/merizo/predict_afdb.py
+@@ -434,6 +434,7 @@ def main():
+                 ted-merizo -d cpu -i examples/2xdqA.pdb
+                 ted-merizo -d cpu -i examples/*.pdb --save_domains --save_pdf --save_fasta
+                 ted-merizo -d cpu -i examples/2xdqA.pdb --save_domains --plddt_filter
++                ted-merizo -d cpu -i examples/2xdqA.pdb --weights_dir /path/to/merizo_weights
+                 
+             For AlphaFold2 models, the iterative segmentation routine may give better results on longer models:
+                 ted-merizo -d cpu -i examples/AF-Q96PD2-F1-model_v4.pdb --iterate --plddt_filter 60 --conf_filter 0.75
+@@ -462,9 +463,23 @@ def main():
+     parser.add_argument("--shuffle_indices", dest="shuffle_indices", action="store_true", help="Shuffle domain indices - increases contrast between domain colours in PyMOL.")
+     parser.add_argument("--label", dest="label", required=False, default='merizo-v2', help="Label to add to generated files.")
+     parser.add_argument("--inherit_chopping", dest="inherit_chopping", required=False, default=None, help="NOT IMPLEMENTED")
+-    
++    parser.add_argument("--weights_dir", dest="weights_dir", type=str, default=os.environ.get("MERIZO_WEIGHTS", os.path.join(script_dir, 'weights')), help="Directory containing the Merizo weights (weights_part_*.pt). Defaults to $MERIZO_WEIGHTS if set, otherwise the package's share directory. The weights are not installed with the package: download them from https://github.com/psipred/Merizo/tree/fa0c0baab010d65ac2d0e235412ebbfe46355c5f/weights.")
++
+     args = parser.parse_args()
+ 
++    if not os.path.isdir(args.weights_dir) or not any(f.endswith('.pt') for f in os.listdir(args.weights_dir)):
++        parser.error(f"no Merizo weights (*.pt) found in '{args.weights_dir}'.\n"
++                     "The weights are not installed with the package. Download these files:\n"
++                     "  - weights_part_0.pt\n"
++                     "  - weights_part_1.pt\n"
++                     "  - weights_part_2.pt\n"
++                     "from https://github.com/psipred/Merizo/tree/fa0c0baab010d65ac2d0e235412ebbfe46355c5f/weights into:\n"
++                     f"  {os.path.join(script_dir, 'weights')}\n"
++                     "or into any other directory and tell ted-merizo where it is, either with:\n"
++                     "  ted-merizo --weights_dir /path/to/weights ...\n"
++                     "or by setting the environment variable:\n"
++                     "  export MERIZO_WEIGHTS=/path/to/weights")
++
+     # args.input = ['examples/human_200_test/AF-O95302-F1-model_v4.pdb', 'examples/human_200_test/AF-O94779-F1-model_v4.pdb'] #, 'examples/AF-Q8NGE8-F1-model_v4_c2m.pdb']
+     # args.input = ['examples/human_200_test/AF-P33527-F1-model_v4.pdb']
+     # args.save_pdb = True
+@@ -501,7 +516,7 @@ def main():
+     device = get_device(args.device)
+     network = Merizo().to(device)
+ 
+-    network.load_state_dict(read_split_weight_files(os.path.join(script_dir, 'weights')), strict=True)
++    network.load_state_dict(read_split_weight_files(args.weights_dir), strict=True)
+     network.eval()
+ 
+     failed = []

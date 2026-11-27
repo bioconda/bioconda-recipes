@@ -1,0 +1,64 @@
+diff --git a/ted_consensus_1.0/programs/chainsaw/get_predictions.py b/ted_consensus_1.0/programs/chainsaw/get_predictions.py
+--- a/ted_consensus_1.0/programs/chainsaw/get_predictions.py
++++ b/ted_consensus_1.0/programs/chainsaw/get_predictions.py
+@@ -398,7 +398,7 @@ def parse_args():
+     """
+     Parse command line arguments
+     """
+-    parser = argparse.ArgumentParser()
++    parser = argparse.ArgumentParser(prog='ted-chainsaw')
+     parser.add_argument('--model_dir', type=str,
+                         default=f'{constants.REPO_ROOT}/saved_models/secondary_structure_epoch17/version_2',
+                         help='path to model directory must contain model.pt and config.json')
+diff --git a/ted_consensus_1.0/programs/merizo/predict_afdb.py b/ted_consensus_1.0/programs/merizo/predict_afdb.py
+--- a/ted_consensus_1.0/programs/merizo/predict_afdb.py
++++ b/ted_consensus_1.0/programs/merizo/predict_afdb.py
+@@ -424,19 +424,19 @@ def segment(network, args, pdb_path, device, zipped, outfile, file_index):
+ def main():
+     # Read the config file
+     parser = argparse.ArgumentParser(
+-        prog='ProgramName',
++        prog='ted-merizo',
+         formatter_class=argparse.RawDescriptionHelpFormatter,
+         epilog=textwrap.dedent('''\
+             If you use Merizo, please cite the following paper:
+                 Lau, et al., 2023. Merizo: a rapid and accurate domain segmentation method using invariant point attention. bioRxiv, doi: https://doi.org/10.1101/2023.02.19.529114
+             
+             Example usage:
+-                python predict.py -d cpu -i examples/2xdqA.pdb
+-                python predict.py -d cpu -i examples/*.pdb --save_domains --save_pdf --save_fasta
+-                python predict.py -d cpu -i examples/2xdqA.pdb --save_domains --plddt_filter
++                ted-merizo -d cpu -i examples/2xdqA.pdb
++                ted-merizo -d cpu -i examples/*.pdb --save_domains --save_pdf --save_fasta
++                ted-merizo -d cpu -i examples/2xdqA.pdb --save_domains --plddt_filter
+                 
+             For AlphaFold2 models, the iterative segmentation routine may give better results on longer models:
+-                python predict.py -d cpu -i examples/AF-Q96PD2-F1-model_v4.pdb --iterate --plddt_filter 60 --conf_filter 0.75
++                ted-merizo -d cpu -i examples/AF-Q96PD2-F1-model_v4.pdb --iterate --plddt_filter 60 --conf_filter 0.75
+          ''')
+     )
+     
+diff --git a/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py b/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
+--- a/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
++++ b/ted_consensus_1.0/programs/unidoc_latest/Run_UniDoc_from_scratch_structure_afdb.py
+@@ -23,7 +23,7 @@ resndict = {'ALA': 'A', 'ARG': 'R', 'ASN': 'N', 'ASP': 'D', 'CYS': 'C',
+             'PAD': 'X'}
+ 
+ def main():
+-    parser = argparse.ArgumentParser()
++    parser = argparse.ArgumentParser(prog='ted-unidoc')
+     
+     group = parser.add_mutually_exclusive_group()
+     group.add_argument("-i", "--input", type=str, nargs="+", required=False, help="Pass a single file or list of filenames as -i 1ubq.pdb or *.pdb.")
+diff --git a/ted_consensus_1.0/scripts/get_consensus.py b/ted_consensus_1.0/scripts/get_consensus.py
+--- a/ted_consensus_1.0/scripts/get_consensus.py
++++ b/ted_consensus_1.0/scripts/get_consensus.py
+@@ -31,7 +31,7 @@ def read_chopping(file):
+ 
+ def main():
+     # Read the config file
+-    parser = argparse.ArgumentParser()
++    parser = argparse.ArgumentParser(prog='ted-consensus')
+     parser.add_argument("-c", "--choppings", type=str, nargs="+", required=True, help="Pass a list of files containing domain choppings.")
+     parser.add_argument("-o", "--output", type=str, required=True, help="File to save consensus domains to.")
+     parser.add_argument("--overlap", type=float, required=False, default=0.7, help="IoU threshold to use for determining matches.")

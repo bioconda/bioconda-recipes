@@ -1,0 +1,147 @@
+{% set name = "ted-tools" %}
+{% set version = "0.1.8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/sillitoe/ted-tools/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: cd517af08616c83873d6613211598f6beaa70f5a2b49143b5d4fa5764f35d299
+    patches:
+      # run UniDoc_struct in a per-target temp dir instead of chdir-ing into its install dir
+      - unidoc-scratch-dir.patch
+      # pydantic 2 treats Optional fields without a default as required (pydantic 1 defaulted them to None)
+      - chainsaw-pydantic2.patch
+      # show the installed command names (ted-chainsaw, ted-merizo, ted-unidoc, ted-consensus) in --help; applies after unidoc-scratch-dir.patch
+      - command-names.patch
+      # add --weights_dir / $MERIZO_WEIGHTS so the weights (not shipped, too large) can be downloaded after install
+      - merizo-weights-dir.patch
+
+build:
+  number: 0
+  skip: true # [win]
+
+outputs:
+  - name: ted-chainsaw
+    script: build_chainsaw.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('ted-chainsaw', max_pin="x.x") }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - make
+      run:
+        - python >=3.10
+        - pytorch >=2.0
+        - numpy
+        - scipy
+        - pandas
+        - biopython
+        - pydantic <3  # still uses the v1-style @validator, removed in pydantic 3
+    test:
+      commands:
+        - ted-chainsaw --help
+    about:
+      home: https://github.com/sillitoe/ted-tools
+      summary: Chainsaw protein domain segmentation, as used in TED (The Encyclopedia of Domains)
+      license: MIT AND LicenseRef-STRIDE
+      license_file:
+        - LICENSE
+        - ted_consensus_1.0/programs/chainsaw/stride/doc/stride.doc
+
+  - name: ted-merizo
+    script: build_merizo.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('ted-merizo', max_pin="x.x") }}
+    requirements:
+      run:
+        - python >=3.10
+        - pytorch >=2.0
+        - numpy
+        - scipy
+        - matplotlib-base
+        - einops
+        - networkx
+        - natsort
+        - rotary-embedding-torch
+    test:
+      commands:
+        - ted-merizo --help
+    about:
+      home: https://github.com/sillitoe/ted-tools
+      summary: Merizo protein domain segmentation, as used in TED (The Encyclopedia of Domains)
+      license: GPL-3.0-only
+      license_file: ted_consensus_1.0/programs/merizo/LICENSE
+
+  - name: ted-unidoc
+    script: build_unidoc.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('ted-unidoc', max_pin="x.x") }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
+        - make
+      run:
+        - python >=3.10
+        - natsort
+        - pdb-tools
+    test:
+      commands:
+        - ted-unidoc --help
+    about:
+      home: https://github.com/sillitoe/ted-tools
+      summary: UniDoc protein domain segmentation, as used in TED (The Encyclopedia of Domains)
+      license: MIT AND LicenseRef-STRIDE
+      license_file:
+        - ted_consensus_1.0/programs/unidoc_latest/LICENSE
+        - ted_consensus_1.0/programs/chainsaw/stride/doc/stride.doc
+
+  - name: ted-consensus
+    script: build_consensus.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage('ted-consensus', max_pin="x.x") }}
+    requirements:
+      run:
+        - python >=3.10
+        - numpy
+        - pandas
+        - networkx
+        - natsort
+    test:
+      commands:
+        - ted-consensus --help
+    about:
+      home: https://github.com/sillitoe/ted-tools
+      summary: Consensus of Merizo, Chainsaw and UniDoc domain choppings, as used in TED (The Encyclopedia of Domains)
+      license: MIT
+      license_file: LICENSE
+
+about:
+  home: https://github.com/sillitoe/ted-tools
+  summary: Domain segmentation tools from TED (The Encyclopedia of Domains)
+  license: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/sillitoe/ted-tools
+  doc_url: https://github.com/sillitoe/ted-tools/tree/main/ted_consensus_1.0
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.1101/2024.03.18.585509
+  recipe-maintainers:
+    - FernandoDuarteF
+  skip-lints:
+    # every output has its own run_exports; bioconda-utils <5 only looks in the top-level build section
+    - missing_run_exports
+    # the linter wants it noarch. It cannot be
+    - should_be_noarch_generic

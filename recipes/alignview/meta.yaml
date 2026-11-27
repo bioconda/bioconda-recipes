@@ -1,0 +1,67 @@
+{% set name = "alignview" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/Est-oup/AlignView/releases/download/v1.0.0/alignview-1.0.0.tar.gz"
+  sha256: f819f53b917a59ec8b7d016276d6ebcb722f1bbcf2aaab1c9330e0ca6d079bdf
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - alignview = alignview:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}.*
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >={{ python_min }}
+
+test:
+  imports:
+    - alignview
+    - av_report
+    - av_workspace
+    - av_genetics
+  requires:
+    - python {{ python_min }}.*
+  commands:
+    # Keep generated projects out of mulled's host-mounted /source directory.
+    - cd "$(mktemp -d)"
+    - alignview --version
+    - alignview --help
+    - alignview --docs quickstart
+    - alignview --docs files
+    - alignview --demo --no-menu --no-open --save --out "bioconda smoke project" --html-out "bioconda smoke report.html"
+    - alignview report "bioconda smoke project" --html-out "bioconda resumed report.html" --no-open
+    - python -c "import json,pathlib; p=pathlib.Path('bioconda smoke project'); d=json.loads((p/'session.json').read_text()); assert d['msa']; assert (p/'project_manifest.json').is_file(); assert pathlib.Path('bioconda smoke report.html').stat().st_size > 1000; assert pathlib.Path('bioconda resumed report.html').stat().st_size > 1000"
+
+about:
+  home: https://github.com/Est-oup/AlignView
+  dev_url: https://github.com/Est-oup/AlignView
+  doc_url: https://github.com/Est-oup/AlignView/tree/main/docs
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Sequence alignment inspection and local similarity evidence
+  description: |
+    AlignView is a terminal workspace for nucleotide and protein sequences,
+    local search evidence, multiple alignments and standalone offline reports.
+    Viewing existing alignments, the bundled demonstration and report exports
+    require only Python. Scientific engines are installed separately for the
+    selected analysis, for example BLAST, DIAMOND, MAFFT or VSEARCH.
+
+extra:
+  recipe-maintainers:
+    - Est-oup

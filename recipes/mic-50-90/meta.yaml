@@ -1,0 +1,63 @@
+{% set name = "mic-50-90" %}
+{% set version = "2.0.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/m/mic-50-90/mic_50_90-{{ version }}.tar.gz
+  sha256: 7ec7ea813da1b082e90462873fb2bdf18c0ea3f9156ee1601e8f2462bb1b2138
+
+build:
+  number: 1
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - mic-50-90 = mic_50_90.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - hatchling >=1.27
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.26
+    - scipy >=1.13
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - mic_50_90
+  commands:
+    - mic-50-90 --version
+    - mic-50-90 distribution --help
+    - mic-50-90 reporting-audit --help
+
+about:
+  home: https://github.com/maciejkochanowski/mic-50-90
+  summary: A Python package for bounding MIC distributions from incomplete susceptibility reports
+  description: |
+    Published antimicrobial susceptibility results often give only MIC50, MIC90, a range and a
+    few percentages. From these, and from exact or rounded counts, MIC-50-90 computes the smallest
+    and largest count the report allows in every MIC category and range, names the count that
+    would narrow an open question most, selects counts a laboratory can publish so that readers
+    can check its conclusions, and gives optional population bounds under stated sampling
+    assumptions.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  dev_url: https://github.com/maciejkochanowski/mic-50-90
+  doc_url: https://github.com/maciejkochanowski/mic-50-90/tree/main/docs
+
+extra:
+  identifiers:
+    - biotools:mic-50-90
+    - doi:10.5281/zenodo.23297915
+  recipe-maintainers:
+    - maciejkochanowski

@@ -1,0 +1,70 @@
+{% set name = "genairr" %}
+{% set version = "2.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 263de7fffebc2102023f3b2909c623ccdcbdd7fadcfbef19c0a72b2212f91b2e
+
+build:
+  number: 0
+  skip: True  # [py < 39]
+  script:
+    # The crate lives in engine_rs/, so Cargo.lock is not at the sdist root.
+    - cd engine_rs
+    - cargo-bundle-licenses --format yaml --output $SRC_DIR/THIRDPARTY.yml
+    - cd $SRC_DIR
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation --no-cache-dir
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - maturin >=1.5,<2.0
+  run:
+    - python
+    - numpy >=1.24
+    - scipy >=1.10
+
+test:
+  imports:
+    - GenAIRR
+    - GenAIRR.data
+  commands:
+    - python -c "import GenAIRR.data as d; assert type(d.HUMAN_IGH_OGRDB).__name__ == 'DataConfig'"
+    - python -c "import GenAIRR as ga; r = ga.Experiment.on('human_igh').recombine().run_records(n=5, seed=42); assert len(r) == 5 and r[0]['locus'] == 'IGH'"
+
+about:
+  home: https://github.com/MuteJester/GenAIRR
+  summary: Simulation of adaptive immune receptor sequences with ground-truth annotations
+  description: |
+    GenAIRR simulates immunoglobulin and T-cell receptor rearrangements and writes them as
+    AIRR records, with the generating alleles, trimming, N regions and somatic hypermutations
+    recorded per base. Reference data for human, mouse, rat, rabbit and rhesus IG and TR loci
+    ships with the package, and the simulation kernel is a Rust extension module.
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  doc_url: https://mutejester.github.io/GenAIRR/
+  dev_url: https://github.com/MuteJester/GenAIRR
+
+extra:
+  identifiers:
+    - doi:10.1093/bib/bbae556
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - MuteJester

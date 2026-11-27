@@ -1,0 +1,50 @@
+From a6f3bdbb3aac3cbd2218dfb394995705432ba4a3 Mon Sep 17 00:00:00 2001
+From: mvdbeek <m.vandenbeek@gmail.com>
+Date: Thu, 26 Nov 2026 08:17:26 +0100
+Subject: [PATCH] mummerplot: only send SIGHUP to a forked mouse listener
+
+$child starts at the sentinel value 1 and is only replaced by fork's
+result for the interactive x11 terminal. For every other terminal the
+parent then runs `kill 1, $child`, which sends SIGHUP to PID 1. On a
+normal host that fails with EPERM. Inside a container's PID namespace
+PID 1 is the container's init or shim (docker, apptainer --pid), which
+either dies or forwards the signal to the job, so the run fails even
+though the plot was written.
+
+Track whether a listener was forked and only signal it in that case.
+
+Fixes #190
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ scripts/mummerplot.pl | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/mummerplot.pl b/scripts/mummerplot.pl
+index 7f42f8f..726ecac 100644
+--- a/scripts/mummerplot.pl
++++ b/scripts/mummerplot.pl
+@@ -302,15 +302,19 @@ MAIN:
+     unless ( $OPT_gpstatus == -1 ) {
+ 
+         my $child = 1;
++        my $forked = 0;
+         if ( $OPT_gpstatus == 0 && $OPT_terminal eq $X11 ) {
+             print STDERR "Forking mouse listener\n";
+             $child = fork;
++            $forked = 1;
+         }
+ 
+         #-- parent runs gnuplot
+         if ( $child ) {
+             RunGP( );
+-            kill 1, $child;
++            #-- only signal a listener we forked; $child is otherwise the
++            #-- sentinel 1, and kill 1, 1 sends SIGHUP to PID 1
++            kill 1, $child if $forked;
+         }
+         #-- child listens to clipboard
+         elsif ( defined $child ) {
+-- 
+2.53.0
+

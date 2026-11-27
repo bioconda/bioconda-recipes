@@ -1,0 +1,50 @@
+{% set version = "0.1.0" %}
+
+package:
+  name: gloci
+  version: {{ version }}
+
+source:
+  url: https://github.com/duartemolha/gloci/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 38d08fc4332d049b537e6b22eb5c31aa302b8f99c00f663390e4a8ee7a2f13e3
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('gloci', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - gloci --version
+    - gloci genomes show hg38
+    # The inputs are written here, not shipped as test files: bioconda's container test
+    # (mulled-build) runs these commands without the recipe's files. The output is a.bed.
+    - cd "$(mktemp -d)" && printf 'chr1\t100\t200\tgeneA\nchr1\t300\t400\tgeneB\nchr2\t50\t150\tgeneC\n' > a.bed && printf 'chr1\t150\t350\tpeak1\nchr2\t100\t200\tpeak2\nchr3\t0\t10\tpeak3\n' > b.bed && gloci intersect -a a.bed -b b.bed | cmp - a.bed
+    - test -f $PREFIX/share/man/man1/gloci.1
+    - test -f $PREFIX/share/bash-completion/completions/gloci
+    - test -f $PREFIX/share/zsh/site-functions/_gloci
+    - test -f $PREFIX/share/fish/vendor_completions.d/gloci.fish
+
+about:
+  home: https://github.com/duartemolha/gloci
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Fast genomic interval and VCF toolkit, one static binary (replaces bedtools, bedops, vcftools)
+  dev_url: https://github.com/duartemolha/gloci
+
+extra:
+  recipe-maintainers:
+    - duartemolha
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64

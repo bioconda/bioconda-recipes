@@ -1,0 +1,24 @@
+diff --git a/build.rs b/build.rs
+index bad2dfa..aee1b29 100644
+--- a/build.rs
++++ b/build.rs
+@@ -92,9 +92,17 @@ fn build_tags() -> String {
+         Some(c) => tags.push_str(&format!("+cpu={c}")),
+         None => {}
+     }
+-    // The profile is the target-dir component above build/<pkg>/out.
++    // The profile is the directory holding `build/`. Its depth above OUT_DIR
++    // depends on the Cargo version: `build/<pkg>-<hash>/out` (old layout) or
++    // `build/<pkg>/<hash>/out` (newer build-dir layout), so search upward.
+     let out = PathBuf::from(std::env::var("OUT_DIR").unwrap_or_default());
+-    if let Some(profile) = out.ancestors().nth(3).and_then(|p| p.file_name()) {
++    let profile = out
++        .ancestors()
++        .skip(1)
++        .find(|p| p.file_name().is_some_and(|n| n == "build"))
++        .and_then(Path::parent)
++        .and_then(Path::file_name);
++    if let Some(profile) = profile {
+         let profile = profile.to_string_lossy();
+         if profile != "release" && profile != "debug" {
+             tags.push_str(&format!("+{profile}"));
