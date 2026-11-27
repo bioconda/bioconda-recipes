@@ -47,8 +47,10 @@ requirements:
 test:
   commands:
     - sargent --version
-    - cp -r "$(dirname "$(dirname "$(command -v sargent)")")/share/sargent/examples" .
-    - sargent --silent --stage1-gibbs --joint --uniform-arg --gibbs-iter 200 --gibbs-burn 50 -o toy examples/toy.phen examples/toy.trees examples/toy
+    # Copy the example files flat (no subdirectory) so the test leaves nothing
+    # that the container test's cleanup cannot remove.
+    - cp "$(dirname "$(dirname "$(command -v sargent)")")"/share/sargent/examples/toy.* .
+    - sargent --silent --stage1-gibbs --joint --uniform-arg --gibbs-iter 200 --gibbs-burn 50 -o toy toy.phen toy.trees toy
     - test -s toy.summary.json
 
 about:
