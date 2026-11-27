@@ -28,6 +28,9 @@ build:
       -DTSKIT_SOURCE_DIR=${SRC_DIR}/tskit/c
     - cmake --build build --parallel ${CPU_COUNT}
     - cmake --install build
+    # Example input files, also used by the tests below.
+    - mkdir -p ${PREFIX}/share/${PKG_NAME}
+    - cp -r examples ${PREFIX}/share/${PKG_NAME}/
 
 requirements:
   build:
@@ -42,10 +45,9 @@ requirements:
     - liblapack  # [linux]
 
 test:
-  source_files:
-    - examples
   commands:
     - sargent --version
+    - cp -r "$(dirname "$(dirname "$(command -v sargent)")")/share/sargent/examples" .
     - sargent --silent --stage1-gibbs --joint --uniform-arg --gibbs-iter 200 --gibbs-burn 50 -o toy examples/toy.phen examples/toy.trees examples/toy
     - test -s toy.summary.json
 
