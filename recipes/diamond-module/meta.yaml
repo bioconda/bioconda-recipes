@@ -38,10 +38,14 @@ test:
     - pytest
   imports:
     - DIAMOnD
+  # The commands also run in the mulled container test, which has neither
+  # source_files nor test requirements, so they must be self-contained.
+  # The upstream pytest test on the example data runs in run_test.sh.
   commands:
     - pip check
-    - pytest -v tests
-    - diamond-module Example/PPI.txt Example/seed_genes.txt 10 && test -s first_10_added_nodes_weight_1.txt
+    - printf 'a,c\nb,c\na,d\nd,e\ne,f\nf,g\ng,d\nc,h\nh,e\n' > net.txt && printf 'a\nb\n' > seeds.txt
+    - diamond-module net.txt seeds.txt 1 out.txt
+    - awk -F'\t' 'NR == 2 && $1 == 1 && $2 == "c" { ok = 1 } END { exit !ok }' out.txt
 
 about:
   home: https://github.com/REPO4EU/DIAMOnD
