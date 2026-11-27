@@ -1,0 +1,73 @@
+{% set name = "sargent" %}
+{% set version = "0.10.0" %}
+{% set tskit_version = "1.3.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/CshlSiepelLab/sargent/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: c0f50b0e68aab0a7101c5f31f3523e4dcda25f226c35c1b467a22e86eb36242a
+  # The tskit C library (MIT), compiled into sargent.  GitHub's source archive
+  # omits sargent's tskit submodule, so fetch the same release from tskit-dev.
+  - url: https://github.com/tskit-dev/tskit/archive/refs/tags/C_{{ tskit_version }}.tar.gz
+    sha256: 87e1cd9591cc9cf22f2fedf6e846c495f4573ac09f1b7d5ac12f7d569ee71d58
+    folder: tskit
+
+build:
+  number: 0
+  skip: True  # [win]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin='x.x') }}
+  script:
+    - cmake -S . -B build
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=${PREFIX}
+      -DCMAKE_C_COMPILER=${CC}
+      -DTSKIT_SOURCE_DIR=${SRC_DIR}/tskit/c
+    - cmake --build build --parallel ${CPU_COUNT}
+    - cmake --install build
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib("c") }}
+    - cmake
+    - make
+  host:
+    - llvm-openmp  # [osx]
+    - libgomp  # [linux]
+    - libblas  # [linux]
+    - liblapack  # [linux]
+
+test:
+  source_files:
+    - examples
+  commands:
+    - sargent --version
+    - sargent --silent --stage1-gibbs --joint --uniform-arg --gibbs-iter 200 --gibbs-burn 50 -o toy examples/toy.phen examples/toy.trees examples/toy
+    - test -s toy.summary.json
+
+about:
+  home: "https://github.com/CshlSiepelLab/sargent"
+  license: "BSD-3-Clause"
+  license_family: BSD
+  license_file:
+    - LICENSE
+    - tskit/LICENSE
+  summary: "SARGENT: Bayesian sparse linear mixed models for complex traits using ancestral recombination graphs."
+  dev_url: "https://github.com/CshlSiepelLab/sargent"
+  doc_url: "https://github.com/CshlSiepelLab/sargent#readme"
+  description: |
+    SARGENT (Sparse ARG-based ENcoding of Traits) fits Bayesian sparse linear
+    mixed models for complex traits that combine effects of typed SNPs with a
+    random effect derived from an ancestral recombination graph (ARG), and
+    predicts phenotypes for held-out individuals.
+
+extra:
+  recipe-maintainers:
+    - asiepel
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
