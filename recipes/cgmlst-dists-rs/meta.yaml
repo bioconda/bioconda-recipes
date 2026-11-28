@@ -1,0 +1,45 @@
+{% set name = "cgmlst-dists-rs" %}
+{% set version = "0.1.5" %}
+{% set sha256 = "cb3c0393084dea507888669047d54267a9e7c8f8ed709755af1b9db327e5aa97" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/genpat-it/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - cgmlst-dists-rs --version | grep -F '{{ version }}'
+    # Compute a real matrix, with chewBBACA hashed ids above 2^31 (read as
+    # missing before 0.1.3): S1/S2 differ at L2 only, L3 is missing on S2.
+    - printf 'id\tL1\tL2\tL3\nS1\t4294967295\t2147483648\t3000000000\nS2\t4294967295\t2147483649\t-\n' > in.tab
+    - cgmlst-dists-rs -s -i in.tab > out.tsv
+    - test "$(sed -n 2p out.tsv | cut -f3)" = 1
+
+about:
+  home: https://genpat-it.github.io/cgmlst-dists-rs/
+  license: GPL-3.0-only
+  license_family: GPL3
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: "Ultra-fast pairwise cgMLST Hamming distance matrix from chewBBACA allele calls (Rust)"
+  dev_url: https://github.com/genpat-it/cgmlst-dists-rs
+
+extra:
+  recipe-maintainers:
+    - andreaderuvo

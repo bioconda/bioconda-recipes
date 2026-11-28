@@ -9,3 +9,6 @@ cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 RUST_BACKTRACE=1 cargo install --verbose --no-track --path . --root "${PREFIX}"
 
 "${STRIP}" "$PREFIX/bin/autocycler"
+
+mkdir -p "$PREFIX/share/autocycler"
+cp -R pipelines "$PREFIX/share/autocycler/"

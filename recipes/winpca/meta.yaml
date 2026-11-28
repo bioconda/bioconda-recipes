@@ -1,0 +1,55 @@
+{% set name = "winpca" %}
+{% set version = "1.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MoritzBlumer/winpca/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 31357ad3c8990513bae602d6c959b12266ff29b6ee66e3646c95c8e5d0bc440a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - winpca = winpca.main:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=64
+  run:
+    - python >={{ python_min }}
+    - numpy
+    - pandas
+    - scikit-allel
+    - plotly >=6
+    - python-kaleido >=1
+    - pcangsd >=1.36.4
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - winpca
+    - winpca.windowed_pca
+    - winpca.plot
+  commands:
+    - winpca -h
+
+about:
+  home: https://github.com/MoritzBlumer/winpca
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: WinPCA - A package for windowed principal component analysis
+  dev_url: https://github.com/MoritzBlumer/winpca
+
+extra:
+  recipe-maintainers:
+    - MoritzBlumer

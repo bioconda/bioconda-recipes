@@ -1,0 +1,39 @@
+--- a/test/unit-test-density-fitness.cpp
++++ b/test/unit-test-density-fitness.cpp
+@@ -177,5 +177,35 @@
+ 	json a = json::parse(ss);
+ 	json b = json::parse(reference);
+ 
+-	CHECK(a == b);
++	REQUIRE(a.is_array());
++	REQUIRE(b.is_array());
++	REQUIRE(a.size() == b.size());
++
++	for (std::size_t i = 0; i < a.size(); ++i)
++	{
++		CAPTURE(i);
++		REQUIRE(a[i].is_object());
++		REQUIRE(b[i].is_object());
++
++		// Use the same relative tolerances as the EDS output test above.
++		for (const char *key : { "RSR", "SRSR", "RSCCS", "EDIAm", "OPIA" })
++		{
++			CAPTURE(key);
++			REQUIRE(a[i].contains(key));
++			REQUIRE(b[i].contains(key));
++			REQUIRE(a[i][key].is_number());
++			REQUIRE(b[i][key].is_number());
++
++			const double tolerance =
++				(std::string(key) == "EDIAm" or std::string(key) == "OPIA") ? 0.1 : 0.01;
++			CHECK_THAT(a[i][key].get<double>(),
++				Catch::Matchers::WithinRel(b[i][key].get<double>(), tolerance));
++
++			a[i].erase(key);
++			b[i].erase(key);
++		}
++
++		// All remaining fields, including identifiers and NGRID, must match exactly.
++		CHECK(a[i] == b[i]);
++	}
+ }

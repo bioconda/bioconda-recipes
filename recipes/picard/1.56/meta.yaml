@@ -1,0 +1,39 @@
+{% set version = "1.56" %}
+
+package:
+  name: picard
+  version: {{ version }}
+
+source:
+  - url: https://github.com/broadinstitute/picard/archive/{{ version }}.tar.gz
+    sha256: 35b131450e504995352de78f477276ff4f8b0cf3e1a500a1d7e23d2fb2f4e12a
+
+  - url: https://depot.galaxyproject.org/software/Ant-Apache-BCEL/Ant-Apache-BCEL_1.8.1_src_all.jar
+    sha256: 389b33831a33b2e45fcab6e43409e094c88feaa218100c09c44090d247b97baf
+    folder: lib/ant
+
+build:
+  number: 2
+  run_exports:
+    - {{ pin_subpackage('picard', max_pin='x') }}
+  noarch: generic
+
+requirements:
+  build:
+    - ant
+    - openjdk =8
+
+  run:
+    - openjdk >=8
+
+test:
+  commands:
+    - picard --test-wrapper
+    - "picard ViewSam.jar --help 2>&1 | grep USAGE:"
+about:
+  home: "http://broadinstitute.github.io/picard/"
+  license: MIT
+  summary: "Java tools for working with NGS data in the BAM format"
+
+extra:
+  notes:  "Picard version 1.56 uses a wrapper script symlinked to bin/: picard.  The wrapper script takes as arguments the particular jar file you want to run followed by any arguments for that jar.  For example, 'picard ViewSam.jar --help'."

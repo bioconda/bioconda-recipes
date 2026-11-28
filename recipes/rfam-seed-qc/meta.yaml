@@ -1,0 +1,61 @@
+{% set name = "rfam-seed-qc" %}
+{% set version = "1.3.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Rfam/rfam-seed-qc/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: fb613f1b290487a00c4b356acf59c6a6def13f4871f15500952bc10171104e04
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - python >=3.10
+    - biopython >=1.79
+    - infernal        # cmscan, cmpress (--cm-db)
+    - easel           # esl-reformat (gap minimization); not included in infernal
+    - blast           # blastn, blastdbcmd (--local)
+    - wget >=1.19.1   # build_live_cm.py (needs --retry-on-http-error)
+
+test:
+  commands:
+    - rfam-seed-qc --help
+    - rfam-seed-qc-build-live-cm --help
+    # Must also work when the environment is not activated
+    - env -i PATH=/usr/bin:/bin "${PREFIX}/bin/rfam-seed-qc" --help
+    # One tool per check: command -v with several names can return 0 when one is missing
+    - for t in cmscan cmpress esl-reformat blastn blastdbcmd wget; do command -v "$t"; done
+    # Offline validation of a minimal alignment (no --fix, so no network)
+    - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\nX02/1-4 ACGU\n#=GC SS_cons <..>\n//\n' > ok.sto
+    - rfam-seed-qc -v ok.sto | grep -q "Valid Stockholm file"
+    - printf '# STOCKHOLM 1.0\n\nX01/1-4 ACGU\n' > bad.sto
+    - if rfam-seed-qc bad.sto > bad.log 2>&1; then exit 1; fi
+    - grep -qF "Missing required '//' terminator" bad.log
+    - rfam-seed-qc --version | grep -qF "rfam-seed-qc {{ version }}"
+
+about:
+  home: https://github.com/Rfam/rfam-seed-qc
+  dev_url: https://github.com/Rfam/rfam-seed-qc
+  doc_url: https://github.com/Rfam/rfam-seed-qc#readme
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Validate and fix Stockholm seed alignments for Rfam.
+  description: |
+    rfam-seed-qc checks Stockholm multiple sequence alignments (Rfam seed
+    alignments) for format errors and, with --fix, corrects common problems:
+    missing coordinates, duplicate and overlapping sequences, and sequences
+    that do not match their NCBI or RNAcentral source, with a BLAST fallback
+    (NCBI web BLAST, or a local database with --local). Optional checks
+    against known Rfam families use Infernal's cmscan.
+
+extra:
+  recipe-maintainers:
+    - pmb59

@@ -1,0 +1,49 @@
+{% set name = "linxira-bio" %}
+{% set version = "1.1.5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Linxira-OS/linxira-bio-sdk/releases/download/v{{ version }}/linxira-bio-sdk-{{ version }}.tar.gz
+  sha256: 96bbfa3f0c70b6e0af042d7513a4185c676ac4812cfa9ac70271a7877ecdb1a9
+
+build:
+  number: 0
+  skip: True  # [osx or aarch64]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+
+test:
+  commands:
+    - linxira-bio --version
+    - linxira-bio capabilities --json > /dev/null
+    - printf '>a\nACGT\n' > test.fa
+    - linxira-bio sequence stats test.fa --json > /dev/null
+
+about:
+  home: https://github.com/Linxira-OS/linxira-bio-sdk
+  license: AGPL-3.0-or-later
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Local-first bioinformatics execution toolkit with CLI, MCP server, and workflow packs
+  description: |
+    Linxira Bio provides deterministic local bioinformatics capabilities through
+    a CLI and a stdio MCP server. The conda package installs the headless CLI,
+    MCP server, and worker plus the bundled workflow catalog; the native UI is
+    distributed separately in the GitHub release archives.
+  dev_url: https://github.com/Linxira-OS/linxira-bio-sdk
+  doc_url: https://github.com/Linxira-OS/linxira-bio-sdk#readme
+
+extra:
+  recipe-maintainers:
+    - BOHUYESHAN-APB

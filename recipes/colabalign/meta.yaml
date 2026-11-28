@@ -1,0 +1,127 @@
+{% set name = "colabalign" %}
+{% set version = "1.2.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/crfield18/ColabAlign/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: bfafda27fb0911564598dd77a4b45199c5e058ffe42bda9df6437ae43e0c444a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - colabalign = colabalign.pipeline:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  # Compatible ranges, not the exact reference pins: an exactly pinned noarch
+  # package would only install into the reference environment. Lower bounds are
+  # the tested versions; locks/ holds the exact reproducible environments.
+  host:
+    - python >=3.12
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.12
+    - numpy >=2.5,<3
+    - pandas >=3.1,<4
+    - biopython >=1.88,<2
+    - scipy >=1.18,<2
+    - tqdm >=4.70,<5
+    - treecluster >=1.0.5,<2
+    - usalign >=20241201
+    - beem-bio >=1.0.1,<2
+
+test:
+  imports:
+    - colabalign
+    - colabalign.pipeline
+  commands:
+    - colabalign --help
+    - colabalign --version
+    - USalign -h > /dev/null
+    - command -v BeEM > /dev/null
+    - TreeCluster.py -h > /dev/null
+    # End-to-end run on six synthetic CA-only structures (.pdb, .cif and .zip),
+    # generated here with the run dependencies only: no downloads, no test files.
+    - |
+      python -c "
+      import pathlib, subprocess, tempfile, zipfile
+      import numpy as np
+      import pandas as pd
+      from Bio.PDB import MMCIFIO, PDBParser
+      def seg(k, n, r):
+          if k == 'h':
+              t = np.arange(n) * np.deg2rad(100)
+              return np.column_stack([2.3 * np.cos(t), 2.3 * np.sin(t), 1.5 * np.arange(n)])
+          if k == 's':
+              return np.column_stack([3.3 * np.arange(n), np.arange(n) % 2, np.zeros(n)])
+          v = r.normal(size=(n, 3))
+          return np.cumsum(3.8 * v / np.linalg.norm(v, axis=1, keepdims=True), axis=0)
+      def trace(segs, seed):
+          r, o, out = np.random.default_rng(seed), np.zeros(3), []
+          for k, n in segs:
+              q, _ = np.linalg.qr(r.normal(size=(3, 3)))
+              x = seg(k, n, r)
+              x = (x - x[0]) @ q + o
+              out.append(x)
+              o = x[-1] + q[0] * 3.8
+          x = np.vstack(out)
+          return x + r.normal(scale=0.3, size=x.shape)
+      def write_pdb(p, x):
+          rows = list(f'ATOM  {i:5d}  CA  ALA A{i:4d}    {a:8.3f}{b:8.3f}{c:8.3f}  1.00  0.00           C' for i, (a, b, c) in enumerate(x, 1))
+          p.write_text(chr(10).join(rows + ['TER', 'END', '']))
+      fams = {'hh': [('h', 14), ('c', 4), ('h', 14)], 'bab': [('s', 6), ('c', 3), ('h', 12), ('c', 3), ('s', 6)]}
+      work = pathlib.Path(tempfile.mkdtemp())
+      src, ind = work / 'src', work / 'in'
+      src.mkdir(); ind.mkdir()
+      paths = []
+      for f, (name, segs) in enumerate(fams.items()):
+          for v in range(3):
+              paths.append(src / f'{name}{v}.pdb')
+              write_pdb(paths[-1], trace(segs + [('c', 3 * v)] * (v > 0), 10 * f + v))
+      for p in paths[:3]:
+          (ind / p.name).write_bytes(p.read_bytes())
+      with zipfile.ZipFile(ind / 'more.zip', 'w') as z:
+          for p in paths[3:5]:
+              z.write(p, f'batch/{p.name}')
+      io = MMCIFIO()
+      io.set_structure(PDBParser(QUIET=True).get_structure('x', paths[5]))
+      io.save(str(ind / f'{paths[5].stem}.cif'))
+      subprocess.run(['colabalign', '-i', str(ind), '-o', str(work / 'out'), '-c', '2', '-t', '0.3', '0.6'], check=True)
+      res = work / 'out' / 'results'
+      tm = pd.read_csv(res / 'us-align_score_matrix.csv', index_col=0)
+      assert tm.shape == (6, 6) and not tm.isna().any().any(), tm
+      assert (res / 'colabalign.tree').stat().st_size > 0
+      assert all((res / 'clusters' / t).is_dir() for t in ('0.30', '0.60'))
+      print('colabalign smoke test passed:', sorted(tm.index))
+      "
+
+about:
+  home: https://github.com/crfield18/ColabAlign
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "All-vs-all US-align protein structure comparison, structural dendrograms and clustering."
+  description: |
+    ColabAlign runs parallel all-vs-all US-align (TM-align) structural
+    alignments of protein chains, builds a UPGMA structural dendrogram from
+    the TM-score matrix, clusters it with TreeCluster at one or more
+    thresholds, superposes each cluster onto its medoid, and picks a
+    consensus representative per cluster. Accepts .pdb and .cif files, and
+    .zip or tar (.tar, .tar.gz/.tgz, .tar.bz2, .tar.xz) archives of them.
+  dev_url: https://github.com/crfield18/ColabAlign
+  doc_url: https://github.com/crfield18/ColabAlign/blob/v{{ version }}/README.md
+
+extra:
+  identifiers:
+    - doi:10.1101/2025.10.06.677802
+    - doi:10.5281/zenodo.14169501
+  recipe-maintainers:
+    - crfield18

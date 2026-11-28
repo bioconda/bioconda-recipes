@@ -1,0 +1,57 @@
+{% set name = "aastore" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/RabbitBio/RabbitAAStore/archive/47586d3327252e3c0f85585095b8c8ade810d5f1.tar.gz
+  sha256: 232ba90f95a27a99cbb5534910dcf17c669b3d1f179e0631adcac1e18578c0f9
+  patches:
+    - fix-probe-deallocation.patch
+
+build:
+  number: 0
+  skip: true  # [not linux or not x86_64 or py < 39]
+  run_exports:
+    - {{ pin_subpackage('aastore', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.16
+    - ninja
+    - patch
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.10
+    - pybind11 >=3.0,<4
+    - liburing
+  run:
+    - python
+    - liburing
+
+test:
+  imports:
+    - aastore
+
+about:
+  home: https://github.com/RabbitBio/RabbitAAStore
+  license: GPL-3.0-only
+  license_family: GPL
+  license_file: LICENSE
+  summary: Compact protein sequence storage with batched random and sequential access
+  description: |
+    RabbitAAStore combines continuous 5-bit protein sequence encoding, compact
+    indexing, configurable preloading, and batched disk access. This package
+    provides its Python API and compiled C++ core, with runtime SIMD dispatch
+    and automatic fallback from io_uring to pread when io_uring is unavailable.
+  doc_url: https://github.com/RabbitBio/RabbitAAStore/blob/main/docs/python_api.md
+  dev_url: https://github.com/RabbitBio/RabbitAAStore
+
+extra:
+  recipe-maintainers:
+    - gyj8321

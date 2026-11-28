@@ -1,0 +1,62 @@
+# conda recipe for Bioconda: https://bioconda.github.io
+{% set name = "gwyddionpy" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9295b0f9b4d57f9830db64f924ac15b7e33c1f23de94202e7092815171ce399a
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - gwyddionpy-fetch-converter = gwyddionpy._fetch_converter:_main
+  # Bioconda requires run_exports; 0.x versions pin to the minor release.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=78.1.1
+    - setuptools-scm >=6.2
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.22
+    - gwyfile >=0.3
+    - platformdirs >=3.0
+  # Vendor formats need the GPL `gwyconvert` binary. It stays optional,
+  # as on PyPI, so a plain install keeps the Apache-2.0 license.
+  # conda name of the PyPI `gwyddionpy-converter`.
+  run_constrained:
+    - gwyconvert =={{ version }}
+
+test:
+  requires:
+    - python {{ python_min }}
+  imports:
+    - gwyddionpy
+  # No `pip check` for now: conda-forge gwyfile 0.3.0 reports version 0.0.0.
+  # Add it back once conda-forge/gwyfile-feedstock#4 is fixed.
+
+about:
+  home: https://github.com/FAIRmat-NFDI/gwyddionPy
+  summary: Read any Gwyddion-supported SPM raw file into NumPy via the gwyconvert helper.
+  description: |
+    gwyddionpy reads scanning probe microscopy (SPM) files into NumPy arrays.
+    It reads `.gwy` files by itself. For vendor formats, also install
+    `gwyconvert`, which provides the GPL `gwyconvert` binary.
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  dev_url: https://github.com/FAIRmat-NFDI/gwyddionPy
+
+extra:
+  recipe-maintainers:
+    - RubelMozumder

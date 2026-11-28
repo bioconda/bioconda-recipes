@@ -19,44 +19,46 @@ JAR_DIR=$DIR
 
 java=java
 
-if [ -z "${JAVA_HOME:=}" ]; then
-  if [ -e "$JAVA_HOME/bin/java" ]; then
-      java="$JAVA_HOME/bin/java"
-  fi
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    java="$JAVA_HOME/bin/java"
 fi
 
 # extract memory and system property Java arguments from the list of provided arguments
 # http://java.dzone.com/articles/better-java-shell-script
-default_jvm_mem_opts="-Xms512m -Xmx1g"
-jvm_mem_opts=""
-jvm_prop_opts=""
-pass_args=""
+default_jvm_mem_opts=(-Xms512m -Xmx1g)
+jvm_mem_opts=()
+jvm_prop_opts=()
+pass_args=()
 for arg in "$@"; do
     case $arg in
         '-D'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts+=("$arg")
             ;;
         '-XX'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts+=("$arg")
             ;;
          '-Xm'*)
-            jvm_mem_opts="$jvm_mem_opts $arg"
+            jvm_mem_opts+=("$arg")
             ;;
          *)
-            pass_args="$pass_args $arg"
+            pass_args+=("$arg")
             ;;
     esac
 done
 
-if [ "$jvm_mem_opts" == "" ]; then
-    jvm_mem_opts="$default_jvm_mem_opts"
+if [ ${#jvm_mem_opts[@]} -eq 0 ]; then
+    jvm_mem_opts=("${default_jvm_mem_opts[@]}")
 fi
 
-pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
+if [[ ${pass_args[0]:-} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/trimmomatic.jar" $pass_args
+    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
+        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
+        -cp "$JAR_DIR/trimmomatic.jar" ${pass_args[@]+"${pass_args[@]}"}
+
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/trimmomatic.jar" $pass_args
+    exec "$java" ${jvm_mem_opts[@]+"${jvm_mem_opts[@]}"} \
+        ${jvm_prop_opts[@]+"${jvm_prop_opts[@]}"} \
+        -jar "$JAR_DIR/trimmomatic.jar" ${pass_args[@]+"${pass_args[@]}"}
+
 fi
-exit

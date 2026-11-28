@@ -11,7 +11,7 @@ source:
     - src_Makefile.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('pairix', max_pin="x.x") }}
 
@@ -19,9 +19,11 @@ requirements:
   build:
     - make
     - {{ compiler('c') }}
+    - {{ stdlib('c') }}
   host:
     - python
     - pip
+    - setuptools
     - zlib
   run:
     - python
@@ -30,10 +32,10 @@ requirements:
     - samtools
 
 test:
-  #imports:
-    #- pypairix
   commands:
     - pairix --help
+    # Not under imports: perl is a run requirement, so bioconda's container test would run `perl -e "use pypairix;"`.
+    - python -c "import pypairix"
 
 about:
   home: https://github.com/4dn-dcic/pairix

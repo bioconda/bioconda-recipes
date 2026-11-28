@@ -1,0 +1,46 @@
+{% set name = "trumut" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/erkim11/TRumut/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: b70212f52f5d7c1b904fa6eed78a32916ecd096e48a0e9b6ad9851a654158c31
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+  host:
+    - zlib
+  run:
+    - samtools
+
+test:
+  commands:
+    - trumut --version | grep {{ version }}
+    - trumut --help
+
+about:
+  home: https://github.com/erkim11/TRumut
+  doc_url: https://erkim11.github.io/TRumut/
+  dev_url: https://github.com/erkim11/TRumut
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Alignment-free tandem repeat mutation caller for long reads.
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - erkim11

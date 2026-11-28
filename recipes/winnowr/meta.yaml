@@ -1,0 +1,62 @@
+{% set name = "winnowr" %}
+{% set version = "0.1.2" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # The release's source tarball includes the vendored XGBoost (a git submodule),
+  # which GitHub's archive/ tarball leaves out.
+  url: https://github.com/fg-labs/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}-src.tar.gz
+  sha256: 19cf873e41e531a9abf917c8ee510dcc50184ba4fb781363936d9e2978a46972
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("winnowr", max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+    # XGBoost is built from the vendored sources with CMake.
+    - cmake
+    - make
+    # bindgen generates rust-htslib's htslib bindings with libclang.
+    - clang
+    - libclang
+  host:
+    # OpenMP for XGBoost: GCC's libgomp.a is linked statically on Linux. On
+    # macOS, llvm-openmp ships only libomp.dylib, so winnowr links it with a
+    # build warning (its run_exports add it at run time).
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - winnowr --version | grep -F "winnowr {{ version }}"
+    - winnowr --help
+
+about:
+  home: https://github.com/fg-labs/winnowr
+  license: MIT AND Apache-2.0
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+    # XGBoost and dmlc-core (Apache-2.0) are vendored and linked statically.
+    - xgboost/vendor/xgboost/LICENSE
+    - xgboost/vendor/xgboost/dmlc-core/LICENSE
+  summary: Machine-learned filtering and genotyping of germline small-variant calls.
+  dev_url: https://github.com/fg-labs/winnowr
+  doc_url: https://winnowr.readthedocs.io
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - nh13

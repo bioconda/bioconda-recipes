@@ -9,12 +9,16 @@ source:
   sha256: 41cdafaf21392144b683d7acf99f7a1fc59085f9b3697cd6ace57f40dddace9c
   patches:
     - 0001-Fix-missing-forceobj-for-numba.jit.patch
+    - 0002-Use-workers-for-scipy-cKDTree.patch
+    - 0003-Replace-deprecated-numpy-float.patch
+    - 0004-Link-the-math-library.patch
 
 build:
-  number: 9
+  number: 10
+  skip: True  # [py < 311 or py >= 314]
   run_exports:
     - {{ pin_subpackage("mnnpy", max_pin="x.x") }}
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed -vv
 
 requirements:
   build:
@@ -26,17 +30,22 @@ requirements:
     - cython
     - pip
     - python
+    - setuptools
+    - wheel
   run:
-    - anndata
+    # mnnpy still calls AnnData.concatenate, removed in AnnData 0.13.
+    - anndata >=0.9.2,<0.13
     - numba
-    - numpy
+    - numpy >=1.23.5,<2.3
     - pandas
-    - python
-    - scipy <1.9.0
+    - python >=3.11,<3.14
+    # SciPy 1.15 changed the randomized interpolative SVD outputs.
+    - scipy >=1.9.3,<1.15
 
 test:
   imports:
     - mnnpy
+    - mnnpy._utils
 
 about:
   home: http://github.com/chriscainx/mnnpy

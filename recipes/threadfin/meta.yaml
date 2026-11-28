@@ -1,0 +1,69 @@
+{% set name = "threadfin" %}
+{% set version = "4.7.0" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 81078e82bd1c535a0890d5e6ecd69f71a2746d415ef53e9c67fd012d1bfa1d6e
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools
+  run:
+    - python >={{ python_min }}
+    - anndata >=0.10
+    - numpy >=1.24
+    - pandas >=2.0
+    - scipy >=1.10
+    - scikit-learn >=1.3
+    - joblib >=1.2
+    - scanpy >=1.10
+    - matplotlib-base >=3.7
+    - python-igraph >=0.10
+    - leidenalg >=0.10
+    # the validated pair: threadfin allows pynndescent 0.7 (which umap-learn 0.6 requires) only with scanpy >=1.12.5,
+    # i.e. Python >=3.12, and a noarch recipe cannot make that distinction
+    - umap-learn >=0.5.5,<0.6
+    - pynndescent >=0.5.8,<0.7
+    - harmonypy >=0.0.9
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  imports:
+    - threadfin
+  commands:
+    - pip check
+
+about:
+  home: https://github.com/Reynold4k/Threadfin
+  summary: "Relationships between B-cell clones from paired single-cell RNA and BCR sequencing."
+  description: |
+    Threadfin takes paired single-cell RNA and receptor (BCR or TCR) sequencing and describes every clone by the
+    distribution of its cells' transcriptional states, so that clones, not cells, can be compared, mapped and tested:
+    clone embeddings, clonal coherence, clonal programmes, clone-level tests and clonal memory.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/Reynold4k/Threadfin
+  doc_url: https://github.com/Reynold4k/Threadfin/blob/main/docs/README.md
+
+extra:
+  recipe-maintainers:
+    - Reynold4k
+  identifiers:
+    - doi:10.5281/zenodo.23824521

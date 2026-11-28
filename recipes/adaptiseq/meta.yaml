@@ -1,0 +1,70 @@
+{% set name = "adaptiseq" %}
+{% set version = "0.1.15" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/adaptiseq-{{ version }}.tar.gz
+  sha256: de80376b7b51b162fbc96d1b8134eae58c21f47ebef0c74f752980c705683842
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - adaptiseq = adaptiseq.cli:main
+  run_exports:
+    - {{ pin_subpackage('adaptiseq', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77.0
+  run:
+    - python >=3.10
+    - aiohttp >=3.8
+    - aioftp >=0.21
+    - numpy >=1.21
+    # External tools adaptiSeq shells out to (same set as iSeq, plus md5sum,
+    # which macOS does not ship). The CLI preflight is needs-based, but the
+    # package installs them all so every mode works out of the box.
+    - wget
+    - axel
+    - pigz
+    - coreutils
+    - sra-tools >=2.11.0
+    - aspera-cli 4.14.0.*
+
+test:
+  imports:
+    - adaptiseq
+    - adaptiseq.engine
+  commands:
+    - adaptiseq --version
+    - adaptiseq --help
+    - python -m adaptiseq --version
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: https://github.com/swargo98/adaptiSeq
+  summary: "Fast, resumable, adaptive batch downloader for public sequencing data (GSA/SRA/ENA/DDBJ/GEO)."
+  description: |
+    adaptiSeq downloads sequencing data and metadata from GSA, SRA, ENA, DDBJ
+    and GEO. It offers batch-parallel download of accession lists, a segmented and resumable
+    HTTP(S)/FTP engine, md5 verification of every file inside the worker pool
+    with an exit status that reflects what was delivered, adaptive concurrency
+    (several controllers), adaptive parallel Aspera, and an importable Python API.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/swargo98/adaptiSeq
+  doc_url: https://swargo98.github.io/adaptiSeq/
+
+extra:
+  recipe-maintainers:
+    - swargo98

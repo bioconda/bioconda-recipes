@@ -1,76 +1,36 @@
 #!/bin/bash
 set -euo pipefail
 
-PKGDIR="$SRC_DIR"
-if [ ! -d "$PKGDIR/src" ]; then
-  PKGDIR=$(find "$SRC_DIR" -maxdepth 2 -type d -name src | head -1 | xargs dirname)
-fi
+cd "$SRC_DIR"
+export CPPFLAGS="${CPPFLAGS:-} -I${PREFIX}/include -I${SRC_DIR}/src/deps/libdeflate"
+export CFLAGS="${CFLAGS:-} -fPIC"
+export CXXFLAGS="${CXXFLAGS:-} ${CPPFLAGS}"
+export LDFLAGS="${LDFLAGS:-} -L${PREFIX}/lib"
 
-echo "SRC_DIR=$SRC_DIR"
-echo "PKGDIR=$PKGDIR"
+rm -f inst/stringtie inst/stringtie3/stringtie inst/gffcompare inst/trmap inst/.trmap.*
+find inst -name .DS_Store -delete
+mkdir -p inst/stringtie3
+rm -rf src/deps/libdeflate/build
+cmake -S src/deps/libdeflate -B src/deps/libdeflate/build \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER="$CC" \
+    -DLIBDEFLATE_BUILD_SHARED_LIB=OFF -DLIBDEFLATE_BUILD_GZIP=OFF
+cmake --build src/deps/libdeflate/build --parallel "${CPU_COUNT:-1}"
 
-cat > "$PKGDIR/src/Makefile" <<'MAKE_EOF'
-.PHONY: all deps tools tools-old tools-new clean distclean
+make -C src/deps/htslib distclean CC="$CC" AR="$AR" RANLIB="$RANLIB"
+make -C src/deps/htslib -j"${CPU_COUNT:-1}" libhts.a \
+    CC="$CC" AR="$AR" RANLIB="$RANLIB" \
+    CPPFLAGS="$CPPFLAGS" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
-all: deps tools
+make -C src/gffcompare clean CXX="$CXX" LINKER="$CXX"
+make -C src/gffcompare -j"${CPU_COUNT:-1}" release \
+    CXX="$CXX" LINKER="$CXX" LDFLAGS="$LDFLAGS"
+for tool in stringtie stringtie3; do
+    make -C "src/$tool" clean CXX="$CXX" LINKER="$CXX"
+    make -C "src/$tool" -j"${CPU_COUNT:-1}" release \
+        CXX="$CXX" LINKER="$CXX" LDFLAGS="$LDFLAGS" \
+        LIBS="../deps/htslib/libhts.a ../deps/libdeflate/build/libdeflate.a -lz -llzma -lbz2 -lm -pthread"
+done
+make -C src install-tools
 
-deps:
-	rm -rf ./deps/libdeflate/build
-	cmake -S ./deps/libdeflate -B ./deps/libdeflate/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
-	cmake --build ./deps/libdeflate/build -j1
-	cd ./deps/xz && make clean || true && ./configure --prefix=$(PWD)/deps/xz/install && make -j1 && make install
-	cd ./deps/bzip2 && make clean || true && make libbz2.a CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)"
-	cd ./deps/htslib && make clean || true && make \
-		CC="$(CC)" AR="$(AR)" RANLIB="$(RANLIB)" \
-		CPPFLAGS="-I$(PREFIX)/include" \
-		CFLAGS="-I$(PREFIX)/include -O2 -fPIC" \
-		LDFLAGS="-L$(PREFIX)/lib" \
-		libhts.a
-
-tools: tools-old tools-new
-
-tools-old:
-	$(MAKE) -C ./stringtie clean || true
-	$(MAKE) -C ./stringtie release \
-		CC="$(CC)" CXX="$(CXX)" LINKER="$(CXX)" \
-		LDFLAGS="-L$(PREFIX)/lib" \
-		LIBS="../deps/htslib/libhts.a ../deps/libdeflate/build/libdeflate.a ../deps/xz/install/lib/liblzma.a ../deps/bzip2/libbz2.a -L$(PREFIX)/lib -lz -llzma -lbz2 -pthread" \
-		CFLAGS="-I$(PREFIX)/include -I../deps/htslib -I../deps/libdeflate -I../deps/xz/install/include -I../deps/bzip2"
-
-tools-new:
-	$(MAKE) -C ./stringtie3 clean || true
-	$(MAKE) -C ./stringtie3 release \
-		CC="$(CC)" CXX="$(CXX)" LINKER="$(CXX)" \
-		LDFLAGS="-L$(PREFIX)/lib" \
-		LIBS="../deps/htslib/libhts.a ../deps/libdeflate/build/libdeflate.a ../deps/xz/install/lib/liblzma.a ../deps/bzip2/libbz2.a -L$(PREFIX)/lib -lz -llzma -lbz2 -pthread" \
-		CFLAGS="-I$(PREFIX)/include -I../deps/htslib -I../deps/libdeflate -I../deps/xz/install/include -I../deps/bzip2"
-
-clean:
-	$(MAKE) -C ./stringtie clean || true
-	$(MAKE) -C ./stringtie3 clean || true
-	cd ./deps/htslib && make clean || true
-	cd ./deps/bzip2 && make clean || true
-	cd ./deps/xz && make clean || true
-	rm -rf ./deps/xz/install
-	rm -rf ./deps/libdeflate/build
-
-distclean: clean
-	find ./deps -name '*.o' -delete
-	find ./deps -name '*.a' -delete
-	find ./deps -name '*.so' -delete
-	find ./deps -name '*.dylib' -delete
-	find ./deps -name '*.la' -delete
-	find ./deps -name '*.lo' -delete
-	find ./deps -name '.DS_Store' -delete
-	find ./deps -name '.libs' -type d -prune -exec rm -rf {} +
-MAKE_EOF
-
-perl -0pi -e 's/^import\(BSgenome\.Mmusculus\.UCSC\.mm10\)\n//mg' "$PKGDIR/NAMESPACE"
-perl -0pi -e 's/^.*BSgenome\.Mmusculus\.UCSC\.mm10.*\n//mg' "$PKGDIR/DESCRIPTION" || true
-
-cd "$PKGDIR/src"
-make clean || true
-make CC="$CC" CXX="$CXX" AR="$AR" RANLIB="$RANLIB" LINKER="$CXX" PREFIX="$PREFIX"
-cd "$PKGDIR"
-
-$R CMD INSTALL --build .
+# The executables are already built and installed under inst.
+"$R" CMD INSTALL --build --no-libs .

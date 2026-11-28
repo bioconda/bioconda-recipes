@@ -25,6 +25,15 @@ cmake_args=(
     -DGMX_BINARY_SUFFIX="_mddb"
     -DGMX_LIBS_SUFFIX="_mddb"
 )
+
+# Fix the SIMD level so the binaries do not depend on the build machine's CPU.
+# Without it, GROMACS picks the best SIMD the build host supports (AVX-512 on
+# the CI runners), and the package dies with "Illegal instruction" on AVX2-only
+# CPUs, even for `gmx_mddb --version`.
+if [[ "${target_platform}" == "linux-64" ]]; then
+    cmake_args+=(-DGMX_SIMD=AVX2_256)
+fi
+
 cmake .. "${cmake_args[@]}"
 make -j ${CPU_COUNT}
 #make check
