@@ -1,7 +1,8 @@
 #!/bin/bash
-
 set -eo pipefail
 
-make
 mkdir -p "${PREFIX}/bin"
-cp IMa3 "${PREFIX}/bin"
+
+make CC2="${CXX}" FLAGS="-O3 -fpermissive -Wno-register" -j"${CPU_COUNT}"
+
+install -v -m 0755 IMa3 "${PREFIX}/bin"
