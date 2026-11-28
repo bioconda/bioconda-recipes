@@ -1,5 +1,5 @@
 {% set name = "priorcons" %}
-{% set version = "0.1.4" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name }}
@@ -7,42 +7,43 @@ package:
 
 source:
   url: https://pypi.io/packages/source/p/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: c75580bb09ab44a35fd8bf634c24f59731624aca41b69f4eda5e49e54d56f27a
-
+  sha256: 5b3216554580277e387f8413c2a019b282229c49a7241947c25440afaec42921
 
 build:
   noarch: python
   number: 0
-  script: python -m pip install . --no-deps -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  entry_points:
+    - priorcons = priorcons.cli:entrypoint
   run_exports:
     - {{ pin_subpackage(name, max_pin="x.x") }}
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.9
     - pip
-    - setuptools
+    - setuptools >=77
     - wheel
   run:
-    - python >=3.8
-    - numpy
-    - pandas
-    - biopython
-    - pyarrow
+    - python >=3.9
+    - numpy >=1.21
 
 test:
-  commands:
-    - priorcons --help
   imports:
     - priorcons
+  commands:
+    - priorcons --help
+    - priorcons --version
 
 about:
-  home: https://github.com/GERMAN00VP/priorcons
-  license: APL-1.0
-  license_file: LICENSE
-  summary: Prior-guided integration tool that improves viral consensus sequences by filling masked regions using candidate sequences validated against evolutionary priors.
-  author: Germán Vallejo Palma
-  maintainer: Germán Vallejo Palma
+  home: https://github.com/GERMAN00VP/PriorCons
+  license: Apache-2.0
+  license_family: APACHE
+  license_file:
+    - LICENSE
+    - NOTICE
+  summary: Prior-guided integration of viral consensus sequences using a reference-anchored genome database.
+  dev_url: https://github.com/GERMAN00VP/PriorCons
 
 extra:
   recipe-maintainers:
