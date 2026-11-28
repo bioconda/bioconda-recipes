@@ -1,0 +1,44 @@
+{% set name = "gstar" %}
+{% set version = "1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MikeAxtell/GSTAr/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f801a8e7c988c8f328f1d94f8b9a2f1b037751b7b97bc920310668cd4b7f7ec2
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  run:
+    - perl
+    - viennarna >=2
+
+test:
+  commands:
+    - GSTAr.pl -v 2>&1 | grep "version {{ version }}"
+    - GSTAr.pl -h 2>&1 | grep "GSTAr"
+    - RNAplex --version
+
+about:
+  home: https://github.com/MikeAxtell/GSTAr
+  license: GPL-3.0-or-later
+  license_family: GPL3
+  license_file: LICENSE
+  summary: "Generic Small RNA-Transcriptome Aligner: RNAplex-based alignment of miRNAs and siRNAs to a transcriptome."
+  description: |
+    GSTAr aligns small RNAs (15-26 nt) to a transcriptome with RNAplex and reports
+    each site with its minimum free energy ratio and Allen et al. (2005) score.
+    It is the target-prediction step of CleaveLand4 and is used to predict
+    small RNA-directed cleavage sites for degradome analysis.
+  dev_url: https://github.com/MikeAxtell/GSTAr
+
+extra:
+  recipe-maintainers:
+    - IceGreb
