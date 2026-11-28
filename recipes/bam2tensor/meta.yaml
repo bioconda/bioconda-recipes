@@ -1,0 +1,59 @@
+{% set name = "bam2tensor" %}
+{% set version = "3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b32b73387e6bf905a793d76ec382793a48a9b49454d208e01e5b79826a734742
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - bam2tensor = bam2tensor.__main__:main
+    - bam2tensor-inspect = bam2tensor.inspect:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling
+  run:
+    - python >=3.10
+    - click >=8.0.1
+    - numpy >=1.26.0
+    - scipy >=1.15.0
+    - tqdm >=4.66.1
+    - biopython >=1.81
+    - pysam >=0.22.0
+
+test:
+  imports:
+    - bam2tensor
+  commands:
+    - bam2tensor --help
+    - bam2tensor --version
+    - bam2tensor-inspect --help
+
+about:
+  home: https://github.com/mcwdsi/bam2tensor
+  summary: Convert bisulfite-seq and EM-seq BAM files to sparse tensor representations of DNA methylation
+  description: |
+    bam2tensor extracts per-fragment CpG methylation states from
+    bisulfite-seq and EM-seq BAM files (Bismark, bwa-meth, Biscuit, gem3)
+    and writes them as sparse COO matrices (.npz) for deep learning pipelines.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/mcwdsi/bam2tensor
+  doc_url: https://mcwdsi.github.io/bam2tensor
+
+extra:
+  recipe-maintainers:
+    - semenko
