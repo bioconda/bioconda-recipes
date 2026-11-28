@@ -1,20 +1,20 @@
 {% set name = "SigProfilerMatrixGenerator" %}
-{% set version = "1.3.3" %}
+{% set version = "1.6.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/SigProfilerMatrixGenerator-{{ version }}.tar.gz
-  sha256: 8dd0f7031244c45f3ba75a066fb9eb807a5048e18e924ae504e3a3da9ee76493
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: 219266e4e859b4484bd33032bbd79c7f64affc7f6404187c2ebbe5ad5d42c79f
 
 build:
   entry_points:
     - SigProfilerMatrixGenerator=SigProfilerMatrixGenerator.scripts.SigProfilerMatrixGenerator_CLI:main_function
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
-  number: 1
+  script: SETUPTOOLS_SCM_PRETEND_VERSION={{ version }} {{ PYTHON }} -m pip install . -vvv --no-deps --no-build-isolation --no-cache-dir
+  number: 0
   run_exports:
     - {{ pin_subpackage(name|lower, max_pin="x") }}
 
@@ -22,7 +22,9 @@ requirements:
   host:
     - python >=3.9
     - pip
-    - setuptools
+    - setuptools >=69
+    - setuptools-scm >=8
+    - wheel
   run:
     - python >=3.9
     - matplotlib-base >=2.2.2
