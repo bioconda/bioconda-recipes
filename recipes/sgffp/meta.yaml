@@ -1,0 +1,45 @@
+{% set version = "0.22.1" %}
+
+package:
+  name: sgffp
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/s/sgffp/sgffp-{{ version }}.tar.gz
+  sha256: 4b27461e5c60e9a22adaf909beb621e8c7112b5d18221cde91b3f058b79f131b
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+  run_exports:
+  - {{ pin_subpackage('sgffp', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - hatchling
+    - pip
+  run:
+    - python >=3.10
+    - xmltodict >=0.14
+
+test:
+  imports:
+    - sgffp
+  commands:
+    - pip check
+    - sff --help
+  requires:
+    - pip
+    - python
+
+about:
+  home: https://github.com/merv1n34k/sgffp
+  summary: Read, write, and manipulate SnapGene files (.dna, .rna, .prot)
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - ramez17khaled
