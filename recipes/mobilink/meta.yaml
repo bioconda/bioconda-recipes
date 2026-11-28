@@ -1,0 +1,60 @@
+{% set name = "mobilink" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/allminer1/mobilink/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f2b29b3b7e8ef9cc2fff8a0f07033356640b2dea45591f00fa917c6b47d0a63b
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  entry_points:
+    - mobilink = mobilink.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - hatchling >=1.20
+  run:
+    - python >=3.10
+    - numpy >=1.24
+    - scipy >=1.10
+    - pandas >=2.0
+    - click >=8.1
+    - python-edlib >=1.3
+
+test:
+  imports:
+    - mobilink
+    - mobilink.stats
+    - mobilink.nulls
+  commands:
+    - mobilink --version
+    - mobilink test --help
+    - mobilink meta --help
+    - mobilink chimeras --help
+
+about:
+  home: https://github.com/allminer1/mobilink
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Chance-corrected, read-length-robust co-localization of gene classes on long reads and contigs
+  description: |
+    mobilink tests whether two gene classes (for example antibiotic resistance genes and mobile genetic elements)
+    sit close together on long reads or contigs more often than chance, and estimates the net linked fraction, an
+    effect size that does not depend on read length.
+  dev_url: https://github.com/allminer1/mobilink
+  doc_url: https://github.com/allminer1/mobilink/tree/main/docs
+
+extra:
+  recipe-maintainers:
+    - allminer1
