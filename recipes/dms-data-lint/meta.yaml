@@ -1,0 +1,49 @@
+{% set name = "dms-data-lint" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/MaximilianStammnitz/dms-data-lint/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: e94f07f66ccfde38292a8607927023048843f6cd10cd8e5598779e93785681db
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+  host:
+    - isa-l
+  run:
+    - isa-l
+
+test:
+  commands:
+    - dms_data_lint --version
+
+about:
+  home: https://github.com/MaximilianStammnitz/dms-data-lint
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Integrity and format checks of paired-end FASTQ files (nf-core/deepmutscan)
+  description: |
+    Checks that the two FASTQ files of a paired-end library are intact and consistent: complete
+    gzip decompression with checksums, the format of every record, equal record numbers, matching
+    mate names in the same order, and no duplicate read names. The checks and messages are those of
+    fq lint in its default settings; decompression with ISA-L and one thread per file. The raw-data
+    check of nf-core/deepmutscan.
+
+extra:
+  recipe-maintainers:
+    - MaximilianStammnitz
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
