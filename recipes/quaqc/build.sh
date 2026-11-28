@@ -14,5 +14,5 @@ sed -i.bak 's|-lpthread|-pthread|' Makefile
 sed -i.bak 's|-std=gnu99|-std=gnu11|' Makefile
 rm -rf *.bak
 
-make CC="${CC}" CFLAGS="${CFLAGS}" PREFIX="${PREFIX}" z_dyn=1 hts_dyn=1 release -j"${CPU_COUNT}"
+make CC="${CC}" CFLAGS="${CFLAGS}" PREFIX="${PREFIX}" z_dyn=1 hts_dyn=1 bw_dyn=1 release -j"${CPU_COUNT}"
 make install
