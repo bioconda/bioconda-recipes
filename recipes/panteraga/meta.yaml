@@ -1,5 +1,5 @@
 {% set name = "panteraga" %}
-{% set version = "1.4.1" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name }}
@@ -7,10 +7,11 @@ package:
 
 source:
   - url: https://github.com/piosierra/panteraGA/archive/refs/tags/v{{ version }}.tar.gz
-    sha256: 33156ee3507f479549da253187b53d505a7566989728544e5827065a4b22264a
-  - url: https://zenodo.org/records/22990589/files/model.tar.gz
-    sha256: 51c7cfed52a94428e0b8f5f0777b4a77d4be839004667c4047c727d65685aa2e
-    folder: zenodo_model
+    sha256: 3bdfc9b3e0fdfceace191b8f69a86cd68b487122d26eace6cbc8e11fe7d03e1c
+  # HMM classifier libraries pantera_hmm_v2 (CC0), doi:10.5281/zenodo.24543291
+  - url: https://zenodo.org/records/24543291/files/pantera_hmm_v2.tar.gz
+    sha256: cb9ece1055401fc5141f36cf8781f1bed590c2eee0f921cd1410c2a2ee328156
+    folder: zenodo_hmm
 
 build:
   number: 0
@@ -26,23 +27,30 @@ requirements:
     - r-ape
     - r-stringi
     - r-data.table
-    - r-xgboost
-    - r-quantmod
     - bioconductor-biostrings
     - mafft
-    - emboss        # getorf
-    - blast >=2.12  # blastp, blastn, makeblastdb (-mt_mode needs 2.12)
+    - blast >=2.12  # blastn, makeblastdb, dustmasker (-mt_mode needs 2.12)
     - cd-hit        # cd-hit-est
-    - fastga        # FastGA, ONEview
+    - fastga        # FastGA, ONEview, FAtoGDB, GIXmake
     - alntools      # svfind
+    - fastan        # FasTAN (tandem masking, the default)
+    - hmmer         # hmmsearch, nhmmer (HMM classifier)
+    - miniprot      # protein-to-DNA alignment (HMM classifier)
+    - infernal      # cmscan, cmfetch, cmalign (SINE heads, ncRNA flag)
+    - trf           # tandem repeat flag
+    # optional: diamond, only for the host-protein part of the libraries (built by
+    # model/hmm/host_build/build_host_part.sh, not shipped)
 
 test:
   commands:
     - panteraGA -h
-    - test -s $PREFIX/share/{{ name }}-{{ version }}/libs/RepeatPeps.lib.psq
-    - test -s $PREFIX/share/{{ name }}-{{ version }}/model/typesnames
-    - test -s $PREFIX/share/{{ name }}-{{ version }}/model/featurenames
-    - test $(wc -c < $PREFIX/share/{{ name }}-{{ version }}/model/xgbmodel.ubj) -gt 1000000
+    - test -s $PREFIX/share/{{ name }}-{{ version }}/scripts/pantera_classify.R
+    - test -s $PREFIX/share/{{ name }}-{{ version }}/model/label_map.tsv
+    - test -s $PREFIX/share/{{ name }}-{{ version }}/model/hmm/prot/pantera_v5.cal.hmm.gz
+    - test -s $PREFIX/share/{{ name }}-{{ version }}/model/hmm/tir/pantera_tir_ends.hmm.gz
+    - hmmsearch -h > /dev/null
+    - miniprot --version
+    - cmscan -h > /dev/null
 
 about:
   home: https://github.com/piosierra/panteraGA
@@ -50,6 +58,10 @@ about:
   license_family: MIT
   license_file: LICENSE
   summary: Generate a Transposable Elements library from a FastGA whole genome alignment.
+  description: |
+    panteraGA builds a library of polymorphic transposable elements from FastGA whole-genome alignments and
+    classifies it with an HMM classifier. The classifier's model libraries (pantera_hmm_v2, CC0) are
+    downloaded from Zenodo (doi:10.5281/zenodo.24543291).
   dev_url: https://github.com/piosierra/panteraGA
 
 extra:

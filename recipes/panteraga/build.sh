@@ -2,22 +2,18 @@
 set -euo pipefail
 
 SHARE="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}"
-mkdir -p "${SHARE}/model" "${PREFIX}/bin"
+mkdir -p "${SHARE}/model" "${SHARE}/scripts" "${PREFIX}/bin"
 
-# Script
+# Script, HMM classifier and its label map (panteraGA reads them from its own folder)
 install -m 755 panteraGA "${SHARE}/panteraGA"
+install -m 644 scripts/pantera_classify.R "${SHARE}/scripts/pantera_classify.R"
+install -m 644 model/label_map.tsv "${SHARE}/model/label_map.tsv"
 
-# BLAST protein library (already indexed in the repository)
-cp -r libs "${SHARE}/"
-
-# Model: small text files from the repo, real model from Zenodo
-cp model/typesnames model/featurenames "${SHARE}/model/"
-# conda-build unpacks a .tar.gz itself; a plain .gz may arrive still compressed.
-MODEL=$(find zenodo_model -name 'xgbmodel.ubj*' -type f | head -n 1)
-case "${MODEL}" in
-  *.gz) gunzip -c "${MODEL}" > "${SHARE}/model/xgbmodel.ubj" ;;
-  *)    cp "${MODEL}" "${SHARE}/model/xgbmodel.ubj" ;;
-esac
+# HMM libraries from Zenodo -> model/hmm. conda-build may or may not strip the archive's top folder
+# (pantera_hmm_v2/), so the library folder is located by its protein file.
+PROT=$(find zenodo_hmm -path '*/prot/pantera_v5.cal.hmm.gz' -type f | head -n 1)
+[ -n "${PROT}" ] || { echo "pantera_hmm_v2 library not found in zenodo_hmm" >&2; exit 1; }
+cp -r "$(dirname "$(dirname "${PROT}")")" "${SHARE}/model/hmm"
 
 # Relative symlink so the package stays relocatable
 ln -s "../share/${PKG_NAME}-${PKG_VERSION}/panteraGA" "${PREFIX}/bin/panteraGA"
