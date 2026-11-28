@@ -1,0 +1,59 @@
+{% set name = "tau-glymphatic-continuum" %}
+{% set version = "1.1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: "https://github.com/Lukecele/tau-glymphatic-continuum/archive/refs/tags/v{{ version }}.tar.gz"
+  sha256: f19477bdef4cb4d1666cd86e4b943365254c729553b90fc501c41b1136822e73
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-build-isolation --no-deps --no-cache-dir -vvv"
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+
+test:
+  requires:
+    - pip
+  imports:
+    - tau_glymphatic
+    - tau_glymphatic.alps
+    - tau_glymphatic.solver
+    - tau_glymphatic.pde_brinkman
+    - tau_glymphatic.statistics
+    - tau_glymphatic.audit
+    - tau_glymphatic.cohorts
+    - tau_glymphatic.models
+    - tau_glymphatic.cli
+  commands:
+    - python -m pip check
+    - tau-calc --help
+    - tau-calc --audit
+    - tau-calc --alps 1.50 --apoe-e4 1 --json
+
+about:
+  home: https://github.com/Lukecele/tau-glymphatic-continuum
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Multiscale reaction-diffusion and perivascular glymphatic clearance engine for Alzheimer's tau spreading."
+  description: "A multiscale biophysical reaction-diffusion and perivascular transport computational engine modeling pathological Tau propagation in Alzheimer's disease. Parameterized from clinical DTI-ALPS diffusion indices, Stokes-Brinkman perivascular hydrodynamics, and microglial neuroinflammatory strain across multi-center cohorts."
+
+extra:
+  recipe-maintainers:
+    - Lukecele
+  identifiers:
+    - doi:10.5281/zenodo.24261518
+    - biotools:tau-glymphatic-continuum

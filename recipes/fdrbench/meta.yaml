@@ -1,0 +1,62 @@
+{% set name = "fdrbench" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "d1740d90decd139c0e2294d766797be800c2b7bd3fd7ae3624e9822ffd7dceed" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  # The release zip carries only the jar and its lib/ directory, with no licence
+  # file, so the licence is fetched separately from the tag.
+  - url: https://github.com/Noble-Lab/FDRBench/releases/download/v{{ version }}/fdrbench-{{ version }}.zip
+    sha256: {{ sha256 }}
+  - url: https://raw.githubusercontent.com/Noble-Lab/FDRBench/v{{ version }}/LICENSE
+    sha256: c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('fdrbench', max_pin="x") }}
+
+requirements:
+  run:
+    - openjdk >=11
+
+test:
+  commands:
+    - fdrbench -h
+
+about:
+  home: https://github.com/Noble-Lab/FDRBench
+  dev_url: https://github.com/Noble-Lab/FDRBench
+  doc_url: https://github.com/Noble-Lab/FDRBench/blob/v{{ version }}/README.md
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "FDRBench: entrapment-based false discovery rate control evaluation for proteomics"
+  description: |
+    FDRBench evaluates false discovery rate control in tandem mass spectrometry
+    analysis using entrapment. It provides two functions: building entrapment
+    databases, either by randomly shuffling target sequences or by taking
+    sequences from foreign species; and estimating the false discovery
+    proportion (FDP) using the lower bound, combined and paired methods.
+    It has been tested against identification results from DIA-NN, MSFragger,
+    Spectronaut, MaxQuant, Tide, Sage and others.
+
+    Wen B, Freestone J, Riffle M, et al. Assessment of false discovery rate
+    control in tandem mass spectrometry analysis using entrapment.
+    Nat Methods 22, 1454-1463 (2025). doi:10.1038/s41592-025-02719-x
+
+extra:
+  recipe-maintainers:
+    - BioGeek
+  identifiers:
+    - doi:10.1038/s41592-025-02719-x
+  notes: |
+    FDRBench is a Java program invoked through a wrapper script named
+    "fdrbench", which is placed on $PATH. The wrapper passes $JAVA_OPTS to the
+    JVM, so memory can be raised with e.g. JAVA_OPTS="-Xmx8G" fdrbench ...
+    Running it with no arguments launches the graphical interface; passing
+    arguments runs the command line interface.

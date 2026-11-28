@@ -1,0 +1,46 @@
+{% set version = "0.1.0" %}
+{% set commit = "50187ba8bb5eb3a36f4509e8dc0a7aeaa63a1e75" %}
+
+package:
+  name: r-lulu
+  version: {{ version }}
+
+source:
+  url: https://github.com/tobiasgf/lulu/archive/{{ commit }}.tar.gz
+  sha256: d493659aebe52b59c1f0e5998616a60093f8776cbf1543f02a36fc51bd5a631f
+
+build:
+  noarch: generic
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('r-lulu', max_pin='x.x') }}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-dplyr
+  run:
+    - r-base
+    - r-dplyr
+
+test:
+  commands:
+    - Rscript -e 'library("lulu"); stopifnot(packageVersion("lulu") == "0.1.0")'
+    - Rscript -e 'library("lulu"); otutable <- data.frame(Sample1=c(100,10,5), Sample2=c(100,10,5), row.names=c("OTU1","OTU2","OTU3"), check.names=FALSE); matchlist <- data.frame(child=c("OTU2","OTU3"), parent=c("OTU1","OTU1"), match=c(99,98), stringsAsFactors=FALSE); result <- lulu(otutable, matchlist, minimum_match=84); stopifnot(is.list(result)); stopifnot(result$curated_count == 1); stopifnot(result$discarded_count == 2); stopifnot(identical(as.character(result$curated_otus), "OTU1")); stopifnot(nrow(result$curated_table) == 1); stopifnot(as.numeric(result$curated_table["OTU1","Sample1"]) == 115); stopifnot(as.numeric(result$curated_table["OTU1","Sample2"]) == 115); cat("LULU functional test passed\n")'
+
+about:
+  home: https://github.com/tobiasgf/lulu
+  license: GPL-3.0-only
+  license_file: LICENSE
+  summary: Post-clustering curation of amplicon data for reliable biodiversity metrics
+  description: >-
+    LULU identifies and merges likely artefactual daughter OTUs using
+    co-occurrence, sequence similarity, and relative abundance information.
+  dev_url: https://github.com/tobiasgf/lulu
+
+extra:
+  recipe-maintainers:
+    - ollybolly

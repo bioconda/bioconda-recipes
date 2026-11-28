@@ -1,0 +1,98 @@
+{% set name = "focaloop" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/nekrut/focaloop/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 7639681000aa4aead19add1c869c992793940d2e5f154d75f12ed1c9ab5b7aa7
+
+build:
+  number: 0
+  skip: true  # [py < 310 or win]
+  entry_points:
+    - focaloop = focaloop.cli:main
+  run_exports:
+    - {{ pin_subpackage('focaloop', max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
+  host:
+    - python
+    - pip
+    - setuptools >=68
+  run:
+    - python
+    - numpy >=1.24
+    - pandas >=2.0
+    - pyarrow >=14
+    - scipy >=1.10
+    - pyyaml >=6
+    - requests >=2.28
+    - zstandard >=0.21
+    - pydeseq2 >=0.4.12
+    - statsmodels >=0.14
+    - scikit-learn >=1.5
+    - numba >=0.58
+    - mappy >=2.26
+    - pysam >=0.22
+    - biopython >=1.83
+    - bwa >=0.7.17
+    - bwa-mem2 >=2.2.1
+    - strobealign >=0.14.0
+    - minimap2 >=2.28
+    - hisat2 >=2.2.1
+    - salmon >=1.10.3
+    - piscem >=0.10.3
+    - samtools >=1.21
+    - bcftools >=1.21
+    - htslib >=1.21
+    - miniprot
+    - diamond
+    - stringtie
+    - gffcompare
+    - seqkit
+    - hmmer
+    - infernal
+    - trnascan-se
+    - barrnap
+    - curl
+    - zstd
+
+test:
+  imports:
+    - focaloop
+    - focaloop.panexpr
+    - focaloop.malariavar
+    - focaloop.geneloop
+  commands:
+    - focaloop --version
+    - focaloop expressionloop --help
+    - focaloop variationloop --help
+    - focaloop geneloop --help
+    - focaloop query --help
+    - '(glcore 2>&1 || true) | grep -q "usage: glcore"'
+    - 'prep_unitigs_filt_adapt < /dev/null'
+    - '(logan_var_pileup 2>&1 || true) | grep -q "usage: logan_var_pileup"'
+    - 'prep_expr_unitigs < /dev/null'
+    - '(expr_sam_ec_v2 2>&1 || true) | grep -q "usage: expr_sam_ec_v2"'
+    - python -c "from focaloop.galaxy_runners import prebuild_all_native_libs; assert len(prebuild_all_native_libs()) == 16"
+
+about:
+  home: https://github.com/nekrut/focaloop
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Adaptive byte-budgeted streaming loops for RNA-seq expression, genomic variation, and eukaryotic genome annotation"
+  dev_url: https://github.com/nekrut/focaloop
+
+extra:
+  recipe-maintainers:
+    - nekrut

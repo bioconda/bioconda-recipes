@@ -5,6 +5,9 @@ mkdir -p "${PREFIX}/bin"
 # Install both the pairix binaries and the Python extension module
 export C_INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+# GCC 14 turns these warnings into errors; the sources trip both of them.
+# CFLAGS reaches both make and the pip build of the extension.
+export CFLAGS="${CFLAGS} -Wno-error=incompatible-pointer-types -Wno-error=int-conversion"
 
 make CC="${CC}"
 

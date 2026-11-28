@@ -1,53 +1,67 @@
 {% set name = "TEsorter" %}
-{% set version = "1.5.1" %}
-{% set sha256 = "3eca3df3bd2edd4e157560abb752658635c8d3cd2da25f09d31abbc6ae6f338c" %}
+{% set version = "2.0.0" %}
+{% set sha256 = "69045eabfc437b955d4302782dbfbcda8b63925bb978aab40d179e733d9f131a" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
-  url: https://github.com/zhangrengang/TEsorter/archive/refs/tags/v{{ version }}.tar.gz
+  # TEsorter 2.x is TEsorter2, a reimplementation that keeps the TEsorter
+  # command line (`TEsorter` runs TEsorter2; `--legacy` runs TEsorter's pipeline).
+  url: https://github.com/KGerhardt/TEsorter2/archive/refs/tags/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   noarch: python
-  entry_points:
-    - TEsorter = TEsorter.app:main
-    - TEsorter-test = TEsorter.test.test_app:main
-    - concatenate_domains.py = TEsorter.modules.concatenate_domains:main
   number: 0
+  entry_points:
+    - TEsorter = tesorter2.pipeline:main
+    - TEsorter2 = tesorter2.pipeline:main
+    - tesorter2 = tesorter2.pipeline:main
+    - tesorter2-emit = tesorter2.emit:main
+    - tesorter2-subset = tesorter2.subset:main
   run_exports:
     - {{ pin_subpackage('tesorter', max_pin="x") }}
 
 requirements:
   host:
-    - python >=3
+    - python >=3.9
     - pip
-    - setuptools
-    - hmmer
+    - setuptools >=61
   run:
-    - python >=3
-    - drmaa
-    - pp
+    - python >=3.9
+    - pyhmmer >=0.10
+    - pyfastx
+    - numpy
     - hmmer
-    - rmblast
-    - biopython
-    - xopen
+    - rmblast          # full BLAST+ (blastn, blastp, makeblastdb), as in TEsorter 1; coexists with RepeatMasker
+    - minimap2
+    - nail
+    - bath
 
 test:
-  commands:
-    - "TEsorter --version"
-    - "TEsorter-test"
+  # run_test.sh: --version of every command, plus classification of a
+  # profile consensus emitted from the bundled REXdb.
+  imports:
+    - tesorter2
 
 about:
-  home: "https://github.com/zhangrengang/TEsorter"
+  home: "https://github.com/KGerhardt/TEsorter2"
   license: "GPL-3.0-or-later"
   license_family: GPL3
   license_file: LICENSE
-  summary: "Lineage-level classification of transposable elements using conserved protein domains."
-  dev_url: "https://github.com/zhangrengang/TEsorter"
-  doc_url: "https://github.com/zhangrengang/TEsorter/blob/v{{ version }}/README.md"
+  summary: "Fast, divergence-robust classification of transposable elements from conserved protein domains (TEsorter2)."
+  description: |
+    TEsorter2 classifies transposable elements to Order, Superfamily and
+    Clade from conserved protein domains, as TEsorter does, with faster
+    in-process searches, a staged nail/HMMER/BATH cascade for degraded
+    copies, multi-database reconciliation and a genome mode. The
+    `TEsorter` command is the same program and accepts TEsorter's
+    arguments, so existing TEsorter commands run TEsorter2; `--legacy`
+    runs TEsorter's original single-database pipeline.
+  dev_url: "https://github.com/KGerhardt/TEsorter2"
+  doc_url: "https://github.com/KGerhardt/TEsorter2/blob/v{{ version }}/README.md"
 
 extra:
   identifiers:

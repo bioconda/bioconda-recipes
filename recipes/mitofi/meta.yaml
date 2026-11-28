@@ -1,0 +1,66 @@
+{% set name = "mitofi" %}
+{% set version = "1.0.0" %}
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 7470e0427cc9f5eb669253e833f803c9c51b0f219eca5ee833b1ba30fca43110
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - mitofi = mitofi.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=64
+  run:
+    - python >={{ python_min }}
+    - numpy >=1.21
+    - scipy >=1.7
+    - scikit-image >=0.19
+    - scikit-learn >=1.5
+    - tifffile >=2021.7
+    - imagecodecs >=2022.2
+    - joblib >=1.1
+    - tk
+
+test:
+  imports:
+    - mitofi
+  commands:
+    - mitofi --version | grep {{ version }}
+    - mitofi --help
+    - pip check
+  requires:
+    - pip
+    - python {{ python_min }}
+
+about:
+  home: https://github.com/vishal9045/MitoFI
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: A continuous, calibrated mitochondrial fragmentation index for 2D confocal images
+  description: |
+    MitoFI scores two-dimensional fluorescence images of mitochondria with a continuous
+    fragmentation index from 0 (elongated network) to 1 (fragmented), with a quality gate
+    that withholds scores for fields it cannot segment. Command-line and graphical interfaces.
+  doc_url: https://github.com/vishal9045/MitoFI#readme
+  dev_url: https://github.com/vishal9045/MitoFI
+
+extra:
+  identifiers:
+    - doi:10.5281/zenodo.23857565
+  recipe-maintainers:
+    - vishal9045

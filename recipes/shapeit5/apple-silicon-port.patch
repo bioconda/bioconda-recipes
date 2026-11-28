@@ -1,0 +1,4675 @@
+diff --git a/README.md b/README.md
+index a240754..b9153cd 100644
+--- a/README.md
++++ b/README.md
+@@ -22,6 +22,35 @@ SHAPEIT5 estimates haplotypes in large datasets, with a special focus on rare va
+ 
+ It is strongly advised to prioritize the use of the latest released version (see released section on the right hand side) instead of cloning the latest version of the source code, as doing so is at your own risk.
+ 
++## Apple Silicon (macOS)
++
++SHAPEIT5 builds and runs natively on Apple Silicon (arm64) since v5.1.2: the AVX2/FMA SIMD kernels of the HMM engine were ported to ARM NEON, and the build system automatically uses clang + Homebrew dependencies on macOS.
++
++```bash
++brew install htslib boost zlib bzip2 lzma curl openssl
++make macos    # native arm64 build of all binaries
++```
++
++### Why native (and why now)
++
++The previous releases ship **x86_64 static binaries** (and a Docker image of the same). On Apple Silicon those only run under the **Rosetta 2** translation layer. Apple has announced that **macOS 27 is the last release to support Rosetta 2** for general Intel apps; starting with **macOS 28 (expected 2027)**, Intel-only binaries will no longer launch. The native arm64 build removes that dependency entirely, and is also faster.
++
++Measured on an M1 Pro (10 cores), `phase_common` on the haploid test dataset (`--thread 8`), native NEON vs the original x86_64 AVX2 binary run under Rosetta 2:
++
++| Build | Wall time (avg of 2) |
++|---|---|
++| **Native NEON (arm64)** | **~76 s** |
++| x86_64 AVX2 under Rosetta 2 | ~188 s |
++
++So the native build is **~2.5x faster** than running the x86_64 binary through Rosetta 2, and is not subject to the Rosetta 2 end of life.
++
++Notes:
++
++- `make` also works on macOS (Darwin is detected automatically); `make macos` is the explicit target.
++- For maximum performance, run with `--thread N` where N is the number of physical cores (10-12 on M3).
++- The Docker image in `docker/` contains prebuilt **x86_64** static binaries: on a Mac it runs via Rosetta 2 (~2.5x slower, and only until macOS 28). A multi-arch arm64 Linux image is a planned follow-up.
++- The `static_exe` targets (Linux x86_64 static binaries) do not apply on macOS.
++
+ ## Citation
+ If you use SHAPEIT5 in your research work, please cite the following paper:
+ 
+diff --git a/common/makefile_common.mk b/common/makefile_common.mk
+index 6bf98b9..43f9815 100644
+--- a/common/makefile_common.mk
++++ b/common/makefile_common.mk
+@@ -1,7 +1,6 @@
+ #COMPILER MODE C++17
+ CXX=g++ -std=c++20
+ 
+-
+ #create folders
+ dummy_build_folder_bin := $(shell mkdir -p bin)
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+@@ -33,6 +32,24 @@ NAME=$(shell basename $(CURDIR))
+ BFILE=bin/$(NAME)
+ EXEFILE=bin/$(NAME)_static
+ 
++# Apple Silicon / macOS native build (clang + Homebrew htslib/boost)
++UNAME_S := $(shell uname -s)
++ifeq ($(UNAME_S),Darwin)
++CXX=clang++ -std=c++20
++CXXFLAG=-O3 -march=native
++CXXFLAG+= -D__COMMIT_ID__=\"$(COMMIT_VERS)\"
++CXXFLAG+= -D__COMMIT_DATE__=\"$(COMMIT_DATE)\"
++LDFLAG=-O3 -L$(shell brew --prefix)/lib
++HTSSRC=$(shell brew --prefix)/opt/htslib
++HTSLIB_INC=$(HTSSRC)/include
++HTSLIB_LIB=$(HTSSRC)/lib/libhts.a
++BOOST_INC=$(shell brew --prefix)/opt/boost/include
++BOOST_LIB_IO=$(shell brew --prefix)/opt/boost/lib/libboost_iostreams.a
++BOOST_LIB_PO=$(shell brew --prefix)/opt/boost/lib/libboost_program_options.a
++BOOST_LIB_SE=$(shell brew --prefix)/opt/boost/lib/libboost_serialization.a
++macos: $(BFILE)
++endif
++
+ # Only search for libraries if goals != clean
+ ifeq (,$(filter clean,$(MAKECMDGOALS)))
+ 
+@@ -47,7 +64,7 @@ ifeq (,$(filter clean,$(MAKECMDGOALS)))
+ ##########################################
+ # Boost libraries for static compilation #
+ ##########################################
+-BOOST_INC=/usr/include
++BOOST_INC ?= /usr/include
+ 
+ # If not set by user command, search for it
+ BOOST_LIB_IO?=$(shell whereis libboost_iostreams | grep -o '\S*\.a\b')
+@@ -158,7 +175,11 @@ dnanexus: HTSLIB_LIB=/usr/local/lib/libhts.a
+ dnanexus: $(BFILE)
+ 
+ #COMPILATION RULES
++ifeq ($(UNAME_S),Darwin)
++all: macos
++else
+ all: desktop
++endif
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ -o $@ $(HTSLIB_LIB) $(BOOST_LIB_IO) $(BOOST_LIB_PO) $(DYN_LIBS)
+diff --git a/docs/CHANGELOG.md b/docs/CHANGELOG.md
+index 918fe3f..a1cb429 100644
+--- a/docs/CHANGELOG.md
++++ b/docs/CHANGELOG.md
+@@ -8,8 +8,12 @@ layout: default
+ All notable changes to this project are documented in this file.
+ 
+ {: .highlight }
+-Version 5.1.1 is now available [here] (https://github.com/odelaneau/shapeit/releases) as docker image or static binaries. 
++Version 5.1.2 is now available [here] (https://github.com/odelaneau/shapeit/releases) as docker image or static binaries. 
+ 
++## v5.1.2
++	* Apple Silicon (arm64) support: HMM AVX2/FMA kernels ported to ARM NEON, native macOS build via clang + Homebrew (`make macos`)
++	* NEON kernels give comparable performance to AVX2 on Linux and ~10x the speed of the scalar code with compiler auto-vectorization on ARM
++	* Native arm64 build is ~2.5x faster than the x86_64 binaries run under Rosetta 2, and removes the Rosetta 2 dependency (Rosetta 2 support for Intel apps ends with macOS 27 / macOS 28)
+ 
+ ## v5.1.1
+ 	* Bugfix of a nasty segfault, thanks to Ami Williams (23andMe).
+diff --git a/phase_common/src/containers/conditioning_set/conditioning_set_selection.cpp b/phase_common/src/containers/conditioning_set/conditioning_set_selection.cpp
+index c235785..ef5eb50 100644
+--- a/phase_common/src/containers/conditioning_set/conditioning_set_selection.cpp
++++ b/phase_common/src/containers/conditioning_set/conditioning_set_selection.cpp
+@@ -20,163 +20,193 @@
+  * SOFTWARE.
+  ******************************************************************************/
+ 
++#include <algorithm>
+ #include <containers/conditioning_set/conditioning_set_header.h>
+ 
+ using namespace std;
+ 
+-void * selecter_callback(void * ptr) {
+-	conditioning_set * S = static_cast< conditioning_set * >( ptr );
+-
+-	int id_worker, id_job;
+-	pthread_mutex_lock(&S->mutex_workers);
+-	id_worker = S->i_worker ++;
+-	pthread_mutex_unlock(&S->mutex_workers);
+-
+-	for(;;) {
+-		pthread_mutex_lock(&S->mutex_workers);
+-		id_job = S->i_job ++;
+-		pthread_mutex_unlock(&S->mutex_workers);
+-
+-		if (id_job <= S->sites_pbwt_mthreading.back()) {
+-			S->select(id_job);
+-			pthread_mutex_lock(&S->mutex_workers);
+-			vrb.progress("  * PBWT selection", (++S->d_job)*1.0/(S->sites_pbwt_mthreading.back()+1));
+-			pthread_mutex_unlock(&S->mutex_workers);
+-		}
+-		else pthread_exit(NULL);
+-	}
++void *selecter_callback(void *ptr) {
++  conditioning_set *S = static_cast<conditioning_set *>(ptr);
++
++  int id_worker, id_job;
++  pthread_mutex_lock(&S->mutex_workers);
++  id_worker = S->i_worker++;
++  pthread_mutex_unlock(&S->mutex_workers);
++
++  for (;;) {
++    pthread_mutex_lock(&S->mutex_workers);
++    id_job = S->i_job++;
++    pthread_mutex_unlock(&S->mutex_workers);
++
++    if (id_job <= S->sites_pbwt_mthreading.back()) {
++      S->select(id_job);
++      pthread_mutex_lock(&S->mutex_workers);
++      vrb.progress("  * PBWT selection",
++                   (++S->d_job) * 1.0 / (S->sites_pbwt_mthreading.back() + 1));
++      pthread_mutex_unlock(&S->mutex_workers);
++    } else
++      pthread_exit(NULL);
++  }
+ }
+ 
+ void conditioning_set::transposePBWTneighbours() {
+-	int block = 32;
+-	unsigned long addr_tar, addr_src;
+-	unsigned long addr_offset = sites_pbwt_ngroups * n_ind * 2UL;
+-	for (int d = 0; d < depth ; d ++) {
+-		for (int s = 0; s < sites_pbwt_ngroups ; s += block) {
+-			for(int h = 0; h < n_ind * 2; ++h) {
+-				for(int b = 0; b < block && s + b < sites_pbwt_ngroups ; ++b) {
+-					addr_tar = depth * addr_offset + h*sites_pbwt_ngroups + s + b;
+-					addr_src = d * addr_offset + (s + b)*n_ind*2UL + h;
+-					indexes_pbwt_neighbour[addr_tar] = indexes_pbwt_neighbour[addr_src];
+-				}
+-			}
+-		}
+-		std::copy(indexes_pbwt_neighbour.begin() + depth * addr_offset , indexes_pbwt_neighbour.end(), indexes_pbwt_neighbour.begin() + d * addr_offset );
+-	}
++  int block = 32;
++  unsigned long addr_tar, addr_src;
++  unsigned long addr_offset = sites_pbwt_ngroups * n_ind * 2UL;
++  for (int d = 0; d < depth; d++) {
++    for (int s = 0; s < sites_pbwt_ngroups; s += block) {
++      for (int h = 0; h < n_ind * 2; ++h) {
++        for (int b = 0; b < block && s + b < sites_pbwt_ngroups; ++b) {
++          addr_tar = depth * addr_offset + h * sites_pbwt_ngroups + s + b;
++          addr_src = d * addr_offset + (s + b) * n_ind * 2UL + h;
++          indexes_pbwt_neighbour[addr_tar] = indexes_pbwt_neighbour[addr_src];
++        }
++      }
++    }
++    std::copy(indexes_pbwt_neighbour.begin() + depth * addr_offset,
++              indexes_pbwt_neighbour.end(),
++              indexes_pbwt_neighbour.begin() + d * addr_offset);
++  }
+ }
+ 
+-
+ void conditioning_set::select(int chunk) {
+-	vector < int > A = vector < int > (n_hap, 0);
+-	vector < int > B = vector < int > (n_hap, 0);
+-	vector < int > C = vector < int > (n_hap, 0);
+-	vector < int > D = vector < int > (n_hap, 0);
+-	iota(A.begin(), A.end(), 0);
+-	fill(C.begin(), C.end(), 0);
+-
+-	for (int l = 0 ; l < n_site ; l ++) {
+-		bool eval = sites_pbwt_evaluation[l];
+-		bool selc = sites_pbwt_selection[l];
+-		bool chnk = (sites_pbwt_mthreading[l] == chunk);
+-		bool buff = (sites_pbwt_mthreading[l] < chunk) && (l >= starts_pbwt_mthreading[chunk]);
+-
+-		if (eval && (chnk || buff)) {
+-			int u = 0, v = 0, p = l, q = l;
+-			for (int h = 0 ; h < n_hap ; h ++) {
+-				int alookup = A[h], dlookup = C[h];
+-				if (dlookup > p) p = dlookup;
+-				if (dlookup > q) q = dlookup;
+-				if (!H_opt_var.get(l, alookup)) {
+-					A[u] = alookup;
+-					C[u] = p;
+-					p = 0;
+-					u++;
+-				} else {
+-					B[v] = alookup;
+-					D[v] = q;
+-					q = 0;
+-					v++;
+-				}
+-			}
+-			std::copy(B.begin(), B.begin()+v, A.begin()+u);
+-			std::copy(D.begin(), D.begin()+v, C.begin()+u);
+-			if (selc && chnk) store(l, A, C);
+-		}
+-	}
++  vector<int> A = vector<int>(n_hap, 0);
++  vector<int> B = vector<int>(n_hap, 0);
++  vector<int> C = vector<int>(n_hap, 0);
++  vector<int> D = vector<int>(n_hap, 0);
++  iota(A.begin(), A.end(), 0);
++  fill(C.begin(), C.end(), 0);
++
++  for (int l = 0; l < n_site; l++) {
++    bool eval = sites_pbwt_evaluation[l];
++    bool selc = sites_pbwt_selection[l];
++    bool chnk = (sites_pbwt_mthreading[l] == chunk);
++    bool buff = (sites_pbwt_mthreading[l] < chunk) &&
++                (l >= starts_pbwt_mthreading[chunk]);
++
++    if (eval && (chnk || buff)) {
++      int u = 0, v = 0, p = l, q = l;
++      for (int h = 0; h < n_hap; h++) {
++        int alookup = A[h], dlookup = C[h];
++        if (dlookup > p)
++          p = dlookup;
++        if (dlookup > q)
++          q = dlookup;
++        if (!H_opt_var.get(l, alookup)) {
++          A[u] = alookup;
++          C[u] = p;
++          p = 0;
++          u++;
++        } else {
++          B[v] = alookup;
++          D[v] = q;
++          q = 0;
++          v++;
++        }
++      }
++      std::copy(B.begin(), B.begin() + v, A.begin() + u);
++      std::copy(D.begin(), D.begin() + v, C.begin() + u);
++      if (selc && chnk)
++        store(l, A, C);
++    }
++  }
+ }
+ 
+-void conditioning_set::store(int l, vector < int > & A, vector < int > & C) {
+-	unsigned long addr_offset = sites_pbwt_ngroups * n_ind * 2UL;
+-	for (int h = 0 ; h < n_hap ; h ++) {
+-		int chap = A[h];
+-		int cind = chap / 2;
+-		if (cind < n_ind) {
+-			int add_guess0 = 0, add_guess1 = 0, offset0 = 1, offset1 = 1, hap_guess0 = -1, hap_guess1 = -1, div_guess0 = -1, div_guess1 = -1;
+-			unsigned long tar_idx = sites_pbwt_grouping[l] * 2UL * n_ind + chap;
+-			for (int n_added = 0 ; n_added < depth ; ) {
+-				if ((h-offset0)>=0) {
+-					hap_guess0 = A[h-offset0];
+-					div_guess0 = max(C[h-offset0+1], div_guess0);
+-					add_guess0 = Kbanned.noIBD2(chap, hap_guess0, l);
+-				} else { add_guess0 = 0; div_guess0 = l+1; }
+-				if ((h+offset1)<n_hap) {
+-					hap_guess1 = A[h+offset1];
+-					div_guess1 = max(C[h+offset1], div_guess1);
+-					add_guess1 = Kbanned.noIBD2(chap, hap_guess1, l);
+-				} else { add_guess1 = 0; div_guess1 = l+1; }
+-				if (add_guess0 && add_guess1) {
+-					if (div_guess0 < div_guess1) {
+-						indexes_pbwt_neighbour[n_added*addr_offset+tar_idx] = hap_guess0;
+-						offset0++; n_added++;
+-					} else {
+-						indexes_pbwt_neighbour[n_added*addr_offset+tar_idx] = hap_guess1;
+-						offset1++; n_added++;
+-					}
+-				} else if (add_guess0) {
+-					indexes_pbwt_neighbour[n_added*addr_offset+tar_idx] = hap_guess0;
+-					offset0++; n_added++;
+-				} else if (add_guess1) {
+-					indexes_pbwt_neighbour[n_added*addr_offset+tar_idx] = hap_guess1;
+-					offset1++; n_added++;
+-				} else {
+-					offset0++;
+-					offset1++;
+-				}
+-			}
+-		}
+-	}
++void conditioning_set::store(int l, vector<int> &A, vector<int> &C) {
++  unsigned long addr_offset = sites_pbwt_ngroups * n_ind * 2UL;
++  for (int h = 0; h < n_hap; h++) {
++    int chap = A[h];
++    int cind = chap / 2;
++    if (cind < n_ind) {
++      int add_guess0 = 0, add_guess1 = 0, offset0 = 1, offset1 = 1,
++          hap_guess0 = -1, hap_guess1 = -1, div_guess0 = -1, div_guess1 = -1;
++      unsigned long tar_idx = sites_pbwt_grouping[l] * 2UL * n_ind + chap;
++      for (int n_added = 0; n_added < depth;) {
++        if ((h - offset0) >= 0) {
++          hap_guess0 = A[h - offset0];
++          div_guess0 = max(C[h - offset0 + 1], div_guess0);
++          add_guess0 = Kbanned.noIBD2(chap, hap_guess0, l);
++        } else {
++          add_guess0 = 0;
++          div_guess0 = l + 1;
++        }
++        if ((h + offset1) < n_hap) {
++          hap_guess1 = A[h + offset1];
++          div_guess1 = max(C[h + offset1], div_guess1);
++          add_guess1 = Kbanned.noIBD2(chap, hap_guess1, l);
++        } else {
++          add_guess1 = 0;
++          div_guess1 = l + 1;
++        }
++        if (add_guess0 && add_guess1) {
++          if (div_guess0 < div_guess1) {
++            indexes_pbwt_neighbour[n_added * addr_offset + tar_idx] =
++                hap_guess0;
++            offset0++;
++            n_added++;
++          } else {
++            indexes_pbwt_neighbour[n_added * addr_offset + tar_idx] =
++                hap_guess1;
++            offset1++;
++            n_added++;
++          }
++        } else if (add_guess0) {
++          indexes_pbwt_neighbour[n_added * addr_offset + tar_idx] = hap_guess0;
++          offset0++;
++          n_added++;
++        } else if (add_guess1) {
++          indexes_pbwt_neighbour[n_added * addr_offset + tar_idx] = hap_guess1;
++          offset1++;
++          n_added++;
++        } else {
++          offset0++;
++          offset1++;
++        }
++      }
++    }
++  }
+ }
+ 
+ void conditioning_set::select() {
+-	tac.clock();
+-	i_worker = 0; i_job = 0, d_job = 0;
+-
+-	//Select new sites at which to trigger storage
+-	vector < vector < int > > candidates = vector < vector < int > > (sites_pbwt_grouping.back() + 1);
+-	for (int l = 0 ; l < n_site ; l++) if (sites_pbwt_evaluation[l]) candidates[sites_pbwt_grouping[l]].push_back(l);
+-	sites_pbwt_selection = vector < bool > (n_site , false);
+-	for (int g = 0 ; g < candidates.size() ; g++) {
+-		if (candidates[g].size() > 0) {
+-			sites_pbwt_selection[candidates[g][rng.getInt(candidates[g].size())]] = true;
+-		}
+-	}
+-
+-	//Clean up previous selected states
+-	fill(indexes_pbwt_neighbour.begin(), indexes_pbwt_neighbour.end() , -1);
+-
+-	//Perform multi-threaded selection
+-	vrb.progress("  * PBWT selection", 0.0f);
+-	if (nthread > 1) {
+-		for (int t = 0 ; t < nthread ; t++) pthread_create( &id_workers[t] , NULL, selecter_callback, static_cast<void *>(this));
+-		for (int t = 0 ; t < nthread ; t++) pthread_join( id_workers[t] , NULL);
+-	} else for (int c = 0 ; c  <= sites_pbwt_mthreading.back() ; c ++) {
+-		select(c);
+-		vrb.progress("  * PBWT selection", c*1.0/(sites_pbwt_mthreading.back()+1));
+-	}
+-
+-	//Transpose matrix with selected states
+-	transposePBWTneighbours();
+-
+-	vrb.bullet("PBWT selection (" + stb.str(tac.rel_time()*1.0/1000, 2) + "s)");
++  tac.clock();
++  i_worker = 0;
++  i_job = 0, d_job = 0;
++
++  // Select new sites at which to trigger storage
++  vector<vector<int>> candidates =
++      vector<vector<int>>(sites_pbwt_grouping.back() + 1);
++  for (int l = 0; l < n_site; l++)
++    if (sites_pbwt_evaluation[l])
++      candidates[sites_pbwt_grouping[l]].push_back(l);
++  sites_pbwt_selection = vector<bool>(n_site, false);
++  for (int g = 0; g < candidates.size(); g++) {
++    if (candidates[g].size() > 0) {
++      sites_pbwt_selection[candidates[g][rng.getInt(candidates[g].size())]] =
++          true;
++    }
++  }
++
++  // Clean up previous selected states
++  fill(indexes_pbwt_neighbour.begin(), indexes_pbwt_neighbour.end(), -1);
++
++  // Perform multi-threaded selection
++  vrb.progress("  * PBWT selection", 0.0f);
++  if (nthread > 1) {
++    for (int t = 0; t < nthread; t++)
++      pthread_create(&id_workers[t], NULL, selecter_callback,
++                     static_cast<void *>(this));
++    for (int t = 0; t < nthread; t++)
++      pthread_join(id_workers[t], NULL);
++  } else
++    for (int c = 0; c <= sites_pbwt_mthreading.back(); c++) {
++      select(c);
++      vrb.progress("  * PBWT selection",
++                   c * 1.0 / (sites_pbwt_mthreading.back() + 1));
++    }
++
++  // Transpose matrix with selected states
++  transposePBWTneighbours();
++
++  vrb.bullet("PBWT selection (" + stb.str(tac.rel_time() * 1.0 / 1000, 2) +
++             "s)");
+ }
+-
+diff --git a/phase_common/src/models/haplotype_segment_double.h b/phase_common/src/models/haplotype_segment_double.h
+index 44e59fe..ff3265c 100644
+--- a/phase_common/src/models/haplotype_segment_double.h
++++ b/phase_common/src/models/haplotype_segment_double.h
+@@ -23,461 +23,979 @@
+ #ifndef _HAPLOTYPE_SEGMENT_DOUBLE_H
+ #define _HAPLOTYPE_SEGMENT_DOUBLE_H
+ 
+-#include <utils/otools.h>
+ #include <objects/compute_job.h>
+ #include <objects/hmm_parameters.h>
++#include <utils/otools.h>
+ 
++#ifdef __AVX2__
+ #include <immintrin.h>
++#elif defined(__ARM_NEON)
++#include <arm_neon.h>
++#endif
+ #include <boost/align/aligned_allocator.hpp>
+ 
+ template <typename T>
+-using aligned_vector32 = std::vector<T, boost::alignment::aligned_allocator < T, 32 > >;
++using aligned_vector32 =
++    std::vector<T, boost::alignment::aligned_allocator<T, 32>>;
+ 
+ class haplotype_segment_double {
+ private:
+-	//EXTERNAL DATA
+-	hmm_parameters & M;
+-	genotype * G;
+-	bitmatrix Hhap, Hvar;
+-
+-	//COORDINATES & CONSTANTS
+-	int segment_first;
+-	int segment_last;
+-	int locus_first;
+-	int locus_last;
+-	int ambiguous_first;
+-	int ambiguous_last;
+-	int missing_first;
+-	int missing_last;
+-	int transition_first;
+-	int transition_last;
+-	unsigned int n_cond_haps;
+-	unsigned int n_missing;
+-
+-	//CURSORS
+-	int curr_segment_index;
+-	int curr_segment_locus;
+-	int curr_abs_locus;
+-	int prev_abs_locus;
+-	int curr_rel_locus;
+-	int curr_rel_locus_offset;
+-	int curr_abs_ambiguous;
+-	int curr_abs_transition;
+-	int curr_abs_missing;
+-	int curr_rel_missing;
+-
+-
+-	//DYNAMIC ARRAYS
+-	double probSumT;
+-	aligned_vector32 < double > prob;
+-	aligned_vector32 < double > probSumK;
+-	aligned_vector32 < double > probSumH;
+-	std::vector < aligned_vector32 < double > > Alpha;
+-	std::vector < aligned_vector32 < double > > AlphaSum;
+-	std::vector < int > AlphaLocus;
+-	aligned_vector32 < double > AlphaSumSum;
+-	std::vector < aligned_vector32 < double > > AlphaMissing;
+-	std::vector < aligned_vector32 < double > > AlphaSumMissing;
+-	double HProbs [HAP_NUMBER * HAP_NUMBER] __attribute__ ((aligned(32)));
+-	double DProbs [HAP_NUMBER * HAP_NUMBER * HAP_NUMBER * HAP_NUMBER] __attribute__ ((aligned(32)));
+-
+-	//STATIC ARRAYS
+-	double sumHProbs;
+-	double sumDProbs;
+-	double g0[HAP_NUMBER], g1[HAP_NUMBER];
+-	double nt, yt;
+-
+-	//INLINED AND UNROLLED ROUTINES
+-	void INIT_HOM();
+-	void INIT_AMB();
+-	void INIT_MIS();
+-	bool RUN_HOM(char);
+-	void RUN_AMB();
+-	void RUN_MIS();
+-	void COLLAPSE_HOM();
+-	void COLLAPSE_AMB();
+-	void COLLAPSE_MIS();
+-	void SUMK();
+-	void IMPUTE(std::vector < float > & );
+-	bool TRANS_HAP();
+-	bool TRANS_DIP_MULT();
+-	bool TRANS_DIP_ADD();
+-	void SET_FIRST_TRANS(std::vector < double > & );
+-	int SET_OTHER_TRANS(std::vector < double > & );
++  // EXTERNAL DATA
++  hmm_parameters &M;
++  genotype *G;
++  bitmatrix Hhap, Hvar;
++
++  // COORDINATES & CONSTANTS
++  int segment_first;
++  int segment_last;
++  int locus_first;
++  int locus_last;
++  int ambiguous_first;
++  int ambiguous_last;
++  int missing_first;
++  int missing_last;
++  int transition_first;
++  int transition_last;
++  unsigned int n_cond_haps;
++  unsigned int n_missing;
++
++  // CURSORS
++  int curr_segment_index;
++  int curr_segment_locus;
++  int curr_abs_locus;
++  int prev_abs_locus;
++  int curr_rel_locus;
++  int curr_rel_locus_offset;
++  int curr_abs_ambiguous;
++  int curr_abs_transition;
++  int curr_abs_missing;
++  int curr_rel_missing;
++
++  // DYNAMIC ARRAYS
++  double probSumT;
++  aligned_vector32<double> prob;
++  aligned_vector32<double> probSumK;
++  aligned_vector32<double> probSumH;
++  std::vector<aligned_vector32<double>> Alpha;
++  std::vector<aligned_vector32<double>> AlphaSum;
++  std::vector<int> AlphaLocus;
++  aligned_vector32<double> AlphaSumSum;
++  std::vector<aligned_vector32<double>> AlphaMissing;
++  std::vector<aligned_vector32<double>> AlphaSumMissing;
++  double HProbs[HAP_NUMBER * HAP_NUMBER] __attribute__((aligned(32)));
++  double DProbs[HAP_NUMBER * HAP_NUMBER * HAP_NUMBER * HAP_NUMBER]
++      __attribute__((aligned(32)));
++
++  // STATIC ARRAYS
++  double sumHProbs;
++  double sumDProbs;
++  double g0[HAP_NUMBER], g1[HAP_NUMBER];
++  double nt, yt;
++
++  // INLINED AND UNROLLED ROUTINES
++  void INIT_HOM();
++  void INIT_AMB();
++  void INIT_MIS();
++  bool RUN_HOM(char);
++  void RUN_AMB();
++  void RUN_MIS();
++  void COLLAPSE_HOM();
++  void COLLAPSE_AMB();
++  void COLLAPSE_MIS();
++  void SUMK();
++  void IMPUTE(std::vector<float> &);
++  bool TRANS_HAP();
++  bool TRANS_DIP_MULT();
++  bool TRANS_DIP_ADD();
++  void SET_FIRST_TRANS(std::vector<double> &);
++  int SET_OTHER_TRANS(std::vector<double> &);
+ 
+ public:
+-	//CONSTRUCTOR/DESTRUCTOR
+-	haplotype_segment_double(genotype *, bitmatrix &, std::vector < unsigned int > &, window &, hmm_parameters &);
+-	~haplotype_segment_double();
+-
+-	//void fetch();
+-	void forward();
+-	int backward(std::vector < double > &, std::vector < float > &);
++  // CONSTRUCTOR/DESTRUCTOR
++  haplotype_segment_double(genotype *, bitmatrix &, std::vector<unsigned int> &,
++                           window &, hmm_parameters &);
++  ~haplotype_segment_double();
++
++  // void fetch();
++  void forward();
++  int backward(std::vector<double> &, std::vector<float> &);
+ };
+ 
+ /*******************************************************************************/
+-/*****************			HOMOZYGOUS GENOTYPE			************************/
++/*****************			HOMOZYGOUS GENOTYPE
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_double::INIT_HOM() {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_set1_pd((ag==ah)?1.0f:M.ed/M.ee);
+-		__m256d _prob1 = _mm256_set1_pd((ag==ah)?1.0f:M.ed/M.ee);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i+0], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::INIT_HOM() {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++#if defined(__AVX2__)
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _mm256_set1_pd((ag == ah) ? 1.0f : M.ed / M.ee);
++    __m256d _prob1 = _mm256_set1_pd((ag == ah) ? 1.0f : M.ed / M.ee);
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i + 0], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum = vdupq_n_f64(0.0);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float64x2_t _prob = vdupq_n_f64((ag == ah) ? 1.0 : M.ed / M.ee);
++    _sum = vaddq_f64(_sum, _prob);
++    vst1q_f64(&prob[i + 0], _prob);
++    vst1q_f64(&prob[i + 2], _prob);
++    vst1q_f64(&prob[i + 4], _prob);
++    vst1q_f64(&prob[i + 6], _prob);
++  }
++  vst1q_f64(&probSumH[0], _sum);
++  vst1q_f64(&probSumH[2], _sum);
++  vst1q_f64(&probSumH[4], _sum);
++  vst1q_f64(&probSumH[6], _sum);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    double p = (ag == ah) ? 1.0 : M.ed / M.ee;
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = p;
++    sum0 += 4.0 * p;
++    sum1 += 4.0 * p;
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-bool haplotype_segment_double::RUN_HOM(char rare_allele) {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	if (rare_allele < 0 || ag == rare_allele) {
+-		__m256d _sum0 = _mm256_set1_pd(0.0f);
+-		__m256d _sum1 = _mm256_set1_pd(0.0f);
+-		__m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
+-		__m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
+-		__m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
+-		_tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
+-		_tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
+-		__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-		__m256d _mismatch = _mm256_set1_pd(M.ed/M.ee);
+-		for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-			bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-			__m256d _prob0 = _mm256_load_pd(&prob[i]);
+-			__m256d _prob1 = _mm256_load_pd(&prob[i+4]);
+-			_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
+-			_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
+-			if (ag!=ah) {
+-				_prob0 = _mm256_mul_pd(_prob0, _mismatch);
+-				_prob1 = _mm256_mul_pd(_prob1, _mismatch);
+-			}
+-			_sum0 = _mm256_add_pd(_sum0, _prob0);
+-			_sum1 = _mm256_add_pd(_sum1, _prob1);
+-			_mm256_store_pd(&prob[i], _prob0);
+-			_mm256_store_pd(&prob[i+4], _prob1);
+-		}
+-		_mm256_store_pd(&probSumH[0], _sum0);
+-		_mm256_store_pd(&probSumH[4], _sum1);
+-		probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+-		return true;
+-	}
+-	return false;
++inline bool haplotype_segment_double::RUN_HOM(char rare_allele) {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++  if (rare_allele < 0 || ag == rare_allele) {
++#if defined(__AVX2__)
++    __m256d _sum0 = _mm256_set1_pd(0.0f);
++    __m256d _sum1 = _mm256_set1_pd(0.0f);
++    __m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
++    __m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
++    __m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
++    _tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
++    _tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
++    __m256d _nt = _mm256_set1_pd(nt / probSumT);
++    __m256d _mismatch = _mm256_set1_pd(M.ed / M.ee);
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      __m256d _prob0 = _mm256_load_pd(&prob[i]);
++      __m256d _prob1 = _mm256_load_pd(&prob[i + 4]);
++      _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
++      _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
++      if (ag != ah) {
++        _prob0 = _mm256_mul_pd(_prob0, _mismatch);
++        _prob1 = _mm256_mul_pd(_prob1, _mismatch);
++      }
++      _sum0 = _mm256_add_pd(_sum0, _prob0);
++      _sum1 = _mm256_add_pd(_sum1, _prob1);
++      _mm256_store_pd(&prob[i], _prob0);
++      _mm256_store_pd(&prob[i + 4], _prob1);
++    }
++    _mm256_store_pd(&probSumH[0], _sum0);
++    _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++    float64x2_t _sum0 = vdupq_n_f64(0.0);
++    float64x2_t _sum1 = vdupq_n_f64(0.0);
++    float64x2_t _sum2 = vdupq_n_f64(0.0);
++    float64x2_t _sum3 = vdupq_n_f64(0.0);
++    float64x2_t _factor = vdupq_n_f64(yt / (n_cond_haps * probSumT));
++    float64x2_t _tf0 = vld1q_f64(&probSumH[0]);
++    float64x2_t _tf1 = vld1q_f64(&probSumH[2]);
++    float64x2_t _tf2 = vld1q_f64(&probSumH[4]);
++    float64x2_t _tf3 = vld1q_f64(&probSumH[6]);
++    _tf0 = vmulq_f64(_tf0, _factor);
++    _tf1 = vmulq_f64(_tf1, _factor);
++    _tf2 = vmulq_f64(_tf2, _factor);
++    _tf3 = vmulq_f64(_tf3, _factor);
++    float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++    float64x2_t _mismatch = vdupq_n_f64(M.ed / M.ee);
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      float64x2_t _p0 = vld1q_f64(&prob[i]);
++      float64x2_t _p1 = vld1q_f64(&prob[i + 2]);
++      float64x2_t _p2 = vld1q_f64(&prob[i + 4]);
++      float64x2_t _p3 = vld1q_f64(&prob[i + 6]);
++      _p0 = vmlaq_f64(_tf0, _p0, _nt);
++      _p1 = vmlaq_f64(_tf1, _p1, _nt);
++      _p2 = vmlaq_f64(_tf2, _p2, _nt);
++      _p3 = vmlaq_f64(_tf3, _p3, _nt);
++      if (ag != ah) {
++        _p0 = vmulq_f64(_p0, _mismatch);
++        _p1 = vmulq_f64(_p1, _mismatch);
++        _p2 = vmulq_f64(_p2, _mismatch);
++        _p3 = vmulq_f64(_p3, _mismatch);
++      }
++      _sum0 = vaddq_f64(_sum0, _p0);
++      _sum1 = vaddq_f64(_sum1, _p1);
++      _sum2 = vaddq_f64(_sum2, _p2);
++      _sum3 = vaddq_f64(_sum3, _p3);
++      vst1q_f64(&prob[i], _p0);
++      vst1q_f64(&prob[i + 2], _p1);
++      vst1q_f64(&prob[i + 4], _p2);
++      vst1q_f64(&prob[i + 6], _p3);
++    }
++    vst1q_f64(&probSumH[0], _sum0);
++    vst1q_f64(&probSumH[2], _sum1);
++    vst1q_f64(&probSumH[4], _sum2);
++    vst1q_f64(&probSumH[6], _sum3);
++#else
++    double sum0 = 0.0, sum1 = 0.0;
++    double factor = yt / (n_cond_haps * probSumT);
++    double tFreq0[4], tFreq1[4];
++    for (int h = 0; h < 4; h++) {
++      tFreq0[h] = probSumH[h] * factor;
++      tFreq1[h] = probSumH[h + 4] * factor;
++    }
++    double nt_ = nt / probSumT;
++    double mismatch = M.ed / M.ee;
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      for (int h = 0; h < 4; h++) {
++        prob[i + h] = prob[i + h] * nt_ + tFreq0[h];
++        prob[i + 4 + h] = prob[i + 4 + h] * nt_ + tFreq1[h];
++        if (ag != ah) {
++          prob[i + h] *= mismatch;
++          prob[i + 4 + h] *= mismatch;
++        }
++      }
++      for (int h = 0; h < 4; h++) {
++        sum0 += prob[i + h];
++        sum1 += prob[i + 4 + h];
++      }
++    }
++    for (int h = 0; h < 4; h++)
++      probSumH[h] = sum0;
++    for (int h = 4; h < HAP_NUMBER; h++)
++      probSumH[h] = sum1;
++#endif
++    probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++               probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++    return true;
++  }
++  return false;
+ }
+ 
+-inline
+-void haplotype_segment_double::COLLAPSE_HOM() {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _tFreq = _mm256_set1_pd(yt / n_cond_haps);					//Check divide by probSumT here!
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	__m256d _mismatch = _mm256_set1_pd(M.ed/M.ee);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_set1_pd(probSumK[k]);
+-		__m256d _prob1 = _mm256_set1_pd(probSumK[k]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
+-		if (ag!=ah) {
+-			_prob0 = _mm256_mul_pd(_prob0, _mismatch);
+-			_prob1 = _mm256_mul_pd(_prob1, _mismatch);
+-		}
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::COLLAPSE_HOM() {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++#if defined(__AVX2__)
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _tFreq =
++      _mm256_set1_pd(yt / n_cond_haps); // Check divide by probSumT here!
++  __m256d _nt = _mm256_set1_pd(nt / probSumT);
++  __m256d _mismatch = _mm256_set1_pd(M.ed / M.ee);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _mm256_set1_pd(probSumK[k]);
++    __m256d _prob1 = _mm256_set1_pd(probSumK[k]);
++    _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
++    _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
++    if (ag != ah) {
++      _prob0 = _mm256_mul_pd(_prob0, _mismatch);
++      _prob1 = _mm256_mul_pd(_prob1, _mismatch);
++    }
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum = vdupq_n_f64(0.0);
++  float64x2_t _tFreq =
++      vdupq_n_f64(yt / n_cond_haps); // Check divide by probSumT here!
++  float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++  float64x2_t _mismatch = vdupq_n_f64(M.ed / M.ee);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float64x2_t _prob = vmlaq_f64(_tFreq, vdupq_n_f64(probSumK[k]), _nt);
++    if (ag != ah)
++      _prob = vmulq_f64(_prob, _mismatch);
++    _sum = vaddq_f64(_sum, _prob);
++    vst1q_f64(&prob[i], _prob);
++    vst1q_f64(&prob[i + 2], _prob);
++    vst1q_f64(&prob[i + 4], _prob);
++    vst1q_f64(&prob[i + 6], _prob);
++  }
++  vst1q_f64(&probSumH[0], _sum);
++  vst1q_f64(&probSumH[2], _sum);
++  vst1q_f64(&probSumH[4], _sum);
++  vst1q_f64(&probSumH[6], _sum);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  double tFreq = yt / n_cond_haps; // Check divide by probSumT here!
++  double nt_ = nt / probSumT;
++  double mismatch = M.ed / M.ee;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    double p0 = probSumK[k] * nt_ + tFreq;
++    double p1 = probSumK[k] * nt_ + tFreq;
++    if (ag != ah) {
++      p0 *= mismatch;
++      p1 *= mismatch;
++    }
++    for (int h = 0; h < 4; h++)
++      prob[i + h] = p0;
++    for (int h = 4; h < HAP_NUMBER; h++)
++      prob[i + h] = p1;
++    sum0 += 4.0 * p0;
++    sum1 += 4.0 * p1;
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************			HETEROZYGOUS GENOTYPE			********************/
++/*****************			HETEROZYGOUS GENOTYPE
++ * ********************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_double::INIT_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _emit0[2], _emit1[2];
+-	_emit0[0] = _mm256_loadu_pd(&g0[0]);
+-	_emit0[1] = _mm256_loadu_pd(&g1[0]);
+-	_emit1[0] = _mm256_loadu_pd(&g0[4]);
+-	_emit1[1] = _mm256_loadu_pd(&g1[4]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _emit0[ah];
+-		__m256d _prob1 = _emit1[ah];
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::INIT_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#ifdef __AVX2__
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _emit0[2], _emit1[2];
++  _emit0[0] = _mm256_loadu_pd(&g0[0]);
++  _emit0[1] = _mm256_loadu_pd(&g1[0]);
++  _emit1[0] = _mm256_loadu_pd(&g0[4]);
++  _emit1[1] = _mm256_loadu_pd(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _emit0[ah];
++    __m256d _prob1 = _emit1[ah];
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum0 = vdupq_n_f64(0.0);
++  float64x2_t _sum1 = vdupq_n_f64(0.0);
++  float64x2_t _sum2 = vdupq_n_f64(0.0);
++  float64x2_t _sum3 = vdupq_n_f64(0.0);
++  float64x2_t _e00 = vld1q_f64(&g0[0]), _e01 = vld1q_f64(&g0[2]);
++  float64x2_t _e02 = vld1q_f64(&g1[0]), _e03 = vld1q_f64(&g1[2]);
++  float64x2_t _e10 = vld1q_f64(&g0[4]), _e11 = vld1q_f64(&g0[6]);
++  float64x2_t _e12 = vld1q_f64(&g1[4]), _e13 = vld1q_f64(&g1[6]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float64x2_t _p0 = ah ? _e02 : _e00;
++    float64x2_t _p1 = ah ? _e03 : _e01;
++    float64x2_t _p2 = ah ? _e12 : _e10;
++    float64x2_t _p3 = ah ? _e13 : _e11;
++    _sum0 = vaddq_f64(_sum0, _p0);
++    _sum1 = vaddq_f64(_sum1, _p1);
++    _sum2 = vaddq_f64(_sum2, _p2);
++    _sum3 = vaddq_f64(_sum3, _p3);
++    vst1q_f64(&prob[i], _p0);
++    vst1q_f64(&prob[i + 2], _p1);
++    vst1q_f64(&prob[i + 4], _p2);
++    vst1q_f64(&prob[i + 6], _p3);
++  }
++  vst1q_f64(&probSumH[0], _sum0);
++  vst1q_f64(&probSumH[2], _sum1);
++  vst1q_f64(&probSumH[4], _sum2);
++  vst1q_f64(&probSumH[6], _sum3);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  for (int h = 0; h < 4; h++) {
++    sum0 += g0[h];
++    sum1 += g1[h];
++  }
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < 4; h++)
++      prob[i + h] = (ah ? g1[h] : g0[h]);
++    for (int h = 4; h < HAP_NUMBER; h++)
++      prob[i + h] = (ah ? g1[h - 4] : g0[h - 4]);
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-void haplotype_segment_double::RUN_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
+-	__m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
+-	__m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
+-	_tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
+-	_tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	__m256d _emit0[2], _emit1[2];
+-	_emit0[0] = _mm256_loadu_pd(&g0[0]);
+-	_emit0[1] = _mm256_loadu_pd(&g1[0]);
+-	_emit1[0] = _mm256_loadu_pd(&g0[4]);
+-	_emit1[1] = _mm256_loadu_pd(&g1[4]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_load_pd(&prob[i+0]);
+-		__m256d _prob1 = _mm256_load_pd(&prob[i+4]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
+-		_prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
+-		_prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i+0], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::RUN_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#ifdef __AVX2__
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
++  __m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
++  __m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
++  _tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
++  _tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
++  __m256d _nt = _mm256_set1_pd(nt / probSumT);
++  __m256d _emit0[2], _emit1[2];
++  _emit0[0] = _mm256_loadu_pd(&g0[0]);
++  _emit0[1] = _mm256_loadu_pd(&g1[0]);
++  _emit1[0] = _mm256_loadu_pd(&g0[4]);
++  _emit1[1] = _mm256_loadu_pd(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _mm256_load_pd(&prob[i + 0]);
++    __m256d _prob1 = _mm256_load_pd(&prob[i + 4]);
++    _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
++    _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
++    _prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
++    _prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i + 0], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum0 = vdupq_n_f64(0.0);
++  float64x2_t _sum1 = vdupq_n_f64(0.0);
++  float64x2_t _sum2 = vdupq_n_f64(0.0);
++  float64x2_t _sum3 = vdupq_n_f64(0.0);
++  float64x2_t _factor = vdupq_n_f64(yt / (n_cond_haps * probSumT));
++  float64x2_t _tf0 = vld1q_f64(&probSumH[0]);
++  float64x2_t _tf1 = vld1q_f64(&probSumH[2]);
++  float64x2_t _tf2 = vld1q_f64(&probSumH[4]);
++  float64x2_t _tf3 = vld1q_f64(&probSumH[6]);
++  _tf0 = vmulq_f64(_tf0, _factor);
++  _tf1 = vmulq_f64(_tf1, _factor);
++  _tf2 = vmulq_f64(_tf2, _factor);
++  _tf3 = vmulq_f64(_tf3, _factor);
++  float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++  float64x2_t _e00 = vld1q_f64(&g0[0]), _e01 = vld1q_f64(&g0[2]);
++  float64x2_t _e02 = vld1q_f64(&g1[0]), _e03 = vld1q_f64(&g1[2]);
++  float64x2_t _e10 = vld1q_f64(&g0[4]), _e11 = vld1q_f64(&g0[6]);
++  float64x2_t _e12 = vld1q_f64(&g1[4]), _e13 = vld1q_f64(&g1[6]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float64x2_t _p0 = vld1q_f64(&prob[i]);
++    float64x2_t _p1 = vld1q_f64(&prob[i + 2]);
++    float64x2_t _p2 = vld1q_f64(&prob[i + 4]);
++    float64x2_t _p3 = vld1q_f64(&prob[i + 6]);
++    _p0 = vmulq_f64(vmlaq_f64(_tf0, _p0, _nt), ah ? _e02 : _e00);
++    _p1 = vmulq_f64(vmlaq_f64(_tf1, _p1, _nt), ah ? _e03 : _e01);
++    _p2 = vmulq_f64(vmlaq_f64(_tf2, _p2, _nt), ah ? _e12 : _e10);
++    _p3 = vmulq_f64(vmlaq_f64(_tf3, _p3, _nt), ah ? _e13 : _e11);
++    _sum0 = vaddq_f64(_sum0, _p0);
++    _sum1 = vaddq_f64(_sum1, _p1);
++    _sum2 = vaddq_f64(_sum2, _p2);
++    _sum3 = vaddq_f64(_sum3, _p3);
++    vst1q_f64(&prob[i], _p0);
++    vst1q_f64(&prob[i + 2], _p1);
++    vst1q_f64(&prob[i + 4], _p2);
++    vst1q_f64(&prob[i + 6], _p3);
++  }
++  vst1q_f64(&probSumH[0], _sum0);
++  vst1q_f64(&probSumH[2], _sum1);
++  vst1q_f64(&probSumH[4], _sum2);
++  vst1q_f64(&probSumH[6], _sum3);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  double factor = yt / (n_cond_haps * probSumT);
++  double tFreq0[4], tFreq1[4];
++  for (int h = 0; h < 4; h++) {
++    tFreq0[h] = probSumH[h] * factor;
++    tFreq1[h] = probSumH[h + 4] * factor;
++  }
++  double nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < 4; h++) {
++      prob[i + h] = (prob[i + h] * nt_ + tFreq0[h]) * (ah ? g1[h] : g0[h]);
++      prob[i + 4 + h] =
++          (prob[i + 4 + h] * nt_ + tFreq1[h]) * (ah ? g1[h - 4] : g0[h - 4]);
++      sum0 += prob[i + h];
++      sum1 += prob[i + 4 + h];
++    }
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-void haplotype_segment_double::COLLAPSE_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _tFreq = _mm256_set1_pd(yt / n_cond_haps);
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	__m256d _emit0[2], _emit1[2];
+-	_emit0[0] = _mm256_loadu_pd(&g0[0]);
+-	_emit0[1] = _mm256_loadu_pd(&g1[0]);
+-	_emit1[0] = _mm256_loadu_pd(&g0[4]);
+-	_emit1[1] = _mm256_loadu_pd(&g1[4]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_set1_pd(probSumK[k]);
+-		__m256d _prob1 = _mm256_set1_pd(probSumK[k]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
+-		_prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
+-		_prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i+0], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::COLLAPSE_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#ifdef __AVX2__
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _tFreq = _mm256_set1_pd(yt / n_cond_haps);
++  __m256d _nt = _mm256_set1_pd(nt / probSumT);
++  __m256d _emit0[2], _emit1[2];
++  _emit0[0] = _mm256_loadu_pd(&g0[0]);
++  _emit0[1] = _mm256_loadu_pd(&g1[0]);
++  _emit1[0] = _mm256_loadu_pd(&g0[4]);
++  _emit1[1] = _mm256_loadu_pd(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _mm256_set1_pd(probSumK[k]);
++    __m256d _prob1 = _mm256_set1_pd(probSumK[k]);
++    _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
++    _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
++    _prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
++    _prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i + 0], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum0 = vdupq_n_f64(0.0);
++  float64x2_t _sum1 = vdupq_n_f64(0.0);
++  float64x2_t _sum2 = vdupq_n_f64(0.0);
++  float64x2_t _sum3 = vdupq_n_f64(0.0);
++  float64x2_t _tFreq = vdupq_n_f64(yt / n_cond_haps);
++  float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++  float64x2_t _e00 = vld1q_f64(&g0[0]), _e01 = vld1q_f64(&g0[2]);
++  float64x2_t _e02 = vld1q_f64(&g1[0]), _e03 = vld1q_f64(&g1[2]);
++  float64x2_t _e10 = vld1q_f64(&g0[4]), _e11 = vld1q_f64(&g0[6]);
++  float64x2_t _e12 = vld1q_f64(&g1[4]), _e13 = vld1q_f64(&g1[6]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float64x2_t _base = vmlaq_f64(_tFreq, vdupq_n_f64(probSumK[k]), _nt);
++    float64x2_t _p0 = vmulq_f64(_base, ah ? _e02 : _e00);
++    float64x2_t _p1 = vmulq_f64(_base, ah ? _e03 : _e01);
++    float64x2_t _p2 = vmulq_f64(_base, ah ? _e12 : _e10);
++    float64x2_t _p3 = vmulq_f64(_base, ah ? _e13 : _e11);
++    _sum0 = vaddq_f64(_sum0, _p0);
++    _sum1 = vaddq_f64(_sum1, _p1);
++    _sum2 = vaddq_f64(_sum2, _p2);
++    _sum3 = vaddq_f64(_sum3, _p3);
++    vst1q_f64(&prob[i], _p0);
++    vst1q_f64(&prob[i + 2], _p1);
++    vst1q_f64(&prob[i + 4], _p2);
++    vst1q_f64(&prob[i + 6], _p3);
++  }
++  vst1q_f64(&probSumH[0], _sum0);
++  vst1q_f64(&probSumH[2], _sum1);
++  vst1q_f64(&probSumH[4], _sum2);
++  vst1q_f64(&probSumH[6], _sum3);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  double tFreq = yt / n_cond_haps;
++  double nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    double base = probSumK[k] * nt_ + tFreq;
++    for (int h = 0; h < 4; h++) {
++      prob[i + h] = base * (ah ? g1[h] : g0[h]);
++      sum0 += prob[i + h];
++    }
++    for (int h = 4; h < HAP_NUMBER; h++) {
++      prob[i + h] = base * (ah ? g1[h - 4] : g0[h - 4]);
++      sum1 += prob[i + h];
++    }
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************			MISSING GENOTYPE			************************/
++/*****************			MISSING GENOTYPE
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_double::INIT_MIS() {
+-	fill(prob.begin(), prob.end(), 1.0f/(HAP_NUMBER * n_cond_haps));
+-	fill(probSumH.begin(), probSumH.end(), 1.0f/HAP_NUMBER);
+-	probSumT = 1.0f;
++inline void haplotype_segment_double::INIT_MIS() {
++  fill(prob.begin(), prob.end(), 1.0f / (HAP_NUMBER * n_cond_haps));
++  fill(probSumH.begin(), probSumH.end(), 1.0f / HAP_NUMBER);
++  probSumT = 1.0f;
+ }
+ 
+-inline
+-void haplotype_segment_double::RUN_MIS() {
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
+-	__m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
+-	__m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
+-	_tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
+-	_tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		__m256d _prob0 = _mm256_load_pd(&prob[i]);
+-		__m256d _prob1 = _mm256_load_pd(&prob[i+4]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::RUN_MIS() {
++#if defined(__AVX2__)
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
++  __m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
++  __m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
++  _tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
++  _tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
++  __m256d _nt = _mm256_set1_pd(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    __m256d _prob0 = _mm256_load_pd(&prob[i]);
++    __m256d _prob1 = _mm256_load_pd(&prob[i + 4]);
++    _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
++    _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum0 = vdupq_n_f64(0.0);
++  float64x2_t _sum1 = vdupq_n_f64(0.0);
++  float64x2_t _sum2 = vdupq_n_f64(0.0);
++  float64x2_t _sum3 = vdupq_n_f64(0.0);
++  float64x2_t _factor = vdupq_n_f64(yt / (n_cond_haps * probSumT));
++  float64x2_t _tf0 = vld1q_f64(&probSumH[0]);
++  float64x2_t _tf1 = vld1q_f64(&probSumH[2]);
++  float64x2_t _tf2 = vld1q_f64(&probSumH[4]);
++  float64x2_t _tf3 = vld1q_f64(&probSumH[6]);
++  _tf0 = vmulq_f64(_tf0, _factor);
++  _tf1 = vmulq_f64(_tf1, _factor);
++  _tf2 = vmulq_f64(_tf2, _factor);
++  _tf3 = vmulq_f64(_tf3, _factor);
++  float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    float64x2_t _p0 = vld1q_f64(&prob[i]);
++    float64x2_t _p1 = vld1q_f64(&prob[i + 2]);
++    float64x2_t _p2 = vld1q_f64(&prob[i + 4]);
++    float64x2_t _p3 = vld1q_f64(&prob[i + 6]);
++    _p0 = vmlaq_f64(_tf0, _p0, _nt);
++    _p1 = vmlaq_f64(_tf1, _p1, _nt);
++    _p2 = vmlaq_f64(_tf2, _p2, _nt);
++    _p3 = vmlaq_f64(_tf3, _p3, _nt);
++    _sum0 = vaddq_f64(_sum0, _p0);
++    _sum1 = vaddq_f64(_sum1, _p1);
++    _sum2 = vaddq_f64(_sum2, _p2);
++    _sum3 = vaddq_f64(_sum3, _p3);
++    vst1q_f64(&prob[i], _p0);
++    vst1q_f64(&prob[i + 2], _p1);
++    vst1q_f64(&prob[i + 4], _p2);
++    vst1q_f64(&prob[i + 6], _p3);
++  }
++  vst1q_f64(&probSumH[0], _sum0);
++  vst1q_f64(&probSumH[2], _sum1);
++  vst1q_f64(&probSumH[4], _sum2);
++  vst1q_f64(&probSumH[6], _sum3);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  double factor = yt / (n_cond_haps * probSumT);
++  double tFreq0[4], tFreq1[4];
++  for (int h = 0; h < 4; h++) {
++    tFreq0[h] = probSumH[h] * factor;
++    tFreq1[h] = probSumH[h + 4] * factor;
++  }
++  double nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    for (int h = 0; h < 4; h++) {
++      prob[i + h] = prob[i + h] * nt_ + tFreq0[h];
++      prob[i + 4 + h] = prob[i + 4 + h] * nt_ + tFreq1[h];
++      sum0 += prob[i + h];
++      sum1 += prob[i + 4 + h];
++    }
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-void haplotype_segment_double::COLLAPSE_MIS() {
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _tFreq = _mm256_set1_pd(yt / n_cond_haps);
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		__m256d _prob0 = _mm256_set1_pd(probSumK[k]);
+-		__m256d _prob1 = _mm256_set1_pd(probSumK[k]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_double::COLLAPSE_MIS() {
++#if defined(__AVX2__)
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++  __m256d _tFreq = _mm256_set1_pd(yt / n_cond_haps);
++  __m256d _nt = _mm256_set1_pd(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    __m256d _prob0 = _mm256_set1_pd(probSumK[k]);
++    __m256d _prob1 = _mm256_set1_pd(probSumK[k]);
++    _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq);
++    _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq);
++    _sum0 = _mm256_add_pd(_sum0, _prob0);
++    _sum1 = _mm256_add_pd(_sum1, _prob1);
++    _mm256_store_pd(&prob[i], _prob0);
++    _mm256_store_pd(&prob[i + 4], _prob1);
++  }
++  _mm256_store_pd(&probSumH[0], _sum0);
++  _mm256_store_pd(&probSumH[4], _sum1);
++#elif defined(__ARM_NEON)
++  float64x2_t _sum = vdupq_n_f64(0.0);
++  float64x2_t _tFreq = vdupq_n_f64(yt / n_cond_haps);
++  float64x2_t _nt = vdupq_n_f64(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    float64x2_t _prob = vmlaq_f64(_tFreq, vdupq_n_f64(probSumK[k]), _nt);
++    _sum = vaddq_f64(_sum, _prob);
++    vst1q_f64(&prob[i], _prob);
++    vst1q_f64(&prob[i + 2], _prob);
++    vst1q_f64(&prob[i + 4], _prob);
++    vst1q_f64(&prob[i + 6], _prob);
++  }
++  vst1q_f64(&probSumH[0], _sum);
++  vst1q_f64(&probSumH[2], _sum);
++  vst1q_f64(&probSumH[4], _sum);
++  vst1q_f64(&probSumH[6], _sum);
++#else
++  double sum0 = 0.0, sum1 = 0.0;
++  double tFreq = yt / n_cond_haps;
++  double nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    double p = probSumK[k] * nt_ + tFreq;
++    for (int h = 0; h < 4; h++)
++      prob[i + h] = p;
++    for (int h = 4; h < HAP_NUMBER; h++)
++      prob[i + h] = p;
++    sum0 += 4.0 * p;
++    sum1 += 4.0 * p;
++  }
++  for (int h = 0; h < 4; h++)
++    probSumH[h] = sum0;
++  for (int h = 4; h < HAP_NUMBER; h++)
++    probSumH[h] = sum1;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************					SUM Ks				************************/
++/*****************					SUM Ks
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_double::SUMK() {
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		probSumK[k] = prob[i+0] + prob[i+1] + prob[i+2] + prob[i+3] + prob[i+4] + prob[i+5] + prob[i+6] + prob[i+7];
+-	}
++inline void haplotype_segment_double::SUMK() {
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    probSumK[k] = prob[i + 0] + prob[i + 1] + prob[i + 2] + prob[i + 3] +
++                  prob[i + 4] + prob[i + 5] + prob[i + 6] + prob[i + 7];
++  }
+ }
+ 
+ /*******************************************************************************/
+-/*****************		TRANSITION COMPUTATIONS			************************/
++/*****************		TRANSITION COMPUTATIONS
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-bool haplotype_segment_double::TRANS_HAP() {
+-	sumHProbs = 0.0f;
+-	unsigned int  curr_rel_segment_index = curr_segment_index-segment_first;
+-	yt = M.getForwardTransProb(AlphaLocus[curr_rel_segment_index - 1], prev_abs_locus);
+-	nt = 1.0f - yt;
+-	double fact1 = nt / AlphaSumSum[curr_rel_segment_index - 1];
+-	for (int h1 = 0 ; h1 < HAP_NUMBER ; h1++) {
+-		__m256d _sum0 = _mm256_set1_pd(0.0f);
+-		__m256d _sum1 = _mm256_set1_pd(0.0f);
+-		double fact2 = (AlphaSum[curr_rel_segment_index-1][h1]/AlphaSumSum[curr_rel_segment_index-1]) * yt / n_cond_haps;
+-		for (int k = 0 ; k < n_cond_haps ; k ++) {
+-			__m256d _alpha = _mm256_set1_pd(Alpha[curr_rel_segment_index-1][k*HAP_NUMBER + h1] * fact1 + fact2);
+-			__m256d _beta0 = _mm256_load_pd(&prob[k*HAP_NUMBER+0]);
+-			__m256d _beta1 = _mm256_load_pd(&prob[k*HAP_NUMBER+4]);
+-			_sum0 = _mm256_add_pd(_sum0, _mm256_mul_pd(_alpha, _beta0));
+-			_sum1 = _mm256_add_pd(_sum1, _mm256_mul_pd(_alpha, _beta1));
+-		}
+-		_mm256_store_pd(&HProbs[h1*HAP_NUMBER+0], _sum0);
+-		_mm256_store_pd(&HProbs[h1*HAP_NUMBER+4], _sum1);
+-		sumHProbs += HProbs[h1*HAP_NUMBER+0]+HProbs[h1*HAP_NUMBER+1]+HProbs[h1*HAP_NUMBER+2]+HProbs[h1*HAP_NUMBER+3]+HProbs[h1*HAP_NUMBER+4]+HProbs[h1*HAP_NUMBER+5]+HProbs[h1*HAP_NUMBER+6]+HProbs[h1*HAP_NUMBER+7];
+-	}
+-	return (std::isnan(sumHProbs) || std::isinf(sumHProbs) || sumHProbs < std::numeric_limits<double>::min());
++inline bool haplotype_segment_double::TRANS_HAP() {
++  sumHProbs = 0.0f;
++  unsigned int curr_rel_segment_index = curr_segment_index - segment_first;
++  yt = M.getForwardTransProb(AlphaLocus[curr_rel_segment_index - 1],
++                             prev_abs_locus);
++  nt = 1.0f - yt;
++  double fact1 = nt / AlphaSumSum[curr_rel_segment_index - 1];
++  for (int h1 = 0; h1 < HAP_NUMBER; h1++) {
++    double fact2 = (AlphaSum[curr_rel_segment_index - 1][h1] /
++                    AlphaSumSum[curr_rel_segment_index - 1]) *
++                   yt / n_cond_haps;
++#ifdef __AVX2__
++    __m256d _sum0 = _mm256_set1_pd(0.0f);
++    __m256d _sum1 = _mm256_set1_pd(0.0f);
++    for (int k = 0; k < n_cond_haps; k++) {
++      __m256d _alpha = _mm256_set1_pd(
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2);
++      __m256d _beta0 = _mm256_load_pd(&prob[k * HAP_NUMBER + 0]);
++      __m256d _beta1 = _mm256_load_pd(&prob[k * HAP_NUMBER + 4]);
++      _sum0 = _mm256_add_pd(_sum0, _mm256_mul_pd(_alpha, _beta0));
++      _sum1 = _mm256_add_pd(_sum1, _mm256_mul_pd(_alpha, _beta1));
++    }
++    _mm256_store_pd(&HProbs[h1 * HAP_NUMBER + 0], _sum0);
++    _mm256_store_pd(&HProbs[h1 * HAP_NUMBER + 4], _sum1);
++#elif defined(__ARM_NEON)
++    float64x2_t _sum0 = vdupq_n_f64(0.0);
++    float64x2_t _sum1 = vdupq_n_f64(0.0);
++    float64x2_t _sum2 = vdupq_n_f64(0.0);
++    float64x2_t _sum3 = vdupq_n_f64(0.0);
++    for (int k = 0; k < n_cond_haps; k++) {
++      float64x2_t _alpha = vdupq_n_f64(
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2);
++      float64x2_t _beta0 = vld1q_f64(&prob[k * HAP_NUMBER + 0]);
++      float64x2_t _beta1 = vld1q_f64(&prob[k * HAP_NUMBER + 2]);
++      float64x2_t _beta2 = vld1q_f64(&prob[k * HAP_NUMBER + 4]);
++      float64x2_t _beta3 = vld1q_f64(&prob[k * HAP_NUMBER + 6]);
++      _sum0 = vmlaq_f64(_sum0, _alpha, _beta0);
++      _sum1 = vmlaq_f64(_sum1, _alpha, _beta1);
++      _sum2 = vmlaq_f64(_sum2, _alpha, _beta2);
++      _sum3 = vmlaq_f64(_sum3, _alpha, _beta3);
++    }
++    vst1q_f64(&HProbs[h1 * HAP_NUMBER + 0], _sum0);
++    vst1q_f64(&HProbs[h1 * HAP_NUMBER + 2], _sum1);
++    vst1q_f64(&HProbs[h1 * HAP_NUMBER + 4], _sum2);
++    vst1q_f64(&HProbs[h1 * HAP_NUMBER + 6], _sum3);
++#else
++    double sum0 = 0.0, sum1 = 0.0;
++    for (int k = 0; k < n_cond_haps; k++) {
++      double alpha =
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2;
++      for (int h = 0; h < 4; h++)
++        sum0 += alpha * prob[k * HAP_NUMBER + h];
++      for (int h = 4; h < HAP_NUMBER; h++)
++        sum1 += alpha * prob[k * HAP_NUMBER + h];
++    }
++    for (int h = 0; h < 4; h++)
++      HProbs[h1 * HAP_NUMBER + h] = sum0;
++    for (int h = 4; h < HAP_NUMBER; h++)
++      HProbs[h1 * HAP_NUMBER + h] = sum1;
++#endif
++    sumHProbs += HProbs[h1 * HAP_NUMBER + 0] + HProbs[h1 * HAP_NUMBER + 1] +
++                 HProbs[h1 * HAP_NUMBER + 2] + HProbs[h1 * HAP_NUMBER + 3] +
++                 HProbs[h1 * HAP_NUMBER + 4] + HProbs[h1 * HAP_NUMBER + 5] +
++                 HProbs[h1 * HAP_NUMBER + 6] + HProbs[h1 * HAP_NUMBER + 7];
++  }
++  return (std::isnan(sumHProbs) || std::isinf(sumHProbs) ||
++          sumHProbs < std::numeric_limits<double>::min());
+ }
+ 
+-inline
+-bool haplotype_segment_double::TRANS_DIP_MULT() {
+-	sumDProbs= 0.0f;
+-	double scaling = 1.0 / sumHProbs;
+-	for (int pd = 0, t = 0 ; pd < 64 ; ++pd) {
+-		if (DIP_GET(G->Diplotypes[curr_segment_index-1], pd)) {
+-			for (int nd = 0 ; nd < 64 ; ++nd) {
+-				if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
+-					DProbs[t] = (((double)HProbs[DIP_HAP0(pd)*HAP_NUMBER+DIP_HAP0(nd)]) * scaling) * ((double)(HProbs[DIP_HAP1(pd)*HAP_NUMBER+DIP_HAP1(nd)]) * scaling);
+-					sumDProbs += DProbs[t];
+-					t++;
+-				}
+-			}
+-		}
+-	}
+-	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++inline bool haplotype_segment_double::TRANS_DIP_MULT() {
++  sumDProbs = 0.0f;
++  double scaling = 1.0 / sumHProbs;
++  for (int pd = 0, t = 0; pd < 64; ++pd) {
++    if (DIP_GET(G->Diplotypes[curr_segment_index - 1], pd)) {
++      for (int nd = 0; nd < 64; ++nd) {
++        if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
++          DProbs[t] =
++              (((double)HProbs[DIP_HAP0(pd) * HAP_NUMBER + DIP_HAP0(nd)]) *
++               scaling) *
++              ((double)(HProbs[DIP_HAP1(pd) * HAP_NUMBER + DIP_HAP1(nd)]) *
++               scaling);
++          sumDProbs += DProbs[t];
++          t++;
++        }
++      }
++    }
++  }
++  return (std::isnan(sumDProbs) || std::isinf(sumDProbs) ||
++          sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+-inline
+-bool haplotype_segment_double::TRANS_DIP_ADD() {
+-	sumDProbs = 0.0f;
+-	double scaling = 1.0 / sumHProbs;
+-	for (int pd = 0, t = 0 ; pd < 64 ; ++pd) {
+-		if (DIP_GET(G->Diplotypes[curr_segment_index-1], pd)) {
+-			for (int nd = 0 ; nd < 64 ; ++nd) {
+-				if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
+-					DProbs[t] = DProbs[t] = (((double)HProbs[DIP_HAP0(pd)*HAP_NUMBER+DIP_HAP0(nd)]) * scaling) + ((double)(HProbs[DIP_HAP1(pd)*HAP_NUMBER+DIP_HAP1(nd)]) * scaling);
+-					sumDProbs += DProbs[t];
+-					t++;
+-				}
+-			}
+-		}
+-	}
+-	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++inline bool haplotype_segment_double::TRANS_DIP_ADD() {
++  sumDProbs = 0.0f;
++  double scaling = 1.0 / sumHProbs;
++  for (int pd = 0, t = 0; pd < 64; ++pd) {
++    if (DIP_GET(G->Diplotypes[curr_segment_index - 1], pd)) {
++      for (int nd = 0; nd < 64; ++nd) {
++        if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
++          DProbs[t] = DProbs[t] =
++              (((double)HProbs[DIP_HAP0(pd) * HAP_NUMBER + DIP_HAP0(nd)]) *
++               scaling) +
++              ((double)(HProbs[DIP_HAP1(pd) * HAP_NUMBER + DIP_HAP1(nd)]) *
++               scaling);
++          sumDProbs += DProbs[t];
++          t++;
++        }
++      }
++    }
++  }
++  return (std::isnan(sumDProbs) || std::isinf(sumDProbs) ||
++          sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+-inline
+-void haplotype_segment_double::IMPUTE(std::vector < float > & missing_probabilities) {
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-
+-	__m256d _sumA0[2], _sumA1[2];
+-	_sumA0[0] = _mm256_set1_pd(0.0f);
+-	_sumA0[1] = _mm256_set1_pd(0.0f);
+-	_sumA1[0] = _mm256_set1_pd(0.0f);
+-	_sumA1[1] = _mm256_set1_pd(0.0f);
+-
+-	__m256d _alphaSum0 = _mm256_load_pd(&AlphaSumMissing[curr_rel_missing][0]);
+-	__m256d _alphaSum1 = _mm256_load_pd(&AlphaSumMissing[curr_rel_missing][1]);
+-
+-	__m256d _ones = _mm256_set1_pd(1.0f);
+-
+-	_alphaSum0 = _mm256_div_pd(_ones, _alphaSum0);
+-	_alphaSum1 = _mm256_div_pd(_ones, _alphaSum1);
+-
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_load_pd(&prob[i]);
+-		__m256d _prob1 = _mm256_load_pd(&prob[i+4]);
+-
+-		__m256d _alpha0 = _mm256_load_pd(&AlphaMissing[curr_rel_missing][i+0]);
+-		__m256d _alpha1 = _mm256_load_pd(&AlphaMissing[curr_rel_missing][i+4]);
+-
+-		_sum0 = _mm256_mul_pd(_mm256_mul_pd(_alpha0, _alphaSum0), _prob0);
+-		_sum1 = _mm256_mul_pd(_mm256_mul_pd(_alpha1, _alphaSum1), _prob1);
+-
+-		_sumA0[ah] = _mm256_add_pd(_sumA0[ah], _sum0);
+-		_sumA1[ah] = _mm256_add_pd(_sumA1[ah], _sum1);
+-	}
+-	double * prob0 = (double*)&_sumA0[0];
+-	double * prob1 = (double*)&_sumA0[1];
+-	for (int h = 0 ; h < 4 ; h ++) missing_probabilities[curr_abs_missing * HAP_NUMBER + h] = prob1[h] / (prob0[h]+prob1[h]);
+-	prob0 = (double*)&_sumA1[0];
+-	prob1 = (double*)&_sumA1[1];
+-	for (int h = 4 ; h < HAP_NUMBER ; h ++) missing_probabilities[curr_abs_missing * HAP_NUMBER + h] = prob1[h] / (prob0[h]+prob1[h]);
++inline void
++haplotype_segment_double::IMPUTE(std::vector<float> &missing_probabilities) {
++#ifdef __AVX2__
++  __m256d _sum0 = _mm256_set1_pd(0.0f);
++  __m256d _sum1 = _mm256_set1_pd(0.0f);
++
++  __m256d _sumA0[2], _sumA1[2];
++  _sumA0[0] = _mm256_set1_pd(0.0f);
++  _sumA0[1] = _mm256_set1_pd(0.0f);
++  _sumA1[0] = _mm256_set1_pd(0.0f);
++  _sumA1[1] = _mm256_set1_pd(0.0f);
++
++  __m256d _alphaSum0 = _mm256_load_pd(&AlphaSumMissing[curr_rel_missing][0]);
++  __m256d _alphaSum1 = _mm256_load_pd(&AlphaSumMissing[curr_rel_missing][1]);
++
++  __m256d _ones = _mm256_set1_pd(1.0f);
++
++  _alphaSum0 = _mm256_div_pd(_ones, _alphaSum0);
++  _alphaSum1 = _mm256_div_pd(_ones, _alphaSum1);
++
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256d _prob0 = _mm256_load_pd(&prob[i]);
++    __m256d _prob1 = _mm256_load_pd(&prob[i + 4]);
++
++    __m256d _alpha0 = _mm256_load_pd(&AlphaMissing[curr_rel_missing][i + 0]);
++    __m256d _alpha1 = _mm256_load_pd(&AlphaMissing[curr_rel_missing][i + 4]);
++
++    _sum0 = _mm256_mul_pd(_mm256_mul_pd(_alpha0, _alphaSum0), _prob0);
++    _sum1 = _mm256_mul_pd(_mm256_mul_pd(_alpha1, _alphaSum1), _prob1);
++
++    _sumA0[ah] = _mm256_add_pd(_sumA0[ah], _sum0);
++    _sumA1[ah] = _mm256_add_pd(_sumA1[ah], _sum1);
++  }
++  double *prob0 = (double *)&_sumA0[0];
++  double *prob1 = (double *)&_sumA0[1];
++  for (int h = 0; h < 4; h++)
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        prob1[h] / (prob0[h] + prob1[h]);
++  prob0 = (double *)&_sumA1[0];
++  prob1 = (double *)&_sumA1[1];
++  for (int h = 4; h < HAP_NUMBER; h++)
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        prob1[h] / (prob0[h] + prob1[h]);
++#else
++  double sumA0[2][HAP_NUMBER], sumA1[2][HAP_NUMBER];
++  for (int a = 0; a < 2; a++)
++    for (int h = 0; h < HAP_NUMBER; h++) {
++      sumA0[a][h] = 0.0;
++      sumA1[a][h] = 0.0;
++    }
++  double alphaSum0[HAP_NUMBER], alphaSum1[HAP_NUMBER];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    alphaSum0[h] = 1.0 / AlphaSumMissing[curr_rel_missing][h];
++    alphaSum1[h] = 1.0 / AlphaSumMissing[curr_rel_missing][h + HAP_NUMBER];
++  }
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < HAP_NUMBER; h++) {
++      double s0 =
++          AlphaMissing[curr_rel_missing][i + h] * alphaSum0[h] * prob[i + h];
++      double s1 =
++          AlphaMissing[curr_rel_missing][i + h] * alphaSum1[h] * prob[i + h];
++      sumA0[ah][h] += s0;
++      sumA1[ah][h] += s1;
++    }
++  }
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        (float)(sumA1[1][h] / (sumA0[0][h] + sumA1[0][h]));
++  }
++#endif
+ }
+ 
+ #endif
+diff --git a/phase_common/src/models/haplotype_segment_single.h b/phase_common/src/models/haplotype_segment_single.h
+index 782b023..583bf1d 100644
+--- a/phase_common/src/models/haplotype_segment_single.h
++++ b/phase_common/src/models/haplotype_segment_single.h
+@@ -23,410 +23,818 @@
+ #ifndef _HAPLOTYPE_SEGMENT_SINGLE_H
+ #define _HAPLOTYPE_SEGMENT_SINGLE_H
+ 
+-#include <utils/otools.h>
+ #include <objects/compute_job.h>
+ #include <objects/hmm_parameters.h>
++#include <utils/otools.h>
+ 
++#ifdef __AVX2__
+ #include <immintrin.h>
++#elif defined(__ARM_NEON)
++#include <arm_neon.h>
++#endif
+ #include <boost/align/aligned_allocator.hpp>
+ 
+ template <typename T>
+-using aligned_vector32 = std::vector<T, boost::alignment::aligned_allocator < T, 32 > >;
++using aligned_vector32 =
++    std::vector<T, boost::alignment::aligned_allocator<T, 32>>;
+ 
+ class haplotype_segment_single {
+ private:
+-	//EXTERNAL DATA
+-	hmm_parameters & M;
+-	genotype * G;
+-	bitmatrix Hhap, Hvar;
+-
+-	//COORDINATES & CONSTANTS
+-	int segment_first;
+-	int segment_last;
+-	int locus_first;
+-	int locus_last;
+-	int ambiguous_first;
+-	int ambiguous_last;
+-	int missing_first;
+-	int missing_last;
+-	int transition_first;
+-	int transition_last;
+-	unsigned int n_cond_haps;
+-	unsigned int n_missing;
+-
+-	//CURSORS
+-	int curr_segment_index;
+-	int curr_segment_locus;
+-	int curr_abs_locus;
+-	int prev_abs_locus;
+-	int curr_rel_locus;
+-	int curr_rel_locus_offset;
+-	int curr_abs_ambiguous;
+-	int curr_abs_transition;
+-	int curr_abs_missing;
+-	int curr_rel_missing;
+-
+-
+-	//DYNAMIC ARRAYS
+-	float probSumT;
+-	aligned_vector32 < float > prob;
+-	aligned_vector32 < float > probSumK;
+-	aligned_vector32 < float > probSumH;
+-	std::vector < aligned_vector32 < float > > Alpha;
+-	std::vector < aligned_vector32 < float > > AlphaSum;
+-	std::vector < int > AlphaLocus;
+-	aligned_vector32 < float > AlphaSumSum;
+-	std::vector < aligned_vector32 < float > > AlphaMissing;
+-	std::vector < aligned_vector32 < float > > AlphaSumMissing;
+-	float HProbs [HAP_NUMBER * HAP_NUMBER] __attribute__ ((aligned(32)));
+-	double DProbs [HAP_NUMBER * HAP_NUMBER * HAP_NUMBER * HAP_NUMBER] __attribute__ ((aligned(32)));
+-
+-	//STATIC ARRAYS
+-	float sumHProbs;
+-	double sumDProbs;
+-	float g0[HAP_NUMBER], g1[HAP_NUMBER];
+-	float nt, yt;
+-
+-	//INLINED AND UNROLLED ROUTINES
+-	void INIT_HOM();
+-	void INIT_AMB();
+-	void INIT_MIS();
+-	bool RUN_HOM(char);
+-	void RUN_AMB();
+-	void RUN_MIS();
+-	void COLLAPSE_HOM();
+-	void COLLAPSE_AMB();
+-	void COLLAPSE_MIS();
+-	void SUMK();
+-	void IMPUTE(std::vector < float > & );
+-	bool TRANS_HAP();
+-	bool TRANS_DIP_MULT();
+-	bool TRANS_DIP_ADD();
+-	void SET_FIRST_TRANS(std::vector < double > & );
+-	int SET_OTHER_TRANS(std::vector < double > & );
++  // EXTERNAL DATA
++  hmm_parameters &M;
++  genotype *G;
++  bitmatrix Hhap, Hvar;
++
++  // COORDINATES & CONSTANTS
++  int segment_first;
++  int segment_last;
++  int locus_first;
++  int locus_last;
++  int ambiguous_first;
++  int ambiguous_last;
++  int missing_first;
++  int missing_last;
++  int transition_first;
++  int transition_last;
++  unsigned int n_cond_haps;
++  unsigned int n_missing;
++
++  // CURSORS
++  int curr_segment_index;
++  int curr_segment_locus;
++  int curr_abs_locus;
++  int prev_abs_locus;
++  int curr_rel_locus;
++  int curr_rel_locus_offset;
++  int curr_abs_ambiguous;
++  int curr_abs_transition;
++  int curr_abs_missing;
++  int curr_rel_missing;
++
++  // DYNAMIC ARRAYS
++  float probSumT;
++  aligned_vector32<float> prob;
++  aligned_vector32<float> probSumK;
++  aligned_vector32<float> probSumH;
++  std::vector<aligned_vector32<float>> Alpha;
++  std::vector<aligned_vector32<float>> AlphaSum;
++  std::vector<int> AlphaLocus;
++  aligned_vector32<float> AlphaSumSum;
++  std::vector<aligned_vector32<float>> AlphaMissing;
++  std::vector<aligned_vector32<float>> AlphaSumMissing;
++  float HProbs[HAP_NUMBER * HAP_NUMBER] __attribute__((aligned(32)));
++  double DProbs[HAP_NUMBER * HAP_NUMBER * HAP_NUMBER * HAP_NUMBER]
++      __attribute__((aligned(32)));
++
++  // STATIC ARRAYS
++  float sumHProbs;
++  double sumDProbs;
++  float g0[HAP_NUMBER], g1[HAP_NUMBER];
++  float nt, yt;
++
++  // INLINED AND UNROLLED ROUTINES
++  void INIT_HOM();
++  void INIT_AMB();
++  void INIT_MIS();
++  bool RUN_HOM(char);
++  void RUN_AMB();
++  void RUN_MIS();
++  void COLLAPSE_HOM();
++  void COLLAPSE_AMB();
++  void COLLAPSE_MIS();
++  void SUMK();
++  void IMPUTE(std::vector<float> &);
++  bool TRANS_HAP();
++  bool TRANS_DIP_MULT();
++  bool TRANS_DIP_ADD();
++  void SET_FIRST_TRANS(std::vector<double> &);
++  int SET_OTHER_TRANS(std::vector<double> &);
+ 
+ public:
+-	//CONSTRUCTOR/DESTRUCTOR
+-	haplotype_segment_single(genotype *, bitmatrix &, std::vector < unsigned int > &, window &, hmm_parameters &);
+-	~haplotype_segment_single();
+-
+-	//void fetch();
+-	void forward();
+-	int backward(std::vector < double > &, std::vector < float > &);
++  // CONSTRUCTOR/DESTRUCTOR
++  haplotype_segment_single(genotype *, bitmatrix &, std::vector<unsigned int> &,
++                           window &, hmm_parameters &);
++  ~haplotype_segment_single();
++
++  // void fetch();
++  void forward();
++  int backward(std::vector<double> &, std::vector<float> &);
+ };
+ 
+ /*******************************************************************************/
+-/*****************			HOMOZYGOUS GENOTYPE			************************/
++/*****************			HOMOZYGOUS GENOTYPE
++ * ************************/
+ /*******************************************************************************/
+ 
+-
+-inline
+-void haplotype_segment_single::INIT_HOM() {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-
+-		//std::cout << curr_rel_locus << " " << curr_rel_locus_offset << " " << k << " " << n_cond_haps << std::endl;
+-
+-
+-		__m256 _prob = _mm256_set1_ps((ag==ah)?1.0f:M.ed/M.ee);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::INIT_HOM() {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++
++    // std::cout << curr_rel_locus << " " << curr_rel_locus_offset << " " << k
++    // << " " << n_cond_haps << std::endl;
++
++    __m256 _prob = _mm256_set1_ps((ag == ah) ? 1.0f : M.ed / M.ee);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _prob = vdupq_n_f32((ag == ah) ? 1.0f : M.ed / M.ee);
++    _sum0 = vaddq_f32(_sum0, _prob);
++    _sum1 = vaddq_f32(_sum1, _prob);
++    vst1q_f32(&prob[i], _prob);
++    vst1q_f32(&prob[i + 4], _prob);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float p = (ag == ah) ? 1.0f : M.ed / M.ee;
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = p;
++    sum += p;
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-bool haplotype_segment_single::RUN_HOM(char rare_allele) {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	if (rare_allele < 0 || ag == rare_allele) {
+-		__m256 _sum = _mm256_set1_ps(0.0f);
+-		__m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
+-		__m256 _tFreq = _mm256_load_ps(&probSumH[0]);
+-		_tFreq = _mm256_mul_ps(_tFreq, _factor);
+-		__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-		__m256 _mismatch = _mm256_set1_ps(M.ed/M.ee);
+-		for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-			bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-			__m256 _prob = _mm256_load_ps(&prob[i]);
+-			_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-			if (ag!=ah) _prob = _mm256_mul_ps(_prob, _mismatch);
+-			_sum = _mm256_add_ps(_sum, _prob);
+-			_mm256_store_ps(&prob[i], _prob);
+-		}
+-		_mm256_store_ps(&probSumH[0], _sum);
+-		probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+-		return true;
+-	}
+-	return false;
++inline bool haplotype_segment_single::RUN_HOM(char rare_allele) {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++  if (rare_allele < 0 || ag == rare_allele) {
++#if defined(__AVX2__)
++    __m256 _sum = _mm256_set1_ps(0.0f);
++    __m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
++    __m256 _tFreq = _mm256_load_ps(&probSumH[0]);
++    _tFreq = _mm256_mul_ps(_tFreq, _factor);
++    __m256 _nt = _mm256_set1_ps(nt / probSumT);
++    __m256 _mismatch = _mm256_set1_ps(M.ed / M.ee);
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      __m256 _prob = _mm256_load_ps(&prob[i]);
++      _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++      if (ag != ah)
++        _prob = _mm256_mul_ps(_prob, _mismatch);
++      _sum = _mm256_add_ps(_sum, _prob);
++      _mm256_store_ps(&prob[i], _prob);
++    }
++    _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++    float32x4_t _sum0 = vdupq_n_f32(0.0f);
++    float32x4_t _sum1 = vdupq_n_f32(0.0f);
++    float32x4_t _factor = vdupq_n_f32(yt / (n_cond_haps * probSumT));
++    float32x4_t _tFreq0 = vld1q_f32(&probSumH[0]);
++    float32x4_t _tFreq1 = vld1q_f32(&probSumH[4]);
++    _tFreq0 = vmulq_f32(_tFreq0, _factor);
++    _tFreq1 = vmulq_f32(_tFreq1, _factor);
++    float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++    float32x4_t _mismatch = vdupq_n_f32(M.ed / M.ee);
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      float32x4_t _prob0 = vld1q_f32(&prob[i]);
++      float32x4_t _prob1 = vld1q_f32(&prob[i + 4]);
++      _prob0 = vmlaq_f32(_tFreq0, _prob0, _nt);
++      _prob1 = vmlaq_f32(_tFreq1, _prob1, _nt);
++      if (ag != ah) {
++        _prob0 = vmulq_f32(_prob0, _mismatch);
++        _prob1 = vmulq_f32(_prob1, _mismatch);
++      }
++      _sum0 = vaddq_f32(_sum0, _prob0);
++      _sum1 = vaddq_f32(_sum1, _prob1);
++      vst1q_f32(&prob[i], _prob0);
++      vst1q_f32(&prob[i + 4], _prob1);
++    }
++    vst1q_f32(&probSumH[0], _sum0);
++    vst1q_f32(&probSumH[4], _sum1);
++#else
++    float sum = 0.0f;
++    float factor = yt / (n_cond_haps * probSumT);
++    float tFreq[HAP_NUMBER];
++    for (int h = 0; h < HAP_NUMBER; h++)
++      tFreq[h] = probSumH[h] * factor;
++    float nt_ = nt / probSumT;
++    float mismatch = M.ed / M.ee;
++    for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++      bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++      for (int h = 0; h < HAP_NUMBER; h++) {
++        prob[i + h] = prob[i + h] * nt_ + tFreq[h];
++        if (ag != ah)
++          prob[i + h] *= mismatch;
++      }
++      for (int h = 0; h < HAP_NUMBER; h++)
++        sum += prob[i + h];
++    }
++    for (int h = 0; h < HAP_NUMBER; h++)
++      probSumH[h] = sum;
++#endif
++    probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++               probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++    return true;
++  }
++  return false;
+ }
+ 
+-inline
+-void haplotype_segment_single::COLLAPSE_HOM() {
+-	bool ag = VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _tFreq = _mm256_set1_ps(yt / n_cond_haps);					//Check divide by probSumT here!
+-	__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-	__m256 _mismatch = _mm256_set1_ps(M.ed/M.ee);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256 _prob = _mm256_set1_ps(probSumK[k]);
+-		_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-		if (ag!=ah) _prob = _mm256_mul_ps(_prob, _mismatch);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::COLLAPSE_HOM() {
++  bool ag =
++      VAR_GET_HAP0(MOD2(curr_abs_locus), G->Variants[DIV2(curr_abs_locus)]);
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _tFreq =
++      _mm256_set1_ps(yt / n_cond_haps); // Check divide by probSumT here!
++  __m256 _nt = _mm256_set1_ps(nt / probSumT);
++  __m256 _mismatch = _mm256_set1_ps(M.ed / M.ee);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256 _prob = _mm256_set1_ps(probSumK[k]);
++    _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++    if (ag != ah)
++      _prob = _mm256_mul_ps(_prob, _mismatch);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _tFreq =
++      vdupq_n_f32(yt / n_cond_haps); // Check divide by probSumT here!
++  float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++  float32x4_t _mismatch = vdupq_n_f32(M.ed / M.ee);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _prob = vdupq_n_f32(probSumK[k]);
++    _prob = vmlaq_f32(_tFreq, _prob, _nt);
++    if (ag != ah)
++      _prob = vmulq_f32(_prob, _mismatch);
++    _sum0 = vaddq_f32(_sum0, _prob);
++    _sum1 = vaddq_f32(_sum1, _prob);
++    vst1q_f32(&prob[i], _prob);
++    vst1q_f32(&prob[i + 4], _prob);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  float tFreq = yt / n_cond_haps; // Check divide by probSumT here!
++  float nt_ = nt / probSumT;
++  float mismatch = M.ed / M.ee;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float p = probSumK[k] * nt_ + tFreq;
++    if (ag != ah)
++      p *= mismatch;
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = p;
++    sum += p;
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************			HETEROZYGOUS GENOTYPE			********************/
++/*****************			HETEROZYGOUS GENOTYPE
++ * ********************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_single::INIT_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _emit[2]; _emit[0] = _mm256_loadu_ps(&g0[0]); _emit[1] = _mm256_loadu_ps(&g1[0]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256 _prob = _emit[ah];
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::INIT_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _emit[2];
++  _emit[0] = _mm256_loadu_ps(&g0[0]);
++  _emit[1] = _mm256_loadu_ps(&g1[0]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256 _prob = _emit[ah];
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _e00 = vld1q_f32(&g0[0]), _e01 = vld1q_f32(&g1[0]);
++  float32x4_t _e10 = vld1q_f32(&g0[4]), _e11 = vld1q_f32(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _p0 = ah ? _e01 : _e00;
++    float32x4_t _p1 = ah ? _e11 : _e10;
++    _sum0 = vaddq_f32(_sum0, _p0);
++    _sum1 = vaddq_f32(_sum1, _p1);
++    vst1q_f32(&prob[i], _p0);
++    vst1q_f32(&prob[i + 4], _p1);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = ah ? g1[h] : g0[h];
++    for (int h = 0; h < HAP_NUMBER; h++)
++      sum += ah ? g1[h] : g0[h];
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-void haplotype_segment_single::RUN_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
+-	__m256 _tFreq = _mm256_load_ps(&probSumH[0]);
+-	_tFreq = _mm256_mul_ps(_tFreq, _factor);
+-	__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-	__m256 _emit[2]; _emit[0] = _mm256_loadu_ps(&g0[0]); _emit[1] = _mm256_loadu_ps(&g1[0]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256 _prob = _mm256_load_ps(&prob[i]);
+-		_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-		_prob = _mm256_mul_ps(_prob, _emit[ah]);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::RUN_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
++  __m256 _tFreq = _mm256_load_ps(&probSumH[0]);
++  _tFreq = _mm256_mul_ps(_tFreq, _factor);
++  __m256 _nt = _mm256_set1_ps(nt / probSumT);
++  __m256 _emit[2];
++  _emit[0] = _mm256_loadu_ps(&g0[0]);
++  _emit[1] = _mm256_loadu_ps(&g1[0]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256 _prob = _mm256_load_ps(&prob[i]);
++    _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++    _prob = _mm256_mul_ps(_prob, _emit[ah]);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _factor = vdupq_n_f32(yt / (n_cond_haps * probSumT));
++  float32x4_t _tFreq0 = vld1q_f32(&probSumH[0]);
++  float32x4_t _tFreq1 = vld1q_f32(&probSumH[4]);
++  _tFreq0 = vmulq_f32(_tFreq0, _factor);
++  _tFreq1 = vmulq_f32(_tFreq1, _factor);
++  float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++  float32x4_t _e00 = vld1q_f32(&g0[0]), _e01 = vld1q_f32(&g1[0]);
++  float32x4_t _e10 = vld1q_f32(&g0[4]), _e11 = vld1q_f32(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _p0 = vld1q_f32(&prob[i]);
++    float32x4_t _p1 = vld1q_f32(&prob[i + 4]);
++    _p0 = vmulq_f32(vmlaq_f32(_tFreq0, _p0, _nt), ah ? _e01 : _e00);
++    _p1 = vmulq_f32(vmlaq_f32(_tFreq1, _p1, _nt), ah ? _e11 : _e10);
++    _sum0 = vaddq_f32(_sum0, _p0);
++    _sum1 = vaddq_f32(_sum1, _p1);
++    vst1q_f32(&prob[i], _p0);
++    vst1q_f32(&prob[i + 4], _p1);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  float factor = yt / (n_cond_haps * probSumT);
++  float tFreq[HAP_NUMBER];
++  for (int h = 0; h < HAP_NUMBER; h++)
++    tFreq[h] = probSumH[h] * factor;
++  float nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < HAP_NUMBER; h++) {
++      prob[i + h] = (prob[i + h] * nt_ + tFreq[h]) * (ah ? g1[h] : g0[h]);
++    }
++    for (int h = 0; h < HAP_NUMBER; h++)
++      sum += prob[i + h];
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*
+ inline
+ void haplotype_segment_single::RUN_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256d _sum0 = _mm256_set1_pd(0.0f);
+-	__m256d _sum1 = _mm256_set1_pd(0.0f);
+-	__m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
+-	__m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
+-	__m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
+-	_tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
+-	_tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
+-	__m256d _nt = _mm256_set1_pd(nt / probSumT);
+-	__m256d _emit0[2], _emit1[2];
+-	_emit0[0] = _mm256_loadu_pd(&g0[0]);
+-	_emit0[1] = _mm256_loadu_pd(&g1[0]);
+-	_emit1[0] = _mm256_loadu_pd(&g0[4]);
+-	_emit1[1] = _mm256_loadu_pd(&g1[4]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256d _prob0 = _mm256_load_pd(&prob[i+0]);
+-		__m256d _prob1 = _mm256_load_pd(&prob[i+4]);
+-		_prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
+-		_prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
+-		_prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
+-		_prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
+-		_sum0 = _mm256_add_pd(_sum0, _prob0);
+-		_sum1 = _mm256_add_pd(_sum1, _prob1);
+-		_mm256_store_pd(&prob[i+0], _prob0);
+-		_mm256_store_pd(&prob[i+4], _prob1);
+-	}
+-	_mm256_store_pd(&probSumH[0], _sum0);
+-	_mm256_store_pd(&probSumH[4], _sum1);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++        unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++        for (int h = 0 ; h < HAP_NUMBER ; h ++) {
++                g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
++                g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
++        }
++        __m256d _sum0 = _mm256_set1_pd(0.0f);
++        __m256d _sum1 = _mm256_set1_pd(0.0f);
++        __m256d _factor = _mm256_set1_pd(yt / (n_cond_haps * probSumT));
++        __m256d _tFreq0 = _mm256_load_pd(&probSumH[0]);
++        __m256d _tFreq1 = _mm256_load_pd(&probSumH[4]);
++        _tFreq0 = _mm256_mul_pd(_tFreq0, _factor);
++        _tFreq1 = _mm256_mul_pd(_tFreq1, _factor);
++        __m256d _nt = _mm256_set1_pd(nt / probSumT);
++        __m256d _emit0[2], _emit1[2];
++        _emit0[0] = _mm256_loadu_pd(&g0[0]);
++        _emit0[1] = _mm256_loadu_pd(&g1[0]);
++        _emit1[0] = _mm256_loadu_pd(&g0[4]);
++        _emit1[1] = _mm256_loadu_pd(&g1[4]);
++        for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
++                bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
++                __m256d _prob0 = _mm256_load_pd(&prob[i+0]);
++                __m256d _prob1 = _mm256_load_pd(&prob[i+4]);
++                _prob0 = _mm256_fmadd_pd(_prob0, _nt, _tFreq0);
++                _prob1 = _mm256_fmadd_pd(_prob1, _nt, _tFreq1);
++                _prob0 = _mm256_mul_pd(_prob0, _emit0[ah]);
++                _prob1 = _mm256_mul_pd(_prob1, _emit1[ah]);
++                _sum0 = _mm256_add_pd(_sum0, _prob0);
++                _sum1 = _mm256_add_pd(_sum1, _prob1);
++                _mm256_store_pd(&prob[i+0], _prob0);
++                _mm256_store_pd(&prob[i+4], _prob1);
++        }
++        _mm256_store_pd(&probSumH[0], _sum0);
++        _mm256_store_pd(&probSumH[4], _sum1);
++        probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ */
+ 
+-inline
+-void haplotype_segment_single::COLLAPSE_AMB() {
+-	unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		g0[h] = HAP_GET(amb_code,h)?M.ed/M.ee:1.0f;
+-		g1[h] = HAP_GET(amb_code,h)?1.0f:M.ed/M.ee;
+-	}
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _tFreq = _mm256_set1_ps(yt / n_cond_haps);
+-	__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-	__m256 _emit[2]; _emit[0] = _mm256_loadu_ps(&g0[0]); _emit[1] = _mm256_loadu_ps(&g1[0]);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256 _prob = _mm256_set1_ps(probSumK[k]);
+-		_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-		_prob = _mm256_mul_ps(_prob, _emit[ah]);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::COLLAPSE_AMB() {
++  unsigned char amb_code = G->Ambiguous[curr_abs_ambiguous];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    g0[h] = HAP_GET(amb_code, h) ? M.ed / M.ee : 1.0f;
++    g1[h] = HAP_GET(amb_code, h) ? 1.0f : M.ed / M.ee;
++  }
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _tFreq = _mm256_set1_ps(yt / n_cond_haps);
++  __m256 _nt = _mm256_set1_ps(nt / probSumT);
++  __m256 _emit[2];
++  _emit[0] = _mm256_loadu_ps(&g0[0]);
++  _emit[1] = _mm256_loadu_ps(&g1[0]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256 _prob = _mm256_set1_ps(probSumK[k]);
++    _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++    _prob = _mm256_mul_ps(_prob, _emit[ah]);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _tFreq = vdupq_n_f32(yt / n_cond_haps);
++  float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++  float32x4_t _e00 = vld1q_f32(&g0[0]), _e01 = vld1q_f32(&g1[0]);
++  float32x4_t _e10 = vld1q_f32(&g0[4]), _e11 = vld1q_f32(&g1[4]);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _p0 = vmulq_f32(
++        vmlaq_f32(_tFreq, vdupq_n_f32(probSumK[k]), _nt), ah ? _e01 : _e00);
++    float32x4_t _p1 = vmulq_f32(
++        vmlaq_f32(_tFreq, vdupq_n_f32(probSumK[k]), _nt), ah ? _e11 : _e10);
++    _sum0 = vaddq_f32(_sum0, _p0);
++    _sum1 = vaddq_f32(_sum1, _p1);
++    vst1q_f32(&prob[i], _p0);
++    vst1q_f32(&prob[i + 4], _p1);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  float tFreq = yt / n_cond_haps;
++  float nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float p = probSumK[k] * nt_ + tFreq;
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = p * (ah ? g1[h] : g0[h]);
++    for (int h = 0; h < HAP_NUMBER; h++)
++      sum += prob[i + h];
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************			MISSING GENOTYPE			************************/
++/*****************			MISSING GENOTYPE
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_single::INIT_MIS() {
+-	fill(prob.begin(), prob.end(), 1.0f/(HAP_NUMBER * n_cond_haps));
+-	fill(probSumH.begin(), probSumH.end(), 1.0f/HAP_NUMBER);
+-	probSumT = 1.0f;
++inline void haplotype_segment_single::INIT_MIS() {
++  fill(prob.begin(), prob.end(), 1.0f / (HAP_NUMBER * n_cond_haps));
++  fill(probSumH.begin(), probSumH.end(), 1.0f / HAP_NUMBER);
++  probSumT = 1.0f;
+ }
+ 
+-inline
+-void haplotype_segment_single::RUN_MIS() {
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
+-	__m256 _tFreq = _mm256_load_ps(&probSumH[0]);
+-	_tFreq = _mm256_mul_ps(_tFreq, _factor);
+-	__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		__m256 _prob = _mm256_load_ps(&prob[i]);
+-		_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::RUN_MIS() {
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _factor = _mm256_set1_ps(yt / (n_cond_haps * probSumT));
++  __m256 _tFreq = _mm256_load_ps(&probSumH[0]);
++  _tFreq = _mm256_mul_ps(_tFreq, _factor);
++  __m256 _nt = _mm256_set1_ps(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    __m256 _prob = _mm256_load_ps(&prob[i]);
++    _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _factor = vdupq_n_f32(yt / (n_cond_haps * probSumT));
++  float32x4_t _tFreq0 = vld1q_f32(&probSumH[0]);
++  float32x4_t _tFreq1 = vld1q_f32(&probSumH[4]);
++  _tFreq0 = vmulq_f32(_tFreq0, _factor);
++  _tFreq1 = vmulq_f32(_tFreq1, _factor);
++  float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    float32x4_t _p0 = vld1q_f32(&prob[i]);
++    float32x4_t _p1 = vld1q_f32(&prob[i + 4]);
++    _p0 = vmlaq_f32(_tFreq0, _p0, _nt);
++    _p1 = vmlaq_f32(_tFreq1, _p1, _nt);
++    _sum0 = vaddq_f32(_sum0, _p0);
++    _sum1 = vaddq_f32(_sum1, _p1);
++    vst1q_f32(&prob[i], _p0);
++    vst1q_f32(&prob[i + 4], _p1);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  float factor = yt / (n_cond_haps * probSumT);
++  float tFreq[HAP_NUMBER];
++  for (int h = 0; h < HAP_NUMBER; h++)
++    tFreq[h] = probSumH[h] * factor;
++  float nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = prob[i + h] * nt_ + tFreq[h];
++    for (int h = 0; h < HAP_NUMBER; h++)
++      sum += prob[i + h];
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+-inline
+-void haplotype_segment_single::COLLAPSE_MIS() {
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _tFreq = _mm256_set1_ps(yt / n_cond_haps);
+-	__m256 _nt = _mm256_set1_ps(nt / probSumT);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		__m256 _prob = _mm256_set1_ps(probSumK[k]);
+-		_prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
+-		_sum = _mm256_add_ps(_sum, _prob);
+-		_mm256_store_ps(&prob[i], _prob);
+-	}
+-	_mm256_store_ps(&probSumH[0], _sum);
+-	probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] + probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
++inline void haplotype_segment_single::COLLAPSE_MIS() {
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _tFreq = _mm256_set1_ps(yt / n_cond_haps);
++  __m256 _nt = _mm256_set1_ps(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    __m256 _prob = _mm256_set1_ps(probSumK[k]);
++    _prob = _mm256_fmadd_ps(_prob, _nt, _tFreq);
++    _sum = _mm256_add_ps(_sum, _prob);
++    _mm256_store_ps(&prob[i], _prob);
++  }
++  _mm256_store_ps(&probSumH[0], _sum);
++#elif defined(__ARM_NEON)
++  float32x4_t _sum0 = vdupq_n_f32(0.0f);
++  float32x4_t _sum1 = vdupq_n_f32(0.0f);
++  float32x4_t _tFreq = vdupq_n_f32(yt / n_cond_haps);
++  float32x4_t _nt = vdupq_n_f32(nt / probSumT);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    float32x4_t _prob = vmlaq_f32(_tFreq, vdupq_n_f32(probSumK[k]), _nt);
++    _sum0 = vaddq_f32(_sum0, _prob);
++    _sum1 = vaddq_f32(_sum1, _prob);
++    vst1q_f32(&prob[i], _prob);
++    vst1q_f32(&prob[i + 4], _prob);
++  }
++  vst1q_f32(&probSumH[0], _sum0);
++  vst1q_f32(&probSumH[4], _sum1);
++#else
++  float sum = 0.0f;
++  float tFreq = yt / n_cond_haps;
++  float nt_ = nt / probSumT;
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    float p = probSumK[k] * nt_ + tFreq;
++    for (int h = 0; h < HAP_NUMBER; h++)
++      prob[i + h] = p;
++    sum += p;
++  }
++  for (int h = 0; h < HAP_NUMBER; h++)
++    probSumH[h] = sum;
++#endif
++  probSumT = probSumH[0] + probSumH[1] + probSumH[2] + probSumH[3] +
++             probSumH[4] + probSumH[5] + probSumH[6] + probSumH[7];
+ }
+ 
+ /*******************************************************************************/
+-/*****************					SUM Ks				************************/
++/*****************					SUM Ks
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-void haplotype_segment_single::SUMK() {
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		probSumK[k] = prob[i+0] + prob[i+1] + prob[i+2] + prob[i+3] + prob[i+4] + prob[i+5] + prob[i+6] + prob[i+7];
+-	}
++inline void haplotype_segment_single::SUMK() {
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    probSumK[k] = prob[i + 0] + prob[i + 1] + prob[i + 2] + prob[i + 3] +
++                  prob[i + 4] + prob[i + 5] + prob[i + 6] + prob[i + 7];
++  }
+ }
+ 
+ /*******************************************************************************/
+-/*****************		TRANSITION COMPUTATIONS			************************/
++/*****************		TRANSITION COMPUTATIONS
++ * ************************/
+ /*******************************************************************************/
+ 
+-inline
+-bool haplotype_segment_single::TRANS_HAP() {
+-	sumHProbs = 0.0f;
+-	unsigned int  curr_rel_segment_index = curr_segment_index-segment_first;
+-	yt = M.getForwardTransProb(AlphaLocus[curr_rel_segment_index - 1], prev_abs_locus);
+-	nt = 1.0f - yt;
+-	float fact1 = nt / AlphaSumSum[curr_rel_segment_index - 1];
+-	for (int h1 = 0 ; h1 < HAP_NUMBER ; h1++) {
+-		__m256 _sum = _mm256_set1_ps(0.0f);
+-		float fact2 = (AlphaSum[curr_rel_segment_index-1][h1]/AlphaSumSum[curr_rel_segment_index-1]) * yt / n_cond_haps;
+-		for (int k = 0 ; k < n_cond_haps ; k ++) {
+-			__m256 _alpha = _mm256_set1_ps(Alpha[curr_rel_segment_index-1][k*HAP_NUMBER + h1] * fact1 + fact2);
+-			__m256 _beta = _mm256_load_ps(&prob[k*HAP_NUMBER]);
+-			_sum = _mm256_add_ps(_sum, _mm256_mul_ps(_alpha, _beta));
+-		}
+-		_mm256_store_ps(&HProbs[h1*HAP_NUMBER], _sum);
+-		sumHProbs += HProbs[h1*HAP_NUMBER+0]+HProbs[h1*HAP_NUMBER+1]+HProbs[h1*HAP_NUMBER+2]+HProbs[h1*HAP_NUMBER+3]+HProbs[h1*HAP_NUMBER+4]+HProbs[h1*HAP_NUMBER+5]+HProbs[h1*HAP_NUMBER+6]+HProbs[h1*HAP_NUMBER+7];
+-	}
+-	return (std::isnan(sumHProbs) || std::isinf(sumHProbs) || sumHProbs < std::numeric_limits<float>::min());
++inline bool haplotype_segment_single::TRANS_HAP() {
++  sumHProbs = 0.0f;
++  unsigned int curr_rel_segment_index = curr_segment_index - segment_first;
++  yt = M.getForwardTransProb(AlphaLocus[curr_rel_segment_index - 1],
++                             prev_abs_locus);
++  nt = 1.0f - yt;
++  float fact1 = nt / AlphaSumSum[curr_rel_segment_index - 1];
++  for (int h1 = 0; h1 < HAP_NUMBER; h1++) {
++    float fact2 = (AlphaSum[curr_rel_segment_index - 1][h1] /
++                   AlphaSumSum[curr_rel_segment_index - 1]) *
++                  yt / n_cond_haps;
++#if defined(__AVX2__)
++    __m256 _sum = _mm256_set1_ps(0.0f);
++    for (int k = 0; k < n_cond_haps; k++) {
++      __m256 _alpha = _mm256_set1_ps(
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2);
++      __m256 _beta = _mm256_load_ps(&prob[k * HAP_NUMBER]);
++      _sum = _mm256_add_ps(_sum, _mm256_mul_ps(_alpha, _beta));
++    }
++    _mm256_store_ps(&HProbs[h1 * HAP_NUMBER], _sum);
++#elif defined(__ARM_NEON)
++    float32x4_t _sum0 = vdupq_n_f32(0.0f);
++    float32x4_t _sum1 = vdupq_n_f32(0.0f);
++    for (int k = 0; k < n_cond_haps; k++) {
++      float32x4_t _alpha = vdupq_n_f32(
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2);
++      float32x4_t _b0 = vld1q_f32(&prob[k * HAP_NUMBER]);
++      float32x4_t _b1 = vld1q_f32(&prob[k * HAP_NUMBER + 4]);
++      _sum0 = vmlaq_f32(_sum0, _alpha, _b0);
++      _sum1 = vmlaq_f32(_sum1, _alpha, _b1);
++    }
++    vst1q_f32(&HProbs[h1 * HAP_NUMBER], _sum0);
++    vst1q_f32(&HProbs[h1 * HAP_NUMBER + 4], _sum1);
++#else
++    float sum = 0.0f;
++    for (int k = 0; k < n_cond_haps; k++) {
++      float alpha =
++          Alpha[curr_rel_segment_index - 1][k * HAP_NUMBER + h1] * fact1 +
++          fact2;
++      for (int h = 0; h < HAP_NUMBER; h++)
++        sum += alpha * prob[k * HAP_NUMBER + h];
++    }
++    for (int h = 0; h < HAP_NUMBER; h++)
++      HProbs[h1 * HAP_NUMBER + h] = sum;
++#endif
++    sumHProbs += HProbs[h1 * HAP_NUMBER + 0] + HProbs[h1 * HAP_NUMBER + 1] +
++                 HProbs[h1 * HAP_NUMBER + 2] + HProbs[h1 * HAP_NUMBER + 3] +
++                 HProbs[h1 * HAP_NUMBER + 4] + HProbs[h1 * HAP_NUMBER + 5] +
++                 HProbs[h1 * HAP_NUMBER + 6] + HProbs[h1 * HAP_NUMBER + 7];
++  }
++  return (std::isnan(sumHProbs) || std::isinf(sumHProbs) ||
++          sumHProbs < std::numeric_limits<float>::min());
+ }
+ 
+-inline
+-bool haplotype_segment_single::TRANS_DIP_MULT() {
+-	sumDProbs= 0.0f;
+-	double scaling = 1.0 / sumHProbs;
+-	for (int pd = 0, t = 0 ; pd < 64 ; ++pd) {
+-		if (DIP_GET(G->Diplotypes[curr_segment_index-1], pd)) {
+-			for (int nd = 0 ; nd < 64 ; ++nd) {
+-				if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
+-					DProbs[t] = (((double)HProbs[DIP_HAP0(pd)*HAP_NUMBER+DIP_HAP0(nd)]) * scaling) * ((double)(HProbs[DIP_HAP1(pd)*HAP_NUMBER+DIP_HAP1(nd)]) * scaling);
+-					sumDProbs += DProbs[t];
+-					t++;
+-				}
+-			}
+-		}
+-	}
+-	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++inline bool haplotype_segment_single::TRANS_DIP_MULT() {
++  sumDProbs = 0.0f;
++  double scaling = 1.0 / sumHProbs;
++  for (int pd = 0, t = 0; pd < 64; ++pd) {
++    if (DIP_GET(G->Diplotypes[curr_segment_index - 1], pd)) {
++      for (int nd = 0; nd < 64; ++nd) {
++        if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
++          DProbs[t] =
++              (((double)HProbs[DIP_HAP0(pd) * HAP_NUMBER + DIP_HAP0(nd)]) *
++               scaling) *
++              ((double)(HProbs[DIP_HAP1(pd) * HAP_NUMBER + DIP_HAP1(nd)]) *
++               scaling);
++          sumDProbs += DProbs[t];
++          t++;
++        }
++      }
++    }
++  }
++  return (std::isnan(sumDProbs) || std::isinf(sumDProbs) ||
++          sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+-inline
+-bool haplotype_segment_single::TRANS_DIP_ADD() {
+-	sumDProbs = 0.0f;
+-	double scaling = 1.0 / sumHProbs;
+-	for (int pd = 0, t = 0 ; pd < 64 ; ++pd) {
+-		if (DIP_GET(G->Diplotypes[curr_segment_index-1], pd)) {
+-			for (int nd = 0 ; nd < 64 ; ++nd) {
+-				if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
+-					DProbs[t] = DProbs[t] = (((double)HProbs[DIP_HAP0(pd)*HAP_NUMBER+DIP_HAP0(nd)]) * scaling) + ((double)(HProbs[DIP_HAP1(pd)*HAP_NUMBER+DIP_HAP1(nd)]) * scaling);
+-					sumDProbs += DProbs[t];
+-					t++;
+-				}
+-			}
+-		}
+-	}
+-	return (std::isnan(sumDProbs) || std::isinf(sumDProbs) || sumDProbs < std::numeric_limits<double>::min());
++inline bool haplotype_segment_single::TRANS_DIP_ADD() {
++  sumDProbs = 0.0f;
++  double scaling = 1.0 / sumHProbs;
++  for (int pd = 0, t = 0; pd < 64; ++pd) {
++    if (DIP_GET(G->Diplotypes[curr_segment_index - 1], pd)) {
++      for (int nd = 0; nd < 64; ++nd) {
++        if (DIP_GET(G->Diplotypes[curr_segment_index], nd)) {
++          DProbs[t] = DProbs[t] =
++              (((double)HProbs[DIP_HAP0(pd) * HAP_NUMBER + DIP_HAP0(nd)]) *
++               scaling) +
++              ((double)(HProbs[DIP_HAP1(pd) * HAP_NUMBER + DIP_HAP1(nd)]) *
++               scaling);
++          sumDProbs += DProbs[t];
++          t++;
++        }
++      }
++    }
++  }
++  return (std::isnan(sumDProbs) || std::isinf(sumDProbs) ||
++          sumDProbs < std::numeric_limits<double>::min());
+ }
+ 
+-inline
+-void haplotype_segment_single::IMPUTE(std::vector < float > & missing_probabilities) {
+-	__m256 _sum = _mm256_set1_ps(0.0f);
+-	__m256 _sumA [2]; _sumA[0] = _mm256_set1_ps(0.0f); _sumA[1] = _mm256_set1_ps(0.0f);
+-	__m256 _alphaSum = _mm256_load_ps(&AlphaSumMissing[curr_rel_missing][0]);
+-	__m256 _ones = _mm256_set1_ps(1.0f);
+-	_alphaSum = _mm256_div_ps(_ones, _alphaSum);
+-	for(int k = 0, i = 0 ; k != n_cond_haps ; ++k, i += HAP_NUMBER) {
+-		bool ah = Hvar.get(curr_rel_locus+curr_rel_locus_offset, k);
+-		__m256 _prob = _mm256_load_ps(&prob[i]);
+-		__m256 _alpha = _mm256_load_ps(&AlphaMissing[curr_rel_missing][i]);
+-		_sum = _mm256_mul_ps(_mm256_mul_ps(_alpha, _alphaSum), _prob);
+-		_sumA[ah] = _mm256_add_ps(_sumA[ah], _sum);
+-	}
+-	float * prob0 = (float*)&_sumA[0];
+-	float * prob1 = (float*)&_sumA[1];
+-	for (int h = 0 ; h < HAP_NUMBER ; h ++) {
+-		missing_probabilities[curr_abs_missing * HAP_NUMBER + h] = prob1[h] / (prob0[h]+prob1[h]);
+-	}
++inline void
++haplotype_segment_single::IMPUTE(std::vector<float> &missing_probabilities) {
++#if defined(__AVX2__)
++  __m256 _sum = _mm256_set1_ps(0.0f);
++  __m256 _sumA[2];
++  _sumA[0] = _mm256_set1_ps(0.0f);
++  _sumA[1] = _mm256_set1_ps(0.0f);
++  __m256 _alphaSum = _mm256_load_ps(&AlphaSumMissing[curr_rel_missing][0]);
++  __m256 _ones = _mm256_set1_ps(1.0f);
++  _alphaSum = _mm256_div_ps(_ones, _alphaSum);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    __m256 _prob = _mm256_load_ps(&prob[i]);
++    __m256 _alpha = _mm256_load_ps(&AlphaMissing[curr_rel_missing][i]);
++    _sum = _mm256_mul_ps(_mm256_mul_ps(_alpha, _alphaSum), _prob);
++    _sumA[ah] = _mm256_add_ps(_sumA[ah], _sum);
++  }
++  float *prob0 = (float *)&_sumA[0];
++  float *prob1 = (float *)&_sumA[1];
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        prob1[h] / (prob0[h] + prob1[h]);
++  }
++#elif defined(__ARM_NEON)
++  float32x4_t _sumA0[2], _sumA1[2];
++  _sumA0[0] = vdupq_n_f32(0.0f);
++  _sumA0[1] = vdupq_n_f32(0.0f);
++  _sumA1[0] = vdupq_n_f32(0.0f);
++  _sumA1[1] = vdupq_n_f32(0.0f);
++  float32x4_t _as0 = vld1q_f32(&AlphaSumMissing[curr_rel_missing][0]);
++  float32x4_t _as1 = vld1q_f32(&AlphaSumMissing[curr_rel_missing][4]);
++  _as0 = vdivq_f32(vdupq_n_f32(1.0f), _as0);
++  _as1 = vdivq_f32(vdupq_n_f32(1.0f), _as1);
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    float32x4_t _prob0 = vld1q_f32(&prob[i]);
++    float32x4_t _prob1 = vld1q_f32(&prob[i + 4]);
++    float32x4_t _a0 = vld1q_f32(&AlphaMissing[curr_rel_missing][i]);
++    float32x4_t _a1 = vld1q_f32(&AlphaMissing[curr_rel_missing][i + 4]);
++    float32x4_t _s0 = vmulq_f32(vmulq_f32(_a0, _as0), _prob0);
++    float32x4_t _s1 = vmulq_f32(vmulq_f32(_a1, _as1), _prob1);
++    _sumA0[ah] = vaddq_f32(_sumA0[ah], _s0);
++    _sumA1[ah] = vaddq_f32(_sumA1[ah], _s1);
++  }
++  float *prob0 = (float *)&_sumA0[0];
++  float *prob1 = (float *)&_sumA0[1];
++  for (int h = 0; h < 4; h++)
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        prob1[h] / (prob0[h] + prob1[h]);
++  prob0 = (float *)&_sumA1[0];
++  prob1 = (float *)&_sumA1[1];
++  for (int h = 4; h < HAP_NUMBER; h++)
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        prob1[h] / (prob0[h] + prob1[h]);
++#else
++  float sumA[2][HAP_NUMBER];
++  for (int a = 0; a < 2; a++)
++    for (int h = 0; h < HAP_NUMBER; h++)
++      sumA[a][h] = 0.0f;
++  float alphaSum[HAP_NUMBER];
++  for (int h = 0; h < HAP_NUMBER; h++)
++    alphaSum[h] = 1.0f / AlphaSumMissing[curr_rel_missing][h];
++  for (int k = 0, i = 0; k != n_cond_haps; ++k, i += HAP_NUMBER) {
++    bool ah = Hvar.get(curr_rel_locus + curr_rel_locus_offset, k);
++    for (int h = 0; h < HAP_NUMBER; h++) {
++      float s =
++          AlphaMissing[curr_rel_missing][i + h] * alphaSum[h] * prob[i + h];
++      sumA[ah][h] += s;
++    }
++  }
++  for (int h = 0; h < HAP_NUMBER; h++) {
++    missing_probabilities[curr_abs_missing * HAP_NUMBER + h] =
++        sumA[1][h] / (sumA[0][h] + sumA[1][h]);
++  }
++#endif
+ }
+ 
+ #endif
+diff --git a/phase_rare/src/containers/conditioning_set/conditioning_set_selection.cpp b/phase_rare/src/containers/conditioning_set/conditioning_set_selection.cpp
+index e9dd2c8..46f0697 100644
+--- a/phase_rare/src/containers/conditioning_set/conditioning_set_selection.cpp
++++ b/phase_rare/src/containers/conditioning_set/conditioning_set_selection.cpp
+@@ -24,197 +24,242 @@
+ 
+ using namespace std;
+ 
+-void conditioning_set::select(variant_map & V, genotype_set & G) {
+-	tac.clock();
+-
+-	npushes = 0;
+-	ncollisions = 0;
+-
+-	vector < int32_t > A = vector < int32_t > (n_haplotypes, 0);
+-	vector < int32_t > B = vector < int32_t > (n_haplotypes, 0);
+-	vector < int32_t > R = vector < int32_t > (n_haplotypes, 0);
+-	vector < int32_t > M = vector < int32_t > (depth_common * n_haplotypes, -1);
+-	iota(A.begin(), A.end(), 0);
+-	random_shuffle(A.begin(), A.end());
+-
+-	//Select new sites at which to trigger storage
+-	vector < vector < int32_t > > candidates = vector < vector < int32_t > > (sites_pbwt_grouping.back() + 1);
+-	for (int32_t l = 0 ; l < n_scaffold_variants ; l++) if (sites_pbwt_evaluation[l]) candidates[sites_pbwt_grouping[l]].push_back(l);
+-	sites_pbwt_selection = vector < bool > (n_scaffold_variants , false);
+-	for (int32_t g = 0 ; g < candidates.size() ; g++) {
+-		if (candidates[g].size() > 0) {
+-			sites_pbwt_selection[candidates[g][rng.getInt(candidates[g].size())]] = true;
+-		}
+-	}
+-
+-	//PBWT forward sweep
+-	tac.clock();
+-	for (int32_t vt = 0 ; vt < V.sizeFull() ; vt ++) {
+-		int32_t vc = V.vec_full[vt]->idx_common;
+-		int32_t vr = V.vec_full[vt]->idx_rare;
+-		int32_t vs = V.vec_full[vt]->idx_scaffold;
+-
+-		if (vs >= 0) {
+-			bool eval = sites_pbwt_evaluation[vs];
+-			bool selc = sites_pbwt_selection[vs];
+-			if (eval) {
+-				int32_t u = 0, v = 0;
+-				for (int32_t h = 0 ; h < n_haplotypes ; h ++) {
+-					if (!Hvar.get(vs, A[h])) A[u++] = A[h];
+-					else B[v++] = A[h];
+-				}
+-				std::copy(B.begin(), B.begin()+v, A.begin()+u);
+-				for (int32_t h = 0 ; h < n_haplotypes ; h ++) R[A[h]] = h;
+-				if (selc) storeCommon(A, M);
+-			}
+-		} else if (vr >= 0 && G.GRvar_genotypes[vr].size() > 1) storeRare(R, G.GRvar_genotypes[vr]);
+-		vrb.progress("  * PBWT forward selection", vt * 1.0 / V.sizeFull());
+-	}
+-	sort(indexes_pbwt_neighbour_serialized.begin(), indexes_pbwt_neighbour_serialized.end());
+-	indexes_pbwt_neighbour_serialized.erase(unique(indexes_pbwt_neighbour_serialized.begin(), indexes_pbwt_neighbour_serialized.end()), indexes_pbwt_neighbour_serialized.end());
+-	vrb.bullet("PBWT forward selection (" + stb.str(tac.rel_time()*1.0/1000, 2) + "s)");
+-
+-	//PBWT backward sweep
+-	tac.clock();
+-	for (int32_t vt = V.sizeFull()-1 ; vt >= 0 ; vt --) {
+-		int32_t vc = V.vec_full[vt]->idx_common;
+-		int32_t vr = V.vec_full[vt]->idx_rare;
+-		int32_t vs = V.vec_full[vt]->idx_scaffold;
+-
+-		if (vs >= 0) {
+-			bool eval = sites_pbwt_evaluation[vs];
+-			bool selc = sites_pbwt_selection[vs];
+-			if (eval) {
+-				int32_t u = 0, v = 0;
+-				for (int32_t h = 0 ; h < n_haplotypes ; h ++) {
+-					if (!Hvar.get(vs, A[h])) A[u++] = A[h];
+-					else B[v++] = A[h];
+-				}
+-				std::copy(B.begin(), B.begin()+v, A.begin()+u);
+-				for (int32_t h = 0 ; h < n_haplotypes ; h ++) R[A[h]] = h;
+-				if (selc) storeCommon(A, M);
+-			}
+-		} else if (vr >= 0 && G.GRvar_genotypes[vr].size() > 1) storeRare(R, G.GRvar_genotypes[vr]);
+-		vrb.progress("  * PBWT backward selection", (V.sizeFull()-vt) * 1.0 / V.sizeFull());
+-	}
+-	sort(indexes_pbwt_neighbour_serialized.begin(), indexes_pbwt_neighbour_serialized.end());
+-	indexes_pbwt_neighbour_serialized.erase(unique(indexes_pbwt_neighbour_serialized.begin(), indexes_pbwt_neighbour_serialized.end()), indexes_pbwt_neighbour_serialized.end());
+-	vrb.bullet("PBWT backward selection (" + stb.str(tac.rel_time()*1.0/1000, 2) + "s)");
+-
+-	stats1D statK;
+-	for (int64_t h = 0, e = 0 ; h < n_haplotypes ; h ++) {
+-		vector < uint32_t > buffer;
+-		while (indexes_pbwt_neighbour_serialized[e].first == h) {
+-			buffer.push_back(indexes_pbwt_neighbour_serialized[e].second);
+-			e++;
+-		}
+-
+-		//Minimal number of states is 50
+-		if (buffer.size() < 50) {
+-			while (buffer.size() < 50) {
+-				if (!checkIBD2(shuffledO[shuffledI], h)) buffer.push_back(rng.getInt(n_haplotypes));
+-				shuffledI = (shuffledI<(n_haplotypes-1))?(shuffledI+1):0;
+-			}
+-			sort(buffer.begin(), buffer.end());
+-			buffer.erase(unique(buffer.begin(), buffer.end()), buffer.end());
+-		}
+-
+-		indexes_pbwt_neighbour[h].reserve(buffer.size());
+-		indexes_pbwt_neighbour[h] = buffer;
+-		assert(indexes_pbwt_neighbour[h].size());
+-		statK.push(indexes_pbwt_neighbour[h].size());
+-	}
+-
+-	indexes_pbwt_neighbour_serialized.clear();
+-	indexes_pbwt_neighbour_serialized.shrink_to_fit();
+-	vrb.bullet2("#states="+ stb.str(statK.mean(), 2) + "+/-" + stb.str(statK.sd(), 2));
+-	vrb.bullet2("#collisions = "+ stb.str(ncollisions) + " / #pushes = "+ stb.str(npushes) + " / rate = " + stb.str(npushes * 100.0 / (npushes + ncollisions), 2) + "%");
+-}
++void conditioning_set::select(variant_map &V, genotype_set &G) {
++  tac.clock();
++
++  npushes = 0;
++  ncollisions = 0;
++
++  vector<int32_t> A = vector<int32_t>(n_haplotypes, 0);
++  vector<int32_t> B = vector<int32_t>(n_haplotypes, 0);
++  vector<int32_t> R = vector<int32_t>(n_haplotypes, 0);
++  vector<int32_t> M = vector<int32_t>(depth_common * n_haplotypes, -1);
++  iota(A.begin(), A.end(), 0);
++  shuffle(A.begin(), A.end(), rng.getEngine());
++
++  // Select new sites at which to trigger storage
++  vector<vector<int32_t>> candidates =
++      vector<vector<int32_t>>(sites_pbwt_grouping.back() + 1);
++  for (int32_t l = 0; l < n_scaffold_variants; l++)
++    if (sites_pbwt_evaluation[l])
++      candidates[sites_pbwt_grouping[l]].push_back(l);
++  sites_pbwt_selection = vector<bool>(n_scaffold_variants, false);
++  for (int32_t g = 0; g < candidates.size(); g++) {
++    if (candidates[g].size() > 0) {
++      sites_pbwt_selection[candidates[g][rng.getInt(candidates[g].size())]] =
++          true;
++    }
++  }
++
++  // PBWT forward sweep
++  tac.clock();
++  for (int32_t vt = 0; vt < V.sizeFull(); vt++) {
++    int32_t vc = V.vec_full[vt]->idx_common;
++    int32_t vr = V.vec_full[vt]->idx_rare;
++    int32_t vs = V.vec_full[vt]->idx_scaffold;
++
++    if (vs >= 0) {
++      bool eval = sites_pbwt_evaluation[vs];
++      bool selc = sites_pbwt_selection[vs];
++      if (eval) {
++        int32_t u = 0, v = 0;
++        for (int32_t h = 0; h < n_haplotypes; h++) {
++          if (!Hvar.get(vs, A[h]))
++            A[u++] = A[h];
++          else
++            B[v++] = A[h];
++        }
++        std::copy(B.begin(), B.begin() + v, A.begin() + u);
++        for (int32_t h = 0; h < n_haplotypes; h++)
++          R[A[h]] = h;
++        if (selc)
++          storeCommon(A, M);
++      }
++    } else if (vr >= 0 && G.GRvar_genotypes[vr].size() > 1)
++      storeRare(R, G.GRvar_genotypes[vr]);
++    vrb.progress("  * PBWT forward selection", vt * 1.0 / V.sizeFull());
++  }
++  sort(indexes_pbwt_neighbour_serialized.begin(),
++       indexes_pbwt_neighbour_serialized.end());
++  indexes_pbwt_neighbour_serialized.erase(
++      unique(indexes_pbwt_neighbour_serialized.begin(),
++             indexes_pbwt_neighbour_serialized.end()),
++      indexes_pbwt_neighbour_serialized.end());
++  vrb.bullet("PBWT forward selection (" +
++             stb.str(tac.rel_time() * 1.0 / 1000, 2) + "s)");
++
++  // PBWT backward sweep
++  tac.clock();
++  for (int32_t vt = V.sizeFull() - 1; vt >= 0; vt--) {
++    int32_t vc = V.vec_full[vt]->idx_common;
++    int32_t vr = V.vec_full[vt]->idx_rare;
++    int32_t vs = V.vec_full[vt]->idx_scaffold;
+ 
+-void conditioning_set::storeRare(vector < int32_t > & R, vector < rare_genotype > & G) {
+-	vector < pair < int32_t, int32_t > > N;
+-	for (int32_t g = 0 ; g < G.size() ; g ++) {
+-		if (!G[g].mis) {
+-			uint32_t hap0 = 2*G[g].idx+0;
+-			uint32_t hap1 = 2*G[g].idx+1;
+-			N.push_back( pair < int32_t, int32_t > (R[hap0], hap0));
+-			N.push_back( pair < int32_t, int32_t > (R[hap1], hap1));
+-		}
+-	}
+-	sort(N.begin(), N.end());
+-
+-	for (int32_t h = 0 ; h < N.size() ; h ++) {
+-		int32_t target_hap = N[h].second;
+-		int32_t nstored = 0, offset = 1, done = 0;
+-		while (nstored < (2*depth_rare) && !done) {
+-			done = 1;
+-			if (h-offset >= 0) {
+-				//if (N[h-offset].second/2 != target_hap/2) {
+-				if (!checkIBD2(N[h-offset].second, target_hap)) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (target_hap, N[h-offset].second));
+-					nstored ++;
+-				}
+-				done = 0;
+-			}
+-			if (h+offset < N.size()) {
+-				//if (N[h+offset].second/2 != target_hap/2) {
+-				if (!checkIBD2(N[h+offset].second, target_hap)) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (target_hap, N[h+offset].second));
+-					nstored ++;
+-				}
+-				done = 0;
+-			}
+-			offset ++;
+-		}
+-	}
++    if (vs >= 0) {
++      bool eval = sites_pbwt_evaluation[vs];
++      bool selc = sites_pbwt_selection[vs];
++      if (eval) {
++        int32_t u = 0, v = 0;
++        for (int32_t h = 0; h < n_haplotypes; h++) {
++          if (!Hvar.get(vs, A[h]))
++            A[u++] = A[h];
++          else
++            B[v++] = A[h];
++        }
++        std::copy(B.begin(), B.begin() + v, A.begin() + u);
++        for (int32_t h = 0; h < n_haplotypes; h++)
++          R[A[h]] = h;
++        if (selc)
++          storeCommon(A, M);
++      }
++    } else if (vr >= 0 && G.GRvar_genotypes[vr].size() > 1)
++      storeRare(R, G.GRvar_genotypes[vr]);
++    vrb.progress("  * PBWT backward selection",
++                 (V.sizeFull() - vt) * 1.0 / V.sizeFull());
++  }
++  sort(indexes_pbwt_neighbour_serialized.begin(),
++       indexes_pbwt_neighbour_serialized.end());
++  indexes_pbwt_neighbour_serialized.erase(
++      unique(indexes_pbwt_neighbour_serialized.begin(),
++             indexes_pbwt_neighbour_serialized.end()),
++      indexes_pbwt_neighbour_serialized.end());
++  vrb.bullet("PBWT backward selection (" +
++             stb.str(tac.rel_time() * 1.0 / 1000, 2) + "s)");
++
++  stats1D statK;
++  for (int64_t h = 0, e = 0; h < n_haplotypes; h++) {
++    vector<uint32_t> buffer;
++    while (indexes_pbwt_neighbour_serialized[e].first == h) {
++      buffer.push_back(indexes_pbwt_neighbour_serialized[e].second);
++      e++;
++    }
++
++    // Minimal number of states is 50
++    if (buffer.size() < 50) {
++      while (buffer.size() < 50) {
++        if (!checkIBD2(shuffledO[shuffledI], h))
++          buffer.push_back(rng.getInt(n_haplotypes));
++        shuffledI = (shuffledI < (n_haplotypes - 1)) ? (shuffledI + 1) : 0;
++      }
++      sort(buffer.begin(), buffer.end());
++      buffer.erase(unique(buffer.begin(), buffer.end()), buffer.end());
++    }
++
++    indexes_pbwt_neighbour[h].reserve(buffer.size());
++    indexes_pbwt_neighbour[h] = buffer;
++    assert(indexes_pbwt_neighbour[h].size());
++    statK.push(indexes_pbwt_neighbour[h].size());
++  }
++
++  indexes_pbwt_neighbour_serialized.clear();
++  indexes_pbwt_neighbour_serialized.shrink_to_fit();
++  vrb.bullet2("#states=" + stb.str(statK.mean(), 2) + "+/-" +
++              stb.str(statK.sd(), 2));
++  vrb.bullet2("#collisions = " + stb.str(ncollisions) +
++              " / #pushes = " + stb.str(npushes) + " / rate = " +
++              stb.str(npushes * 100.0 / (npushes + ncollisions), 2) + "%");
+ }
+ 
+-void conditioning_set::storeCommon(vector < int32_t > & A, vector < int32_t > & M) {
+-	for (int32_t h = 0 ; h < n_haplotypes ; h ++) {
+-		int32_t chap = A[h], add_guess0 = 0, add_guess1 = 0, offset0 = 1, offset1 = 1, hap_guess0 = -1, hap_guess1 = -1;
+-		for (int32_t n_added = 0 ; n_added < depth_common ; ) {
+-			if ((h-offset0)>=0) {
+-				hap_guess0 = A[h-offset0];
+-				//add_guess0 = (hap_guess0/2 != chap/2);
+-				add_guess0 = !checkIBD2(hap_guess0/2, chap/2);
+-			} else add_guess0 = 0;
+-			if ((h+offset1)<n_haplotypes) {
+-				hap_guess1 = A[h+offset1];
+-				//add_guess1 = (hap_guess1/2 != chap/2);
+-				add_guess1 = !checkIBD2(hap_guess1/2, chap/2);
+-			} else add_guess1 = 0;
+-			if (add_guess0 && add_guess1) {
+-				if (hap_guess0 != M[chap * depth_common + n_added]) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (chap, hap_guess0));
+-					M[chap * depth_common + n_added] = hap_guess0;
+-					npushes++;
+-				} else ncollisions++;
+-				offset0++; n_added++;
+-				if (hap_guess1 != M[chap * depth_common + n_added]) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (chap, hap_guess1));
+-					M[chap * depth_common + n_added] = hap_guess1;
+-					npushes++;
+-				} else ncollisions++;
+-				offset1++; n_added++;
+-			} else if (add_guess0) {
+-				if (hap_guess0 != M[chap * depth_common + n_added]) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (chap, hap_guess0));
+-					M[chap * depth_common + n_added] = hap_guess0;
+-					npushes++;
+-				} else ncollisions++;
+-				offset0++; n_added++;
+-			} else if (add_guess1) {
+-				if (hap_guess1 != M[chap * depth_common + n_added]) {
+-					indexes_pbwt_neighbour_serialized.push_back(pair < uint32_t, uint32_t > (chap, hap_guess1));
+-					M[chap * depth_common + n_added] = hap_guess1;
+-					npushes++;
+-				} else ncollisions++;
+-				offset1++; n_added++;
+-			} else {
+-				offset0++;
+-				offset1++;
+-			}
+-		}
+-	}
++void conditioning_set::storeRare(vector<int32_t> &R, vector<rare_genotype> &G) {
++  vector<pair<int32_t, int32_t>> N;
++  for (int32_t g = 0; g < G.size(); g++) {
++    if (!G[g].mis) {
++      uint32_t hap0 = 2 * G[g].idx + 0;
++      uint32_t hap1 = 2 * G[g].idx + 1;
++      N.push_back(pair<int32_t, int32_t>(R[hap0], hap0));
++      N.push_back(pair<int32_t, int32_t>(R[hap1], hap1));
++    }
++  }
++  sort(N.begin(), N.end());
++
++  for (int32_t h = 0; h < N.size(); h++) {
++    int32_t target_hap = N[h].second;
++    int32_t nstored = 0, offset = 1, done = 0;
++    while (nstored < (2 * depth_rare) && !done) {
++      done = 1;
++      if (h - offset >= 0) {
++        // if (N[h-offset].second/2 != target_hap/2) {
++        if (!checkIBD2(N[h - offset].second, target_hap)) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(target_hap, N[h - offset].second));
++          nstored++;
++        }
++        done = 0;
++      }
++      if (h + offset < N.size()) {
++        // if (N[h+offset].second/2 != target_hap/2) {
++        if (!checkIBD2(N[h + offset].second, target_hap)) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(target_hap, N[h + offset].second));
++          nstored++;
++        }
++        done = 0;
++      }
++      offset++;
++    }
++  }
+ }
+ 
++void conditioning_set::storeCommon(vector<int32_t> &A, vector<int32_t> &M) {
++  for (int32_t h = 0; h < n_haplotypes; h++) {
++    int32_t chap = A[h], add_guess0 = 0, add_guess1 = 0, offset0 = 1,
++            offset1 = 1, hap_guess0 = -1, hap_guess1 = -1;
++    for (int32_t n_added = 0; n_added < depth_common;) {
++      if ((h - offset0) >= 0) {
++        hap_guess0 = A[h - offset0];
++        // add_guess0 = (hap_guess0/2 != chap/2);
++        add_guess0 = !checkIBD2(hap_guess0 / 2, chap / 2);
++      } else
++        add_guess0 = 0;
++      if ((h + offset1) < n_haplotypes) {
++        hap_guess1 = A[h + offset1];
++        // add_guess1 = (hap_guess1/2 != chap/2);
++        add_guess1 = !checkIBD2(hap_guess1 / 2, chap / 2);
++      } else
++        add_guess1 = 0;
++      if (add_guess0 && add_guess1) {
++        if (hap_guess0 != M[chap * depth_common + n_added]) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(chap, hap_guess0));
++          M[chap * depth_common + n_added] = hap_guess0;
++          npushes++;
++        } else
++          ncollisions++;
++        offset0++;
++        n_added++;
++        if (hap_guess1 != M[chap * depth_common + n_added]) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(chap, hap_guess1));
++          M[chap * depth_common + n_added] = hap_guess1;
++          npushes++;
++        } else
++          ncollisions++;
++        offset1++;
++        n_added++;
++      } else if (add_guess0) {
++        if (hap_guess0 != M[chap * depth_common + n_added]) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(chap, hap_guess0));
++          M[chap * depth_common + n_added] = hap_guess0;
++          npushes++;
++        } else
++          ncollisions++;
++        offset0++;
++        n_added++;
++      } else if (add_guess1) {
++        if (hap_guess1 != M[chap * depth_common + n_added]) {
++          indexes_pbwt_neighbour_serialized.push_back(
++              pair<uint32_t, uint32_t>(chap, hap_guess1));
++          M[chap * depth_common + n_added] = hap_guess1;
++          npushes++;
++        } else
++          ncollisions++;
++        offset1++;
++        n_added++;
++      } else {
++        offset0++;
++        offset1++;
++      }
++    }
++  }
++}
+diff --git a/phase_rare/src/models/hmm_scaffold/hmm_scaffold_header.h b/phase_rare/src/models/hmm_scaffold/hmm_scaffold_header.h
+index 201fafb..3e11edf 100644
+--- a/phase_rare/src/models/hmm_scaffold/hmm_scaffold_header.h
++++ b/phase_rare/src/models/hmm_scaffold/hmm_scaffold_header.h
+@@ -23,65 +23,69 @@
+ #ifndef _HMM_SCAFFOLD_H
+ #define _HMM_SCAFFOLD_H
+ 
+-#include <utils/otools.h>
+ #include <containers/conditioning_set/conditioning_set_header.h>
+ #include <containers/genotype_set/genotype_set_header.h>
+-#include <objects/hmm_parameters.h>
+ #include <containers/state_set.h>
++#include <objects/hmm_parameters.h>
++#include <utils/otools.h>
+ 
++#ifdef __AVX2__
+ #include <immintrin.h>
+ 
+-inline
+-float horizontal_add (const __m256& a) {
+-	__m128 vlow = _mm256_castps256_ps128(a);
+-	__m128 vhigh = _mm256_extractf128_ps(a, 1); // high 128
+-	vlow = _mm_add_ps(vlow, vhigh);     // add the low 128
+-	__m128 shuf = _mm_movehdup_ps(vlow);        // broadcast elements 3,1 to 2,0
+-	__m128 sums = _mm_add_ps(vlow, shuf);
+-	shuf = _mm_movehl_ps(shuf, sums); // high half -> low half
+-	sums = _mm_add_ss(sums, shuf);    // (no wasted instructions, and all of them are the 4B minimum)
+-	return _mm_cvtss_f32(sums);
++inline float horizontal_add(const __m256 &a) {
++  __m128 vlow = _mm256_castps256_ps128(a);
++  __m128 vhigh = _mm256_extractf128_ps(a, 1); // high 128
++  vlow = _mm_add_ps(vlow, vhigh);             // add the low 128
++  __m128 shuf = _mm_movehdup_ps(vlow);        // broadcast elements 3,1 to 2,0
++  __m128 sums = _mm_add_ps(vlow, shuf);
++  shuf = _mm_movehl_ps(shuf, sums); // high half -> low half
++  sums = _mm_add_ss(
++      sums,
++      shuf); // (no wasted instructions, and all of them are the 4B minimum)
++  return _mm_cvtss_f32(sums);
+ }
++#elif defined(__ARM_NEON)
++#include <arm_neon.h>
++
++inline float horizontal_add(const float32x4_t &a) {
++  float32x2_t s = vget_low_f32(a);
++  s = vadd_f32(s, vget_high_f32(a));
++  return vget_lane_f32(vpadd_f32(s, s), 0);
++}
++#endif
+ 
+ class hmm_scaffold {
+ public:
+-	//DATA
+-	conditioning_set & C;
+-	genotype_set & G;
+-	variant_map & V;
+-	hmm_parameters & M;
++  // DATA
++  conditioning_set &C;
++  genotype_set &G;
++  variant_map &V;
++  hmm_parameters &M;
+ 
+-	//CONSTANT
+-	uint32_t hap;
+-	float match_prob[2];
+-	uint32_t nstates;
++  // CONSTANT
++  uint32_t hap;
++  float match_prob[2];
++  uint32_t nstates;
+ 
+-	//
+-	bitmatrix Hvar;
+-	bitmatrix Hhap;
++  //
++  bitmatrix Hvar;
++  bitmatrix Hhap;
+ 
+-	//ARRAYS
+-	std::vector < aligned_vector32 < float > > alpha;
+-	aligned_vector32 < float > beta;
++  // ARRAYS
++  std::vector<aligned_vector32<float>> alpha;
++  aligned_vector32<float> beta;
+ 
+ public:
+-	//CONSTRUCTOR/DESTRUCTOR
+-	hmm_scaffold(variant_map & _V, genotype_set & _G, conditioning_set & _C, hmm_parameters & _M);
+-	~hmm_scaffold();
+-
+-	void setup(uint32_t _hap);
+-	double forward();
+-	void backward(std::vector < std::vector < uint32_t > > & cevents, std::vector < int32_t > & vpath);
+-	void viterbi(std::vector < int32_t > & path);
+-
++  // CONSTRUCTOR/DESTRUCTOR
++  hmm_scaffold(variant_map &_V, genotype_set &_G, conditioning_set &_C,
++               hmm_parameters &_M);
++  ~hmm_scaffold();
++
++  void setup(uint32_t _hap);
++  double forward();
++  void backward(std::vector<std::vector<uint32_t>> &cevents,
++                std::vector<int32_t> &vpath);
++  void viterbi(std::vector<int32_t> &path);
+ };
+ 
+ #endif
+-
+-
+-
+-
+-
+-
+-
+-
+diff --git a/phase_rare/src/models/hmm_scaffold/hmm_scaffold_main.cpp b/phase_rare/src/models/hmm_scaffold/hmm_scaffold_main.cpp
+index 2fbd33c..c650beb 100644
+--- a/phase_rare/src/models/hmm_scaffold/hmm_scaffold_main.cpp
++++ b/phase_rare/src/models/hmm_scaffold/hmm_scaffold_main.cpp
+@@ -24,246 +24,423 @@
+ 
+ using namespace std;
+ 
+-hmm_scaffold::hmm_scaffold(variant_map & _V, genotype_set & _G, conditioning_set & _C, hmm_parameters & _M) : V(_V), G(_G), C(_C), M(_M){
+-	match_prob[0] = 1.0f; match_prob[1] = M.ed/M.ee;
+-
+-	unsigned max_nstates = 0;
+-	for (int32_t h = 0 ; h < C.n_haplotypes ; h ++) if (C.indexes_pbwt_neighbour[h].size() > max_nstates) max_nstates = C.indexes_pbwt_neighbour[h].size();
+-	alpha = vector < aligned_vector32 < float > > (C.n_scaffold_variants, aligned_vector32 < float > (max_nstates, 0.0f));
+-	beta = aligned_vector32 < float > (max_nstates, 1.0f);
+-	Hvar.allocate(C.n_scaffold_variants, max_nstates);
+-	Hhap.allocate(max_nstates, C.n_scaffold_variants);
++hmm_scaffold::hmm_scaffold(variant_map &_V, genotype_set &_G,
++                           conditioning_set &_C, hmm_parameters &_M)
++    : V(_V), G(_G), C(_C), M(_M) {
++  match_prob[0] = 1.0f;
++  match_prob[1] = M.ed / M.ee;
++
++  unsigned max_nstates = 0;
++  for (int32_t h = 0; h < C.n_haplotypes; h++)
++    if (C.indexes_pbwt_neighbour[h].size() > max_nstates)
++      max_nstates = C.indexes_pbwt_neighbour[h].size();
++  alpha = vector<aligned_vector32<float>>(
++      C.n_scaffold_variants, aligned_vector32<float>(max_nstates, 0.0f));
++  beta = aligned_vector32<float>(max_nstates, 1.0f);
++  Hvar.allocate(C.n_scaffold_variants, max_nstates);
++  Hhap.allocate(max_nstates, C.n_scaffold_variants);
+ }
+ 
+ hmm_scaffold::~hmm_scaffold() {
+-	alpha.clear();
+-	beta.clear();
++  alpha.clear();
++  beta.clear();
+ }
+ 
+ void hmm_scaffold::setup(uint32_t _hap) {
+-	hap = _hap;
+-	nstates = C.indexes_pbwt_neighbour[hap].size();
++  hap = _hap;
++  nstates = C.indexes_pbwt_neighbour[hap].size();
+ 
+-	Hvar.reallocateFast(C.n_scaffold_variants, nstates);
+-	Hhap.reallocateFast(nstates, C.n_scaffold_variants);
++  Hvar.reallocateFast(C.n_scaffold_variants, nstates);
++  Hhap.reallocateFast(nstates, C.n_scaffold_variants);
+ 
+-	Hhap.subset(C.Hhap, C.indexes_pbwt_neighbour[hap]);
+-	Hhap.transpose(Hvar);
++  Hhap.subset(C.Hhap, C.indexes_pbwt_neighbour[hap]);
++  Hhap.transpose(Hvar);
+ }
+ 
+ double hmm_scaffold::forward() {
+-	float sum;
+-	double loglik = 0.0;
+-	const uint32_t nstatesMD8 = (nstates / 8) * 8;
+-	const __m256i _vshift_count = _mm256_set_epi32(31,30,29,28,27,26,25,24);
+-	for (int32_t vs = 0 ; vs < C.n_scaffold_variants ; vs ++) {
+-		const std::array<float,2> emit = {match_prob[C.Hhap.get(hap, vs)], match_prob[1-C.Hhap.get(hap, vs)]};
+-		const __m256 _emit0 = _mm256_set1_ps(emit[0]);
+-		const __m256 _emit1 = _mm256_set1_ps(emit[1]);
+-
+-		if (!vs) {
+-			const float f0 = 1.0f / nstates;
+-			const __m256 _f0 = _mm256_set1_ps(f0);
+-			__m256 _sum = _mm256_set1_ps(0.0f);
+-			int32_t offset = 0;
+-			for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-				const __m256i _mask = _mm256_sllv_epi32(_mm256_set1_epi32((uint32_t )Hvar.getByte(vs, k)), _vshift_count);
+-				const __m256 _emiss = _mm256_blendv_ps (_emit0, _emit1, _mm256_castsi256_ps(_mask));
+-				const __m256 _prob_curr = _mm256_mul_ps(_emiss, _f0);
+-				_sum = _mm256_add_ps(_sum, _prob_curr);
+-				_mm256_store_ps(&alpha[vs][k], _prob_curr);
+-				offset += 8;
+-			}
+-			sum = (offset > 0)?horizontal_add(_sum):0.0f;
+-			for (; offset < nstates ; offset ++) {
+-				alpha[vs][offset] = f0 * emit[Hvar.get(vs, offset)];
+-				sum += alpha[vs][offset];
+-			}
+-			loglik += log(sum);
+-		} else {
+-			const float f0 = M.t[vs-1] / nstates;
+-			const float f1 = M.nt[vs-1] / sum;
+-			const __m256 _f0 = _mm256_set1_ps(f0);
+-			const __m256 _f1 = _mm256_set1_ps(f1);
+-			__m256 _sum = _mm256_set1_ps(0.0f);
+-			int32_t offset = 0;
+-			for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-				const __m256i _mask = _mm256_sllv_epi32(_mm256_set1_epi32((uint32_t )Hvar.getByte(vs, k)), _vshift_count);
+-				const __m256 _emiss = _mm256_blendv_ps (_emit0, _emit1, _mm256_castsi256_ps(_mask));
+-				const __m256 _prob_prev = _mm256_load_ps(&alpha[vs-1][k]);
+-				const __m256 _prob_temp = _mm256_fmadd_ps(_prob_prev, _f1, _f0);
+-				const __m256 _prob_curr = _mm256_mul_ps(_prob_temp, _emiss);
+-				_sum = _mm256_add_ps(_sum, _prob_curr);
+-				_mm256_store_ps(&alpha[vs][k], _prob_curr);
+-				offset += 8;
+-			}
+-			sum = (offset > 0)?horizontal_add(_sum):0.0f;
+-			for (; offset < nstates ; offset ++) {
+-				alpha[vs][offset] = (alpha[vs-1][offset]*f1+f0)*emit[Hvar.get(vs, offset)];
+-				sum += alpha[vs][offset];
+-			}
+-			loglik += log(sum);
+-		}
+-	}
+-	return loglik;
++  float sum;
++  double loglik = 0.0;
++#ifdef __AVX2__
++  const uint32_t nstatesMD8 = (nstates / 8) * 8;
++  const __m256i _vshift_count =
++      _mm256_set_epi32(31, 30, 29, 28, 27, 26, 25, 24);
++#elif defined(__ARM_NEON)
++  const uint32_t nstatesMD4 = (nstates / 4) * 4;
++  const uint32x4_t _vshift_count = {24, 25, 26, 27};
++#endif
++  for (int32_t vs = 0; vs < C.n_scaffold_variants; vs++) {
++    const std::array<float, 2> emit = {match_prob[C.Hhap.get(hap, vs)],
++                                       match_prob[1 - C.Hhap.get(hap, vs)]};
++#ifdef __AVX2__
++    const __m256 _emit0 = _mm256_set1_ps(emit[0]);
++    const __m256 _emit1 = _mm256_set1_ps(emit[1]);
++#elif defined(__ARM_NEON)
++    const float32x4_t _emit0 = vdupq_n_f32(emit[0]);
++    const float32x4_t _emit1 = vdupq_n_f32(emit[1]);
++#endif
++
++    if (!vs) {
++      const float f0 = 1.0f / nstates;
++#ifdef __AVX2__
++      const __m256 _f0 = _mm256_set1_ps(f0);
++      __m256 _sum = _mm256_set1_ps(0.0f);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD8; k += 8) {
++        const __m256i _mask = _mm256_sllv_epi32(
++            _mm256_set1_epi32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++        const __m256 _emiss =
++            _mm256_blendv_ps(_emit0, _emit1, _mm256_castsi256_ps(_mask));
++        const __m256 _prob_curr = _mm256_mul_ps(_emiss, _f0);
++        _sum = _mm256_add_ps(_sum, _prob_curr);
++        _mm256_store_ps(&alpha[vs][k], _prob_curr);
++        offset += 8;
++      }
++      sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++#elif defined(__ARM_NEON)
++      const float32x4_t _f0 = vdupq_n_f32(f0);
++      float32x4_t _sum = vdupq_n_f32(0.0f);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD4; k += 4) {
++        const uint32x4_t _mask = vshlq_u32(
++            vdupq_n_u32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++        const float32x4_t _emiss =
++            vbslq_f32(vreinterpretq_f32_u32(_mask), _emit1, _emit0);
++        const float32x4_t _prob_curr = vmulq_f32(_emiss, _f0);
++        _sum = vaddq_f32(_sum, _prob_curr);
++        vst1q_f32(&alpha[vs][k], _prob_curr);
++        offset += 4;
++      }
++      sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++#else
++      int32_t offset = 0;
++      sum = 0.0f;
++#endif
++      for (; offset < nstates; offset++) {
++        alpha[vs][offset] = f0 * emit[Hvar.get(vs, offset)];
++        sum += alpha[vs][offset];
++      }
++      loglik += log(sum);
++    } else {
++      const float f0 = M.t[vs - 1] / nstates;
++      const float f1 = M.nt[vs - 1] / sum;
++#ifdef __AVX2__
++      const __m256 _f0 = _mm256_set1_ps(f0);
++      const __m256 _f1 = _mm256_set1_ps(f1);
++      __m256 _sum = _mm256_set1_ps(0.0f);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD8; k += 8) {
++        const __m256i _mask = _mm256_sllv_epi32(
++            _mm256_set1_epi32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++        const __m256 _emiss =
++            _mm256_blendv_ps(_emit0, _emit1, _mm256_castsi256_ps(_mask));
++        const __m256 _prob_prev = _mm256_load_ps(&alpha[vs - 1][k]);
++        const __m256 _prob_temp = _mm256_fmadd_ps(_prob_prev, _f1, _f0);
++        const __m256 _prob_curr = _mm256_mul_ps(_prob_temp, _emiss);
++        _sum = _mm256_add_ps(_sum, _prob_curr);
++        _mm256_store_ps(&alpha[vs][k], _prob_curr);
++        offset += 8;
++      }
++      sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++#elif defined(__ARM_NEON)
++      const float32x4_t _f0 = vdupq_n_f32(f0);
++      const float32x4_t _f1 = vdupq_n_f32(f1);
++      float32x4_t _sum = vdupq_n_f32(0.0f);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD4; k += 4) {
++        const uint32x4_t _mask = vshlq_u32(
++            vdupq_n_u32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++        const float32x4_t _emiss =
++            vbslq_f32(vreinterpretq_f32_u32(_mask), _emit1, _emit0);
++        const float32x4_t _prob_prev = vld1q_f32(&alpha[vs - 1][k]);
++        const float32x4_t _prob_temp = vmlaq_f32(_f0, _prob_prev, _f1);
++        const float32x4_t _prob_curr = vmulq_f32(_prob_temp, _emiss);
++        _sum = vaddq_f32(_sum, _prob_curr);
++        vst1q_f32(&alpha[vs][k], _prob_curr);
++        offset += 4;
++      }
++      sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++#else
++      int32_t offset = 0;
++      sum = 0.0f;
++#endif
++      for (; offset < nstates; offset++) {
++        alpha[vs][offset] =
++            (alpha[vs - 1][offset] * f1 + f0) * emit[Hvar.get(vs, offset)];
++        sum += alpha[vs][offset];
++      }
++      loglik += log(sum);
++    }
++  }
++  return loglik;
+ }
+ 
+-void hmm_scaffold::backward(vector < vector < uint32_t > > & cevents, vector < int32_t > & vpath) {
+-	float sum = 0.0f, scale = 0.0f;
+-	const uint32_t nstatesMD8 = (nstates / 8) * 8;
+-	const __m256i _vshift_count = _mm256_set_epi32(31,30,29,28,27,26,25,24);
+-	aligned_vector32 < float > alphaXbeta_curr = aligned_vector32 < float >(nstates, 0.0f);
+-	aligned_vector32 < float > alphaXbeta_prev = aligned_vector32 < float >(nstates, 0.0f);
+-
+-	//vpath = vector < int32_t > (C.n_scaffold_variants, -1);
+-
+-	for (int32_t vs = C.n_scaffold_variants - 1 ; vs >= 0 ; vs --) {
+-
+-		//
+-		const std::array<float,2> emit = {match_prob[C.Hhap.get(hap, vs)], match_prob[1-C.Hhap.get(hap, vs)]};
+-		const __m256 _emit0 = _mm256_set1_ps(emit[0]);
+-		const __m256 _emit1 = _mm256_set1_ps(emit[1]);
+-
+-		//Transitions
+-		if (vs == C.n_scaffold_variants - 1) fill (beta.begin(), beta.end(), 1.0f / nstates);
+-		else {
+-			const float f0 = M.t[vs] / nstates;
+-			const float f1 = M.nt[vs] / sum;
+-			const __m256 _f0 = _mm256_set1_ps(f0);
+-			const __m256 _f1 = _mm256_set1_ps(f1);
+-			int32_t offset = 0;
+-			for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-				const __m256 _prob_prev = _mm256_load_ps(&beta[k]);
+-				const __m256 _prob_curr = _mm256_fmadd_ps(_prob_prev, _f1, _f0);
+-				_mm256_store_ps(&beta[k], _prob_curr);
+-				offset += 8;
+-			}
+-			for (; offset < nstates ; offset ++) beta[offset] = (beta[offset]*f1+f0);
+-		}
+-
+-		//Products
+-		__m256 _scale = _mm256_set1_ps(0.0f);
+-		int32_t offset = 0;
+-		for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-			const __m256 _prob_temp = _mm256_mul_ps(_mm256_load_ps(&alpha[vs][k]), _mm256_load_ps(&beta[k]));
+-			_mm256_store_ps(&alphaXbeta_curr[k], _prob_temp);
+-			_scale = _mm256_add_ps(_scale, _prob_temp);
+-			offset += 8;
+-		}
+-		scale = (offset > 0)?horizontal_add(_scale):0.0f;
+-		for (; offset < nstates ; offset ++) {
+-			alphaXbeta_curr[offset] = alpha[vs][offset] * beta[offset];
+-			scale += alphaXbeta_curr[offset];
+-		}
+-		scale = 1.0f / scale;
+-		_scale = _mm256_set1_ps(scale);
+-		offset = 0;
+-		for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-			const __m256 _prob_temp = _mm256_mul_ps(_mm256_load_ps(&alphaXbeta_curr[k]), _scale);
+-			_mm256_store_ps(&alphaXbeta_curr[k], _prob_temp);
+-			offset += 8;
+-		}
+-		for (; offset < nstates ; offset ++) alphaXbeta_curr[offset] *= scale;
+-
+-		//Emission
+-		__m256 _sum = _mm256_set1_ps(0.0f);
+-		offset = 0;
+-		for (int32_t k = 0 ; k < nstatesMD8 ; k += 8) {
+-			const __m256i _mask = _mm256_sllv_epi32(_mm256_set1_epi32((uint32_t )Hvar.getByte(vs, k)), _vshift_count);
+-			const __m256 _emiss = _mm256_blendv_ps (_emit0, _emit1, _mm256_castsi256_ps(_mask));
+-			const __m256 _prob_prev = _mm256_load_ps(&beta[k]);
+-			const __m256 _prob_curr = _mm256_mul_ps(_prob_prev, _emiss);
+-			_sum = _mm256_add_ps(_sum, _prob_curr);
+-			_mm256_store_ps(&beta[k], _prob_curr);
+-			offset += 8;
+-		}
+-		sum = (offset > 0)?horizontal_add(_sum):0.0f;
+-		for (; offset < nstates ; offset ++) {
+-			beta[offset] *= emit[Hvar.get(vs, offset)];
+-			sum += beta[offset];
+-		}
+-
+-		//vpath[vs] = std::distance(alphaXbeta_curr.begin(),std::max_element(alphaXbeta_curr.begin(), alphaXbeta_curr.end()));
+-
+-		//Storage
+-		if (cevents[vs+1].size()) {
+-			if (vs == C.n_scaffold_variants-1) copy(alphaXbeta_curr.begin(), alphaXbeta_curr.begin() + nstates, alphaXbeta_prev.begin());
+-
+-			//Impute from full conditioning set
+-			for (int32_t vr = 0 ; vr < cevents[vs+1].size() ; vr ++) {
+-				G.phaseLiAndStephens(cevents[vs+1][vr], hap, alphaXbeta_prev, alphaXbeta_curr, C.indexes_pbwt_neighbour[hap], 0.5001f);
+-			}
+-		}
+-
+-		//Saving products
+-		copy(alphaXbeta_curr.begin(), alphaXbeta_curr.begin() + nstates, alphaXbeta_prev.begin());
+-	}
+-
+-	if (cevents[0].size()) {
+-
+-		//Impute from full conditioning set
+-		for (int32_t vr = 0 ; vr < cevents[0].size() ; vr ++) {
+-			G.phaseLiAndStephens(cevents[0][vr], hap, alphaXbeta_curr, alphaXbeta_curr, C.indexes_pbwt_neighbour[hap], 0.5001f);
+-		}
+-	}
++void hmm_scaffold::backward(vector<vector<uint32_t>> &cevents,
++                            vector<int32_t> &vpath) {
++  float sum = 0.0f, scale = 0.0f;
++#ifdef __AVX2__
++  const uint32_t nstatesMD8 = (nstates / 8) * 8;
++  const __m256i _vshift_count =
++      _mm256_set_epi32(31, 30, 29, 28, 27, 26, 25, 24);
++#elif defined(__ARM_NEON)
++  const uint32_t nstatesMD4 = (nstates / 4) * 4;
++  const uint32x4_t _vshift_count = {24, 25, 26, 27};
++#endif
++  aligned_vector32<float> alphaXbeta_curr =
++      aligned_vector32<float>(nstates, 0.0f);
++  aligned_vector32<float> alphaXbeta_prev =
++      aligned_vector32<float>(nstates, 0.0f);
++
++  // vpath = vector < int32_t > (C.n_scaffold_variants, -1);
++
++  for (int32_t vs = C.n_scaffold_variants - 1; vs >= 0; vs--) {
++
++    //
++    const std::array<float, 2> emit = {match_prob[C.Hhap.get(hap, vs)],
++                                       match_prob[1 - C.Hhap.get(hap, vs)]};
++#ifdef __AVX2__
++    const __m256 _emit0 = _mm256_set1_ps(emit[0]);
++    const __m256 _emit1 = _mm256_set1_ps(emit[1]);
++#elif defined(__ARM_NEON)
++    const float32x4_t _emit0 = vdupq_n_f32(emit[0]);
++    const float32x4_t _emit1 = vdupq_n_f32(emit[1]);
++#endif
++
++    // Transitions
++    if (vs == C.n_scaffold_variants - 1)
++      fill(beta.begin(), beta.end(), 1.0f / nstates);
++    else {
++      const float f0 = M.t[vs] / nstates;
++      const float f1 = M.nt[vs] / sum;
++#ifdef __AVX2__
++      const __m256 _f0 = _mm256_set1_ps(f0);
++      const __m256 _f1 = _mm256_set1_ps(f1);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD8; k += 8) {
++        const __m256 _prob_prev = _mm256_load_ps(&beta[k]);
++        const __m256 _prob_curr = _mm256_fmadd_ps(_prob_prev, _f1, _f0);
++        _mm256_store_ps(&beta[k], _prob_curr);
++        offset += 8;
++      }
++#elif defined(__ARM_NEON)
++      const float32x4_t _f0 = vdupq_n_f32(f0);
++      const float32x4_t _f1 = vdupq_n_f32(f1);
++      int32_t offset = 0;
++      for (int32_t k = 0; k < nstatesMD4; k += 4) {
++        const float32x4_t _prob_prev = vld1q_f32(&beta[k]);
++        const float32x4_t _prob_curr = vmlaq_f32(_f0, _prob_prev, _f1);
++        vst1q_f32(&beta[k], _prob_curr);
++        offset += 4;
++      }
++#else
++      int32_t offset = 0;
++#endif
++      for (; offset < nstates; offset++)
++        beta[offset] = (beta[offset] * f1 + f0);
++    }
++
++    // Products
++#ifdef __AVX2__
++    __m256 _scale = _mm256_set1_ps(0.0f);
++    int32_t offset = 0;
++    for (int32_t k = 0; k < nstatesMD8; k += 8) {
++      const __m256 _prob_temp = _mm256_mul_ps(_mm256_load_ps(&alpha[vs][k]),
++                                              _mm256_load_ps(&beta[k]));
++      _mm256_store_ps(&alphaXbeta_curr[k], _prob_temp);
++      _scale = _mm256_add_ps(_scale, _prob_temp);
++      offset += 8;
++    }
++    scale = (offset > 0) ? horizontal_add(_scale) : 0.0f;
++    for (; offset < nstates; offset++) {
++      alphaXbeta_curr[offset] = alpha[vs][offset] * beta[offset];
++      scale += alphaXbeta_curr[offset];
++    }
++    scale = 1.0f / scale;
++    _scale = _mm256_set1_ps(scale);
++    offset = 0;
++    for (int32_t k = 0; k < nstatesMD8; k += 8) {
++      const __m256 _prob_temp =
++          _mm256_mul_ps(_mm256_load_ps(&alphaXbeta_curr[k]), _scale);
++      _mm256_store_ps(&alphaXbeta_curr[k], _prob_temp);
++      offset += 8;
++    }
++    for (; offset < nstates; offset++)
++      alphaXbeta_curr[offset] *= scale;
++
++    // Emission
++    __m256 _sum = _mm256_set1_ps(0.0f);
++    offset = 0;
++    for (int32_t k = 0; k < nstatesMD8; k += 8) {
++      const __m256i _mask = _mm256_sllv_epi32(
++          _mm256_set1_epi32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++      const __m256 _emiss =
++          _mm256_blendv_ps(_emit0, _emit1, _mm256_castsi256_ps(_mask));
++      const __m256 _prob_prev = _mm256_load_ps(&beta[k]);
++      const __m256 _prob_curr = _mm256_mul_ps(_prob_prev, _emiss);
++      _sum = _mm256_add_ps(_sum, _prob_curr);
++      _mm256_store_ps(&beta[k], _prob_curr);
++      offset += 8;
++    }
++    sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++    for (; offset < nstates; offset++) {
++      beta[offset] *= emit[Hvar.get(vs, offset)];
++      sum += beta[offset];
++    }
++#elif defined(__ARM_NEON)
++    float32x4_t _scale = vdupq_n_f32(0.0f);
++    int32_t offset = 0;
++    for (int32_t k = 0; k < nstatesMD4; k += 4) {
++      const float32x4_t _prob_temp =
++          vmulq_f32(vld1q_f32(&alpha[vs][k]), vld1q_f32(&beta[k]));
++      vst1q_f32(&alphaXbeta_curr[k], _prob_temp);
++      _scale = vaddq_f32(_scale, _prob_temp);
++      offset += 4;
++    }
++    scale = (offset > 0) ? horizontal_add(_scale) : 0.0f;
++    for (; offset < nstates; offset++) {
++      alphaXbeta_curr[offset] = alpha[vs][offset] * beta[offset];
++      scale += alphaXbeta_curr[offset];
++    }
++    scale = 1.0f / scale;
++    _scale = vdupq_n_f32(scale);
++    offset = 0;
++    for (int32_t k = 0; k < nstatesMD4; k += 4) {
++      const float32x4_t _prob_temp =
++          vmulq_f32(vld1q_f32(&alphaXbeta_curr[k]), _scale);
++      vst1q_f32(&alphaXbeta_curr[k], _prob_temp);
++      offset += 4;
++    }
++    for (; offset < nstates; offset++)
++      alphaXbeta_curr[offset] *= scale;
++
++    // Emission
++    float32x4_t _sum = vdupq_n_f32(0.0f);
++    offset = 0;
++    for (int32_t k = 0; k < nstatesMD4; k += 4) {
++      const uint32x4_t _mask =
++          vshlq_u32(vdupq_n_u32((uint32_t)Hvar.getByte(vs, k)), _vshift_count);
++      const float32x4_t _emiss =
++          vbslq_f32(vreinterpretq_f32_u32(_mask), _emit1, _emit0);
++      const float32x4_t _prob_prev = vld1q_f32(&beta[k]);
++      const float32x4_t _prob_curr = vmulq_f32(_prob_prev, _emiss);
++      _sum = vaddq_f32(_sum, _prob_curr);
++      vst1q_f32(&beta[k], _prob_curr);
++      offset += 4;
++    }
++    sum = (offset > 0) ? horizontal_add(_sum) : 0.0f;
++    for (; offset < nstates; offset++) {
++      beta[offset] *= emit[Hvar.get(vs, offset)];
++      sum += beta[offset];
++    }
++#else
++    int32_t offset = 0;
++    for (; offset < nstates; offset++) {
++      alphaXbeta_curr[offset] = alpha[vs][offset] * beta[offset];
++      scale += alphaXbeta_curr[offset];
++    }
++    scale = 1.0f / scale;
++    for (int32_t k = 0; k < nstates; k++)
++      alphaXbeta_curr[k] *= scale;
++
++    sum = 0.0f;
++    for (int32_t k = 0; k < nstates; k++) {
++      beta[k] *= emit[Hvar.get(vs, k)];
++      sum += beta[k];
++    }
++#endif
++
++    // vpath[vs] =
++    // std::distance(alphaXbeta_curr.begin(),std::max_element(alphaXbeta_curr.begin(),
++    // alphaXbeta_curr.end()));
++
++    // Storage
++    if (cevents[vs + 1].size()) {
++      if (vs == C.n_scaffold_variants - 1)
++        copy(alphaXbeta_curr.begin(), alphaXbeta_curr.begin() + nstates,
++             alphaXbeta_prev.begin());
++
++      // Impute from full conditioning set
++      for (int32_t vr = 0; vr < cevents[vs + 1].size(); vr++) {
++        G.phaseLiAndStephens(cevents[vs + 1][vr], hap, alphaXbeta_prev,
++                             alphaXbeta_curr, C.indexes_pbwt_neighbour[hap],
++                             0.5001f);
++      }
++    }
++
++    // Saving products
++    copy(alphaXbeta_curr.begin(), alphaXbeta_curr.begin() + nstates,
++         alphaXbeta_prev.begin());
++  }
++
++  if (cevents[0].size()) {
++
++    // Impute from full conditioning set
++    for (int32_t vr = 0; vr < cevents[0].size(); vr++) {
++      G.phaseLiAndStephens(cevents[0][vr], hap, alphaXbeta_curr,
++                           alphaXbeta_curr, C.indexes_pbwt_neighbour[hap],
++                           0.5001f);
++    }
++  }
+ }
+ 
+-void hmm_scaffold::viterbi(vector < int32_t > & path) {
+-	float sum, scale, maxv_prev, maxv_curr;
+-	int32_t maxi_curr, maxi_prev;
+-	vector < vector < int32_t > > _viterbi_paths = vector < vector < int32_t > > (C.n_scaffold_variants, vector < int32_t > (nstates, 0));
+-	vector < float > _viterbi_probs = vector < float > (nstates, 0.0f);
+-
+-	//FORWARD PASS
+-	for (int32_t vs = 0 ; vs < C.n_scaffold_variants ; vs ++) {
+-		const std::array < float, 2 > emit = { match_prob[C.Hhap.get(hap, vs)], match_prob[1-C.Hhap.get(hap, vs)] };
+-
+-		if (!vs) {
+-			maxi_curr = -1;
+-			sum = maxv_curr = 0.0f;
+-			for (int32_t k = 0; k < nstates ; k ++) {
+-				_viterbi_probs[k] = emit[Hvar.get(vs, k)];
+-				if (_viterbi_probs[k] > maxv_curr) {
+-					maxv_curr = _viterbi_probs[k];
+-					maxi_curr = k;
+-				}
+-				sum += _viterbi_probs[k];
+-			}
+-		} else {
+-			maxi_curr = -1;
+-			scale = 1.0f / sum;
+-			sum = maxv_curr = 0.0f;
+-
+-			for (int32_t k = 0 ; k < nstates ; k ++) {
+-
+-				float prob_yrecomb = M.t[vs-1] * maxv_prev * scale;
+-				float prob_nrecomb = M.nt[vs-1] * _viterbi_probs[k] * scale;
+-
+-				if (prob_yrecomb > prob_nrecomb) {		// I switch copying from the most likely state
+-					_viterbi_probs[k] = prob_yrecomb;
+-					_viterbi_paths[vs][k] = maxi_prev;
+-				} else {								// I stay copying from the same state
+-					_viterbi_probs[k] = prob_nrecomb;
+-					_viterbi_paths[vs][k] = k;
+-				}
+-
+-				_viterbi_probs[k] *= emit[Hvar.get(vs, k)];
+-
+-				if (_viterbi_probs[k] > maxv_curr) {
+-					maxv_curr = _viterbi_probs[k];
+-					maxi_curr = k;
+-				}
+-
+-				sum += _viterbi_probs[k];
+-			}
+-		}
+-
+-		maxi_prev = maxi_curr;
+-		maxv_prev = maxv_curr;
+-	}
+-
+-	//BACKTRACKING PASS
+-	path = vector < int32_t > (C.n_scaffold_variants, maxi_curr);
+-	for (int32_t vs = C.n_scaffold_variants - 1 ; vs > 0; vs --)
+-		path[vs-1] = _viterbi_paths[vs][path[vs]];
++void hmm_scaffold::viterbi(vector<int32_t> &path) {
++  float sum, scale, maxv_prev, maxv_curr;
++  int32_t maxi_curr, maxi_prev;
++  vector<vector<int32_t>> _viterbi_paths = vector<vector<int32_t>>(
++      C.n_scaffold_variants, vector<int32_t>(nstates, 0));
++  vector<float> _viterbi_probs = vector<float>(nstates, 0.0f);
++
++  // FORWARD PASS
++  for (int32_t vs = 0; vs < C.n_scaffold_variants; vs++) {
++    const std::array<float, 2> emit = {match_prob[C.Hhap.get(hap, vs)],
++                                       match_prob[1 - C.Hhap.get(hap, vs)]};
++
++    if (!vs) {
++      maxi_curr = -1;
++      sum = maxv_curr = 0.0f;
++      for (int32_t k = 0; k < nstates; k++) {
++        _viterbi_probs[k] = emit[Hvar.get(vs, k)];
++        if (_viterbi_probs[k] > maxv_curr) {
++          maxv_curr = _viterbi_probs[k];
++          maxi_curr = k;
++        }
++        sum += _viterbi_probs[k];
++      }
++    } else {
++      maxi_curr = -1;
++      scale = 1.0f / sum;
++      sum = maxv_curr = 0.0f;
++
++      for (int32_t k = 0; k < nstates; k++) {
++
++        float prob_yrecomb = M.t[vs - 1] * maxv_prev * scale;
++        float prob_nrecomb = M.nt[vs - 1] * _viterbi_probs[k] * scale;
++
++        if (prob_yrecomb >
++            prob_nrecomb) { // I switch copying from the most likely state
++          _viterbi_probs[k] = prob_yrecomb;
++          _viterbi_paths[vs][k] = maxi_prev;
++        } else { // I stay copying from the same state
++          _viterbi_probs[k] = prob_nrecomb;
++          _viterbi_paths[vs][k] = k;
++        }
++
++        _viterbi_probs[k] *= emit[Hvar.get(vs, k)];
++
++        if (_viterbi_probs[k] > maxv_curr) {
++          maxv_curr = _viterbi_probs[k];
++          maxi_curr = k;
++        }
++
++        sum += _viterbi_probs[k];
++      }
++    }
++
++    maxi_prev = maxi_curr;
++    maxv_prev = maxv_curr;
++  }
++
++  // BACKTRACKING PASS
++  path = vector<int32_t>(C.n_scaffold_variants, maxi_curr);
++  for (int32_t vs = C.n_scaffold_variants - 1; vs > 0; vs--)
++    path[vs - 1] = _viterbi_paths[vs][path[vs]];
+ }
+diff --git a/simulate/src/containers/genotype_set_family.cpp b/simulate/src/containers/genotype_set_family.cpp
+index d249aed..61ee379 100644
+--- a/simulate/src/containers/genotype_set_family.cpp
++++ b/simulate/src/containers/genotype_set_family.cpp
+@@ -1,123 +1,132 @@
+ #include <containers/genotype_set.h>
+ 
+-
+-genotype_set::genotype_set(haplotype_set & _H) : H(_H) {
+-}
+-
++genotype_set::genotype_set(haplotype_set &_H) : H(_H) {}
+ 
+ genotype_set::~genotype_set() {
+-	IDX.clear();
+-	GEN.clear();
+-	MIS.clear();
+-	SID.clear();
+-	DIP.clear();
++  IDX.clear();
++  GEN.clear();
++  MIS.clear();
++  SID.clear();
++  DIP.clear();
+ }
+ 
+ void genotype_set::fillFamily() {
+-	vrb.title("Assemble haplotype data");
+-	for (int h = 0 ; h < IDX.size() ; h ++) {
+-		GEN.push_back(std::vector < bool > (H.n_var, false));
+-		for (int v = 0 ; v < H.n_var ; v ++) GEN.back()[v] = H.HAP[v][IDX[h][0]];
+-		if (IDX[h].size() == 2) {
+-			int break_point = rng.getInt(H.n_var);
+-			for (int v = break_point ; v < H.n_var ; v ++) GEN.back()[v] = H.HAP[v][IDX[h][1]];
+-		}
+-	}
+-	vrb.bullet("Done");
++  vrb.title("Assemble haplotype data");
++  for (int h = 0; h < IDX.size(); h++) {
++    GEN.push_back(std::vector<bool>(H.n_var, false));
++    for (int v = 0; v < H.n_var; v++)
++      GEN.back()[v] = H.HAP[v][IDX[h][0]];
++    if (IDX[h].size() == 2) {
++      int break_point = rng.getInt(H.n_var);
++      for (int v = break_point; v < H.n_var; v++)
++        GEN.back()[v] = H.HAP[v][IDX[h][1]];
++    }
++  }
++  vrb.bullet("Done");
+ }
+ 
+ void genotype_set::missingFamily(float frac) {
+-	vrb.title("Push sporadic missing");
+-	unsigned int n_miss = 0;
+-	MIS = std::vector < std::vector < bool > > (GEN.size()/2, std::vector < bool > (GEN[0].size(), false));
+-	for (int i = 0 ; i < MIS.size() ; i++) for (int j = 0 ; j < MIS[i].size() ; j++) {
+-		MIS[i][j] = (rng.getDouble() < frac);
+-		n_miss += MIS[i][j];
+-	}
+-	vrb.bullet("N=" + stb.str(n_miss) + " / F=" + stb.str(n_miss * 100.0 / (MIS.size() * MIS[0].size()), 3) + "%");
++  vrb.title("Push sporadic missing");
++  unsigned int n_miss = 0;
++  MIS = std::vector<std::vector<bool>>(GEN.size() / 2,
++                                       std::vector<bool>(GEN[0].size(), false));
++  for (int i = 0; i < MIS.size(); i++)
++    for (int j = 0; j < MIS[i].size(); j++) {
++      MIS[i][j] = (rng.getDouble() < frac);
++      n_miss += MIS[i][j];
++    }
++  vrb.bullet("N=" + stb.str(n_miss) + " / F=" +
++             stb.str(n_miss * 100.0 / (MIS.size() * MIS[0].size()), 3) + "%");
+ }
+ 
+-void genotype_set::includeFamily(int n_twins, int n_obs_fam, int n_obs_fam_off, int n_hid_fam, int n_hid_fam_off) {
+-	vrb.title("Simulate phased family samples");
+-	std::vector < int > O;
+-	for (int h = 0 ; h < H.n_hap ; h ++) O.push_back(h);
+-	random_shuffle(O.begin(), O.end());
++void genotype_set::includeFamily(int n_twins, int n_obs_fam, int n_obs_fam_off,
++                                 int n_hid_fam, int n_hid_fam_off) {
++  vrb.title("Simulate phased family samples");
++  std::vector<int> O;
++  for (int h = 0; h < H.n_hap; h++)
++    O.push_back(h);
++  std::shuffle(O.begin(), O.end(), rng.getEngine());
+ 
+-	//twins
+-	for (int n = 0 ; n < n_twins ; n ++) {
+-		IDX.push_back(std::vector < int > (1, O[2*n+0]));
+-		IDX.push_back(std::vector < int > (1, O[2*n+1]));
+-		IDX.push_back(std::vector < int > (1, O[2*n+0]));
+-		IDX.push_back(std::vector < int > (1, O[2*n+1]));
+-		SID.push_back("Twin_" + stb.str(n) + "_a");
+-		SID.push_back("Twin_" + stb.str(n) + "_b");
+-	}
+-	if (n_twins > 0) O.erase(O.begin(), O.begin() + 2*n_twins);
+-	vrb.bullet(stb.str(n_twins) + " twin pairs simulated");
++  // twins
++  for (int n = 0; n < n_twins; n++) {
++    IDX.push_back(std::vector<int>(1, O[2 * n + 0]));
++    IDX.push_back(std::vector<int>(1, O[2 * n + 1]));
++    IDX.push_back(std::vector<int>(1, O[2 * n + 0]));
++    IDX.push_back(std::vector<int>(1, O[2 * n + 1]));
++    SID.push_back("Twin_" + stb.str(n) + "_a");
++    SID.push_back("Twin_" + stb.str(n) + "_b");
++  }
++  if (n_twins > 0)
++    O.erase(O.begin(), O.begin() + 2 * n_twins);
++  vrb.bullet(stb.str(n_twins) + " twin pairs simulated");
+ 
+-	//Entire families (parents + offsprings)
+-	for (int n = 0 ; n < n_obs_fam ; n ++) {
+-		IDX.push_back(std::vector < int > (1, O[4*n+0]));
+-		IDX.push_back(std::vector < int > (1, O[4*n+1]));
+-		IDX.push_back(std::vector < int > (1, O[4*n+2]));
+-		IDX.push_back(std::vector < int > (1, O[4*n+3]));
+-		SID.push_back("FamO_" + stb.str(n) + "_moth");
+-		SID.push_back("FamO_" + stb.str(n) + "_fath");
++  // Entire families (parents + offsprings)
++  for (int n = 0; n < n_obs_fam; n++) {
++    IDX.push_back(std::vector<int>(1, O[4 * n + 0]));
++    IDX.push_back(std::vector<int>(1, O[4 * n + 1]));
++    IDX.push_back(std::vector<int>(1, O[4 * n + 2]));
++    IDX.push_back(std::vector<int>(1, O[4 * n + 3]));
++    SID.push_back("FamO_" + stb.str(n) + "_moth");
++    SID.push_back("FamO_" + stb.str(n) + "_fath");
+ 
+-		for (int c = 0 ; c < n_obs_fam_off ; c ++) {
+-			IDX.push_back(std::vector < int > (2, 0));
+-			if (rng.getDouble()<0.5) {
+-				IDX.back()[0] = O[4*n+0];
+-				IDX.back()[1] = O[4*n+1];
+-			} else {
+-				IDX.back()[0] = O[4*n+1];
+-				IDX.back()[1] = O[4*n+0];
+-			}
+-			IDX.push_back(std::vector < int > (2, 0));
+-			if (rng.getDouble()<0.5) {
+-				IDX.back()[0] = O[4*n+2];
+-				IDX.back()[1] = O[4*n+3];
+-			} else {
+-				IDX.back()[0] = O[4*n+3];
+-				IDX.back()[1] = O[4*n+2];
+-			}
+-			SID.push_back("FamO_" + stb.str(n) + "_child_" + stb.str(c));
+-		}
+-	}
+-	if (n_obs_fam > 0) O.erase(O.begin(), O.begin() + 4*n_obs_fam);
+-	vrb.bullet(stb.str(n_obs_fam) + " families with " + stb.str(n_obs_fam_off) + " kids simulated");
++    for (int c = 0; c < n_obs_fam_off; c++) {
++      IDX.push_back(std::vector<int>(2, 0));
++      if (rng.getDouble() < 0.5) {
++        IDX.back()[0] = O[4 * n + 0];
++        IDX.back()[1] = O[4 * n + 1];
++      } else {
++        IDX.back()[0] = O[4 * n + 1];
++        IDX.back()[1] = O[4 * n + 0];
++      }
++      IDX.push_back(std::vector<int>(2, 0));
++      if (rng.getDouble() < 0.5) {
++        IDX.back()[0] = O[4 * n + 2];
++        IDX.back()[1] = O[4 * n + 3];
++      } else {
++        IDX.back()[0] = O[4 * n + 3];
++        IDX.back()[1] = O[4 * n + 2];
++      }
++      SID.push_back("FamO_" + stb.str(n) + "_child_" + stb.str(c));
++    }
++  }
++  if (n_obs_fam > 0)
++    O.erase(O.begin(), O.begin() + 4 * n_obs_fam);
++  vrb.bullet(stb.str(n_obs_fam) + " families with " + stb.str(n_obs_fam_off) +
++             " kids simulated");
+ 
+-	//Only kids
+-	for (int n = 0 ; n < n_hid_fam ; n ++) {
+-		for (int c = 0 ; c < n_hid_fam_off ; c ++) {
+-			IDX.push_back(std::vector < int > (2, 0));
+-			if (rng.getDouble()<0.5) {
+-				IDX.back()[0] = O[4*n+0];
+-				IDX.back()[1] = O[4*n+1];
+-			} else {
+-				IDX.back()[0] = O[4*n+1];
+-				IDX.back()[1] = O[4*n+0];
+-			}
+-			IDX.push_back(std::vector < int > (2, 0));
+-			if (rng.getDouble()<0.5) {
+-				IDX.back()[0] = O[4*n+2];
+-				IDX.back()[1] = O[4*n+3];
+-			} else {
+-				IDX.back()[0] = O[4*n+3];
+-				IDX.back()[1] = O[4*n+2];
+-			}
+-			SID.push_back("FamH_" + stb.str(n) + "_child_" + stb.str(c));
+-		}
+-	}
+-	if (n_hid_fam > 0) O.erase(O.begin(), O.begin() + 4*n_hid_fam);
+-	vrb.bullet(stb.str(n_hid_fam) + " groups of " + stb.str(n_hid_fam_off) + " siblings simulated");
++  // Only kids
++  for (int n = 0; n < n_hid_fam; n++) {
++    for (int c = 0; c < n_hid_fam_off; c++) {
++      IDX.push_back(std::vector<int>(2, 0));
++      if (rng.getDouble() < 0.5) {
++        IDX.back()[0] = O[4 * n + 0];
++        IDX.back()[1] = O[4 * n + 1];
++      } else {
++        IDX.back()[0] = O[4 * n + 1];
++        IDX.back()[1] = O[4 * n + 0];
++      }
++      IDX.push_back(std::vector<int>(2, 0));
++      if (rng.getDouble() < 0.5) {
++        IDX.back()[0] = O[4 * n + 2];
++        IDX.back()[1] = O[4 * n + 3];
++      } else {
++        IDX.back()[0] = O[4 * n + 3];
++        IDX.back()[1] = O[4 * n + 2];
++      }
++      SID.push_back("FamH_" + stb.str(n) + "_child_" + stb.str(c));
++    }
++  }
++  if (n_hid_fam > 0)
++    O.erase(O.begin(), O.begin() + 4 * n_hid_fam);
++  vrb.bullet(stb.str(n_hid_fam) + " groups of " + stb.str(n_hid_fam_off) +
++             " siblings simulated");
+ 
+-	//Push remaining as unrelateds
+-	for (int o = 0 ; o < O.size() ; o += 2) {
+-		IDX.push_back(std::vector < int > (1, O[o+0]));
+-		IDX.push_back(std::vector < int > (1, O[o+1]));
+-		SID.push_back("Unr_" + stb.str(o/2));
+-	}
+-	vrb.bullet(stb.str(O.size()/2) + " unrelateds simulated");
+-	O.clear();
++  // Push remaining as unrelateds
++  for (int o = 0; o < O.size(); o += 2) {
++    IDX.push_back(std::vector<int>(1, O[o + 0]));
++    IDX.push_back(std::vector<int>(1, O[o + 1]));
++    SID.push_back("Unr_" + stb.str(o / 2));
++  }
++  vrb.bullet(stb.str(O.size() / 2) + " unrelateds simulated");
++  O.clear();
+ }
+diff --git a/simulate/src/containers/genotype_set_haploid.cpp b/simulate/src/containers/genotype_set_haploid.cpp
+index 517364d..2ef69ba 100644
+--- a/simulate/src/containers/genotype_set_haploid.cpp
++++ b/simulate/src/containers/genotype_set_haploid.cpp
+@@ -1,66 +1,75 @@
+ #include <containers/genotype_set.h>
+ 
+ void genotype_set::fillHaploid() {
+-	vrb.title("Assemble Haploid/Diploid haplotype data");
+-	for (int h = 0 ; h < IDX.size() ; h ++) {
+-		GEN.push_back(std::vector < bool > (H.n_var, false));
+-		for (int v = 0 ; v < H.n_var ; v ++) GEN.back()[v] = H.HAP[v][IDX[h][0]];
+-	}
+-	vrb.bullet("Done");
++  vrb.title("Assemble Haploid/Diploid haplotype data");
++  for (int h = 0; h < IDX.size(); h++) {
++    GEN.push_back(std::vector<bool>(H.n_var, false));
++    for (int v = 0; v < H.n_var; v++)
++      GEN.back()[v] = H.HAP[v][IDX[h][0]];
++  }
++  vrb.bullet("Done");
+ }
+ 
+ void genotype_set::missingHaploid(float fracH, float fracD) {
+-	vrb.title("Push sporadic missing in Haploids/Diploids");
+-	uint64_t n_miss_haploid = 0, n_miss_diploid = 0;
+-	uint64_t n_haploid = 0, n_diploid = 0;
+-	MIS = std::vector < std::vector < bool > > (GEN.size()/2, std::vector < bool > (GEN[0].size(), false));
+-	for (int i = 0 ; i < MIS.size() ; i++) {
+-		for (int j = 0 ; j < MIS[i].size() ; j++) {
+-			if (DIP[i]) {
+-				MIS[i][j] = (rng.getDouble() < fracD);
+-				n_miss_diploid += MIS[i][j];
+-			} else{
+-				MIS[i][j] = (rng.getDouble() < fracH);
+-				n_miss_haploid += MIS[i][j];
+-			}
+-		}
+-		n_haploid += !DIP[i];
+-		n_diploid += DIP[i];
+-	}
+-	vrb.bullet("Haploid N=" + stb.str(n_miss_haploid) + " / F=" + stb.str(n_miss_haploid * 100.0 / (n_haploid * MIS[0].size()), 3) + "%");
+-	vrb.bullet("Diploid N=" + stb.str(n_miss_diploid) + " / F=" + stb.str(n_miss_diploid * 100.0 / (n_diploid * MIS[0].size()), 3) + "%");
++  vrb.title("Push sporadic missing in Haploids/Diploids");
++  uint64_t n_miss_haploid = 0, n_miss_diploid = 0;
++  uint64_t n_haploid = 0, n_diploid = 0;
++  MIS = std::vector<std::vector<bool>>(GEN.size() / 2,
++                                       std::vector<bool>(GEN[0].size(), false));
++  for (int i = 0; i < MIS.size(); i++) {
++    for (int j = 0; j < MIS[i].size(); j++) {
++      if (DIP[i]) {
++        MIS[i][j] = (rng.getDouble() < fracD);
++        n_miss_diploid += MIS[i][j];
++      } else {
++        MIS[i][j] = (rng.getDouble() < fracH);
++        n_miss_haploid += MIS[i][j];
++      }
++    }
++    n_haploid += !DIP[i];
++    n_diploid += DIP[i];
++  }
++  vrb.bullet("Haploid N=" + stb.str(n_miss_haploid) + " / F=" +
++             stb.str(n_miss_haploid * 100.0 / (n_haploid * MIS[0].size()), 3) +
++             "%");
++  vrb.bullet("Diploid N=" + stb.str(n_miss_diploid) + " / F=" +
++             stb.str(n_miss_diploid * 100.0 / (n_diploid * MIS[0].size()), 3) +
++             "%");
+ }
+ 
+ void genotype_set::includeHaploid(int n_haploids, int n_diploids) {
+-	vrb.title("Simulate phased haploid / diploid samples");
+-	std::vector < int > O;
+-	for (int h = 0 ; h < H.n_hap ; h ++) O.push_back(h);
+-	random_shuffle(O.begin(), O.end());
++  vrb.title("Simulate phased haploid / diploid samples");
++  std::vector<int> O;
++  for (int h = 0; h < H.n_hap; h++)
++    O.push_back(h);
++  std::shuffle(O.begin(), O.end(), rng.getEngine());
+ 
+-	vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
++  vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
+ 
+-	//Diploids
+-	for (int n = 0 ; n < n_diploids; n ++) {
+-		IDX.push_back(std::vector < int > (1, O[2*n+0]));
+-		IDX.push_back(std::vector < int > (1, O[2*n+1]));
+-		SID.push_back("Dip_" + stb.str(n));
+-		DIP.push_back(true);
+-	}
+-	if (n_diploids > 0) O.erase(O.begin(), O.begin() + 2*n_diploids);
+-	vrb.bullet(stb.str(n_diploids) + " diploid samples simulated");
++  // Diploids
++  for (int n = 0; n < n_diploids; n++) {
++    IDX.push_back(std::vector<int>(1, O[2 * n + 0]));
++    IDX.push_back(std::vector<int>(1, O[2 * n + 1]));
++    SID.push_back("Dip_" + stb.str(n));
++    DIP.push_back(true);
++  }
++  if (n_diploids > 0)
++    O.erase(O.begin(), O.begin() + 2 * n_diploids);
++  vrb.bullet(stb.str(n_diploids) + " diploid samples simulated");
+ 
+-	vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
++  vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
+ 
+-	//Haploids
+-	for (int n = 0 ; n < n_haploids; n ++) {
+-		IDX.push_back(std::vector < int > (1, O[n]));
+-		IDX.push_back(std::vector < int > (1, O[n]));
+-		SID.push_back("Hap_" + stb.str(n));
+-		DIP.push_back(false);
+-	}
+-	if (n_haploids > 0) O.erase(O.begin(), O.begin() + n_haploids);
+-	vrb.bullet(stb.str(n_haploids) + " haploid samples simulated");
++  // Haploids
++  for (int n = 0; n < n_haploids; n++) {
++    IDX.push_back(std::vector<int>(1, O[n]));
++    IDX.push_back(std::vector<int>(1, O[n]));
++    SID.push_back("Hap_" + stb.str(n));
++    DIP.push_back(false);
++  }
++  if (n_haploids > 0)
++    O.erase(O.begin(), O.begin() + n_haploids);
++  vrb.bullet(stb.str(n_haploids) + " haploid samples simulated");
+ 
+-	vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
+-	O.clear();
++  vrb.bullet("Pool of haplotypes = " + stb.str(O.size()));
++  O.clear();
+ }
+diff --git a/versions/CHANGELOG.md b/versions/CHANGELOG.md
+index fc9132e..e7ee99e 100644
+--- a/versions/CHANGELOG.md
++++ b/versions/CHANGELOG.md
+@@ -8,8 +8,12 @@ layout: default
+ All notable changes to this project are documented in this file.
+ 
+ {: .highlight }
+-Version 5.1.1 is now available [here] (https://github.com/odelaneau/shapeit5/releases) as docker image or static binaries. 
++Version 5.1.2 is now available [here] (https://github.com/odelaneau/shapeit5/releases) as docker image or static binaries. 
+ 
++## v5.1.2
++	* Apple Silicon (arm64) support: HMM AVX2/FMA kernels ported to ARM NEON, native macOS build via clang + Homebrew (`make macos`)
++	* NEON kernels give comparable performance to AVX2 on Linux and ~10x the speed of the scalar code with compiler auto-vectorization on ARM
++	* Native arm64 build is ~2.5x faster than the x86_64 binaries run under Rosetta 2, and removes the Rosetta 2 dependency (Rosetta 2 support for Intel apps ends with macOS 27 / macOS 28)
+ 
+ ## v5.1.1
+ 	* Bugfix of a nasty segfault, thanks to Ami Williams (23andMe). 
+diff --git a/versions/versions.h b/versions/versions.h
+index b89058c..7618d7c 100644
+--- a/versions/versions.h
++++ b/versions/versions.h
+@@ -22,9 +22,9 @@
+ #ifndef _VERSION_H
+ #define _VERSION_H
+ 
+-#define PHASE1_VERSION "1.1"
+-#define PHASE2_VERSION "1.1"
+-#define LIGATE_VERSION "1.1"
+-#define SWITCH_VERSION "1.1"
++#define PHASE1_VERSION "1.2"
++#define PHASE2_VERSION "1.2"
++#define LIGATE_VERSION "1.2"
++#define SWITCH_VERSION "1.2"
+ 
+ #endif
+diff --git a/xcftools/makefile b/xcftools/makefile
+index 159d491..0b4b7e0 100644
+--- a/xcftools/makefile
++++ b/xcftools/makefile
+@@ -1,7 +1,6 @@
+ #COMPILER MODE C++17
+ CXX=g++ -std=c++20
+ 
+-
+ #create folders
+ dummy_build_folder_bin := $(shell mkdir -p bin)
+ dummy_build_folder_obj := $(shell mkdir -p obj)
+@@ -89,6 +88,24 @@ endif
+ # Endif makefile goals != clean
+ endif
+ 
++# Apple Silicon / macOS native build (clang + Homebrew htslib/boost)
++UNAME_S := $(shell uname -s)
++ifeq ($(UNAME_S),Darwin)
++CXX=clang++ -std=c++20
++CXXFLAG=-O3 -march=native
++CXXFLAG+= -D__COMMIT_ID__=\"$(COMMIT_VERS)\"
++CXXFLAG+= -D__COMMIT_DATE__=\"$(COMMIT_DATE)\"
++LDFLAG=-O3 -L$(shell brew --prefix)/lib
++HTSSRC=$(shell brew --prefix)/opt/htslib
++HTSLIB_INC=$(HTSSRC)/include
++HTSLIB_LIB=$(HTSSRC)/lib/libhts.a
++BOOST_INC=$(shell brew --prefix)/opt/boost/include
++BOOST_LIB_IO=$(shell brew --prefix)/opt/boost/lib/libboost_iostreams.a
++BOOST_LIB_PO=$(shell brew --prefix)/opt/boost/lib/libboost_program_options.a
++BOOST_LIB_SE=$(shell brew --prefix)/opt/boost/lib/libboost_serialization.a
++macos: $(BFILE)
++endif
++
+ #CONDITIONAL PATH DEFINITON
+ desktop: $(BFILE)
+ 
+@@ -148,7 +165,11 @@ dnanexus: $(BFILE)
+ 
+ 
+ #COMPILATION RULES
++ifeq ($(UNAME_S),Darwin)
++all: macos
++else
+ all: desktop
++endif
+ 
+ $(BFILE): $(OFILE)
+ 	$(CXX) $(LDFLAG) $^ -o $@ $(DYN_LIBS)

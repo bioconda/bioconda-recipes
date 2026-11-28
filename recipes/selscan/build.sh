@@ -1,21 +1,11 @@
-#!/bin/sh
+#!/bin/bash
+set -euo pipefail
 
-cd src
+# src/Makefile reads CXX, CXXFLAGS, CPPFLAGS and LDFLAGS from the
+# environment, so conda's compiler and the zlib in $PREFIX are used.
+make -C src -j"${CPU_COUNT}" CXXFLAGS="${CXXFLAGS} -O3"
 
-if [ "$(uname)" = "Darwin" ]; then
-    make -f Makefile_macos \
-        CC="${CXX}" \
-        G++FLAG="${CXXFLAGS} -std=c++17 -w -Wno-psabi" \
-        I_PATH="-I../include -I${PREFIX}/include" \
-        L_PATH="${PREFIX}/lib"
-else
-    make -f Makefile_linux \
-        CXX="${CXX}" \
-        CXXFLAGS="${CXXFLAGS} -std=c++17 -fno-pie" \
-        LDFLAGS="${LDFLAGS} -no-pie" \
-        I_PATH="-I../include -I${PREFIX}/include" \
-        L_PATH="${PREFIX}/lib"
-fi
+# Regression suite (about 30 s); needs bash, awk, gzip, cmp and diff.
+make -C src check
 
-install -d "${PREFIX}/bin"
-install selscan "${PREFIX}/bin/"
+make -C src install PREFIX="${PREFIX}"

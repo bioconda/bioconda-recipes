@@ -1,5 +1,5 @@
 {% set name = "deeptools" %}
-{% set version = "4.0.0" %}
+{% set version = "4.1.0" %}
 
 package:
   name: {{ name }}
@@ -7,40 +7,21 @@ package:
 
 source:
   url: https://github.com/deeptools/deepTools/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 9823dffaaa1fa73b1483ed846c1894a89a1ba790a9a812da047057e69475228a
+  sha256: 244cc0242bc8799b68f5798737fd616f7f0f364c0ee3bab28db27b986f4cc76e
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py < 312]
-  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
-  entry_points:
-    - alignmentSieve_old = deeptools.alignmentSieve:main
-    - bamCompare_old = deeptools.bamCompare:main
-    - bamCoverage_old = deeptools.bamCoverage:main
-    - bamPEFragmentSize = deeptools.bamPEFragmentSize:main
-    - bigwigAverage = deeptools.bigwigAverage:main
-    - bigwigCompare = deeptools.bigwigCompare:main
-    - computeGCBias = deeptools.computeGCBias:main
-    - computeMatrix_old = deeptools.computeMatrix:main
-    - computeMatrixOperations = deeptools.computeMatrixOperations:main
-    - correctGCBias = deeptools.correctGCBias:main
-    - deeptools = deeptools.deeptools_list_tools:main
-    - estimateReadFiltering = deeptools.estimateReadFiltering:main
-    - estimateScaleFactor = deeptools.estimateScaleFactor:main
-    - multiBamSummary_old = deeptools.multiBamSummary:main
-    - multiBigwigSummary = deeptools.multiBigwigSummary:main
-    - plotCorrelation = deeptools.plotCorrelation:main
-    - plotCoverage = deeptools.plotCoverage:main
-    - plotEnrichment = deeptools.plotEnrichment:main
-    - plotFingerprint = deeptools.plotFingerprint:main
-    - plotHeatmap = deeptools.plotHeatmap:main
-    - plotPCA = deeptools.plotPCA:main
-    - plotProfile = deeptools.plotProfile:main
-    - bamCoverage = deeptools.bamCoverage2:main
-    - bamCompare = deeptools.bamCompare2:main
-    - computeMatrix = deeptools.computeMatrix2:main
-    - alignmentSieve = deeptools.alignmentSieve2:main
-    - multiBamSummary = deeptools.multiBamSummary2:main
+  script:
+    # The clang 19 linker driver resolves @rpath/libclang-cpp.19.1.dylib
+    # relative to its conda package cache (loader_path), where the library
+    # does not exist - it ships in the separate libclang-cpp19.1 package and
+    # is installed into the build prefix. dyld then aborts the linker with
+    #   dyld: Library not loaded: @rpath/libclang-cpp.19.1.dylib
+    # Extend dyld's fallback search path with the build prefix so the clang
+    # libraries are found.
+    - export DYLD_FALLBACK_LIBRARY_PATH="${BUILD_PREFIX}/lib${DYLD_FALLBACK_LIBRARY_PATH:+:${DYLD_FALLBACK_LIBRARY_PATH}}"  # [osx]
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
   run_exports:
     - {{ pin_subpackage(name, max_pin="x") }}
 
@@ -63,20 +44,17 @@ requirements:
     - python
     - pybigwig >=0.3
     - numpy >=2.0.0
-    - numpydoc >=0.5
     - scipy >=1.13
     - matplotlib-base >=3.10
     - pysam >=0.23
-    - py2bit >=0.3.0
-    - plotly >=4.9
     - deeptoolsintervals >=0.1
-    - importlib-metadata
 
 test:
   imports:
     - deeptools
   commands:
     - bamCompare --version
+    - plotHeatmap --version
 
 about:
   home: "https://github.com/deeptools/deepTools"

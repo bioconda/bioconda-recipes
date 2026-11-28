@@ -1,0 +1,62 @@
+{% set name = "qraft" %}
+{% set version = "1.0.3" %}
+{% set taskflow_commit = "93c307d16051294eee8bebd8ce794e328add0385" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/risenfromashes/qraft/archive/refs/tags/v{{ version }}.tar.gz
+    sha256: 993f170b5585300332f1b930e8fadeda7a540eea4fb97d3fdf44428d31aedc41
+  # Taskflow git submodule at v{{ version }}; the GitHub tarball leaves it empty.
+  - url: https://github.com/taskflow/taskflow/archive/{{ taskflow_commit }}.tar.gz
+    sha256: fc53af60d322d1b14e6628691013a71637f4c99eef2a0a840f4f97b350ef0a1c
+    folder: external/taskflow
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x") }}
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake >=3.20
+    - make
+  host:
+    - jemalloc  # [linux]
+
+test:
+  commands:
+    - qraft --version | grep -F "qraft {{ version }}"
+    - qraft selftest
+
+about:
+  home: https://github.com/risenfromashes/qraft
+  summary: Species trees from gene trees by quartet regrafting, at the scale of a million taxa.
+  description: |
+    QRAFT (Quartet Regrafting for Accurate and Fast Species Tree Estimation)
+    infers a species tree from gene trees. It looks for the species tree that
+    agrees with the most gene-tree quartets, counting every quartet exactly,
+    and it scales to very large datasets. It reads gene trees in Newick
+    format, which may miss taxa or hold several copies of a taxon, and writes
+    the species tree in Newick format, optionally with local posterior
+    probabilities on its edges.
+  license: AGPL-3.0-or-later
+  license_family: AGPL
+  license_file:
+    - LICENSE
+    - external/taskflow/LICENSE
+  dev_url: https://github.com/risenfromashes/qraft
+  doc_url: https://github.com/risenfromashes/qraft/blob/main/README.md
+
+extra:
+  recipe-maintainers:
+    - risenfromashes
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  identifiers:
+    - doi:10.64898/2026.11.05.764586

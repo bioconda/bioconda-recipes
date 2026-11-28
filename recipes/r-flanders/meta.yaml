@@ -1,5 +1,5 @@
 {% set name = "flanders" %}
-{% set version = "1.0.1" %}  # Set the package version
+{% set version = "2.4.0" %}  # Set the package version
 
 package:
   name: r-{{ name|lower }}     # Name must be lowercase
@@ -7,13 +7,12 @@ package:
 
 source:
   url: https://github.com/Biostatistics-Unit-HT/flanders_r/releases/download/v{{ version }}/flanders_{{ version }}.tar.gz
-  sha256: 62728f8eb694b1eadfb696d33a5f65897ec405a3f3f1ff050b013c4f88acf2bc
+  sha256: 7cbe1d6058e3e4ff19f8baa2dbdb6205936518a121d5cf220c5ac428bc5db0d7
 
 build:
   run_exports:
     - {{ pin_subpackage('r-flanders', max_pin="x") }}
   number: 0
-  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
@@ -21,8 +20,13 @@ build:
     $R CMD INSTALL --build .
 
 requirements:
+  build:
+    - {{ stdlib('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
-    - r-base >=4.0
+    - r-base >=4.1
     - r-anndata
     - r-coloc
     - r-data.table
@@ -30,18 +34,32 @@ requirements:
     - r-matrix
     - r-optparse
     - r-susier
+    - r-igraph
+    - r-qgraph
+    - r-stringi
+    - r-r.utils
+    - r-rcpp
+    - r-hyprcoloc
+    - bioconductor-s4vectors
     - bioconductor-singlecellexperiment
     - bioconductor-zellkonverter
     - bioconductor-scrnaseq
   run:
     - r-anndata
-    - r-base >=4.0
+    - r-base >=4.1
     - r-coloc
     - r-data.table
     - r-dplyr
     - r-matrix
     - r-optparse
     - r-susier
+    - r-igraph
+    - r-qgraph
+    - r-stringi
+    - r-r.utils
+    - r-rcpp
+    - r-hyprcoloc
+    - bioconductor-s4vectors
     - bioconductor-singlecellexperiment
     - bioconductor-zellkonverter
     - bioconductor-scrnaseq
@@ -63,6 +81,7 @@ about:
     - Convert multiple *finemap.rds files into a single AnnData object with credible set metadata.
     - Generate an input table (coloc_input) for colocalization testing.
     - Run pairwise colocalization tests, with minimal runtime overhead (typically 5–10 tests per second on standard hardware).
+    - Create coordinated modules from multiple co-localizing signals.
   license_file: LICENSE
 
 extra:

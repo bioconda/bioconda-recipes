@@ -1,0 +1,72 @@
+{% set name = "tnp" %}
+{% set version = "0.1.0" %}
+{% set python_min = "3.11" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/oxpig/TNP/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8ddf44939d3be2e2f47c824fae18002fbe69b8f1396e195f5e86e4f342940cc9
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - TNP = theraprofnano.cli:main
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - uv-build >=0.12.0,<0.13.0
+  run:
+    - python >={{ python_min }}
+    - biopython >=1.83
+    - freesasa
+    - immunebuilder >=1.2
+    - numpy
+    - openmm
+    - pdbfixer
+    - scikit-learn
+    - scipy
+    # Not declared in TNP's `pyproject.toml`: ANARCI because the `anarci`
+    # package on PyPI is not an official release, and DSSP because TNP runs its
+    # `mkdssp` program.
+    - anarci
+    - dssp >=4
+
+test:
+  imports:
+    - theraprofnano
+  commands:
+    - pip check
+    - TNP --help > /dev/null
+    - mkdssp --version > /dev/null
+  requires:
+    - python {{ python_min }}
+    - pip
+
+about:
+  home: https://tnp.opig.stats.ox.ac.uk
+  summary: The Therapeutic Nanobody Profiler, for assessing nanobody developability
+  description: |
+    TNP, the Therapeutic Nanobody Profiler, models a nanobody's structure with
+    NanoBodyBuilder2 and compares its CDR lengths, compactness and surface
+    hydrophobicity and charge with those of clinical-stage nanobodies.  The
+    NanoBodyBuilder2 model weights are downloaded from Zenodo on first use.
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENCE
+  dev_url: https://github.com/oxpig/TNP
+
+extra:
+  identifiers:
+    - doi:10.1038/s42003-026-09594-y
+  recipe-maintainers:
+    - benjaminhwilliams
+    - chris-r-taylor

@@ -8,7 +8,7 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
-cp kggseq.jar $outdir/kggseq.jar
+cp kggseq*.jar $outdir/kggseq.jar
 cp $RECIPE_DIR/kggseq $outdir/
 
 chmod +x $outdir/kggseq

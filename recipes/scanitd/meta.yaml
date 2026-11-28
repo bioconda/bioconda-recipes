@@ -1,5 +1,5 @@
 {% set name = "scanitd" %}
-{% set version = "0.9.2" %}
+{% set version = "0.9.3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,9 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scanitd-{{ version }}.tar.gz
-  sha256: 554efdf1c206a332fca1933a2ffb765d26127e22aaacadf86d170d21cbe288a6
+  sha256: 24962f31888bacb01760effe2af232dc0efbd27046d4e86572c0724202605017
 
 build:
-  noarch: python
   number: 0
   run_exports:
     - {{ pin_subpackage('scanitd', max_pin="x.x") }}
@@ -19,24 +18,31 @@ build:
     - scanitd = scanitd.cli.cli:app
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ stdlib('c') }}
+    - make
   host:
-    - python >=3.9
+    - python
     - pip
     - hatchling
   run:
-    - python >=3.9
+    - python
     - numpy >=2.0.0
     - pysam >=0.22.0
     - pyfaidx >=0.7.2
     - psutil >=5.9.5
-    - ssw-py >=1.0.1
     - loguru >=0.7.0
     - typer >=0.12.5
     - rich >=13.7.0
 
 test:
+  imports:
+    - scanitd
+    - scanitd.ssw
   commands:
     - scanitd --help
+    - python -c "from scanitd.ssw import AlignmentMgr; m = AlignmentMgr(); m.set_read('ACGT'); m.set_reference('TTACGTTT'); r = m.align(); assert r.CIGAR == '4M' and r.reference_start == 2"
 
 about:
   home: https://github.com/ylab-hi/ScanITD

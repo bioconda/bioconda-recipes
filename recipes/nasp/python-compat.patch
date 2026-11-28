@@ -1,0 +1,89 @@
+--- a/nasp/nasp.py
++++ b/nasp/nasp.py
+@@ -364,9 +364,8 @@
+ 
+ 
+ def _get_trimming_parameters(queue, args):
+-    import pkg_resources
+     trim_path = _get_java_path("trimmomatic*.jar")
+-    adapter_file = pkg_resources.resource_filename('nasp', 'illumina_adapters_all.fasta')
++    adapter_file = os.path.join(os.path.dirname(__file__), 'illumina_adapters_all.fasta')
+     quality_string = ''
+     response = input("  What adapter file are you using for trimming [%s]? " % adapter_file)
+     if response:
+@@ -543,11 +542,10 @@
+ 
+ def gonasp_path():
+     import sys
+-    import pkg_resources
+     if sys.maxsize > 2**32:
+-        matrix_path = pkg_resources.resource_filename('nasp', 'nasptool_linux_64')
++        matrix_path = os.path.join(os.path.dirname(__file__), 'nasptool_linux_64')
+     else:
+-        matrix_path = pkg_resources.resource_filename('nasp', 'nasptool_linux_32')
++        matrix_path = os.path.join(os.path.dirname(__file__), 'nasptool_linux_32')
+     if os.path.exists(matrix_path):
+         return matrix_path
+     else:
+--- a/nasp/convert_external_genome.py
++++ b/nasp/convert_external_genome.py
+@@ -121,8 +121,8 @@
+     #parse_delta_file(( external_nickname + ".filtered.delta" ), franken_genome, external_genome)
+     #franken_genome.write_to_fasta_file(external_nickname + ".frankenfasta", "franken::")
+ 
+-    import pkg_resources
+-    nasptool_path = pkg_resources.resource_filename('nasp', 'nasptool_linux_64')
++    import os
++    nasptool_path = os.path.join(os.path.dirname(__file__), 'nasptool_linux_64')
+     with open(external_nickname + ".frankenfasta", 'w') as handle:
+         return_code = subprocess.call([nasptool_path, "frankenfasta", external_nickname + ".filtered.delta"], stdout=handle)
+ 
+--- a/scripts/filter_matrix_by_genome.py
++++ b/scripts/filter_matrix_by_genome.py
+@@ -7,7 +7,7 @@
+ from collections import deque
+ 
+ def filter_genomes(genomes, in_matrix, action):
+-    in_matrix = open(in_matrix, "rU")
++    in_matrix = open(in_matrix, "r")
+     firstLine = in_matrix.readline()
+     first_fields = firstLine.split()
+     #indexes the column right after sequence data
+@@ -29,7 +29,7 @@
+     in_matrix.close()
+ 
+ def filter_matrix(to_keep, in_matrix, prefix):
+-    matrix = open(in_matrix, "rU")
++    matrix = open(in_matrix, "r")
+     outfile = open("%s_genomes.matrix" % prefix, "w")
+     for line in matrix:
+         fields = line.split()
+--- a/scripts/filter_matrix_by_distance.py
++++ b/scripts/filter_matrix_by_distance.py
+@@ -31,7 +31,7 @@
+     return contigs
+ 
+ def _get_index_range(in_matrix):
+-    matrix=open(in_matrix, "rU")
++    matrix=open(in_matrix, "r")
+     firstLine = matrix.readline()
+     first_fields = firstLine.split("\t")
+     last=first_fields.index("#SNPcall")
+@@ -42,7 +42,7 @@
+     """filter NASP matrix for SNPS that are far apart"""
+     import math
+     out_file = "%s_distance_filtered.matrix" % prefix
+-    in_matrix=open(matrix, "U")
++    in_matrix=open(matrix, "r")
+     out_matrix=open(out_file, "w")
+     first_line = in_matrix.readline()
+     out_matrix.write(first_line,)
+@@ -77,7 +77,7 @@
+ def _matrix_to_fasta(in_file, prefix):
+     """converts a NASP matrix to fasta format"""
+     reduced = []
+-    in_matrix = open(in_file, "rU")
++    in_matrix = open(in_file, "r")
+     out_file = "%s_distance_filtered.fasta" % prefix
+     out_fasta = open(out_file, "w")
+     last = _get_index_range(in_file)

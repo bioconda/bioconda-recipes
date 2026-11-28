@@ -1,5 +1,5 @@
 {% set name = "shapeit5" %}
-{% set version = "5.1.1" %}
+{% set version = "5.1.2" %}
 {% set user = "odelaneau" %}
 
 package:
@@ -7,23 +7,29 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/odelaneau/shapeit5
-  git_commit: 990ed0dd0a814756c90e16d3a771bc0089b1177a
-  sha256: ignored
+  # Upstream repo at the main commit c34d4db (parent of the port). The
+  # Apple Silicon port is applied as apple-silicon-port.patch until
+  # odelaneau/shapeit PR #5 is merged; re-point url at the merged
+  # commit and drop the patch afterwards.
+  url: https://github.com/odelaneau/shapeit/archive/c34d4db3e99a2f7e23deb727671ae260901a5886.tar.gz
+  sha256: dcdad851e86ba01d8ddbf330e426f97c16e40cf64950dfd25d0641f1cd5f61f8
   patches:
-    - arm64.patch  # [arm64 or aarch64]
+    - apple-silicon-port.patch
 
 build:
-  number: 2
+  number: 1
+  # osx-64 (Intel Mac) is no longer maintained: Apple Silicon replaced it,
+  # and Apple announced Rosetta 2 support ends with macOS 27. Existing
+  # 5.1.1 osx-64 packages remain available on the bioconda channel.
+  skip: true  # [osx and x86_64]
   run_exports:
     - {{ pin_subpackage('shapeit5', max_pin="x") }}
 
 requirements:
   build:
+    - {{ stdlib('c') }}
     - {{ compiler('cxx') }}
     - make
-    - cmake
-    - clangdev  # [osx]
   host:
     - boost-cpp
     - libcurl
@@ -42,23 +48,26 @@ test:
     - SHAPEIT5_phase_rare --help
     - SHAPEIT5_switch --help
     - SHAPEIT5_ligate --help
+    - SHAPEIT5_xcftools
+    # The binary must keep a valid code signature after conda's prefix
+    # handling, otherwise macOS kills it at launch (SIGKILL). The
+    # --help commands above already fail on that, and this makes the
+    # signature validity explicit on Apple Silicon.
+    - codesign --verify --strict --verbose=2 $PREFIX/bin/SHAPEIT5_phase_common  # [osx and arm64]
 
 about:
-  home: https://odelaneau.github.io/shapeit5
+  home: https://odelaneau.github.io/shapeit
   license: MIT
   license_family: MIT
   license_file: LICENSE
   summary: 'Fast and accurate method for estimation of haplotypes (phasing).'
-  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants.'
-  dev_url: https://github.com/odelaneau/shapeit5
-  doc_url: https://odelaneau.github.io/shapeit5
+  description: 'This package provides the software SHAPEIT5. SHAPEIT5 estimates haplotypes in large datasets (WGS, WES, SNP array), with a special focus on rare variants. The HMM engine uses native ARM NEON SIMD kernels on Apple Silicon (no sse2neon emulation) and AVX2/FMA on x86_64.'
+  dev_url: https://github.com/odelaneau/shapeit
+  doc_url: https://odelaneau.github.io/shapeit
 
 extra:
   identifiers:
-    - doi:10.1101/2022.10.19.512867 
+    - doi:10.1101/2022.10.19.512867
     - biotools:shapeit5
-  #additional-platforms:
-    #- linux-aarch64
-    #- osx-arm64
-  skip-lints:
-    - uses_vcs_url
+  additional-platforms:
+    - osx-arm64

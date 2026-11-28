@@ -1,0 +1,45 @@
+{% set name = "phylodig" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/davidjhoey/PhyloDig/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: c16791ea997fc5642193ec31a62668b54674b65f14c6e62db7e9191d9a6d3b36
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage('phylodig', max_pin="x.x") }}
+  script:
+    - mkdir -p $PREFIX/bin
+    - cp phylodig.sh $PREFIX/bin/phylodig
+    - chmod +x $PREFIX/bin/phylodig
+
+requirements:
+  run:
+    - emboss
+    - hmmer
+    - seqkit
+
+test:
+  commands:
+    - phylodig --help
+
+about:
+  home: https://github.com/davidjhoey/PhyloDig
+  summary: "Command-line tool for homology mining across protein and CDS databases"
+  description: |
+    PhyloDig is a command-line tool for homology mining across protein and
+    CDS databases. It uses HMMER, EMBOSS and SeqKit to search sequence
+    databases and optionally filter extracted proteins using HMM profiles.
+  license: GPL-3.0-only
+  license_file: LICENSE
+  dev_url: https://github.com/davidjhoey/PhyloDig
+
+extra:
+  recipe-maintainers:
+    - davidjhoey

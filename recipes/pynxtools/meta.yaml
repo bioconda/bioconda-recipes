@@ -1,0 +1,89 @@
+{% set name = "pynxtools" %}
+{% set version = "0.16.0" %}
+# Matches requires-python; also lets the recipe render outside conda-forge.
+{% set python_min = "3.10" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bcb761c3f962c84a9c52fca2c7fac62202d72a53c9c18c7dd8c66f1f6c793991
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vvv
+  # read_nexus is left out: in 0.16.0 it points to a function that no longer exists.
+  entry_points:
+    - pynx = pynxtools.cli:pynx
+    - dataconverter = pynxtools.dataconverter.cli:convert
+    - generate_eln = pynxtools.eln_mapper.cli:generate_eln
+    - validate_nexus = pynxtools.dataconverter.cli:validate
+  # Required by the Bioconda linter, also for noarch packages.
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  host:
+    - python {{ python_min }}
+    - pip
+    - setuptools >=78.1.1
+    - setuptools-scm >=6.2
+  run:
+    - python >={{ python_min }}
+    - click >=7.1.2
+    - click-default-group
+    - h5py >=3.6.0
+    - hdf5plugin
+    - python-blosc2
+    - xarray >=0.20.2
+    - pyyaml >=6.0
+    - numpy
+    - pandas >=1.3.2
+    - ase >=3.19.0
+    - mergedeep
+    - importlib-metadata
+    - lxml >=4.9.1
+    - toposort >=1.10.0
+    - anytree
+    - pint
+    - cachetools
+    - structlog
+    - jinja2
+
+test:
+  requires:
+    - python {{ python_min }}
+    - pip
+  # pynxtools.nomad is left out: it needs the optional nomad-lab package.
+  imports:
+    - pynxtools
+    - pynxtools.dataconverter
+    - pynxtools.nexus
+  commands:
+    - pip check
+    - pynx --help
+    - dataconverter --help
+    - validate_nexus --help
+    - generate_eln --help
+
+about:
+  home: https://github.com/FAIRmat-NFDI/pynxtools
+  summary: Convert experimental data to NeXus/HDF5 files and validate them against NeXus application definitions.
+  description: |
+    pynxtools converts experimental and characterization data from materials
+    science into NeXus/HDF5 files, validates them, and serves as the NeXus
+    parser of NOMAD. Format readers are separate plugins, such as pynxtools-spm.
+  license: Apache-2.0 AND LGPL-3.0-or-later AND MIT
+  license_file:
+    - LICENSES/Apache-2.0.txt
+    - LICENSES/LGPL-3.0-or-later.txt
+    - LICENSES/MIT.txt
+  doc_url: https://fairmat-nfdi.github.io/pynxtools/
+  dev_url: https://github.com/FAIRmat-NFDI/pynxtools
+
+extra:
+  recipe-maintainers:
+    - RubelMozumder

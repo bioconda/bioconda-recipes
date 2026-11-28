@@ -1,0 +1,53 @@
+{% set version = "0.1.1" %}
+
+package:
+  name: scphasedcn
+  version: {{ version }}
+
+source:
+  url: https://github.com/ljwharbers/scphasedcn/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 9161d19cf8d0b057bd91f472cb4cfcd5cf8e3967559d1fdf717eb05e331e1d46
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install ./python --no-deps --no-build-isolation -vv
+  entry_points:
+    - scphasedcn = scphasedcn.cli:main
+  run_exports:
+    - {{ pin_subpackage("scphasedcn", max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=64
+  run:
+    - python >=3.10
+    - pysam >=0.22
+    - numpy >=1.24
+    - scipy >=1.10
+    - pandas >=2.0
+    - h5py >=3.8
+    - anndata >=0.10
+    - pyyaml >=6
+
+test:
+  imports:
+    - scphasedcn
+  commands:
+    - scphasedcn --help
+    - scphasedcn run --help
+
+about:
+  home: https://github.com/ljwharbers/scphasedcn
+  license: MIT
+  license_family: MIT
+  license_file: python/LICENSE
+  summary: Per-cell depth, read-phased alleles and fragment tables from SPLONGGET single-cell long-read DNA BAMs (Python extraction layer of scphasedcn)
+  dev_url: https://github.com/ljwharbers/scphasedcn
+  doc_url: https://ljwharbers.github.io/scphasedcn/
+
+extra:
+  recipe-maintainers:
+    - ljwharbers

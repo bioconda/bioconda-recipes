@@ -4,7 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -fopenmp"
 export CPPFLAGS="${CPPFLAGS} -I${PREFIX}/include"
-export CXXFLAGS="${CXXFLAGS} -O3 -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
+export CXXFLAGS="${CXXFLAGS} -O3 -fopenmp -Wno-unused-parameter -Wno-sign-compare -Wno-deprecated-declarations -Wno-unused-variable -Wno-char-subscripts -Wno-cpp -Wno-maybe-uninitialized"
 export BINARY_HOME="${PREFIX}/bin"
 
 case $(uname -m) in
@@ -24,10 +24,11 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	export CXXFLAGS="${CXXFLAGS} -std=c++14"
 fi
 
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Chrysalis/CMakeLists.txt
 sed -i.bak 's|-O2|-O3|' Chrysalis/CMakeLists.txt
-sed -i.bak 's|VERSION 3.1|VERSION 3.5|' Inchworm/CMakeLists.txt
 sed -i.bak 's|-O2|-O3|' Inchworm/CMakeLists.txt
+
+# link bamsifter against the conda htslib rather than building the bundled static copy
+export HTSLIB_PREFIX="${PREFIX}"
 rm -f Chrysalis/*.bak
 rm -f Inchworm/*.bak
 

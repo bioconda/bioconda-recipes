@@ -1,0 +1,48 @@
+{% set name = "viscose" %}
+{% set version = "0.3.2" %}
+package:
+  name: {{ name }}
+  version: {{ version }}
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a954151ba4acdc1d2c5dede57a7e86b075c86c37fdc2107ac4df4040bf93ba23
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-cache-dir -vvv
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+requirements:
+  host:
+    - python >=3.11
+    - pip
+    - setuptools >=77
+  run:
+    - python >=3.11
+    - numpy
+    - glycorender >=0.5.8
+test:
+  imports:
+    - viscose
+    - viscose.drawingml
+  commands:
+    - pip check
+    - python -c "import viscose as vc; fig, ax = vc.subplots(); ax.scatter([1, 2, 3], [3, 1, 2], hue = ['a', 'b', 'a']); ax.plot([1, 2, 3], [1, 2, 3], label = 'line'); fig.save('t.png'); fig.save('t.svg'); fig.save('t.pdf'); assert vc.open('t.pdf') is not None"
+  requires:
+    - pip
+about:
+  home: https://github.com/BojarLab/viscose
+  summary: The plotting engine of glycowork, drawing publication figures with palettes, special effects, and glycans as SNFG glyphs
+  description: |
+    viscose draws scientific figures as PNG, PDF (including PDF/X-4 for print), SVG, and PowerPoint, through
+    glycorender's renderer and without matplotlib. Each palette brings its own special effects, and every palette
+    has a dark version. Glycans in SNFG notation stand in for text labels on axes, legends, and annotations,
+    figures carry their own source for reopening in another palette, and SVG output can be interactive with
+    linked highlighting. It is the plotting backend of glycowork and its sister packages for glycobiology.
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  dev_url: https://github.com/BojarLab/viscose
+extra:
+  recipe-maintainers:
+    - Bribak
