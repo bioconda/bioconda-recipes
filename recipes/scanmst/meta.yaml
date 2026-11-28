@@ -1,5 +1,5 @@
 {% set name = "scanmst" %}
-{% set version = "0.1.9" %}
+{% set version = "0.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,14 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/scanmst-{{ version }}.tar.gz
-  sha256: 27b0f827533cddffd702f2e33997645587d4d5368647580a01d732df11fbb7b5
+  sha256: 277a2e9608c80e0239409be4ffb68962a4990c8de104a56cab31a688a5d11cfa
 
 build:
   # Compiled pybind11 extension linked against htslib -- not noarch.
-  # Linux-only and py39/py310-only, matching requires-python; no osx-arm64
-  # build exists for pysam at any version used here.
-  skip: True  # [not linux or py<39 or py>=311]
+  # Linux-only. Upstream requires-python is >=3.11,<3.14, but bioconda's
+  # htseq 2.1.2 builds for py311/py312 still pin numpy <2 while scanmst
+  # needs numpy >=2, so only py313 is solvable for now.
+  skip: True  # [not linux or py<313 or py>=314]
   number: 0
   run_exports:
     - {{ pin_subpackage('scanmst', max_pin="x.x") }}
@@ -42,25 +43,13 @@ requirements:
     - pip
     - scikit-build-core >=0.10
     - pybind11 >=2.12,<4
-    # htslib pinned to the build whose bzip2/libcurl/libdeflate/openssl/
-    # zlib pins match pysam==0.22.0's verbatim -- see the run section note
-    # on why pysam is 0.22.0 here instead of PyPI's 0.19.0.
-    - htslib ==1.20
-    - zlib >=1.2.13,<1.3.0a0
+    - htslib
+    - zlib
   run:
     - python
-    - htslib ==1.20
-    # htseq/numpy are exact-pinned to the versions the published v0.1.9
-    # manuscript results were produced with. pysam is NOT exact-pinned here
-    # (PyPI has pysam==0.19.0) -- every bioconda build of htseq==2.0.5,
-    # across all rebuilds and python versions, hard-requires pysam>=0.22.0,
-    # so 0.19.0 is not installable alongside it on this channel. Bumped to
-    # the nearest compatible version instead (also dodges alignparse's own
-    # `pysam !=0.22.1` exclusion); approved as a deliberate, bioconda-only
-    # deviation from the PyPI exact pin.
-    - pysam ==0.22.0
-    - htseq ==2.0.5
-    - numpy ==1.26.4
+    - pysam >=0.23,<0.25
+    - htseq >=2.1.2,<3
+    - numpy >=2,<3
     - biopython >=1.81,<2
     - pyfaidx >=0.8.1,<0.9
     - psutil >=7.0.0,<8
