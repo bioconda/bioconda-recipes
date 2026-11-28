@@ -3,37 +3,50 @@ package:
   version: '1.0.4'
 
 source:
-  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_Linux_20160112.tgz                            # [linux64]
+  - url: https://github.com/mmb-irb/imods_biobb/raw/37ba285cadd1401a5b96228a772c5b7ce7b4ca9e/iMOD_v1.04_Linux_20160112.tgz                            # [linux64]
     sha256: 4fa9e172d4990c2b6c39cd9bfa7b886a54cf0d526081cb3a5eaaf5de85dd059a                                     # [linux64]
 
-  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_osx-arm64.tgz                                 # [osx]
+  # the binaries inside are x86_64 (Intel); Apple-silicon Macs run them through Rosetta
+  - url: https://github.com/mmb-irb/imods_biobb/raw/37ba285cadd1401a5b96228a772c5b7ce7b4ca9e/iMOD_v1.04_osx-arm64.tgz                                 # [osx]
     sha256: f40398c2c3e54431165c2c95ca299fe1e6427393f7b303b2f07bd80682500639                                     # [osx]
 
-  - url: https://mmb.irbbarcelona.org/biobb-dev/sw/imod/iMOD_v1.04_osx-arm64.tgz                                 # [osx-arm64]
-    sha256: f40398c2c3e54431165c2c95ca299fe1e6427393f7b303b2f07bd80682500639                                     # [osx-arm64]
-
 build:
-  number: 3
+  number: 4
+  run_exports:
+    - {{ pin_subpackage('imods', max_pin="x") }}
+  ignore_run_exports:
+    - arpack
+    - libopenblas
+    - libgfortran5
+    - mkl
 
   script:
     - mkdir -p $PREFIX/bin
     - cd bin
-    - chmod u+x imc imodview imove imode_gcc 
+    - chmod u+x imc imodview imove imode_gcc
     - cp imc imodview imove imode_gcc $PREFIX/bin/
 
-    - install_name_tool -change /opt/anaconda3/envs/imorph/lib/libarpack.2.dylib $PREFIX/lib/libarpack.2.dylib $PREFIX/bin/imode_gcc       # [osx-arm64]
-    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libopenblas.0.dylib $PREFIX/lib/libopenblas.0.dylib $PREFIX/bin/imode_gcc    # [osx-arm64]
-    - install_name_tool -change /opt/anaconda3/envs/dev/lib/libgfortran.5.dylib $PREFIX/lib/libgfortran.5.dylib $PREFIX/bin/imode_gcc      # [osx-arm64]
-    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libmkl_rt.2.dylib $PREFIX/lib/libmkl_rt.2.dylib $PREFIX/bin/imode_gcc        # [osx-arm64]
+    - install_name_tool -change /opt/anaconda3/envs/imorph/lib/libarpack.2.dylib $PREFIX/lib/libarpack.2.dylib $PREFIX/bin/imode_gcc       # [osx]
+    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libopenblas.0.dylib $PREFIX/lib/libopenblas.0.dylib $PREFIX/bin/imode_gcc    # [osx]
+    - install_name_tool -change /opt/anaconda3/envs/dev/lib/libgfortran.5.dylib $PREFIX/lib/libgfortran.5.dylib $PREFIX/bin/imode_gcc      # [osx]
+    - install_name_tool -change /opt/anaconda3/envs/imods/lib/libmkl_rt.2.dylib $PREFIX/lib/libmkl_rt.2.dylib $PREFIX/bin/imode_gcc        # [osx]
 
+# Prebuilt binaries, nothing is compiled. The macOS libraries are in host only so that
+# conda-build can relocate the links of imode_gcc when packaging; their run_exports are
+# ignored (they would pin the exact build-time versions, e.g. arpack 3.7.0 before), and
+# the run requirements below say what the binaries really need.
 requirements:
   host:
-    - arpack ==3.7.0
-    - mkl ==2023.0.0                                              # [osx-arm64]
-
+    - arpack >=3.7.0,<4                                           # [osx]
+    - libopenblas                                                 # [osx]
+    - libgfortran5                                                # [osx]
+    - libcxx                                                      # [osx]
+    - mkl >=2023.0,<2024                                          # [osx]
   run:
-    - arpack ==3.7.0
-    - mkl ==2023.0.0                                              # [osx-arm64]
+    - arpack >=3.7.0,<4                                           # all 3.7-3.9 ship libarpack.2.dylib
+    - libopenblas                                                 # [osx]
+    - libgfortran5                                                # [osx]
+    - mkl >=2023.0,<2024                                          # [osx]
 
 test:
   commands:
@@ -49,8 +62,8 @@ extra:
     - should_use_compilers
 
 about:
-  home: https://chaconlab.org/multiscale-simulations/imod 
+  home: https://chaconlab.org/multiscale-simulations/imod
   license: Copyright 2018 Chaconlab.org https://chaconlab.org/images/download/License.txt
   license_family: OTHER
-  summary: toolkit to perform Normal Mode Analysis (NMA) in internal coordinates (IC) on both protein and nucleic acid atomic structures.
-  description: "iMOD is an versatile toolkit to perform Normal Mode Analysis (NMA) in internal coordinates (IC) on both protein and nucleic acid atomic structures. Vibrational analysis, motion animations, morphing trajectories and Monte-Carlo simulations can be easily carried out at different scales of resolution using this toolkit." 
+  summary: Normal Mode Analysis in internal coordinates for proteins and nucleic acids.
+  description: "iMOD is an versatile toolkit to perform Normal Mode Analysis (NMA) in internal coordinates (IC) on both protein and nucleic acid atomic structures. Vibrational analysis, motion animations, morphing trajectories and Monte-Carlo simulations can be easily carried out at different scales of resolution using this toolkit."
