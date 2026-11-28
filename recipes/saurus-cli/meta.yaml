@@ -1,13 +1,13 @@
 {% set name = "saurus-cli" %}
-{% set version = "0.2.0" %}
+{% set version = "0.4.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/bbeckley-hub/saurus-cli/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 8c70f69784566274d7e54ae0116fec01d6dda8f4de0e23e4718896d0c35d97e2
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/saurus_cli-{{ version }}.tar.gz
+  sha256: b0e66648b372135f0447ec31773d885c52009bbf5edef72f04a9134649c35f9d
 
 build:
   noarch: python
@@ -37,7 +37,8 @@ test:
     - saurus --examples
     - saurus --about
     - test -d ${PREFIX}/share/saurus/data/mrsa
-    - saurus --lineage USA300 --count
+    - test -f ${PREFIX}/share/saurus/data/DATA_VERSION
+    - saurus --quiet --lineage USA300 --count | grep -q "10,448"
 
 about:
   home: https://saurus-db.org/
@@ -45,17 +46,20 @@ about:
   license_file: LICENSE
   summary: 'Command-line interface for the SAURUS Staphylococcus aureus genomic surveillance database'
   description: |
-    SAURUS-CLI provides programmatic, reproducible access to 139,257
-    Staphylococcus aureus genomes typed by MLST, spa, SCCmec (two
-    independent callers), agr, and capsule serotype, plus AMR genes,
-    virulence factors, plasmid replicons, and BioSample-derived
-    metadata (country, source, host, collection year).
+    SAURUS-CLI provides reproducible, offline access to a master table of
+    134,273 Staphylococcus aureus genomes (134,160 with typing results and
+    113 metadata-only), queryable by MLST sequence type, clonal complex,
+    spa type, SCCmec, agr, capsule serotype, lineage signature, MRSA/MSSA
+    status, SRA availability, and epidemiological metadata (country,
+    source, host, collection year), and by gene presence across the AMR,
+    VFDB, and plasmid modules.
 
-    The full data bundle ships inside the package. After installation,
-    queries run locally with no downloads, no API keys, and no network
-    access required. SAURUS-CLI is part of the ARGUS initiative, a
-    family of open genomic surveillance tools covering the six WHO
-    priority ESKAPE pathogens.
+    The version 1.1.0 data release (16 gzipped TSV files plus a
+    DATA_VERSION marker) ships bundled inside the package. After
+    installation, queries run locally with no downloads, no API keys, and
+    no network access. SAURUS-CLI is part of the ARGUS initiative, a
+    family of open genomic surveillance tools covering the WHO priority
+    ESKAPE pathogens.
   doc_url: https://saurus-db.org/manual.html
   dev_url: https://github.com/bbeckley-hub/saurus-cli
 
@@ -63,7 +67,8 @@ extra:
   recipe-maintainers:
     - bbeckley-hub
   identifiers:
-    - doi:10.1186/s12864-026-12609-x
+    - doi:10.5281/zenodo.24599839
+    - doi:10.5281/zenodo.24568725
   keywords:
     - staphylococcus-aureus
     - mrsa
