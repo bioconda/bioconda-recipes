@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "1.3.2"
+  version: "1.5.0"
 
 package:
   name: geneml
@@ -9,19 +9,19 @@ package:
 
 source:
   url: https://files.pythonhosted.org/packages/source/g/geneml/geneml-${{ version }}.tar.gz
-  sha256: ba2a8caa46f9325a2c486fcfa5d2812b89c8d9cad6c639d4c3baf1aa65c1bb74
+  sha256: 243cd4ba4ddda88d712c26db0a980f81814df8d6aeff5b6c0870b4e4c2841f44
 
 build:
   number: 0
-  noarch: python
-  script: ${{ PYTHON }} -m pip install . -vv
+  skip: match(python, "<3.9")
+  script: pip install . -vv --no-deps --no-build-isolation
   python:
     entry_points:
       - geneml = geneml.main:main
 
 requirements:
   host:
-    - python >=3.9
+    - python
     - hatchling >=1.27.0
     - hatch-vcs >=0.5.0
     - pip
@@ -30,10 +30,17 @@ requirements:
     - biopython >=1.78
     - enlighten >=1.14.1
     - helperlibs >=0.2.2
-    - numba >=0.53.1
+    - numba >=0.60.0
+    - if: target_platform == "osx-64"
+      then: numba <0.61.0
     - numpy >=1.21.0
     - psutil >=5.9.0
-    - tensorflow >=2.17.0
+    - if: target_platform == "linux-64"
+      then: tensorflow-cpu >=2.16.2
+    - if: target_platform != "linux-64"
+      then: tensorflow >=2.16.2
+    - if: target_platform == "osx-64"
+      then: tensorflow <2.17.0
 
 tests:
   - python:
@@ -49,9 +56,13 @@ tests:
 
 about:
   summary: Gene Annotation Across Diverse Fungal Species Using Deep Learning
+  description: >-
+    geneML uses a deep learning approach to predict genes from fungal genomic
+    sequences and produces annotations in GFF3 format.
   license: GPL-3.0-only
   license_file: LICENSE
-  homepage: https://pypi.org/project/geneml/
+  homepage: https://github.com/hexagonbio/geneML
+  repository: https://github.com/hexagonbio/geneML
 
 extra:
   recipe-maintainers:
