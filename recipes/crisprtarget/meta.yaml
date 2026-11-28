@@ -1,0 +1,63 @@
+{% set name = "CRISPRTarget" %}
+{% set version = "1.0" %}
+{% set sha256 = "da75b53a01f607f65947b55b99048d95a4707ae678a93b0baee96432c24cfe78" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/davidchyou/CRISPRTarget/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
+  run_exports:
+    - {{ pin_subpackage(name|lower, max_pin="x") }}
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl
+    # upstream ships prebuilt copies of these binaries in bin/, the recipe
+    # replaces them with the Bioconda packages (see build.sh)
+    # makeblastdb is called with -blastdb_version 4 (BLAST >= 2.6), 2.10.1+ is
+    # what has been tested end-to-end; older blast builds silently produce
+    # no BLAST database
+    - blast >=2.10
+    - bedtools
+    - samtools
+    - easel
+    - coreutils
+
+test:
+  # most tests are in run_test.sh (picked up automatically by conda-build)
+  commands:
+    - command -v CRISPRTarget.pl
+    - command -v MakeUserDB.sh
+    - command -v MakeUserShuffledDB.sh
+
+about:
+  home: https://github.com/davidchyou/CRISPRTarget
+  license: unknown  # upstream ships no LICENSE file (repo and Zenodo record 14839268 checked)
+  summary: "A Linux command-line version of the web-based CRISPRTarget."
+  description: |
+    CRISPRTarget detects targets of CRISPR-array spacers in viral, plasmid and
+    other sequences. Spacers are read from a CRISPRDetect-formatted GFF file (or
+    a FASTA file of spacers), searched with blastn against a user supplied or
+    pre-indexed BLAST database and scored as described in Biswas et al. 2013.
+    P-values are computed against a dinucleotide-shuffled control database
+    (easel). Results are reported as tabular, text and HTML output.
+  dev_url: https://github.com/davidchyou/CRISPRTarget
+  doc_url: https://github.com/davidchyou/CRISPRTarget#readme
+
+extra:
+  recipe-maintainers:
+    - davidchyou
+    - ChrisBrownNZ
+    - bernt-matthias
+  identifiers:
+    - doi:10.4161/rna.24046
+    - pmid:23492433
