@@ -1,0 +1,62 @@
+schema_version: 1
+
+context:
+  version: "2026.3.14"
+
+package:
+  name: massql
+  version: ${{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/m/massql/massql-${{ version }}.tar.gz
+  sha256: 6e148e388813ed81bd243781edf842752fdfa9c58c52daab22820be683af22b0
+
+build:
+  number: 0
+  skip: match(python, "<3.9")
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - massql=massql.msql_cmd:main
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - pymzml
+    - lark-parser
+    - pandas
+    - pyarrow
+    - tqdm
+    - py_expression_eval
+    - pyteomics
+    - psims
+    - plotly
+    - python-kaleido
+    - pydot
+    - pyyaml
+
+tests:
+  - python:
+      imports:
+        - massql
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - python
+    script:
+      - massql --help
+
+about:
+  summary: Mass spectrometry query language python implementation
+  license: MIT
+  license_file: LICENSE.txt
+  homepage: https://github.com/mwang87/MassQueryLanguage
+  documentation: https://mwang87.github.io/MassQueryLanguage_Documentation/
+
+extra:
+  recipe-maintainers:
+    - hechth

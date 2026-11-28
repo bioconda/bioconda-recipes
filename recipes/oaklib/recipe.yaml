@@ -1,0 +1,91 @@
+schema_version: 1
+
+context:
+  version: "0.7.4"
+
+package:
+  name: oaklib
+  version: ${{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/source/o/oaklib/oaklib-${{ version }}.tar.gz
+  sha256: 919432328d5089f7e5d0614181b0d017f97bdc4fdfaa3e09ab6a2fa069093490
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv
+  python:
+    entry_points:
+      - runoak = oaklib.cli:main
+      - vskit = oaklib.utilities.subsets.value_set_expander:main
+      - boomerang = oaklib.utilities.mapping.boomer_utils:main
+
+requirements:
+  host:
+    - python >=3.10,<4,<3.15
+    - hatchling
+    - uv-dynamic-versioning
+    - pip
+  run:
+    - python >=3.10,<4,<3.15
+    - curies >=0.6.6
+    - pronto >=2.5
+    - sparqlwrapper
+    - sqlalchemy >=1.4.32
+    - linkml-runtime >=1.5.3
+    - linkml-renderer >=0.3.0
+    - networkx >=2.7.1
+    - sssom
+    - ratelimit >=2.2.1
+    - appdirs >=1.4.4
+    - semsql >=0.3.1
+    - kgcl-schema >=0.6.9,<1
+    - py-horned-owl >=1.4.1
+    - kgcl-rdflib ==0.5.0
+    - llm >=0.14,<1
+    - pystow >=0.7.28
+    - class-resolver >=0.4.2
+    - ontoportal-client >=0.0.3
+    - prefixmaps >=0.1.2
+    - ols-client >=0.1.1
+    - airium >=0.2.5
+    - ndex2 >=3.5.0
+    - pysolr >=3.9.0,<4
+    - eutils >=0.6.0
+    - setuptools <82
+    - lxml >5.4.0
+    - requests-cache >1.0.1,<2
+    - click
+    - pydantic
+    - jsonlines
+    - tenacity >=8.2.3
+    - defusedxml >=0.7.1
+    - ruamel.yaml
+    - regex
+    - greenlet
+    - ruamel_yaml
+
+tests:
+  - python:
+      imports:
+        - oaklib
+      pip_check: true
+  - requirements:
+      run:
+        - pip
+        - python
+    script:
+      - runoak --help
+      - vskit --help
+      - boomerang --help
+
+about:
+  summary: "Ontology Access Kit: Python library for common ontology operations over a variety of backends"
+  license: Apache-2.0
+  license_file: LICENSE
+  homepage: https://pypi.org/project/oaklib/
+
+extra:
+  recipe-maintainers:
+    - hechth
