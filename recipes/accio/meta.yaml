@@ -1,0 +1,66 @@
+{% set name = "accio" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mpgriffith/accio/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a0c9bfcfe82c5cf3f886e06533c8114fa7a0a6a33f05f4a9e406cb6fd228de81
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  entry_points:
+    - accio = accio.cli:main
+  run_exports:
+    - {{ pin_subpackage('accio', max_pin="x.x") }}
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=61.0
+    - wheel
+  run:
+    - python >=3.10
+    - pandas >=2.0
+    - biopython
+    - scipy
+    - numpy
+    - intervaltree
+    - pysam
+    - blast
+    - mash
+    - mummer4
+    - samtools
+    - bwa
+    - minimap2
+    - skani
+    - ncbi-amrfinderplus
+    - pling
+    - plasnet
+    - genomad
+
+test:
+  imports:
+    - accio
+  commands:
+    - accio --help
+
+about:
+  home: https://github.com/mpgriffith/accio
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "ACCIO - an assembly-based tool enabling plasmid detection"
+  dev_url: https://github.com/mpgriffith/accio
+
+extra:
+  recipe-maintainers:
+    - mpgriffith
+  identifiers:
+    - doi:10.1099/mgen.0.001843
+
