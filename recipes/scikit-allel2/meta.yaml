@@ -1,0 +1,89 @@
+{% set name = "scikit-allel2" %}
+{% set version = "2.1.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/scikit_allel2-{{ version }}.tar.gz
+  sha256: a4e01e521c90283e1cf67f705aac9cfb3e8d86034d55917500078f8ac2b1ba24
+
+build:
+  number: 0
+  skip: true  # [win or py < 312]
+  run_exports:
+    - {{ pin_subpackage(name, max_pin="x.x") }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+    - {{ stdlib('c') }}
+    - cargo-bundle-licenses
+  host:
+    - python
+    - pip
+    - setuptools >=77
+    - setuptools-scm >=8
+    - setuptools-rust >=1.11
+    - cython >=3.1
+    - numpy >=2.0
+  run:
+    - python
+    - numpy >=2.0
+    - dask-core
+    - zarr >=3.1
+
+test:
+  imports:
+    - allel2
+    - allel2.opt.io_vcf_read_rs
+  requires:
+    - pip
+  commands:
+    - pip check
+    - python -c "import allel2; assert allel2.__version__ == '{{ version }}', allel2.__version__"
+    # same checks as upstream ci/smoke_wheel.py, inline because the
+    # biocontainer test has no source files: reads the installed test VCF and
+    # checks from the debug log that the Rust parser read it
+    - >-
+      python -c "import importlib.resources as r, logging, allel2;
+      m = [];
+      h = logging.Handler();
+      h.emit = lambda rec: m.append(rec.getMessage());
+      lg = logging.getLogger('allel2.io.vcf_read');
+      lg.addHandler(h);
+      lg.setLevel(logging.DEBUG);
+      vcf = str(r.files('allel2.test') / 'data' / 'sample.vcf');
+      c = allel2.read_vcf(vcf, fields=['variants/POS', 'calldata/GT']);
+      assert any('with the Rust VCF parser' in x for x in m), m;
+      gt = allel2.GenotypeArray(c['calldata/GT']);
+      assert gt.shape == (9, 3, 2), gt.shape;
+      assert c['variants/POS'][:3].tolist() == [111, 112, 14370];
+      assert gt.count_alleles()[4].tolist() == [0, 2, 4];
+      print('smoke test passed')"
+
+about:
+  home: https://github.com/ltalignani/scikit-allel2
+  license: MIT
+  license_family: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY.yml
+  summary: Explore and analyse genetic variation data, with a parallel VCF reader written in Rust.
+  description: |
+    scikit-allel2 is a maintained fork of scikit-allel (imported as allel2) for
+    exploring and analysing genetic variation data: genotype arrays, allele counts,
+    diversity, divergence, selection scans, LD, PCA and admixture statistics. VCF
+    files are read by a multi-threaded parser written in Rust, with bgzip and
+    tabix/CSI index support, into NumPy arrays, Zarr or HDF5.
+  doc_url: https://scikit-allel2.readthedocs.io
+  dev_url: https://github.com/ltalignani/scikit-allel2
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - ltalignani
